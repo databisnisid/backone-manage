@@ -161,5 +161,5 @@ class NetworksGroup(ModelAdminGroup):
 # Now you just need to register your customised ModelAdmin class with Wagtail
 modeladmin_register(NetworksAdmin)
 modeladmin_register(NetworkRoutesAdmin)
-modeladmin_register(NetworkRulesAdmin)
+#modeladmin_register(NetworkRulesAdmin)
 modeladmin_register(MembersAdmin)
