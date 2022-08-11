@@ -142,6 +142,7 @@ class MembersAdmin(ModelAdmin):
                         heading=_('Member ID and Network')),
         MultiFieldPanel([FieldPanel('is_authorized'), FieldPanel('ipaddress')],
                         heading=_('Authorization and IP Address')),
+        FieldPanel('is_bridge'),
     ]
 
     def get_queryset(self, request):

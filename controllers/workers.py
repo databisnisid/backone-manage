@@ -30,6 +30,7 @@ def zt_import_members(network):
             Only authorized member is imported
             """
             mem.member_id = member_info['id']
+            mem.is_bridge = member_info['activeBridge']
             mem.network = network
             #print(mem.member_id)
             mem.save()

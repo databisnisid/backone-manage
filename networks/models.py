@@ -392,6 +392,7 @@ class Members(models.Model):
         verbose_name=_('Owner')
     )
 
+    is_bridge = models.BooleanField(_('Bridge'), default=False)
     is_authorized = models.BooleanField(_('Authorized'), default=True)
     ipaddress = models.GenericIPAddressField(_('IP Address'), blank=True, null=True)
     configuration = models.TextField(_('Configuration'), blank=True)
@@ -434,16 +435,18 @@ class Members(models.Model):
         else:
             member_info = zt.authorize_member(self.network.network_id, self.member_id, authorized=False)
 
+        # Set Bridge
+        if self.is_bridge:
+            data = {'activeBridge': True}
+        else:
+            data = {'activeBridge': False}
+        member_info = zt.set_member(self.network.network_id, self.member_id, data)
+
         # Assign IP Address
         if self.ipaddress is not None:
             data = {'ipAssignments': [self.ipaddress]}
             member_info = zt.set_member(self.network.network_id, self.member_id, data)
 
-        # Get Member info
-        #member_info = zt.get_member_info(self.network.network_id, self.member_id)
-
-        # Sync from Controller if member is authorized
-        #if 'authorized' in member_info and member_info['authorized']:
         if 'address' in member_info:
             if not self.name:
                 self.name = 'NET: ' + self.network.name + ' MEMBER: ' + member_info['id']
