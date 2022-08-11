@@ -112,8 +112,10 @@ class Networks(models.Model):
 
             #print(result)
 
-            #if self.ip_assignment is not None:
             try:
+                """
+                Check if ip_assignment is entered and valid
+                """
                 ip_address(self.ip_assignment)
                 ip_assignment = '{0}/{1}'.format(str(self.ip_assignment), str(self.ip_assignment_netmask))
 
@@ -126,6 +128,7 @@ class Networks(models.Model):
                             route_index = i
                             break
 
+                    """ If route is found """
                     if route_index >= 0:
                         routes[route_index]['target'] = ip_assignment
                     else:
@@ -151,18 +154,18 @@ class Networks(models.Model):
                         if routes[i]['via'] is None:
                             route_index = i
                             break
-                #if len(result['routes']) != 0 and result['routes'][0]['via'] is None:
-                #    ip_route = result['routes'][0]['target']
 
                     if route_index >= 0:
                         if self.created_at is None:
+                            """
+                            if new record and have route in configuration
+                            then add the route into ip_assigment
+                            """
                             ip_route = routes[route_index]['target']
                             ip_target = ip_route.split('/')
                             self.ip_assignment = ip_target[0]
                             self.ip_assignment_netmask = ip_target[1]
                         else:
-                            #routes = []
-                            #route = {'target': ip_assignment, 'via': ''}
                             routes.pop(route_index)
                             routes_json = {'routes': routes}
                             result = zt.set_network(self.network_id, routes_json)
@@ -185,6 +188,10 @@ class Networks(models.Model):
 
 class NetworkRoutes(models.Model):
     def limit_choices_to_current_user():
+        """
+        limit the choice of foreignkey to current user
+        :return:
+        """
         user = get_current_user()
         if not user.is_superuser:
             return {'user': user}
