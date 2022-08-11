@@ -440,7 +440,7 @@ class Members(models.Model):
             [ip_peers.append(peer['address']) for peer in paths]
 
             result = '<br />'.join([str(p) for p in ip_peers])
-            return format_html(result)
+            return format_html('<small>' + result + '</small>')
         else:
             return ''
 
