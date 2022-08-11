@@ -34,7 +34,7 @@ class NetworksAdmin(ModelAdmin):
     model = Networks
     inspect_view_enabled = True
     menu_label = 'Networks'  # ditch this to use verbose_name_plural from model
-    menu_icon = 'group'  # change as required
+    menu_icon = 'site'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('name', 'network_id', 'ip_allocation')
@@ -42,15 +42,6 @@ class NetworksAdmin(ModelAdmin):
     search_fields = ('name',)
 
     panels = [
-        MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
-                        heading=_('Network Name and Description')),
-        MultiFieldPanel([FieldPanel('ip_assignment'), FieldPanel('ip_assignment_netmask')],
-                        heading=_('IP Assignment')),
-        FieldPanel('user', classname=None, widget=None, heading='',
-                   disable_comments=False, permission='superuser')
-    ]
-
-    panels_admin = [
         MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
                         heading=_('Network Name and Description')),
         MultiFieldPanel([FieldPanel('ip_assignment'), FieldPanel('ip_assignment_netmask')],
@@ -82,7 +73,7 @@ class NetworkRoutesAdmin(ModelAdmin):
     model = NetworkRoutes
     #inspect_view_enabled = True
     menu_label = 'Network Routes'  # ditch this to use verbose_name_plural from model
-    menu_icon = 'group'  # change as required
+    menu_icon = 'redirect'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('__str__', 'gateway', 'network',)
@@ -134,7 +125,7 @@ class MembersAdmin(ModelAdmin):
     model = Members
     inspect_view_enabled = True
     menu_label = 'Members'  # ditch this to use verbose_name_plural from model
-    menu_icon = 'tag'  # change as required
+    menu_icon = 'list-ul'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('name', 'member_id', 'is_authorized', 'ipaddress', 'network',
@@ -168,4 +159,7 @@ class NetworksGroup(ModelAdminGroup):
 
 
 # Now you just need to register your customised ModelAdmin class with Wagtail
-modeladmin_register(NetworksGroup)
+modeladmin_register(NetworksAdmin)
+modeladmin_register(NetworkRoutesAdmin)
+modeladmin_register(NetworkRulesAdmin)
+modeladmin_register(MembersAdmin)
