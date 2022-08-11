@@ -35,10 +35,12 @@ class Controllers(models.Model):
 
     def status(self):
         config = to_dictionary(self.configuration)
-        if config['online']:
-            return format_html("<span style='color: green;'>ONLINE</span>")
-        else:
-            return format_html("<span style='color: red;'>OFFLINE</span>")
+        text = format_html("<span style='color: red;'>OFFLINE</span>")
+        if 'online' in config:
+            if config['online']:
+                text = format_html("<span style='color: green;'>ONLINE</span>")
+
+        return text
 
     status.short_description = _('Status')
 
