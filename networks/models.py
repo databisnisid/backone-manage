@@ -107,11 +107,19 @@ class Networks(models.Model):
 
             if self.ip_assignment is not None:
                 ip_assignment = '{0}/{1}'.format(str(self.ip_assignment), str(self.ip_assignment_netmask))
-                #routes = result['routes']
-                if len(result['routes']) != 0 \
-                        and ip_assignment == result['routes'][0]['target'] \
-                        and result['routes'][0]['via'] is None:
-                    print('It is same ', ip_assignment, result['routes'][0]['target'])
+                routes = result['routes']
+                route_index = -1
+                for i in range(len(routes)):
+                    if routes[i]['via'] is None:
+                        route_index = i
+                        break
+
+                #if len(result['routes']) != 0 \
+                #        and ip_assignment == result['routes'][0]['target'] \
+                #        and result['routes'][0]['via'] is None:
+                if route_index >= 0:
+                    #print('It is same ', ip_assignment, result['routes'][0]['target'])
+                    print('It is same ', ip_assignment, result['routes'][route_index]['target'])
 
                 else:
                     print('It is NOT same ', ip_assignment)
@@ -132,8 +140,17 @@ class Networks(models.Model):
                         result = zt.set_network(self.network_id, routes_json)
 
             else:
-                if len(result['routes']) != 0 and result['routes'][0]['via'] is None:
-                    ip_route = result['routes'][0]['target']
+                routes = result['routes']
+                route_index = -1
+                for i in range(len(routes)):
+                    if routes[i]['via'] is None:
+                        route_index = i
+                        break
+                #if len(result['routes']) != 0 and result['routes'][0]['via'] is None:
+                #    ip_route = result['routes'][0]['target']
+
+                if route_index >= 0:
+                    ip_route = result['routes'][route_index]['target']
                     ip_target = ip_route.split('/')
 
                     self.ip_assignment = ip_target[0]
