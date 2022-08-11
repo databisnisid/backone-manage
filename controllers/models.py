@@ -44,12 +44,18 @@ class Controllers(models.Model):
 
     def node_id(self):
         config = to_dictionary(self.configuration)
-        return config['address']
+        if 'address' in config:
+            return config['address']
+        else:
+            return ''
     node_id.short_description = _('Node ID')
 
     def version(self):
         config = to_dictionary(self.configuration)
-        return config['version']
+        if 'version' in config:
+            return config['version']
+        else:
+            return ''
     version.short_description = _('Version')
 
 
