@@ -46,6 +46,8 @@ class NetworksAdmin(ModelAdmin):
                         heading=_('Network Name and Description')),
         MultiFieldPanel([FieldPanel('ip_assignment'), FieldPanel('ip_assignment_netmask')],
                         heading=_('IP Assignment')),
+        FieldPanel('user', classname=None, widget=None, heading='',
+                   disable_comments=False, permission='superuser')
     ]
 
     panels_admin = [
@@ -53,7 +55,8 @@ class NetworksAdmin(ModelAdmin):
                         heading=_('Network Name and Description')),
         MultiFieldPanel([FieldPanel('ip_assignment'), FieldPanel('ip_assignment_netmask')],
                         heading=_('IP Assignment')),
-        FieldPanel('user'),
+        FieldPanel('user', classname=None, widget=None, heading='',
+                   disable_comments=False, permission='superuser')
     ]
 
     #def __init__(self, *args, **kwargs):

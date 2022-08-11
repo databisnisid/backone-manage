@@ -83,9 +83,9 @@ class Networks(models.Model):
                 self.user = user
             '''
 
-            # Assign controller
-            user_controller = UserControllers.objects.get(user=self.user)
-            self.controller = user_controller.controller
+        # Assign controller
+        user_controller = UserControllers.objects.get(user=self.user)
+        self.controller = user_controller.controller
 
         zt = Zerotier(self.controller.uri, self.controller.token)
         result = zt.list_networks()
@@ -95,68 +95,81 @@ class Networks(models.Model):
         else:
             result = zt.get_network_info(self.network_id)
 
+        #print(result)
+
         if 'nwid' in result:
+            self.network_id = result['nwid']
             if not self.name:
                 if not result['name']:
                     self.name = self.network_id + ' Network'
                 else:
                     self.name = result['name']
 
+            print(self.name, result)
+
             result['name'] = self.name
             result = zt.set_network_name(self.network_id, self.name)
 
-            if self.ip_assignment is not None:
+            print(result)
+
+            #if self.ip_assignment is not None:
+            try:
+                ip_address(self.ip_assignment)
                 ip_assignment = '{0}/{1}'.format(str(self.ip_assignment), str(self.ip_assignment_netmask))
-                routes = result['routes']
-                route_index = -1
-                for i in range(len(routes)):
-                    if routes[i]['via'] is None:
-                        route_index = i
-                        break
 
-                #if len(result['routes']) != 0 \
-                #        and ip_assignment == result['routes'][0]['target'] \
-                #        and result['routes'][0]['via'] is None:
-                if route_index >= 0:
-                    #print('It is same ', ip_assignment, result['routes'][0]['target'])
-                    print('It is same ', ip_assignment, result['routes'][route_index]['target'])
-
-                else:
-                    print('It is NOT same ', ip_assignment)
+                route_index = 0
+                if 'routes' in result:
                     routes = result['routes']
-                    try:
-                        ip_address(self.ip_assignment)
-                        ip_assignment = '{}/{}'.format(str(self.ip_assignment), str(self.ip_assignment_netmask))
+                    route_index = -1
+                    for i in range(len(routes)):
+                        if routes[i]['via'] is None:
+                            route_index = i
+                            break
+
+                    if route_index >= 0:
+                        routes[route_index]['target'] = ip_assignment
+                    else:
                         route = {'target': ip_assignment, 'via': ''}
                         routes.insert(0, route)
-                        routes_json = {'routes': routes}
-                        result = zt.set_network(self.network_id, routes_json)
 
-                    except ValueError:
-                        if len(routes) != 0:
-                            routes.pop(0)
+                else:
+                    routes = []
+                    route = {'target': ip_assignment, 'via': ''}
+                    routes.insert(0, route)
 
-                        routes_json = {'routes': routes}
-                        result = zt.set_network(self.network_id, routes_json)
+                routes_json = {'routes': routes}
+                result = zt.set_network(self.network_id, routes_json)
 
-            else:
-                routes = result['routes']
-                route_index = -1
-                for i in range(len(routes)):
-                    if routes[i]['via'] is None:
-                        route_index = i
-                        break
+            except ValueError:
+                #route_index = 0
+                print('ValueError', result)
+                if 'routes' in result:
+                    routes = result['routes']
+                    print(routes)
+                    route_index = -1
+                    for i in range(len(routes)):
+                        if routes[i]['via'] is None:
+                            route_index = i
+                            break
                 #if len(result['routes']) != 0 and result['routes'][0]['via'] is None:
                 #    ip_route = result['routes'][0]['target']
 
-                if route_index >= 0:
-                    ip_route = result['routes'][route_index]['target']
-                    ip_target = ip_route.split('/')
+                    if route_index >= 0:
+                        if self.created_at is None:
+                            ip_route = routes[route_index]['target']
+                            ip_target = ip_route.split('/')
+                            self.ip_assignment = ip_target[0]
+                            self.ip_assignment_netmask = ip_target[1]
+                        else:
+                            routes = []
+                            route = {'target': ip_assignment, 'via': ''}
+                            routes.insert(0, route)
+                            routes_json = {'routes': routes}
+                            result = zt.set_network(self.network_id, routes_json)
 
-                    self.ip_assignment = ip_target[0]
-                    self.ip_assignment_netmask = ip_target[1]
+            print(result)
 
-            self.network_id = result['nwid']
+            #self.network_id = result['nwid']
             self.configuration = result
             self.route = result['routes']
 

@@ -63,7 +63,7 @@ class Zerotier:
 
     def add_network(self, network_id=None):
         if not network_id:
-            uri_command = self.uri + '/controller/network/' + self.node_id + '______'
+            uri_command = self.uri + '/controller/network/' + self.get_node_id() + '______'
         else:
             uri_command = self.uri + '/controller/network/' + network_id
 
