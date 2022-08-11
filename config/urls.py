@@ -10,7 +10,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),
-    path("login/", include(wagtailadmin_urls)),
+    path("", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     #path("search/", search_views.search, name="search"),
 ]

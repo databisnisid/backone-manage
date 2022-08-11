@@ -28,7 +28,7 @@ class Controllers(models.Model):
 
     def save(self):
         zt = Zerotier(self.uri, self.token)
-        self.node_id = zt.get_node_id()
+        #self.node_id = zt.get_node_id()
         self.configuration = zt.status()
 
         return super(Controllers, self).save()
