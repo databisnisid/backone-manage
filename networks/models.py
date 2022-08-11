@@ -343,10 +343,10 @@ class NetworkRules(models.Model):
 class MemberPeers(models.Model):
     peers = models.TextField(_('Peers'))
     member_id = models.CharField(_('Member ID'), max_length=50)
-    controller = models.ForeignKey(
-        Controllers,
+    network = models.ForeignKey(
+        Networks,
         on_delete=models.CASCADE,
-        verbose_name=_('Controller')
+        verbose_name=_('Network'),
     )
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -361,7 +361,7 @@ class MemberPeers(models.Model):
         return '%s' % self.peers
 
     def save(self):
-        zt = Zerotier(self.controller.uri, self.controller.token)
+        zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         self.peers = zt.get_member_peers(self.member_id)
         return super(MemberPeers, self).save()
 
@@ -458,7 +458,7 @@ class Members(models.Model):
         except ObjectDoesNotExist:
             member_peers = MemberPeers(member_id=self.member_id)
         member_peers.peers = zt.get_member_peers(self.member_id)
-        member_peers.controller = self.network.controller
+        member_peers.network = self.network
         member_peers.save()
         self.peers = member_peers
 

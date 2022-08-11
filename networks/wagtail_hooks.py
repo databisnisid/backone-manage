@@ -5,7 +5,7 @@ from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.admin.edit_handlers import ObjectList
 from django.utils.translation import gettext as _
-
+from controllers.workers import zt_synchronize_member_peers
 
 class NetworkRoutesPermissionHelper(PermissionHelper):
     '''

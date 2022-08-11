@@ -8,8 +8,12 @@ from config.utils import to_list
 
 
 def zt_import_members(network):
-    #net = Networks.objects.get(id=network.id)
-    #zt = Zerotier(net.controller.uri, net.controller.token)
+    """
+    This is for first time when importing the controllers
+    Call by zt_import_networks()
+    :param network:
+    :return:
+    """
     zt = Zerotier(network.controller.uri, network.controller.token)
 
     members = zt.list_members(network.network_id)
@@ -17,18 +21,14 @@ def zt_import_members(network):
     for member in members:
         try:
             mem = Members.objects.get(member_id=member, network=network)
-            is_member = True
         except ObjectDoesNotExist:
             mem = Members()
-            is_member = False
 
         member_info = zt.get_member_info(network.network_id, member)
         if member_info['authorized']:
-            #print(member_info)
-            #if not is_member:
-            #    mem.name = 'NET: ' + network.name + ' MEMBER: ' + member_info['id']
-            #    #print(mem.name)
-
+            """
+            Only authorized member is imported
+            """
             mem.member_id = member_info['id']
             mem.network = network
             #print(mem.member_id)
@@ -36,7 +36,11 @@ def zt_import_members(network):
 
 
 def zt_import_network_routes(network):
-    #net = Networks.objects.get(id=network.id)
+    """
+    Call by zt_import_networks()
+    :param network:
+    :return:
+    """
     zt = Zerotier(network.controller.uri, network.controller.token)
     result = zt.get_network_info(network.network_id)
     #print(net.route)
@@ -59,6 +63,12 @@ def zt_import_network_routes(network):
 
 
 def zt_import_networks(controller):
+    """
+    Import all Networks
+    Call by zt_import_all_controllers()
+    :param controller:
+    :return:
+    """
     try:
         control = Controllers.objects.get(id=controller.id)
         is_control = True
@@ -89,18 +99,27 @@ def zt_import_networks(controller):
                 net.save()
 
             # Import members
-            #net = Networks.objects.get(network_id=network)
             zt_import_network_routes(net)
             zt_import_members(net)
 
 
-def zt_synchronize_all_controllers():
+def zt_import_all_controllers():
+    """
+    For importing all controllers
+    :return:
+    """
     controllers = Controllers.objects.all()
     for controller in controllers:
         zt_import_networks(controller)
 
 
 def zt_synchronize_network(network):
+    """
+    Scheduled job hourly
+    Call by zt_synchronize_all_networks()
+    :param network:
+    :return:
+    """
     zt = Zerotier(network.controller.uri, network.controller.token)
     zt_members = zt.list_members(network.network_id)
     db_members = Members.objects.filter(network=network,
@@ -127,12 +146,24 @@ def zt_synchronize_network(network):
 
 
 def zt_synchronize_all_networks():
+    """
+    Main cronjob to synchronize all networks
+    :return:
+    """
     networks = Networks.objects.all()
     for network in networks:
         zt_synchronize_network(network)
 
 
-def zt_synchronize_member_peers():
-    member_peers = MemberPeers.objects.all()
+def zt_synchronize_member_peers(network=None):
+    """
+    Scheduled cronjob every 5 minutes
+    :return:
+    """
+    if network is not None:
+        member_peers = MemberPeers.objects.filter(network=network)
+    else:
+        member_peers = MemberPeers.objects.all()
+
     for member_peer in member_peers:
         member_peer.save()
