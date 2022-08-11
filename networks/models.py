@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from controllers.backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
 from config.utils import to_dictionary, get_user
-from ipaddress import ip_address
+from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 
 
@@ -49,6 +49,9 @@ class Networks(models.Model):
     )
     ip_assignment = models.GenericIPAddressField(_('IP Assignment'), blank=True, null=True)
     ip_assignment_netmask = models.IntegerField(_('IP Netmask'), choices=NETMASK, default=24)
+
+    # NOTE: This will be improvement in the future, to support many ip assigment in Network
+    #ip_address_netmask = models.CharField(_('IP Network'), max_length=100, blank=True)
 
     configuration = models.TextField(_('Configuration'), blank=True)
     route = models.TextField(_('Route'), blank=True)
@@ -293,7 +296,7 @@ class NetworkRoutes(models.Model):
 
         num_routes = NetworkRoutes.objects.filter(network=self.network).count()
         if num_routes == 32:
-            raise ValidationError( _("Maximum routes is reached!"))
+            raise ValidationError(_("Maximum routes is reached!"))
 
 
 class NetworkRules(models.Model):
@@ -463,6 +466,20 @@ class Members(models.Model):
         self.peers = member_peers
 
         return super(Members, self).save()
+
+    def clean(self):
+        try:
+            ip_address(self.ipaddress)
+            ipaddress_network = '{}/{}'.format(self.network.ip_assignment, self.network.ip_assignment_netmask)
+            if ip_address(self.ipaddress) not in ip_network(ipaddress_network):
+                raise ValidationError({'ipaddress': _('IP address should be in segment ' + ipaddress_network)})
+
+            members = Members.objects.filter(ipaddress=self.ipaddress).exclude(member_id=self.member_id)
+            if members:
+                raise ValidationError({'ipaddress': _('IP address ' + self.ipaddress + ' is already used!')})
+
+        except ValueError:
+            pass
 
     def list_peers(self):
         peers = to_dictionary(self.peers.peers)
