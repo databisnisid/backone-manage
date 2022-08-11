@@ -457,15 +457,15 @@ class Members(models.Model):
             else:
                 direct_or_relay = 'DIRECT'
             #latency = str(peers['latency'])
-            text = format_html("<span style='color: green;'>ONLINE ({})<br />{}({}ms)<br />{}</span>",
+            text = format_html("<small style='color: green;'>ONLINE ({})<br />{}({}ms)<br />{}</small>",
                                version, peers['role'], str(latency), direct_or_relay)
         else:
             controller_configuration = to_dictionary(self.network.controller.configuration)
             version = controller_configuration['version']
             if self.member_id == controller_configuration['address']:
-                text = format_html("<span style='color: blue;'>CONTROLLER ({})</span>", version)
+                text = format_html("<small style='color: blue;'>CONTROLLER ({})</small>", version)
             else:
-                text = format_html("<span style='color: red;'>OFFLINE</span>")
+                text = format_html("<small style='color: red;'>OFFLINE</small>")
 
         return text
 
