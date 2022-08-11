@@ -159,5 +159,5 @@ WAGTAIL_SITE_NAME = 'BackOne Manage'
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 WAGTAILADMIN_BASE_URL = "https://manage.backone.cloud"
 
-#CSRF
+# CSRF
 CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL]
