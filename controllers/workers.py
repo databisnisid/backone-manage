@@ -1,0 +1,138 @@
+from .models import Controllers
+from networks.models import Networks, NetworkRoutes, Members, MemberPeers
+from django.contrib.auth.models import User
+from .backend import Zerotier
+from django.core.exceptions import ObjectDoesNotExist
+from crum import get_current_user
+from config.utils import to_list
+
+
+def zt_import_members(network):
+    #net = Networks.objects.get(id=network.id)
+    #zt = Zerotier(net.controller.uri, net.controller.token)
+    zt = Zerotier(network.controller.uri, network.controller.token)
+
+    members = zt.list_members(network.network_id)
+
+    for member in members:
+        try:
+            mem = Members.objects.get(member_id=member, network=network)
+            is_member = True
+        except ObjectDoesNotExist:
+            mem = Members()
+            is_member = False
+
+        member_info = zt.get_member_info(network.network_id, member)
+        if member_info['authorized']:
+            #print(member_info)
+            #if not is_member:
+            #    mem.name = 'NET: ' + network.name + ' MEMBER: ' + member_info['id']
+            #    #print(mem.name)
+
+            mem.member_id = member_info['id']
+            mem.network = network
+            #print(mem.member_id)
+            mem.save()
+
+
+def zt_import_network_routes(network):
+    #net = Networks.objects.get(id=network.id)
+    zt = Zerotier(network.controller.uri, network.controller.token)
+    result = zt.get_network_info(network.network_id)
+    #print(net.route)
+    routes = result['routes']
+    for route in routes:
+        print(route)
+        ip_target = route['target'].split('/')
+        via = route['via']
+        try:
+            NetworkRoutes.objects.get(network=network,
+                                      ip_network=ip_target[0],
+                                      ip_netmask=ip_target[1],
+                                      gateway=via)
+        except ObjectDoesNotExist:
+            net_route = NetworkRoutes(network=network,
+                                      ip_network=ip_target[0],
+                                      ip_netmask=ip_target[1],
+                                      gateway=via)
+            net_route.save()
+
+
+def zt_import_networks(controller):
+    try:
+        control = Controllers.objects.get(id=controller.id)
+        is_control = True
+    except ObjectDoesNotExist:
+        is_control = False
+
+    if is_control:
+
+        zt = Zerotier(control.uri, control.token)
+        networks = zt.list_networks()
+        for network in networks:
+            try:
+                net = Networks.objects.get(network_id=network, controller=controller)
+                is_network = True
+            except ObjectDoesNotExist:
+                net = Networks()
+                is_network = False
+
+            if not is_network:
+                print('Network is NOT in database. Add network id into DB', network)
+                net_info = zt.get_network_info(network)
+                if not net_info['name']:
+                    net.name = network + ' Network'
+                else:
+                    net.name = net_info['name']
+                net.network_id = net_info['nwid']
+
+                net.save()
+
+            # Import members
+            #net = Networks.objects.get(network_id=network)
+            zt_import_network_routes(net)
+            zt_import_members(net)
+
+
+def zt_synchronize_all_controllers():
+    controllers = Controllers.objects.all()
+    for controller in controllers:
+        zt_import_networks(controller)
+
+
+def zt_synchronize_network(network):
+    zt = Zerotier(network.controller.uri, network.controller.token)
+    zt_members = zt.list_members(network.network_id)
+    db_members = Members.objects.filter(network=network,
+                                        configuration=None).values_list('member_id', flat=True)
+    zt_members = to_list(zt_members)
+    db_members = to_list(db_members)
+    # print('ZT: ', zt_members)
+    # print('DB: ', db_members)
+    new_members = set(zt_members) ^ set(db_members)
+    if new_members:
+        # print(new_members)
+        for new_member in new_members:
+            try:
+                zt_members.index(new_member)
+                try:
+                    member = Members.objects.get(member_id=new_member, is_authorized=True)
+                    member.save()
+                    print('Adding New Members :', new_member)
+                except ObjectDoesNotExist:
+                    pass
+
+            except ValueError:
+                pass
+
+
+def zt_synchronize_all_networks():
+    networks = Networks.objects.all()
+    for network in networks:
+        zt_synchronize_network(network)
+
+
+def zt_synchronize_member_peers():
+    member_peers = MemberPeers.objects.all()
+    for member_peer in member_peers:
+        member_peer.save()

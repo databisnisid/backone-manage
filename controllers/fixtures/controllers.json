@@ -1,0 +1,14 @@
+[
+{
+    "model": "controllers.controllers",
+    "pk": 1,
+    "fields": {
+        "name": "Default Controller",
+        "description": "Default Initial Controller",
+        "uri": "http://localhost:9993",
+        "token": "21893yilahsdla-changeme",
+        "created_at": "2022-07-29T06:43:43.087Z",
+        "updated_at": "2022-07-29T06:43:43.087Z"
+    }
+}
+]
