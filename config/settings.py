@@ -158,3 +158,6 @@ WAGTAIL_SITE_NAME = 'BackOne Manage'
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 WAGTAILADMIN_BASE_URL = "https://manage.backone.cloud"
+
+#CSRF
+CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL]
