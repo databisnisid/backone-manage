@@ -18,7 +18,7 @@ class Zerotier:
         self.uri = uri
         self.token = token
         self.header = {'X-ZT1-AUTH': 'bde5492718141181c4059040'}
-        self.node_id = self.get_node_id()
+        #self.node_id = self.get_node_id()
 
     def get_node_id(self):
         status = self.status()
