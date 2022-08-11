@@ -105,19 +105,19 @@ class Networks(models.Model):
                 else:
                     self.name = result['name']
 
-            print(self.name, result)
+            #print(self.name, result)
 
             result['name'] = self.name
             result = zt.set_network_name(self.network_id, self.name)
 
-            print(result)
+            #print(result)
 
             #if self.ip_assignment is not None:
             try:
                 ip_address(self.ip_assignment)
                 ip_assignment = '{0}/{1}'.format(str(self.ip_assignment), str(self.ip_assignment_netmask))
 
-                route_index = 0
+                #route_index = 0
                 if 'routes' in result:
                     routes = result['routes']
                     route_index = -1
@@ -145,7 +145,7 @@ class Networks(models.Model):
                 print('ValueError', result)
                 if 'routes' in result:
                     routes = result['routes']
-                    print(routes)
+                    #print(routes)
                     route_index = -1
                     for i in range(len(routes)):
                         if routes[i]['via'] is None:
@@ -161,13 +161,13 @@ class Networks(models.Model):
                             self.ip_assignment = ip_target[0]
                             self.ip_assignment_netmask = ip_target[1]
                         else:
-                            routes = []
-                            route = {'target': ip_assignment, 'via': ''}
-                            routes.insert(0, route)
+                            #routes = []
+                            #route = {'target': ip_assignment, 'via': ''}
+                            routes.pop(route_index)
                             routes_json = {'routes': routes}
                             result = zt.set_network(self.network_id, routes_json)
 
-            print(result)
+            #print(result)
 
             #self.network_id = result['nwid']
             self.configuration = result
