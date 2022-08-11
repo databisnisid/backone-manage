@@ -145,7 +145,7 @@ class Networks(models.Model):
 
             except ValueError:
                 #route_index = 0
-                print('ValueError', result)
+                #print('ValueError', result)
                 if 'routes' in result:
                     routes = result['routes']
                     #print(routes)
