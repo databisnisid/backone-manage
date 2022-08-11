@@ -230,6 +230,8 @@ class NetworkRoutes(models.Model):
         except ObjectDoesNotExist:
             self.user = get_user()
 
+        self.user = self.network.user
+
         ip_target = '{}/{}'.format(str(self.ip_network), str(self.ip_netmask))
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         result = zt.get_network_info(self.network.network_id)
@@ -333,6 +335,8 @@ class NetworkRules(models.Model):
         except ObjectDoesNotExist:
             self.user = get_user()
 
+        self.user = self.network.user
+
         return super(NetworkRules, self).save()
 
 
@@ -415,14 +419,8 @@ class Members(models.Model):
             self.user
         except ObjectDoesNotExist:
             self.user = get_user()
-            '''
-            user = get_current_user()
-            if user:
-                self.user = user
-            else:
-                user = User.objects.get(id=1)
-                self.user = user
-            '''
+
+        self.user = self.network.user
 
         # Zerotier
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
