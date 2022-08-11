@@ -202,8 +202,7 @@ class NetworkRoutes(models.Model):
         verbose_name_plural = 'network routes'
 
     def __str__(self):
-        if self.gateway is None:
-            return '%s/%s' % (self.ip_network, self.ip_netmask)
+        return '%s/%s' % (self.ip_network, self.ip_netmask)
 
     def save(self):
         try:
