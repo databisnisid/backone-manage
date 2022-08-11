@@ -59,12 +59,14 @@ class NetworksAdmin(ModelAdmin):
     #def __init__(self, *args, **kwargs):
     #    super().__init__(*args, **kwargs)
 
+    '''
     def get_edit_handler(self, instance, request):
         panels = self.panels
         if request.user.is_superuser:
             panels = self.panels_admin
 
         return ObjectList(panels)
+    '''
 
     def get_queryset(self, request):
         if not request.user.is_superuser:
