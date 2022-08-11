@@ -439,10 +439,8 @@ class Members(models.Model):
             ip_peers = []
             for path in paths:
                 ip_path = path['address'].split('/')
-                print(path['address'])
-                print(ip_path)
                 if ip_path[0] not in ip_peers:
-                    ip_peers.append(ip_path)
+                    ip_peers.append(ip_path[0])
                 #[ip_peers.append(peer['address']) for peer in paths]
 
             result = '<br />'.join([str(p) for p in ip_peers])
