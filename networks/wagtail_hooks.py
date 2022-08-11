@@ -115,6 +115,7 @@ class NetworkRulesAdmin(ModelAdmin):
     ]
 
     def get_queryset(self, request):
+        zt_synchronize_member_peers()
         if not request.user.is_superuser:
             return NetworkRules.objects.filter(user=get_current_user())
         else:
