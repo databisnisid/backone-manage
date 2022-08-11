@@ -14,10 +14,10 @@ def remove_duplicate_peers(peers):
 
 
 class Zerotier:
-    def __init__(self, uri='http://localhost:9993', token = 'bde5492718141181c4059040'):
+    def __init__(self, uri='http://localhost:9993', token='bde5492718141181c4059040'):
         self.uri = uri
         self.token = token
-        self.header = {'X-ZT1-AUTH': 'bde5492718141181c4059040'}
+        self.header = {'X-ZT1-AUTH': self.token}
         #self.node_id = self.get_node_id()
 
     def get_node_id(self):
