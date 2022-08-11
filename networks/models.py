@@ -204,8 +204,6 @@ class NetworkRoutes(models.Model):
     def __str__(self):
         if self.gateway is None:
             return '%s/%s' % (self.ip_network, self.ip_netmask)
-        else:
-            return '%s/%s via %s' % (self.ip_network, self.ip_netmask, self.gateway)
 
     def save(self):
         try:
