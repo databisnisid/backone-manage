@@ -1,5 +1,6 @@
 from django.db import models
-from networks.models import Networks, NetworkRoutes, Members, MemberPeers
+from networks.models import Networks, NetworkRoutes
+from members.models import Members, MemberPeers
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 from config.utils import to_dictionary, get_user

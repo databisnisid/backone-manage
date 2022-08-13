@@ -1,5 +1,6 @@
 from .models import Controllers
-from networks.models import Networks, NetworkRoutes, Members, MemberPeers
+from networks.models import Networks, NetworkRoutes
+from members.models import Members, MemberPeers
 from django.contrib.auth.models import User
 from .backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
@@ -29,6 +30,8 @@ def zt_import_members(network):
             """
             Only authorized member is imported
             """
+            ip_address_list = ','.join([str(ip) for ip in member_info['ipAssignments']])
+            mem.ipaddress = ip_address_list
             mem.member_id = member_info['id']
             mem.is_bridge = member_info['activeBridge']
             mem.network = network
@@ -48,17 +51,15 @@ def zt_import_network_routes(network):
     routes = result['routes']
     for route in routes:
         print(route)
-        ip_target = route['target'].split('/')
+        ip_target = route['target']
         via = route['via']
         try:
             NetworkRoutes.objects.get(network=network,
-                                      ip_network=ip_target[0],
-                                      ip_netmask=ip_target[1],
+                                      ip_network=ip_target,
                                       gateway=via)
         except ObjectDoesNotExist:
             net_route = NetworkRoutes(network=network,
-                                      ip_network=ip_target[0],
-                                      ip_netmask=ip_target[1],
+                                      ip_network=ip_target,
                                       gateway=via)
             net_route.save()
 
@@ -87,6 +88,24 @@ def zt_import_networks(controller):
             except ObjectDoesNotExist:
                 net = Networks()
                 is_network = False
+
+            net_info = zt.get_network_info(network)
+
+            if 'routes' in net_info:
+                routes = net_info['routes']
+                route_indexes = []
+                for i in range(len(routes)):
+                    if routes[i]['via'] is None:
+                        route_indexes.append(i)
+
+                """ If route is found """
+                # is_route_inserted = False
+                if route_indexes:
+                    ip_networks = []
+                    for route_index in route_indexes:
+                        ip_networks.append(routes[route_index]['target'])
+                    print(ip_networks)
+                    net.ip_address_networks = ",".join([str(ip) for ip in ip_networks])
 
             if not is_network:
                 print('Network is NOT in database. Add network id into DB', network)

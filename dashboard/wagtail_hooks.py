@@ -1,7 +1,8 @@
 from django.utils.safestring import mark_safe
 from wagtail.admin.ui.components import Component
 from wagtail import hooks
-from networks.models import Networks, NetworkRoutes, Members
+from networks.models import Networks, NetworkRoutes
+from members.models import Members
 from crum import get_current_user
 
 

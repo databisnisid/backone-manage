@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'dashboard',
     'controllers',
     'networks',
+    'members',
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.embeds',
