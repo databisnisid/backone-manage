@@ -89,6 +89,7 @@ def zt_import_networks(controller):
                 is_network = True
             except ObjectDoesNotExist:
                 net = Networks()
+                net.controller = controller
                 is_network = False
 
             net_info = zt.get_network_info(network)
