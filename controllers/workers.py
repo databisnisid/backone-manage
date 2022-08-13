@@ -92,6 +92,7 @@ def zt_import_networks(controller):
                 is_network = False
 
             net_info = zt.get_network_info(network)
+            print(net_info)
 
             if 'routes' in net_info:
                 routes = net_info['routes']
