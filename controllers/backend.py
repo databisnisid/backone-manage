@@ -93,8 +93,16 @@ class Zerotier:
         data = {'name': name}
         return self.set_network(network_id, data)
 
+    def set_member_ipaddress(self, network_id, member_id, ipaddress=[]):
+        data = {'ipAssignments': ipaddress}
+        return self.set_member(network_id, member_id, data)
+
     def authorize_member(self, network_id, member_id, authorized=True):
         data = {'authorized': authorized}
+        return self.set_member(network_id, member_id, data)
+
+    def bridge_member(self, network_id, member_id, bridge=True):
+        data = {'activeBridge': bridge}
         return self.set_member(network_id, member_id, data)
 
     def get_member_peers(self, member_id):

@@ -20,16 +20,18 @@ def zt_import_members(network):
     members = zt.list_members(network.network_id)
 
     for member in members:
-        try:
-            mem = Members.objects.get(member_id=member, network=network)
-        except ObjectDoesNotExist:
-            mem = Members()
-
         member_info = zt.get_member_info(network.network_id, member)
         if member_info['authorized']:
             """
             Only authorized member is imported
             """
+
+            try:
+                mem = Members.objects.get(member_id=member, network=network)
+            except ObjectDoesNotExist:
+                mem = Members()
+                mem.name = 'NET-' + network.network_id + ' MEMBER-' +  member
+
             ip_address_list = ','.join([str(ip) for ip in member_info['ipAssignments']])
             mem.ipaddress = ip_address_list
             mem.member_id = member_info['id']

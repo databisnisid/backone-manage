@@ -62,7 +62,6 @@ class Members(models.Model):
 
     is_bridge = models.BooleanField(_('Bridge'), default=False)
     is_authorized = models.BooleanField(_('Authorized'), default=True)
-    #ipaddress = models.GenericIPAddressField(_('IP Address'), blank=True, null=True)
     ipaddress = models.CharField(_('IP Address'), max_length=100, blank=True, null=True)
 
     configuration = models.TextField(_('Configuration'), blank=True)
@@ -96,41 +95,30 @@ class Members(models.Model):
 
         self.user = self.network.user
 
+
         # Zerotier
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
+        #member_info = zt.get_member_info(self.network.network_id, self.member_id)
 
-        # Authorized member
-        if self.is_authorized:
-            member_info = zt.authorize_member(self.network.network_id, self.member_id)
-        else:
-            member_info = zt.authorize_member(self.network.network_id, self.member_id, authorized=False)
+        #if self.name is None:
+        #    self.name = 'NET: ' + self.network.name + ' MEMBER: ' + member_info['id']
 
-        # Set Bridge
-        if self.is_bridge:
-            data = {'activeBridge': True}
-        else:
-            data = {'activeBridge': False}
-        member_info = zt.set_member(self.network.network_id, self.member_id, data)
+        # Authorized and Bridge Setting
+        data = {'authorized': self.is_authorized, 'activeBridge': self.is_bridge}
 
         # Assign IP Address
         if self.ipaddress is not None:
             self.ipaddress = self.ipaddress.replace(' ', '')
-            ip_address_list = []
-            for ipaddress in self.ipaddress:
-                ip_address_list.append(ipaddress)
-            data = {'ipAssignments': ip_address_list}
-            member_info = zt.set_member(self.network.network_id, self.member_id, data)
+            ip_address_lists = self.ipaddress.split(',')
+            data['ipAssignments'] = ip_address_lists
 
-        if 'address' in member_info:
-            if not self.name:
-                self.name = 'NET: ' + self.network.name + ' MEMBER: ' + member_info['id']
+        # Apply Configuration to controller
+        print('Member', self.member_id, data)
+        member_info = zt.set_member(self.network.network_id, self.member_id, data)
 
-            # self.is_authorized = True
-            self.configuration = member_info
-            self.member_id = member_info['id']
-
-            if len(member_info['ipAssignments']) != 0:
-                self.ipaddress = member_info['ipAssignments'][0]
+        #if 'address' in member_info:
+        self.configuration = member_info
+            #self.member_id = member_info['id']
 
         # Get MemberPeers
         try:
@@ -145,34 +133,13 @@ class Members(models.Model):
         return super(Members, self).save()
 
     def clean(self):
-        # TODO
         # CHECK: For multiple IP in self.ipaddress
-        '''
-        try:
-            ip_address(self.ipaddress)
-            ipaddress_network = '{}/{}'.format(self.network.ip_assignment, self.network.ip_assignment_netmask)
-            if ip_address(self.ipaddress) not in ip_network(ipaddress_network):
-                raise ValidationError({'ipaddress': _('IP address should be in segment ' + ipaddress_network)})
-
-
-            # Second Raise
-            members = Members.objects.filter(ipaddress=self.ipaddress).exclude(member_id=self.member_id)
-            if members:
-                raise ValidationError({'ipaddress': _('IP address ' + self.ipaddress + ' is already used!')})
-
-        except ValueError:
-            pass
-        '''
-        # TODO
         # Check for list IP_address
         if self.ipaddress is not None:
             self.ipaddress = self.ipaddress.replace(' ', '')
-
-            #print(self.network.ip_address_networks)
             ip_address_lists = self.ipaddress.split(',')
 
             for ip_address_list in ip_address_lists:
-                print(ip_address_list)
                 try:
                     ip_address(ip_address_list)
                 except ValueError:
@@ -180,15 +147,16 @@ class Members(models.Model):
 
         # New Block Validation compare to ip_network
             if self.network.ip_address_networks is not None:
-                #print(self.network.ip_address_networks)
                 ip_network_lists = self.network.ip_address_networks.split(',')
 
                 is_ipaddress_in_network = False
-                for ip_network_list in ip_network_lists:
-                    print(ip_network_list)
-                    for ip_address_list in ip_address_lists:
+                for ip_address_list in ip_address_lists:
+                    for ip_network_list in ip_network_lists:
                         if ip_address(ip_address_list) in ip_network(ip_network_list):
                             is_ipaddress_in_network = True
+                            break
+                        else:
+                            is_ipaddress_in_network = False
 
                 if not is_ipaddress_in_network:
                     raise ValidationError({'ipaddress': _('IP address should be in segment ' +
@@ -196,15 +164,24 @@ class Members(models.Model):
 
                 # Second Raise
                 for ip_address_list in ip_address_lists:
+
                     members = Members.objects.filter(
-                        ipaddress__contains=ip_address_list
-                    ).exclude(member_id=self.member_id)
+                        ipaddress__contains=ip_address_list).exclude(member_id=self.member_id)
 
                     if members:
-                        raise ValidationError({'ipaddress': _('IP address ' + self.ipaddress + ' is already used!')})
-                        break
+                        raise ValidationError(
+                            {'ipaddress': _('IP address ' + ip_address_list + ' is already used!')})
             else:
                 raise ValidationError(_('First, please setup IP Network in ' + self.network.name))
+
+    def list_ipaddress(self):
+        text = ''
+        if self.ipaddress is not None:
+            ipaddress_list = self.ipaddress.split(',')
+            text = format_html('<br />'.join([str(p) for p in ipaddress_list]))
+
+        return text
+    list_ipaddress.short_description = _('IP Address')
 
     def list_peers(self):
         peers = to_dictionary(self.peers.peers)
@@ -229,24 +206,27 @@ class Members(models.Model):
         if 'paths' in peers and len(peers['paths']) != 0:
             version = peers['version']
             latency = peers['latency']
-            #latency = str(int(peers['latency']) * -1) if int(peers['latency']) < 0 else peers['latency']
+
             if latency < 0:
                 direct_or_relay = 'RELAY'
             else:
                 direct_or_relay = 'DIRECT'
-            #latency = str(peers['latency'])
+
             text = format_html("<small style='color: green;'>ONLINE ({})<br />{}({}ms)<br />{}</small>",
                                version, peers['role'], str(latency), direct_or_relay)
         else:
             controller_configuration = to_dictionary(self.network.controller.configuration)
-            version = controller_configuration['version']
+            peers = to_dictionary(self.peers.peers)
+
             if self.member_id == controller_configuration['address']:
+                version = controller_configuration['version']
                 text = format_html("<small style='color: blue;'>CONTROLLER ({})</small>", version)
+            elif 'role' in self.peers.peers and 'latency' in self.peers.peers \
+                    and 'version' in self.peers.peers: # and int(self.peers.peers['latency']) == -1:
+                text = format_html("<small style='color: green;'>RELAY ({})</small>", peers['version'])
             else:
                 text = format_html("<small style='color: red;'>OFFLINE</small>")
 
         return text
 
     member_status.short_description = _('Status')
-
-        #return ",".join([str(p) for p in self.networks.all()])

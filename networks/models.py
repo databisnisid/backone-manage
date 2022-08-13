@@ -11,7 +11,30 @@ from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 
 
+''' Sample of Validator'''
+'''
+def validate_even(value):
+    if value % 2 != 0:
+        raise ValidationError(
+            _('%(value)s is not an even number'),
+            params={'value': value},
+        )
+even_field = models.IntegerField(validators=[validate_even])
+'''
+
+
 class Networks(models.Model):
+    """
+    "ipAssignmentPools": [
+    {
+        "ipRangeEnd": "192.168.64.200",
+        "ipRangeStart": "192.168.64.10"
+    }
+    ],
+    "v4AssignMode": {
+        "zt": true
+    },
+    """
     name = models.CharField(_('Name'), max_length=50)
     description = models.TextField(_('Description'), blank=True)
     network_id = models.CharField(_('Network ID'), max_length=50, unique=True)
@@ -26,14 +49,19 @@ class Networks(models.Model):
         Controllers,
         on_delete=models.CASCADE,
     )
-    #ip_assignment = models.GenericIPAddressField(_('IP Assignment'), blank=True, null=True)
-    #ip_assignment_netmask = models.IntegerField(_('IP Netmask'), choices=NETMASK, default=24)
 
     # NOTE: This will be improvement in the future, to support many ip assigment in Network
     ip_address_networks = models.CharField(_('IP Networks'), max_length=100,
                                            blank=True, null=True,
                                            help_text='Example: 192.168.0.0/24, 10.0.0.0/24')
-
+    '''
+    This auto assign is can be done later.
+    '''
+    '''
+    is_auto_assign = models.BooleanField(_('Auto Assign IP'), default=False)
+    ip_pools = models.CharField(_('IP Pools'), blank=True, null=True,
+                                help_text=_('Example: 192.168.0.10-192.168.0.200'))
+    '''
     configuration = models.TextField(_('Configuration'), blank=True)
     route = models.TextField(_('Route'), blank=True)
 
@@ -58,14 +86,6 @@ class Networks(models.Model):
             self.user
         except ObjectDoesNotExist:
             self.user = get_user()
-            '''
-            user = get_current_user()
-            if user:
-                self.user = user
-            else:
-                user = User.objects.get(id=1)
-                self.user = user
-            '''
 
         # Assign controller
         user_controller = UserControllers.objects.get(user=self.user)
@@ -79,8 +99,6 @@ class Networks(models.Model):
         else:
             result = zt.get_network_info(self.network_id)
 
-        #print(result)
-
         if 'nwid' in result:
             self.network_id = result['nwid']
             if not self.name:
@@ -89,12 +107,8 @@ class Networks(models.Model):
                 else:
                     self.name = result['name']
 
-            #print(self.name, result)
-
             result['name'] = self.name
-            result = zt.set_network_name(self.network_id, self.name)
-
-            #print(result)
+            data = {'name': self.name}
 
             # Working on IP Network array
             if self.ip_address_networks is not None:
@@ -109,7 +123,6 @@ class Networks(models.Model):
                     is_ip_networks = False
 
                 if is_ip_networks:
-                    # route_index = 0
                     if 'routes' in result:
                         routes = result['routes']
 
@@ -118,11 +131,9 @@ class Networks(models.Model):
                         for i in range(len(routes)):
                             if routes[i]['via'] is None:
                                 route_index.append(i)
-                        #print(route_index)
-                        #print(routes)
+
                         j = 0
                         for i in route_index:
-                            #print(i)
                             routes.pop(i-j)
                             j += 1
 
@@ -130,12 +141,10 @@ class Networks(models.Model):
                             route = {'target': ip_network_lists[i], 'via': ''}
                             routes.insert(i, route)
 
-                        routes_json = {'routes': routes}
-                        result = zt.set_network(self.network_id, routes_json)
+                        data['routes'] = routes
 
-            #print(result)
-
-            #self.network_id = result['nwid']
+            print('Network', self.network_id, data)
+            result = zt.set_network(self.network_id, data)
             self.configuration = result
             self.route = result['routes']
 
@@ -146,7 +155,7 @@ class Networks(models.Model):
             self.ip_address_networks = self.ip_address_networks.replace(' ', '')
 
             ip_network_lists = self.ip_address_networks.split(',')
-            #if len(ip_network_lists) >= 0:
+
             try:
                 for ip_network_list in ip_network_lists:
                     ip_network(ip_network_list)
@@ -154,11 +163,12 @@ class Networks(models.Model):
                 raise ValidationError({'ip_address_networks': _('IP Format is not correct!')})
 
     def ip_allocation(self):
+        text = ''
         if self.ip_address_networks is not None:
-            return '%s' % (self.ip_address_networks)
-        else:
-            return ''
-    ip_allocation.short_description = 'IP Allocation'
+            ip_network_lists = self.ip_address_networks.split(',')
+            text = format_html('<br />'.join([str(p) for p in ip_network_lists]))
+        return text
+    ip_allocation.short_description = 'IP Allocations'
 
 
 class NetworkRoutes(models.Model):
@@ -173,8 +183,6 @@ class NetworkRoutes(models.Model):
         else:
             return {}
 
-    #ip_network = models.GenericIPAddressField(_('IP Network'))
-    #ip_netmask = models.IntegerField(_('Netmask'), choices=NETMASK, default=24)
     ip_network = models.CharField(_('IP Network'), max_length=50,
                                   help_text=_('Example: 192.168.0.0/24'))
     gateway = models.GenericIPAddressField(_('Gateway'), null=True)
@@ -214,7 +222,6 @@ class NetworkRoutes(models.Model):
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         result = zt.get_network_info(self.network.network_id)
         routes = result['routes']
-        #print(routes)
 
         is_already_there = False
         for i in range(len(routes)):
@@ -232,8 +239,6 @@ class NetworkRoutes(models.Model):
             if self.gateway is not None:
                 network = Networks.objects.get(id=self.network.id)
                 network.save()
-
-        #print(routes)
 
         return super(NetworkRoutes, self).save()
 
@@ -322,5 +327,3 @@ class NetworkRules(models.Model):
         self.user = self.network.user
 
         return super(NetworkRules, self).save()
-
-
