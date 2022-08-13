@@ -91,7 +91,7 @@ class Networks(models.Model):
         #if self.controller is None:
         try:
             self.controller
-        except NameError:
+        except ObjectDoesNotExist:
             user_controller = UserControllers.objects.get(user=self.user)
             self.controller = user_controller.controller
 
