@@ -88,7 +88,7 @@ class Networks(models.Model):
             self.user = get_user()
 
         # Assign controller
-        if self.user_controller is None:
+        if self.controller is None:
             user_controller = UserControllers.objects.get(user=self.user)
             self.controller = user_controller.controller
 
