@@ -35,7 +35,7 @@ class NetworksAdmin(ModelAdmin):
     model = Networks
     inspect_view_enabled = True
     menu_label = 'Networks'  # ditch this to use verbose_name_plural from model
-    menu_icon = 'site'  # change as required
+    menu_icon = 'link'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('name', 'description', 'network_id', 'ip_allocation')
