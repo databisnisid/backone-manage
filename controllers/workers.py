@@ -198,4 +198,7 @@ def zt_synchronize_member_peers(network=None):
         member_peers = MemberPeers.objects.all()
 
     for member_peer in member_peers:
+        zt = Zerotier(member_peer.network.controller.uri, member_peer.network.controller.token)
+        member_peer.peers = zt.get_member_peers(member_peer.member_id)
+        print('Updating Member ' + member_peer.member_id)
         member_peer.save()
