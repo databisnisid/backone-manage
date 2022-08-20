@@ -17,10 +17,10 @@ class ControllersPermissionHelper(PermissionHelper):
             return False
 
     def user_can_delete_obj(self, user, obj):
-        if user.is_superuser:
-            return True
-        else:
+        if obj.id == 1:
             return False
+        else:
+            return True
 
     def user_can_edit_obj(self, user, obj):
         if user.is_superuser:
