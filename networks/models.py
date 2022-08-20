@@ -454,32 +454,42 @@ class NetworkRules(models.Model):
         file.write(self.rules_definition)
         file.close()
 
+        if settings.DEVELOPMENT:
+            shell = True
+        else:
+            shell = False
+
         result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell)
         result_txt = result.stdout.decode('utf-8')
         if 'ERROR' in result_txt:
             error_msg = result_txt.split(':')
             #print(rules)
             raise ValidationError({'rules_definition': _('Syntax Error: ' + error_msg[1])})
         print(self.rules)
-        #os.remove(filename_rule)
+        os.remove(filename_rule)
 
     def save(self):
         self.user = self.network.user
         self.organization = self.network.organization
 
-        net_rule_file = '/tmp/net-rule-' + self.network.network_id + '.rules'
-        print('FILENAME ', net_rule_file)
-        file = open(net_rule_file, 'w')
+        filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
+        #print('FILENAME ', filename_rule)
+        file = open(filename_rule, 'w')
         file.write(self.rules_definition)
         file.close()
 
-        if self.rules_definition is not None and net_rule_file is not None:
-            print('FILENAME ', net_rule_file)
+        if settings.DEVELOPMENT:
+            shell = True
+        else:
+            shell = False
+
+        if self.rules_definition is not None:
+            print('FILENAME ', filename_rule)
 
             result = subprocess.run([settings.NODEJS, settings.CLIJS, net_rule_file],
-                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell)
             self.rules = result.stdout.decode('utf-8')
 
-        #os.remove(filename_rule)
+        os.remove(filename_rule)
         return super(NetworkRules, self).save()
