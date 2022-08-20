@@ -1,14 +1,15 @@
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, PermissionHelper, modeladmin_register)
+#from wagtail.contrib.modeladmin.views import InspectView
 from .models import Networks, NetworkRoutes, NetworkRules
 from controllers.models import Controllers
-from config.utils import get_user
+#from config.utils import get_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList
 from django.utils.translation import gettext as _
 from crum import get_current_user
-from wagtail.admin.forms import WagtailAdminPageForm
-from wagtail import hooks
-from django.core.exceptions import ObjectDoesNotExist
+#from wagtail.admin.forms import WagtailAdminPageForm
+#from wagtail import hooks
+#from django.core.exceptions import ObjectDoesNotExist
 
 
 '''
@@ -133,17 +134,6 @@ class NetworksAdmin(ModelAdmin):
     search_fields = ('name',)
     #base_form_class = NetworksForm
     permission_helper_class = NetworksPermissionHelper
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        #try:
-        #    user = kwargs['user']
-        #except (AttributeError, KeyError):
-        #    pass
-        #else:
-        #    if self.user is None:
-        #        self.user = get_current_user()
 
     def get_edit_handler(self, instance, request):
         basic_panels = [
