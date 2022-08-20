@@ -1,11 +1,8 @@
-from django.contrib.auth.models import User
-from .models import Networks, NetworkRoutes
+from .models import Networks, NetworkRoutes, NetworkRules
 from members.models import Members
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
-from ipaddress import ip_address
-from config.utils import to_dictionary
 
 
 @receiver(post_save, sender=Networks)
@@ -30,3 +27,35 @@ def first_network_route(sender, instance, created, **kwargs):
                 net_route.ip_network = ip_address_network
                 net_route.save()
 
+    NetworkRoutes.objects.filter(network=instance).update(
+        user=instance.user,
+        organization=instance.organization)
+    NetworkRules.objects.filter(network=instance).update(
+        user=instance.user,
+        organization=instance.organization)
+    Members.objects.filter(network=instance).update(
+        user=instance.user,
+        organization=instance.organization)
+
+    try:
+        NetworkRules.objects.get(network=instance)
+        print('Im here')
+    except ObjectDoesNotExist:
+        print('Im there')
+
+        net_rules = NetworkRules()
+
+        net_rules.name = instance.name + ' Rules'
+        net_rules.network = instance
+        net_rules.save()
+
+    '''
+    for item in iter(kwargs.get('update_fields')):
+        #if item == 'user' and instance.user == "some_value":
+        if item == 'user':
+            NetworkRoutes.objects.filter(network=instance).update(user=instance.user)
+            NetworkRules.objects.filter(network=instance).update(user=instance.user)
+        if item == 'organizations':
+            NetworkRoutes.objects.filter(network=instance).update(organization=instance.organization)
+            NetworkRules.objects.filter(network=instance).update(organization=instance.organization)
+    '''

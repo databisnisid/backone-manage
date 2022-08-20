@@ -1,6 +1,8 @@
 import ast
 from crum import get_current_user
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
+from accounts.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def to_dictionary(data):
@@ -16,8 +18,14 @@ def to_list(data):
 
 def get_user():
     user = get_current_user()
-    if user:
-        return user
-    else:
-        user = User.objects.get(id=1)
-        return user
+
+    #if user is None:
+    if user is None or user.id is None:
+        print('Here!!! ', user)
+        try:
+            #pass
+            user = User.objects.get(id=1)
+        except ObjectDoesNotExist:
+            user = None
+
+    return user

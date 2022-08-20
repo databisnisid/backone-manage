@@ -1,11 +1,10 @@
 from wagtail.contrib.modeladmin.options import (
-    ModelAdmin, ModelAdminGroup, PermissionHelper, modeladmin_register)
-from .models import Members
+    ModelAdmin, modeladmin_register)
+from .models import Members, MemberPeers
 from crum import get_current_user
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel
-from wagtail.admin.edit_handlers import ObjectList
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
-from controllers.workers import zt_synchronize_member_peers
+from django.forms import HiddenInput
 
 
 class MembersAdmin(ModelAdmin):
@@ -21,22 +20,68 @@ class MembersAdmin(ModelAdmin):
     search_fields = ('name', 'member_id', 'ipaddress')
     #ordering = ['name']
 
-    panels = [
-        MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
-                        heading=_('Network Name and Description')),
-        MultiFieldPanel([FieldPanel('member_id'),
-                         FieldPanel('network')],
-                        heading=_('Member ID and Network')),
-        MultiFieldPanel([FieldPanel('is_authorized'), FieldPanel('ipaddress')],
-                        heading=_('Authorization and IP Address')),
-        FieldPanel('is_bridge'),
-    ]
+    def get_edit_handler(self, instance, request):
+        basic_panels = [
+            MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
+                            heading=_('Network Name and Description')),
+            MultiFieldPanel([FieldPanel('member_id', widget=HiddenInput()),
+                             FieldPanel('network')],
+                            heading=_('Member ID and Network')),
+            # MultiFieldPanel([FieldPanel('is_authorized'), FieldPanel('ipaddress')],
+            #                heading=_('Authorization and IP Address')),
+        ]
+
+        bridge_panels = MultiFieldPanel([FieldRowPanel([FieldPanel('is_bridge'), FieldPanel('is_no_auto_ip')])],
+                                        heading=_('Bridge Features'))
+        authorize_panels = MultiFieldPanel([FieldPanel('is_authorized'), FieldPanel('ipaddress')],
+                                           heading=_('Authorization and IP Address'))
+        ipaddress_panels = FieldPanel('ipaddress')
+
+        tags_panels = MultiFieldPanel([FieldPanel('tags')], heading=_('Tagging Features'))
+
+        current_user = get_current_user()
+        #print('Handler', current_user)
+        custom_panels = basic_panels
+        if current_user.is_superuser:
+            custom_panels.append(authorize_panels)
+            custom_panels.append(bridge_panels)
+            custom_panels.append(tags_panels)
+        else:
+            if current_user.organization.features.authorize:
+                custom_panels.append(authorize_panels)
+            else:
+                custom_panels.append(ipaddress_panels)
+            if current_user.organization.features.bridge:
+                custom_panels.append(bridge_panels)
+            if current_user.organization.features.tags:
+                custom_panels.append(tags_panels)
+
+        return ObjectList(custom_panels)
 
     def get_queryset(self, request):
-        if not request.user.is_superuser:
-            return Members.objects.filter(user=get_current_user())
+        #current_user = get_user()
+        current_user = get_current_user()
+        if not current_user.is_superuser:
+            if current_user.organization.is_no_org:
+                return Members.objects.filter(user=current_user)
+            else:
+                return Members.objects.filter(organization=current_user.organization)
         else:
             return Members.objects.all()
 
 
+class MemberPeersAdmin(ModelAdmin):
+    model = MemberPeers
+    inspect_view_enabled = True
+    menu_label = 'MemberPeers'  # ditch this to use verbose_name_plural from model
+    menu_icon = 'grip'  # change as required
+    add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
+    exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
+    list_display = ('member_id', 'network')
+    #list_filter = ('network',)
+    #search_fields = ('name', 'member_id', 'ipaddress')
+    #ordering = ['name']
+
+
 modeladmin_register(MembersAdmin)
+modeladmin_register(MemberPeersAdmin)

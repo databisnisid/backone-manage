@@ -4,30 +4,48 @@ from wagtail import hooks
 from networks.models import Networks, NetworkRoutes
 from members.models import Members
 from crum import get_current_user
+from wagtail.contrib.modeladmin.views import CreateView, EditView
 
 
-@hooks.register('construct_reports_menu')
+#@hooks.register("insert_global_admin_css", order=100)
+#def global_admin_css():
+#    """Workaround wagtail issue 7210
+#    https://github.com/wagtail/wagtail/issues/7210
+#    """
+#    return "<style>textarea {resize:vertical !important}</style>"
+
+
+@hooks.register('construct_reports_menu', order=1)
 def hide_reports_menu_item(request, menu_items):
     menu_items[:] = [item for item in menu_items if item.name != 'workflows']
     menu_items[:] = [item for item in menu_items if item.name != 'workflow-tasks']
     menu_items[:] = [item for item in menu_items if item.name != 'aging-pages']
     menu_items[:] = [item for item in menu_items if item.name != 'locked-pages']
+    #pass
 
 
-@hooks.register('construct_main_menu')
+@hooks.register('construct_main_menu', order=2)
 def hide_snippets_menu_item(request, menu_items):
     menu_items[:] = [item for item in menu_items if item.name != 'documents']
     menu_items[:] = [item for item in menu_items if item.name != 'explorer']
     menu_items[:] = [item for item in menu_items if item.name != 'images']
 
+    if not request.user.organization.features.network_rules and not request.user.is_superuser:
+        menu_items[:] = [item for item in menu_items if item.name != 'network-rules']
+        menu_items[:] = [item for item in menu_items if item.name != 'memberpeers']
 
-@hooks.register("construct_settings_menu")
+    #for panel in menu_items:
+    #    print(panel.name)
+
+
+@hooks.register("construct_settings_menu", order=3)
 def hide_user_menu_item(request, menu_items):
     menu_items[:] = [item for item in menu_items if item.name != "workflows"]
     menu_items[:] = [item for item in menu_items if item.name != "workflow-tasks"]
     menu_items[:] = [item for item in menu_items if item.name != "redirects"]
     menu_items[:] = [item for item in menu_items if item.name != "sites"]
     menu_items[:] = [item for item in menu_items if item.name != "collections"]
+    #pass
 
 
 class NetworksSummaryPanel(Component):
@@ -49,7 +67,7 @@ class NetworksSummaryPanel(Component):
         """)
 
 
-@hooks.register('construct_homepage_panels')
+@hooks.register('construct_homepage_panels', order=4)
 def add_another_welcome_panel(request, panels):
     panels[:] = [panel for panel in panels if panel.name != "site_summary"]
     panels[:] = [panel for panel in panels if panel.name != "workflow_pages_to_moderate"]

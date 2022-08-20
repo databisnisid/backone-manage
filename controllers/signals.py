@@ -1,5 +1,6 @@
-from django.contrib.auth.models import User
-from controllers.models import Controllers, UserControllers
+#from django.contrib.auth.models import User
+from accounts.models import User
+from controllers.models import Controllers #, UserControllers
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,7 +19,7 @@ def assign_user_to_controller(sender, instance, created, **kwargs):
             controller.token ='83hikjdna-change-me'
             controller.save()
 
-        user_controllers = UserControllers()
-        user_controllers.controller = controller
-        user_controllers.user = instance
-        user_controllers.save()
+        #user_controllers = UserControllers()
+        #user_controllers.controller = controller
+        #user_controllers.user = instance
+        #user_controllers.save()

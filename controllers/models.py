@@ -1,9 +1,15 @@
 from django.db import models
-from django.contrib.auth.models import User
+import ast
+#from django.contrib.auth.models import User
 from .backend import Zerotier
-from config.utils import to_dictionary
+#from config.utils import to_dictionary
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
+#from accounts.models import User
+
+
+def to_dictionary(data):
+    return ast.literal_eval(data.replace("\'", "\""))
 
 
 class Controllers(models.Model):
@@ -60,7 +66,7 @@ class Controllers(models.Model):
             return ''
     version.short_description = _('Version')
 
-
+'''
 class UserControllers(models.Model):
     user = models.ForeignKey(
         User,
@@ -79,3 +85,4 @@ class UserControllers(models.Model):
 
     def __str__(self):
         return '%s' % self.user
+'''

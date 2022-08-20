@@ -23,6 +23,7 @@ ALLOWED_HOSTS = [str(os.getenv('ALLOWED_HOSTS'))]
 # Application definition
 
 INSTALLED_APPS = [
+    'accounts',
     'dashboard',
     'controllers',
     'networks',
@@ -162,3 +163,16 @@ WAGTAILADMIN_BASE_URL = "https://manage.backone.cloud"
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL]
+
+# Controller Rule Compiler
+NODEJS = str(os.getenv('NODEJS'))
+CLIJS = str(BASE_DIR) + '/controllers/rule-compiler/cli.js'
+
+# User
+AUTH_USER_MODEL = 'accounts.User'
+
+# Custom Form
+WAGTAIL_USER_EDIT_FORM = 'accounts.forms.CustomUserEditForm'
+WAGTAIL_USER_CREATION_FORM = 'accounts.forms.CustomUserCreationForm'
+WAGTAIL_USER_CUSTOM_FIELDS = ['organization']
+

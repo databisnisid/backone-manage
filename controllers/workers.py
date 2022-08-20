@@ -1,11 +1,10 @@
 from .models import Controllers
 from networks.models import Networks, NetworkRoutes
 from members.models import Members, MemberPeers
-from django.contrib.auth.models import User
 from .backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
-from crum import get_current_user
 from config.utils import to_list
+from config.utils import get_user
 
 
 def zt_import_members(network):
@@ -36,6 +35,7 @@ def zt_import_members(network):
             mem.ipaddress = ip_address_list
             mem.member_id = member_info['id']
             mem.is_bridge = member_info['activeBridge']
+            mem.is_no_auto_ip = member_info['noAutoAssignIps']
             mem.network = network
             #print(mem.member_id)
             mem.save()
@@ -119,6 +119,12 @@ def zt_import_networks(controller):
                 else:
                     net.name = net_info['name']
                 net.network_id = net_info['nwid']
+                try:
+                    net.user
+                    if net.user is None:
+                        net.user = get_user()
+                except ObjectDoesNotExist:
+                    net.user = get_user()
 
                 net.save()
 

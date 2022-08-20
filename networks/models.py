@@ -1,15 +1,15 @@
 from django.db import models
-from django.contrib.auth.models import User
-from controllers.models import Controllers, UserControllers
+from accounts.models import User, Organizations
+from controllers.models import Controllers
 from crum import get_current_user
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
-from config.utils import to_dictionary, get_user
-from ipaddress import ip_address, ip_network
+from ipaddress import ip_network
 from django.core.exceptions import ValidationError
-
+import subprocess
+from config import settings
 
 ''' Sample of Validator'''
 '''
@@ -41,8 +41,16 @@ class Networks(models.Model):
 
     user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name=_('Owner'),
+        null=True
+    )
+
+    organization = models.ForeignKey(
+        Organizations,
+        on_delete=models.SET_NULL,
+        verbose_name=_('Organization'),
+        null=True
     )
 
     controller = models.ForeignKey(
@@ -82,18 +90,30 @@ class Networks(models.Model):
         return super(Networks, self).delete()
 
     def save(self):
+        '''
         try:
             self.user
+            if self.user is None:
+                #self.user = get_user()
+                self.user = get_current_user()
         except ObjectDoesNotExist:
             self.user = get_user()
+        '''
 
-        # Assign controller
-        #if self.controller is None:
+        if self.user is None:
+            self.user = get_current_user()
+
+        print('Network Model', self.user)
+
+        #if self.organization is None:
+        self.organization = self.user.organization
+
         try:
             self.controller
+            if self.controller is None:
+                self.controller = self.user.organization.controller
         except ObjectDoesNotExist:
-            user_controller = UserControllers.objects.get(user=self.user)
-            self.controller = user_controller.controller
+            self.controller = self.user.organization.controller
 
         zt = Zerotier(self.controller.uri, self.controller.token)
         result = zt.list_networks()
@@ -131,21 +151,26 @@ class Networks(models.Model):
                         routes = result['routes']
 
                         ''' Delete all default route'''
-                        route_index = []
-                        for i in range(len(routes)):
-                            if routes[i]['via'] is None:
-                                route_index.append(i)
-
                         j = 0
-                        for i in route_index:
-                            routes.pop(i-j)
-                            j += 1
+                        for i in range(len(routes)):
+                            if routes[i-j]['via'] is None:
+                                routes.pop(i - j)
+                                j += 1
 
                         for i in range(len(ip_network_lists)):
                             route = {'target': ip_network_lists[i], 'via': ''}
                             routes.insert(i, route)
 
                         data['routes'] = routes
+            else:
+                # If no route
+                routes = result['routes']
+                j = 0
+                for i in range(len(routes)):
+                    if routes[i-j]['via'] is None:
+                        routes.pop(i-j)
+                        j += 1
+                data['routes'] = routes
 
             print('Network', self.network_id, data)
             result = zt.set_network(self.network_id, data)
@@ -182,8 +207,12 @@ class NetworkRoutes(models.Model):
         :return:
         """
         user = get_current_user()
+        print('Network User', user)
         if not user.is_superuser:
-            return {'user': user}
+            if user.organization.is_no_org:
+                return {'user': user}
+            else:
+                return {'organization': user.organization}
         else:
             return {}
 
@@ -198,8 +227,16 @@ class NetworkRoutes(models.Model):
     )
     user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
-        verbose_name=_('Owner')
+        on_delete=models.SET_NULL,
+        verbose_name=_('Owner'),
+        null=True
+    )
+
+    organization = models.ForeignKey(
+        Organizations,
+        on_delete=models.SET_NULL,
+        verbose_name=_('Organization'),
+        null=True
     )
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -211,15 +248,12 @@ class NetworkRoutes(models.Model):
         verbose_name_plural = 'network routes'
 
     def __str__(self):
-        return '%s' % (self.ip_network)
+        return '%s' % self.ip_network
 
     def save(self):
-        try:
-            self.user
-        except ObjectDoesNotExist:
-            self.user = get_user()
-
         self.user = self.network.user
+        self.organization = self.network.organization
+
         if self.ip_network:
             self.ip_network = self.ip_network.replace(' ', '')
 
@@ -289,26 +323,116 @@ class NetworkRoutes(models.Model):
                 raise ValidationError(_("Wrong IP Format!"))
 
 
+DEFAULT_RULE_DEFINITION = """
+# This is a default rule set that allows IPv4 and IPv6 traffic.
+# You can edit as needed. If your rule set gets large we recommend
+# cutting and pasting it somewhere to keep a backup.
+
+# Drop all Ethernet frame types that are not IPv4 or IPv6
+drop
+	not ethertype 0x0800 # IPv4
+	not ethertype 0x0806 # IPv4 ARP
+	#not ethertype 0x86dd # IPv6
+;
+
+# Capability: outgoing SSH
+#cap ssh
+#	id 1000
+#	accept
+#		ipprotocol tcp
+#		dport 22
+#	;
+#;
+
+# A tag indicating which department people belong to
+#tag department
+#	id 1000
+#	enum 100 sales
+#	enum 200 marketing
+#	enum 300 accounting
+#	enum 400 engineering
+#;
+
+# Accept all traffic between members of the same department
+#accept
+#	tdiff department 0
+#;
+
+# You can insert other drop, tee, etc. rules here. This rule
+# set ends with a blanket accept, making it permissive by
+# default.
+
+accept;
+"""
+
+DEFAULT_RULE = """
+[
+   {
+    "type": "MATCH_ETHERTYPE",
+    "not": true,
+    "or": false,
+    "etherType": 2048
+   },
+   {
+    "type": "MATCH_ETHERTYPE",
+    "not": true,
+    "or": false,
+    "etherType": 2054
+   },
+   {
+    "type": "MATCH_ETHERTYPE",
+    "not": true,
+    "or": false,
+    "etherType": 34525
+   },
+   {
+    "type": "ACTION_DROP"
+   },
+   {
+    "type": "ACTION_ACCEPT"
+   }
+]
+"""
+
+
 class NetworkRules(models.Model):
     def limit_choices_to_current_user():
+        """
+        limit the choice of foreignkey to current user
+        :return:
+        """
         user = get_current_user()
+        print('Network User', user)
         if not user.is_superuser:
-            return {'user': user}
+            if user.organization.is_no_org:
+                return {'user': user}
+            else:
+                return {'organization': user.organization}
         else:
             return {}
 
+    name = models.CharField(_('Name'), max_length=50)
     network = models.OneToOneField(
         Networks,
         on_delete=models.CASCADE,
         limit_choices_to=limit_choices_to_current_user,
-        verbose_name=_('Network')
+        verbose_name=_('Network'),
     )
-    rules = models.TextField(_('Network Rules'), blank=True)
+    rules_definition = models.TextField(_('Network Rule Definition'), blank=True,
+                                        default=DEFAULT_RULE_DEFINITION)
+    rules = models.TextField(_('Network Rules'), blank=True, default=DEFAULT_RULE)
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name=_('Owner')
+    )
+
+    organization = models.ForeignKey(
+        Organizations,
+        on_delete=models.SET_NULL,
+        verbose_name=_('Organization'),
+        null=True
     )
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -322,12 +446,28 @@ class NetworkRules(models.Model):
     def __str__(self):
         return '%s' % self.network
 
-    def save(self):
-        try:
-            self.user
-        except ObjectDoesNotExist:
-            self.user = get_user()
+    def clean(self):
 
+        file = open('/tmp/net-rule.txt', 'w')
+        file.write(self.rules_definition)
+        file.close()
+
+        result = subprocess.run([settings.NODEJS, settings.CLIJS, '/tmp/net-rule.txt'],
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        result_txt = result.stdout.decode('utf-8')
+        if 'ERROR' in result_txt:
+            error_msg = result_txt.split(':')
+            #print(rules)
+            raise ValidationError({'rules_definition': _('Syntax Error: ' + error_msg[1])})
+        print(self.rules)
+
+    def save(self):
         self.user = self.network.user
+        self.organization = self.network.organization
+
+        if self.rules_definition is not None:
+            result = subprocess.run([settings.NODEJS, settings.CLIJS, '/tmp/net-rule.txt'],
+                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            self.rules = result.stdout.decode('utf-8')
 
         return super(NetworkRules, self).save()

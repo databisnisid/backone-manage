@@ -1,14 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import User
+from accounts.models import User, Organizations
 from networks.models import Networks
-from crum import get_current_user
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
-from config.utils import to_dictionary, get_user
+from config.utils import to_dictionary
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
+from crum import get_current_user
 
 
 class MemberPeers(models.Model):
@@ -41,7 +41,10 @@ class Members(models.Model):
     def limit_choices_to_current_user():
         user = get_current_user()
         if not user.is_superuser:
-            return {'user': user}
+            if user.organization.is_no_org:
+                return {'user': user}
+            else:
+                return {'organization': user.organization}
         else:
             return {}
 
@@ -56,12 +59,22 @@ class Members(models.Model):
     )
     user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
-        verbose_name=_('Owner')
+        on_delete=models.SET_NULL,
+        verbose_name=_('Owner'),
+        null=True
+    )
+    organization = models.ForeignKey(
+        Organizations,
+        on_delete=models.SET_NULL,
+        verbose_name=_('Organization'),
+        null=True
     )
 
-    is_bridge = models.BooleanField(_('Bridge'), default=False)
+    is_bridge = models.BooleanField(_('Bridge Mode'), default=False)
+    is_no_auto_ip = models.BooleanField(_('No Auto Assign IP'), default=False)
     is_authorized = models.BooleanField(_('Authorized'), default=True)
+    tags = models.CharField(_('Tags'), max_length=50, blank=True, null=True,
+                            help_text=_('Example: ssh_client'))
     ipaddress = models.CharField(_('IP Address'), max_length=100, blank=True, null=True)
 
     configuration = models.TextField(_('Configuration'), blank=True)
@@ -88,23 +101,16 @@ class Members(models.Model):
         return super(Members, self).delete()
 
     def save(self):
-        try:
-            self.user
-        except ObjectDoesNotExist:
-            self.user = get_user()
-
         self.user = self.network.user
-
+        self.organization = self.network.organization
 
         # Zerotier
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
-        #member_info = zt.get_member_info(self.network.network_id, self.member_id)
-
-        #if self.name is None:
-        #    self.name = 'NET: ' + self.network.name + ' MEMBER: ' + member_info['id']
 
         # Authorized and Bridge Setting
-        data = {'authorized': self.is_authorized, 'activeBridge': self.is_bridge}
+        data = {'authorized': self.is_authorized,
+                'activeBridge': self.is_bridge,
+                'noAutoAssignIps': self.is_no_auto_ip}
 
         # Assign IP Address
         if self.ipaddress is not None:
@@ -115,10 +121,7 @@ class Members(models.Model):
         # Apply Configuration to controller
         print('Member', self.member_id, data)
         member_info = zt.set_member(self.network.network_id, self.member_id, data)
-
-        #if 'address' in member_info:
         self.configuration = member_info
-            #self.member_id = member_info['id']
 
         # Get MemberPeers
         try:
@@ -192,7 +195,6 @@ class Members(models.Model):
                 ip_path = path['address'].split('/')
                 if ip_path[0] not in ip_peers:
                     ip_peers.append(ip_path[0])
-                #[ip_peers.append(peer['address']) for peer in paths]
 
             result = '<br />'.join([str(p) for p in ip_peers])
             return format_html('<small>' + result + '</small>')

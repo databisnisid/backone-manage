@@ -1,7 +1,7 @@
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, ModelAdminGroup, PermissionHelper, modeladmin_register)
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
-from .models import Controllers, UserControllers
+from .models import Controllers #, UserControllers
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from django.utils.translation import gettext as _
 from crum import get_current_user
@@ -64,7 +64,7 @@ class ControllerButtonHelper(ButtonHelper):
 
 class ControllersAdmin(ModelAdmin):
     model = Controllers
-    button_helper_class = ControllerButtonHelper   # Uncomment this to enable button
+    #button_helper_class = ControllerButtonHelper   # Uncomment this to enable button
     #inspect_view_enabled = True
     menu_label = 'Controllers'  # ditch this to use verbose_name_plural from model
     menu_icon = 'user'  # change as required
@@ -87,7 +87,7 @@ class ControllersAdmin(ModelAdmin):
         self.inspect_view_enabled = True
         super().__init__(*args, **kwargs)
 
-
+'''
 class UserControllersAdmin(ModelAdmin):
     model = UserControllers
     menu_label = 'User Controllers'  # ditch this to use verbose_name_plural from model
@@ -106,7 +106,7 @@ class ControllersGroup(ModelAdminGroup):
     menu_icon = 'folder-open-inverse'  # change as required
     menu_order = 200  # will put in 3rd place (000 being 1st, 100 2nd)
     items = (ControllersAdmin, UserControllersAdmin)
-
+'''
 
 # Now you just need to register your customised ModelAdmin class with Wagtail
-modeladmin_register(ControllersGroup)
+modeladmin_register(ControllersAdmin)
