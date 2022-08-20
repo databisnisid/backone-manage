@@ -454,10 +454,7 @@ class NetworkRules(models.Model):
         file.write(self.rules_definition)
         file.close()
 
-        if settings.DEVELOPMENT:
-            shell = True
-        else:
-            shell = False
+        shell = not settings.DEVELOPMENT
 
         result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell)
@@ -479,15 +476,12 @@ class NetworkRules(models.Model):
         file.write(self.rules_definition)
         file.close()
 
-        if settings.DEVELOPMENT:
-            shell = True
-        else:
-            shell = False
+        shell = not settings.DEVELOPMENT
 
         if self.rules_definition is not None:
             print('FILENAME ', filename_rule)
 
-            result = subprocess.run([settings.NODEJS, settings.CLIJS, net_rule_file],
+            result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell)
             self.rules = result.stdout.decode('utf-8')
 
