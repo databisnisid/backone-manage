@@ -461,7 +461,7 @@ class NetworkRules(models.Model):
 
         #result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
         #                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
-        result = subprocess.run([command],
+        result = subprocess.run(command,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
 
         result_txt = result.stdout.decode('utf-8')
@@ -494,7 +494,7 @@ class NetworkRules(models.Model):
 
             command = '{} {} {}'.format(settings.NODEJS, settings.CLIJS, filename_rule)
 
-            result = subprocess.run([command],
+            result = subprocess.run(command,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
             self.rules = result.stdout.decode('utf-8')
 
