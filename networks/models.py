@@ -485,7 +485,7 @@ class NetworkRules(models.Model):
             zt = Zerotier(self.network.controller.uri, self.network.controller.token)
             print(data)
             zt.set_network(self.network.network_id, data)
-            self.network.save()
+            #self.network.save()
 
         os.remove(filename_rule)
         return super(NetworkRules, self).save()

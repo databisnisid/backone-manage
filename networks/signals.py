@@ -52,3 +52,7 @@ def create_network_rules(sender, instance, created, **kwargs):
         net_rules.network = instance
         net_rules.save()
 
+
+@receiver(post_save, sender=NetworkRules)
+def update_networks(sender, instance, created, **kwargs):
+    instance.network.save()
