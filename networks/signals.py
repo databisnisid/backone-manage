@@ -41,7 +41,7 @@ def first_network_route(sender, instance, created, **kwargs):
         NetworkRules.objects.get(network=instance)
         #print('Im here')
     except ObjectDoesNotExist:
-        #print('Im there')
+        print('Create Network Rule')
 
         net_rules = NetworkRules()
 

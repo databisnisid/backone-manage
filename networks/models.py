@@ -469,11 +469,12 @@ class NetworkRules(models.Model):
         self.organization = self.network.organization
 
         filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
+        print('FILENAME ', filename_rule)
         file = open(filename_rule, 'w')
         file.write(self.rules_definition)
         file.close()
 
-        print('FILENAME', filename_rule)
+        print('FILENAME ', filename_rule)
 
         if self.rules_definition is not None:
             result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
