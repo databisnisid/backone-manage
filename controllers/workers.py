@@ -5,7 +5,7 @@ from .backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
 from config.utils import to_list
 from config.utils import get_user
-from django.utils.timezone import now
+from django.utils.timezone import localtime
 
 
 def zt_import_members(network):
@@ -191,7 +191,7 @@ def zt_synchronize_member_peers(network=None):
     Scheduled cronjob every 5 minutes
     :return:
     """
-    print(now(), 'Synchronize Member Peers')
+    print(localtime(), 'Synchronize Member Peers')
     if network is not None:
         member_peers = MemberPeers.objects.filter(network=network)
     else:
