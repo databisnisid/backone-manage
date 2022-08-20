@@ -457,8 +457,13 @@ class NetworkRules(models.Model):
         shell = not settings.DEVELOPMENT
         print('SHELL', shell)
 
-        result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell)
+        command = '{} {} {}'.format(settings.NODEJS, settings.CLIJS, filename_rule)
+
+        #result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
+        #                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+        result = subprocess.run([command],
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+
         result_txt = result.stdout.decode('utf-8')
 
         print('RESULT', result_txt)
@@ -484,8 +489,13 @@ class NetworkRules(models.Model):
         if self.rules_definition is not None:
             print('FILENAME ', filename_rule)
 
-            result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
-                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell)
+            #result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
+            #                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell)
+
+            command = '{} {} {}'.format(settings.NODEJS, settings.CLIJS, filename_rule)
+
+            result = subprocess.run([command],
+                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
             self.rules = result.stdout.decode('utf-8')
 
         os.remove(filename_rule)
