@@ -470,11 +470,13 @@ class NetworkRules(models.Model):
 
         filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
         file = open(filename_rule, 'w')
+        file.write(self.rules_definition)
+        file.close()
 
         if self.rules_definition is not None:
             result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             self.rules = result.stdout.decode('utf-8')
-        file.close()
+
         os.remove(filename_rule)
         return super(NetworkRules, self).save()
