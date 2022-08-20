@@ -1,11 +1,8 @@
 from django.db import models
 import ast
-#from django.contrib.auth.models import User
 from .backend import Zerotier
-#from config.utils import to_dictionary
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
-#from accounts.models import User
 
 
 def to_dictionary(data):
@@ -17,7 +14,6 @@ class Controllers(models.Model):
     description = models.TextField(_('Description'), blank=True)
     uri = models.URLField(_('URL'), max_length=100, default='http://localhost:9993', unique=True)
     token = models.CharField(_('Token'), max_length=50, unique=True)
-    #node_id = models.CharField(_('Node ID'), max_length=20, blank=True)
 
     configuration = models.TextField(_('Configuration'), blank=True)
 
@@ -34,7 +30,6 @@ class Controllers(models.Model):
 
     def save(self):
         zt = Zerotier(self.uri, self.token)
-        #self.node_id = zt.get_node_id()
         self.configuration = zt.status()
 
         return super(Controllers, self).save()

@@ -34,7 +34,6 @@ class MemberPeers(models.Model):
     def save(self):
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         self.peers = zt.get_member_peers(self.member_id)
-        print('Updating Member ' + self.member_id)
         return super(MemberPeers, self).save()
 
 

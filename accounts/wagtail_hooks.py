@@ -1,15 +1,9 @@
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, ModelAdminGroup, PermissionHelper, modeladmin_register)
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
-from .models import Organizations, Features, User
-from wagtail.contrib.modeladmin.helpers import ButtonHelper
-from django.utils.translation import gettext as _
-from crum import get_current_user
+from .models import Features
 from django.utils.translation import gettext_lazy as _
-
-from wagtail.users.forms import UserEditForm, UserCreationForm
-
-from .models import User, Organizations
+from .models import Organizations
 
 
 class AccountsPermissionHelper(PermissionHelper):

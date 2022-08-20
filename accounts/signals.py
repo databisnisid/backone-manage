@@ -1,4 +1,3 @@
-#from django.contrib.auth.models import User
 from controllers.models import Controllers #, UserControllers
 from .models import Organizations, Features, User
 from django.db.models.signals import post_save

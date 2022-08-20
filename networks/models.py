@@ -258,6 +258,8 @@ class NetworkRoutes(models.Model):
 
         if self.ip_network:
             self.ip_network = self.ip_network.replace(' ', '')
+        if self.gateway:
+            self.gateway = self.gateway.replace(' ', '')
 
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         result = zt.get_network_info(self.network.network_id)
@@ -283,27 +285,21 @@ class NetworkRoutes(models.Model):
         return super(NetworkRoutes, self).save()
 
     def delete(self, using=None, keep_parents=False):
-        ip_target = self.ip_network
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         result = zt.get_network_info(self.network.network_id)
         routes = result['routes']
 
-        index = -1
+        j = 0
         for i in range(len(routes)):
-            if routes[i]['target'] == ip_target:
-                index = i
-                break
+            if routes[i - j]['via'] == self.gateway and routes[i - j]['target'] == self.ip_network:
+                routes.pop(i - j)
+                j += 1
 
-        # If found the ip_target, remove it
-        if index >= 0:
-            routes.pop(index)
-            routes_new = {'routes': routes}
-            print(routes_new)
-            zt.set_network(self.network.network_id, routes_new)
+        routes_new = {'routes': routes}
+        zt.set_network(self.network.network_id, routes_new)
+        network = Networks.objects.get(id=self.network.id)
+        network.save()
 
-            network = Networks.objects.get(id=self.network.id)
-            network.save()
-            
         return super(NetworkRoutes, self).delete()
 
     def clean(self):
@@ -485,9 +481,6 @@ class NetworkRules(models.Model):
 
             self.rules = result.stdout.decode('utf-8')
             rules_clean = to_json(self.rules.replace('\n', ''))
-            #rules_clean = to_json(rules_clean)
-            #print(rules_clean['config'])
-            #data = {}
             data = rules_clean['config']
             zt = Zerotier(self.network.controller.uri, self.network.controller.token)
             print(data)

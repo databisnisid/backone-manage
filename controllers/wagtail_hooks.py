@@ -1,15 +1,12 @@
 from wagtail.contrib.modeladmin.options import (
-    ModelAdmin, ModelAdminGroup, PermissionHelper, modeladmin_register)
+    ModelAdmin, PermissionHelper, modeladmin_register)
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
-from .models import Controllers #, UserControllers
+from .models import Controllers
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from django.utils.translation import gettext as _
-from crum import get_current_user
 
 
 class ControllersPermissionHelper(PermissionHelper):
-    '''
-
     def user_can_list(self, user):
         return True
 
@@ -18,17 +15,18 @@ class ControllersPermissionHelper(PermissionHelper):
             return True
         else:
             return False
-    '''
 
     def user_can_delete_obj(self, user, obj):
         if obj.id == 1:
             return False
         else:
             return True
-    '''
+
     def user_can_edit_obj(self, user, obj):
-        return False
-    '''
+        if obj.id == 1:
+            return False
+        else:
+            return True
 
 
 class ControllerButtonHelper(ButtonHelper):
@@ -87,26 +85,6 @@ class ControllersAdmin(ModelAdmin):
         self.inspect_view_enabled = True
         super().__init__(*args, **kwargs)
 
-'''
-class UserControllersAdmin(ModelAdmin):
-    model = UserControllers
-    menu_label = 'User Controllers'  # ditch this to use verbose_name_plural from model
-    menu_icon = 'snippet'  # change as required
-    add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
-    exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    list_display = ('user', 'controller')
-    list_filter = ('controller',)
-    search_fields = ('name',)
-    #ordering = ['name']
-    permission_helper_class = ControllersPermissionHelper
-
-
-class ControllersGroup(ModelAdminGroup):
-    menu_label = 'Controllers'
-    menu_icon = 'folder-open-inverse'  # change as required
-    menu_order = 200  # will put in 3rd place (000 being 1st, 100 2nd)
-    items = (ControllersAdmin, UserControllersAdmin)
-'''
 
 # Now you just need to register your customised ModelAdmin class with Wagtail
 modeladmin_register(ControllersAdmin)

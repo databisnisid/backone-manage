@@ -1,10 +1,24 @@
 from wagtail.contrib.modeladmin.options import (
-    ModelAdmin, modeladmin_register)
+    ModelAdmin, modeladmin_register, PermissionHelper)
 from .models import Members, MemberPeers
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
 from django.forms import HiddenInput
+
+
+class MemberPeersPermissionHelper(PermissionHelper):
+    def user_can_list(self, user):
+        return True
+
+    def user_can_create(self, user):
+        return False
+
+    def user_can_delete_obj(self, user, obj):
+        return False
+
+    def user_can_edit_obj(self, user, obj):
+        return False
 
 
 class MembersAdmin(ModelAdmin):
@@ -72,13 +86,14 @@ class MembersAdmin(ModelAdmin):
 
 class MemberPeersAdmin(ModelAdmin):
     model = MemberPeers
-    inspect_view_enabled = True
+    #inspect_view_enabled = True
     menu_label = 'MemberPeers'  # ditch this to use verbose_name_plural from model
     menu_icon = 'grip'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    list_display = ('member_id', 'network')
-    #list_filter = ('network',)
+    list_display = ('member_id', 'network', 'peers', 'updated_at')
+    permission_helper_class = MemberPeersPermissionHelper
+    list_filter = ('network',)
     #search_fields = ('name', 'member_id', 'ipaddress')
     #ordering = ['name']
 

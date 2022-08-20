@@ -113,10 +113,8 @@ class NetworksAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         current_user = get_current_user()
-        print('Query Set', current_user, current_user.organization.is_no_org)
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
-                print('No Orgs')
                 return Networks.objects.filter(user=current_user)
             else:
                 return Networks.objects.filter(organization=current_user.organization)
