@@ -136,6 +136,15 @@ class Members(models.Model):
         return super(Members, self).save()
 
     def clean(self):
+        # Check if member_id is already in this network
+
+        if self.member_id:
+            try:
+                Members.objects.get(member_id=self.member_id, network=self.network)
+                raise ValidationError({'member_id': _('Member ID already exist in this network!')})
+            except ObjectDoesNotExist:
+                pass
+
         # CHECK: For multiple IP in self.ipaddress
         # Check for list IP_address
         if self.ipaddress is not None:

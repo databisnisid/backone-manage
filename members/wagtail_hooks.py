@@ -60,9 +60,24 @@ class MemberPeersPermissionHelper(PermissionHelper):
         return False
 
 
+class MembersPermissionHelper(PermissionHelper):
+    def user_can_list(self, user):
+        return True
+
+    def user_can_create(self, user):
+        return True
+
+    def user_can_delete_obj(self, user, obj):
+        return True
+
+    def user_can_edit_obj(self, user, obj):
+        return True
+
+
 class MembersAdmin(ModelAdmin):
     model = Members
     button_helper_class = MembersButtonHelper
+    permission_helper_class = MembersPermissionHelper
     inspect_view_enabled = True
     menu_label = 'Members'  # ditch this to use verbose_name_plural from model
     menu_icon = 'list-ul'  # change as required

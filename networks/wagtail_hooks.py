@@ -1,6 +1,7 @@
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, PermissionHelper, modeladmin_register)
 from .models import Networks, NetworkRoutes, NetworkRules
+from controllers.models import Controllers
 from config.utils import get_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList
 from django.utils.translation import gettext as _
@@ -20,6 +21,35 @@ def add_user_org_panel(request, panels):
         panels.append(user_org_panels)
 '''
 
+
+class NetworksPermissionHelper(PermissionHelper):
+    def user_can_list(self, user):
+        return True
+
+    def user_can_create(self, user):
+        if user.is_superuser:
+            controllers = Controllers.objects.all().count()
+            if controllers > 1:
+                return False
+            else:
+                return True
+        else:
+            return True
+
+    def user_can_delete_obj(self, user, obj):
+        if user.is_superuser:
+            controllers = Controllers.objects.all().count()
+            if controllers > 1:
+                return False
+            else:
+                return True
+        else:
+            return True
+
+    def user_can_edit_obj(self, user, obj):
+        return True
+
+
 class NetworkRulesPermissionHelper(PermissionHelper):
     def user_can_list(self, user):
         return True
@@ -27,11 +57,18 @@ class NetworkRulesPermissionHelper(PermissionHelper):
     def user_can_create(self, user):
         return False
 
-    def user_can_delete_obj(self, instance, obj):
+    def user_can_delete_obj(self, user, obj):
         return False
 
-    def user_can_edit_obj(self, instance, obj):
-        return True
+    def user_can_edit_obj(self, user, obj):
+        if user.is_superuser:
+            controllers = Controllers.objects.all().count()
+            if controllers > 1:
+                return False
+            else:
+                return True
+        else:
+            return True
 
 
 class NetworkRoutesPermissionHelper(PermissionHelper):
@@ -39,17 +76,38 @@ class NetworkRoutesPermissionHelper(PermissionHelper):
         return True
 
     def user_can_create(self, user):
-        return True
-
-    def user_can_delete_obj(self, instance, obj):
-        print('Instance Delete', instance)
-        if obj.gateway is None:
-            return False
+        if user.is_superuser:
+            controllers = Controllers.objects.all().count()
+            if controllers > 1:
+                return False
+            else:
+                return True
         else:
             return True
 
-    def user_can_edit_obj(self, instance, obj):
-        return False
+    def user_can_delete_obj(self, user, obj):
+        print('Instance Delete', user)
+        if obj.gateway is None:
+            return False
+        else:
+            if user.is_superuser:
+                controllers = Controllers.objects.all().count()
+                if controllers > 1:
+                    return False
+                else:
+                    return True
+            else:
+                return True
+
+    def user_can_edit_obj(self, user, obj):
+        if user.is_superuser:
+            controllers = Controllers.objects.all().count()
+            if controllers > 1:
+                return False
+            else:
+                return True
+        else:
+            return True
 
 '''
 class RestrictedFieldPanel(FieldPanel):
@@ -74,6 +132,7 @@ class NetworksAdmin(ModelAdmin):
     #list_filter = ('name',)
     search_fields = ('name',)
     #base_form_class = NetworksForm
+    permission_helper_class = NetworksPermissionHelper
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -102,10 +161,19 @@ class NetworksAdmin(ModelAdmin):
                             heading=_('Network Owner'))
         ]
 
+        superuser_limit_panels = [
+            MultiFieldPanel([FieldPanel('user')],
+                            heading=_('Network Owner'))
+        ]
+
         current_user = get_current_user()
 
         if current_user.is_superuser:
-            custom_panels = superuser_panels
+            controllers = Controllers.objects.all().count()
+            if controllers > 1:
+                custom_panels = superuser_limit_panels
+            else:
+                custom_panels = superuser_panels
         else:
             custom_panels = basic_panels
 

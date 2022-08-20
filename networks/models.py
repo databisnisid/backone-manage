@@ -2,7 +2,7 @@ from django.db import models
 from accounts.models import User, Organizations
 from controllers.models import Controllers
 from crum import get_current_user
-from config.utils import to_json
+from config.utils import to_json, to_dictionary
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
@@ -192,6 +192,11 @@ class Networks(models.Model):
                     ip_network(ip_network_list)
             except ValueError:
                 raise ValidationError({'ip_address_networks': _('IP Format is not correct!')})
+
+        ctl_id = self.network_id[:10]
+        ctl_config = to_dictionary(self.user.organization.controller.configuration)
+        if ctl_id != ctl_config['address']:
+            raise ValidationError({'user': _('Controller Missmatch! User should be in same controllers')})
 
     def ip_allocation(self):
         text = ''
