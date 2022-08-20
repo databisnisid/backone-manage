@@ -478,7 +478,7 @@ class NetworkRules(models.Model):
             print('FILENAME ', net_rule_file)
 
             result = subprocess.run([settings.NODEJS, settings.CLIJS, net_rule_file],
-                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
             self.rules = result.stdout.decode('utf-8')
 
         #os.remove(filename_rule)
