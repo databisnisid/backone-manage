@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /home/backone/server/backone-manage/.env
+#source /home/backone/server/backone-manage/.env
 /home/backone/server/backone-manage/venv/bin/python \
     /home/backone/server/backone-manage/manage.py shell \
     --command "from controllers.workers import zt_synchronize_member_peers; zt_synchronize_member_peers()" \
