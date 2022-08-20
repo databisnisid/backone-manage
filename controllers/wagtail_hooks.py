@@ -4,6 +4,7 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from .models import Controllers
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from django.utils.translation import gettext as _
+from controllers.workers import zt_import_all_controllers
 
 
 class ControllersPermissionHelper(PermissionHelper):
@@ -36,10 +37,11 @@ class ControllerButtonHelper(ButtonHelper):
     synchronize_classnames = ['button button-small button-primary']
 
     def synchronize_button(self, obj):
+        zt_import_all_controllers()
         # Define a label for our button
         text = _('Synchronize')
         return {
-            'url': self.url_helper.create_url, # Modify this to get correct action
+            'url': self.url_helper.index_url, # Modify this to get correct action
             'label': text,
             'classname': self.finalise_classname(self.synchronize_classnames),
             'title': text,
@@ -55,14 +57,14 @@ class ControllerButtonHelper(ButtonHelper):
         buttons = super().get_buttons_for_obj(
             obj, exclude, classnames_add, classnames_exclude
         )
-        if 'import' not in (exclude or []):
+        if 'synchronize_button' not in (exclude or []):
             buttons.append(self.synchronize_button(obj))
         return buttons
 
 
 class ControllersAdmin(ModelAdmin):
     model = Controllers
-    #button_helper_class = ControllerButtonHelper   # Uncomment this to enable button
+    button_helper_class = ControllerButtonHelper   # Uncomment this to enable button
     #inspect_view_enabled = True
     menu_label = 'Controllers'  # ditch this to use verbose_name_plural from model
     menu_icon = 'user'  # change as required
