@@ -64,7 +64,7 @@ class ControllerButtonHelper(ButtonHelper):
 
 class ControllersAdmin(ModelAdmin):
     model = Controllers
-    button_helper_class = ControllerButtonHelper   # Uncomment this to enable button
+    #button_helper_class = ControllerButtonHelper   # Uncomment this to enable button
     #inspect_view_enabled = True
     menu_label = 'Controllers'  # ditch this to use verbose_name_plural from model
     menu_icon = 'user'  # change as required

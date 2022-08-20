@@ -18,9 +18,9 @@ class MembersButtonHelper(ButtonHelper):
         if obj.configuration == '{}' and obj.is_authorized:
             print('Synchronize Configuration ', obj.name)
             obj.save()
-        if obj.peers.peers == '{}':
-            print('Synchronize Peers ', obj.name)
-            obj.peers.save()
+        #if obj.peers.peers == '{}':
+        #    print('Synchronize Peers ', obj.name)
+        #    obj.peers.save()
 
         # Define a label for our button
         text = _('Synchronize')
