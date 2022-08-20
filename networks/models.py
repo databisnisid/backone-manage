@@ -462,7 +462,7 @@ class NetworkRules(models.Model):
             #print(rules)
             raise ValidationError({'rules_definition': _('Syntax Error: ' + error_msg[1])})
         print(self.rules)
-        os.remove(filename_rule)
+        #os.remove(filename_rule)
 
     def save(self):
         self.user = self.network.user
@@ -478,5 +478,5 @@ class NetworkRules(models.Model):
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             self.rules = result.stdout.decode('utf-8')
 
-        os.remove(filename_rule)
+        #os.remove(filename_rule)
         return super(NetworkRules, self).save()
