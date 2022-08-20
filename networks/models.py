@@ -468,16 +468,16 @@ class NetworkRules(models.Model):
         self.user = self.network.user
         self.organization = self.network.organization
 
-        filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
-        print('FILENAME ', filename_rule)
-        file = open(filename_rule, 'w')
+        net_rule_file = '/tmp/net-rule-' + self.network.network_id + '.rules'
+        print('FILENAME ', net_rule_file)
+        file = open(net_rule_file, 'w')
         file.write(self.rules_definition)
         file.close()
 
-        print('FILENAME ', filename_rule)
+        if self.rules_definition is not None and net_rule_file is not None:
+            print('FILENAME ', net_rule_file)
 
-        if self.rules_definition is not None:
-            result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
+            result = subprocess.run([settings.NODEJS, settings.CLIJS, net_rule_file],
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             self.rules = result.stdout.decode('utf-8')
 
