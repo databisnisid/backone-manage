@@ -455,10 +455,13 @@ class NetworkRules(models.Model):
         file.close()
 
         shell = not settings.DEVELOPMENT
+        print('SHELL', shell)
 
         result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell)
         result_txt = result.stdout.decode('utf-8')
+
+        print('RESULT', result_txt)
         if 'ERROR' in result_txt:
             error_msg = result_txt.split(':')
             #print(rules)
