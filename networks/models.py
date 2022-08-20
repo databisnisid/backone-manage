@@ -477,7 +477,6 @@ class NetworkRules(models.Model):
         file.close()
 
         shell = not settings.DEVELOPMENT
-        print(settings.DEVELOPMENT, shell)
 
         if self.rules_definition is not None:
             print('FILENAME ', filename_rule)
