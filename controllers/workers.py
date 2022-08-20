@@ -191,7 +191,7 @@ def zt_synchronize_member_peers(network=None):
     Scheduled cronjob every 5 minutes
     :return:
     """
-    print(localtime(), 'Synchronize Member Peers')
+    print(localtime(), 'START - Synchronize Member Peers')
     if network is not None:
         member_peers = MemberPeers.objects.filter(network=network)
     else:
@@ -204,3 +204,4 @@ def zt_synchronize_member_peers(network=None):
         member_peer.peers = zt.get_member_peers(member_peer.member_id)
         print('Updating Member ' + member_peer.member_id)
         member_peer.save()
+    print(localtime(), 'DONE - Synchronize Member Peers')
