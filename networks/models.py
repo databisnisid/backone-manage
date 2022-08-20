@@ -8,6 +8,7 @@ from controllers.backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
 from ipaddress import ip_network
 from django.core.exceptions import ValidationError
+import os
 import subprocess
 from config import settings
 
@@ -448,11 +449,12 @@ class NetworkRules(models.Model):
 
     def clean(self):
 
-        file = open('/tmp/net-rule.txt', 'w')
+        filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
+        file = open(filename_rule, 'w')
         file.write(self.rules_definition)
         file.close()
 
-        result = subprocess.run([settings.NODEJS, settings.CLIJS, '/tmp/net-rule.txt'],
+        result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         result_txt = result.stdout.decode('utf-8')
         if 'ERROR' in result_txt:
@@ -460,14 +462,19 @@ class NetworkRules(models.Model):
             #print(rules)
             raise ValidationError({'rules_definition': _('Syntax Error: ' + error_msg[1])})
         print(self.rules)
+        os.remove(filename_rule)
 
     def save(self):
         self.user = self.network.user
         self.organization = self.network.organization
 
+        filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
+        file = open(filename_rule, 'w')
+
         if self.rules_definition is not None:
-            result = subprocess.run([settings.NODEJS, settings.CLIJS, '/tmp/net-rule.txt'],
+            result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             self.rules = result.stdout.decode('utf-8')
-
+        file.close()
+        os.remove(filename_rule)
         return super(NetworkRules, self).save()
