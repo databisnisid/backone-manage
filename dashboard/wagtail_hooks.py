@@ -50,13 +50,31 @@ def hide_user_menu_item(request, menu_items):
 
 class NetworksSummaryPanel(Component):
     order = 50
+    template_name = "dashboard/site_summary.html"
 
     def __init__(self):
         user = get_current_user()
-        self.networks = Networks.objects.filter(user=user).count()
-        self.network_routes = NetworkRoutes.objects.filter(user=user).count()
-        self.members = Members.objects.filter(user=user).count()
+        if user.is_superuser:
+            self.networks = Networks.objects.all().count()
+            self.network_routes = NetworkRoutes.objects.all().count()
+            self.members = Members.objects.all().count()
+        elif user.organization.is_no_org:
+            self.networks = Networks.objects.filter(user=user).count()
+            self.network_routes = NetworkRoutes.objects.filter(user=user).count()
+            self.members = Members.objects.filter(user=user).count()
+        else:
+            self.networks = Networks.objects.filter(organization=user.organization).count()
+            self.network_routes = NetworkRoutes.objects.filter(organization=user.organization).count()
+            self.members = Members.objects.filter(organization=user.organization).count()
 
+    def get_context_data(self, parent_context):
+        context = super().get_context_data(parent_context)
+        context['networks'] = self.networks
+        context['network_routes'] = self.network_routes
+        context['members'] = self.members
+
+        return context
+    '''
     def render_html(self, parent_context):
         return mark_safe("""
         <section class="panel summary nice-padding">
@@ -65,6 +83,7 @@ class NetworksSummaryPanel(Component):
                          """<br />Members: """ + str(self.members) + """</h1>
         </section>
         """)
+    '''
 
 
 @hooks.register('construct_homepage_panels', order=4)

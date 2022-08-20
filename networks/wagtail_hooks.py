@@ -156,7 +156,7 @@ class NetworkRoutesAdmin(ModelAdmin):
 
 class NetworkRulesAdmin(ModelAdmin):
     model = NetworkRules
-    inspect_view_enabled = True
+    #inspect_view_enabled = True
     menu_label = 'Network Rules'  # ditch this to use verbose_name_plural from model
     menu_icon = 'tag'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
