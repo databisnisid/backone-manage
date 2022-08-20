@@ -20,19 +20,26 @@ def add_user_org_panel(request, panels):
         panels.append(user_org_panels)
 '''
 
-
-class NetworkRoutesPermissionHelper(PermissionHelper):
-    '''
-
+class NetworkRulesPermissionHelper(PermissionHelper):
     def user_can_list(self, user):
         return True
 
     def user_can_create(self, user):
-        if user.is_superuser:
-            return True
-        else:
-            return False
-    '''
+        return False
+
+    def user_can_delete_obj(self, instance, obj):
+        return False
+
+    def user_can_edit_obj(self, instance, obj):
+        return True
+
+
+class NetworkRoutesPermissionHelper(PermissionHelper):
+    def user_can_list(self, user):
+        return True
+
+    def user_can_create(self, user):
+        return True
 
     def user_can_delete_obj(self, instance, obj):
         print('Instance Delete', instance)
@@ -147,11 +154,6 @@ class NetworkRoutesAdmin(ModelAdmin):
                 return NetworkRoutes.objects.filter(organization=current_user.organization)
         else:
             return NetworkRoutes.objects.all()
-    #def get_queryset(self, request):
-    #    if not request.user.is_superuser:
-    #        return NetworkRoutes.objects.filter(user=get_current_user())
-    #    else:
-    #        return NetworkRoutes.objects.all()
 
 
 class NetworkRulesAdmin(ModelAdmin):
@@ -165,13 +167,26 @@ class NetworkRulesAdmin(ModelAdmin):
     list_filter = ('network',)
     #search_fields = ('__str__',)
     #ordering = ['network', 'gateway']
-    #permission_helper_class = NetworkRoutesPermissionHelper
-    panels = [
-        MultiFieldPanel([FieldPanel('network'),
-                         FieldPanel('rules_definition'),
-                         FieldPanel('rules')],
-                        heading=_('Network Rules')),
-    ]
+    permission_helper_class = NetworkRulesPermissionHelper
+
+    def get_edit_handler(self, instance=None, request=None):
+        basic_panels = [
+            MultiFieldPanel([FieldPanel('network'),
+                             FieldPanel('rules_definition')],
+                            heading=_('Network Rules')),
+        ]
+
+        advance_panels = [
+            MultiFieldPanel([FieldPanel('network'),
+                             FieldPanel('rules_definition'),
+                             FieldPanel('rules')],
+                            heading=_('Network Rules')),
+        ]
+        current_user = get_current_user()
+        if current_user.is_superuser:
+            return ObjectList(advance_panels)
+        else:
+            return ObjectList(basic_panels)
 
     def get_queryset(self, request):
         #current_user = get_user()

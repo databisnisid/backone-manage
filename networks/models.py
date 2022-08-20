@@ -2,6 +2,7 @@ from django.db import models
 from accounts.models import User, Organizations
 from controllers.models import Controllers
 from crum import get_current_user
+from config.utils import to_json
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
@@ -454,15 +455,8 @@ class NetworkRules(models.Model):
         file.write(self.rules_definition)
         file.close()
 
-        shell = not settings.DEVELOPMENT
-        print('SHELL', shell)
-
-        command = '{} {} {}'.format(settings.NODEJS, settings.CLIJS, filename_rule)
-
         result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
-        #result = subprocess.run(command,
-        #                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
 
         result_txt = result.stdout.decode('utf-8')
 
@@ -472,19 +466,16 @@ class NetworkRules(models.Model):
             #print(rules)
             raise ValidationError({'rules_definition': _('Syntax Error: ' + error_msg[1])})
         print(self.rules)
-        os.remove(filename_rule)
+        #os.remove(filename_rule)
 
     def save(self):
         self.user = self.network.user
         self.organization = self.network.organization
 
         filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
-        #print('FILENAME ', filename_rule)
         file = open(filename_rule, 'w')
         file.write(self.rules_definition)
         file.close()
-
-        shell = not settings.DEVELOPMENT
 
         if self.rules_definition is not None:
             print('FILENAME ', filename_rule)
@@ -492,11 +483,16 @@ class NetworkRules(models.Model):
             result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
 
-            command = '{} {} {}'.format(settings.NODEJS, settings.CLIJS, filename_rule)
-
-            #result = subprocess.run(command,
-            #                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
             self.rules = result.stdout.decode('utf-8')
+            rules_clean = to_json(self.rules.replace('\n', ''))
+            #rules_clean = to_json(rules_clean)
+            #print(rules_clean['config'])
+            #data = {}
+            data = rules_clean['config']
+            zt = Zerotier(self.network.controller.uri, self.network.controller.token)
+            print(data)
+            zt.set_network(self.network.network_id, data)
+            self.network.save()
 
         os.remove(filename_rule)
         return super(NetworkRules, self).save()
