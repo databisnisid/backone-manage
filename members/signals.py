@@ -7,5 +7,5 @@ from django.dispatch import receiver
 def delete_member_peers(sender, instance, **kwargs):
     members = Members.objects.filter(member_id=instance.member_id).count()
 
-    if members == 0:
+    if members == 0 and instance.peers is not None:
         instance.peers.delete()
