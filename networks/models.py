@@ -196,7 +196,7 @@ class Networks(models.Model):
         ctl_id = self.network_id[:10]
         ctl_config = to_dictionary(self.user.organization.controller.configuration)
         if ctl_id != ctl_config['address']:
-            raise ValidationError({'user': _('Controller Missmatch! User should be in same controllers')})
+            raise ValidationError({'user': _('Controller Miss Match! Network should be in same controllers')})
 
     def ip_allocation(self):
         text = ''

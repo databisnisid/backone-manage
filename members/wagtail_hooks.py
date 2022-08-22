@@ -1,11 +1,60 @@
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, modeladmin_register, ButtonHelper, PermissionHelper)
+from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
+
 from .models import Members, MemberPeers
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
-from django.forms import HiddenInput
-from django.core.exceptions import ObjectDoesNotExist
+#from django.forms import HiddenInput
+#from django.core.exceptions import ObjectDoesNotExist
+#from wagtail.admin.forms import WagtailAdminModelForm
+#from django import forms
+#from networks.models import Networks
+
+
+'''
+class MembersForm(WagtailAdminModelForm):
+    network = forms.ModelChoiceField(queryset=Networks.objects, required=False, disabled=True)
+
+    class Meta:
+        model = Members
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+
+        self.request = kwargs.pop("request")
+        self.instance = kwargs.pop("instance")
+        print('Form ', self.request, self.instance)
+        super(MembersForm, self).__init__(*args, **kwargs)
+
+        #super().__init__(*args, **kwargs)
+        #instance = getattr(self, 'instance', None)
+        #print(instance)
+        #if not instance.pk:
+        #    # this is a NEW blog entry form - only allow title to be enabled, disable other fields
+        #    self.fields['network'].widget.attrs['readonly'] = False
+        #if instance.pk:
+        #    self.fields['network'].widget.attrs['readonly'] = True
+'''
+
+
+class EditView(ModelFormView, InstanceSpecificView):
+    pass
+
+
+class MembersView(EditView):
+
+    panels = [
+            MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
+                            heading=_('Network Name and Description')),
+            #MultiFieldPanel([FieldPanel('member_id'), FieldPanel('network')],
+            #                heading=_('Member ID and Network')),
+            # MultiFieldPanel([FieldPanel('is_authorized'), FieldPanel('ipaddress')],
+            #                heading=_('Authorization and IP Address')),
+        ]
+
+
 
 
 class MembersButtonHelper(ButtonHelper):
@@ -87,6 +136,10 @@ class MembersAdmin(ModelAdmin):
                     'member_status', 'list_peers')
     list_filter = ('network',)
     search_fields = ('name', 'member_id', 'ipaddress')
+    #edit_view_class = MembersView
+    create_template_name = 'modeladmin/create.html'
+    edit_template_name = 'modeladmin/edit.html'
+    #base_form_class = MembersForm
     #ordering = ['name']
 
     def get_edit_handler(self, instance, request):
@@ -95,6 +148,15 @@ class MembersAdmin(ModelAdmin):
                             heading=_('Network Name and Description')),
             MultiFieldPanel([FieldPanel('member_id'), FieldPanel('network')],
                             heading=_('Member ID and Network')),
+            # MultiFieldPanel([FieldPanel('is_authorized'), FieldPanel('ipaddress')],
+            #                heading=_('Authorization and IP Address')),
+        ]
+
+        basic_no_network_panels = [
+            MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
+                            heading=_('Network Name and Description')),
+            #MultiFieldPanel([FieldPanel('member_id'), FieldPanel('network')],
+            #                heading=_('Member ID and Network')),
             # MultiFieldPanel([FieldPanel('is_authorized'), FieldPanel('ipaddress')],
             #                heading=_('Authorization and IP Address')),
         ]
@@ -108,8 +170,13 @@ class MembersAdmin(ModelAdmin):
         tags_panels = MultiFieldPanel([FieldPanel('tags')], heading=_('Tagging Features'))
 
         current_user = get_current_user()
-        #print('Handler', current_user)
+        print('Handler Instance', instance)
+        print('Handler Request', request)
+        #if not instance.id:
         custom_panels = basic_panels
+        #else:
+        #    custom_panels = basic_no_network_panels
+
         if current_user.is_superuser:
             custom_panels.append(authorize_panels)
             custom_panels.append(bridge_panels)
