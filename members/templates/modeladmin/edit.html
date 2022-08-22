@@ -27,8 +27,13 @@
 <script type="text/javascript">
 
 $('document').ready(function(){
-    document.getElementById('id_member_id').disabled=true;
-    document.getElementById('id_network').disabled=true;
+    //document.getElementById('id_member_id').readOnly=true;
+    $('#id_member_id').prop('readonly', true);
+    //$('#id_member_id').css('pointer-events','none');
+    //$('#id_network').prop('disabled', true);
+    $('#id_network').css('pointer-events','none');
+    //document.getElementById('id_member_id').setAttribute("readonly", true);
+    //document.getElementById('id_network').setAttribute("readonly", true);
     //console.log(elem)
    });
 
