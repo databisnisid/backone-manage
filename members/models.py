@@ -80,8 +80,9 @@ class Members(models.Model):
     configuration = models.TextField(_('Configuration'), blank=True)
     peers = models.ForeignKey(
         MemberPeers,
-        on_delete=models.CASCADE,
-        verbose_name=_('Peers')
+        on_delete=models.SET_NULL,
+        verbose_name=_('Peers'),
+        null=True
     )
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
