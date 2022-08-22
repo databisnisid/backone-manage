@@ -162,28 +162,45 @@ class Members(models.Model):
             if self.network.ip_address_networks is not None:
                 ip_network_lists = self.network.ip_address_networks.split(',')
 
-                is_ipaddress_in_network = False
+                #is_ipaddress_in_network = False
+                ip_status = {}
                 for ip_address_list in ip_address_lists:
+                    ip_status[ip_address_list] = False
+                    print(ip_address_list)
                     for ip_network_list in ip_network_lists:
+                        print(ip_network_list)
                         if ip_address(ip_address_list) in ip_network(ip_network_list):
                             is_ipaddress_in_network = True
+                            ip_status[ip_address_list] = True
                             break
-                        else:
-                            is_ipaddress_in_network = False
-
-                if not is_ipaddress_in_network:
-                    raise ValidationError({'ipaddress': _('IP address should be in segment ' +
-                                                          self.network.ip_address_networks)})
+                        #else:
+                            #is_ipaddress_in_network = False
+                #print(ip_status)
+                #if not is_ipaddress_in_network:
+                for ip_address_list in ip_address_lists:
+                    if not ip_status[ip_address_list]:
+                        raise ValidationError({'ipaddress': _('IP address should be in segment ' +
+                                                              self.network.ip_address_networks)})
 
                 # Second Raise
                 for ip_address_list in ip_address_lists:
 
                     members = Members.objects.filter(
-                        ipaddress=ip_address_list).exclude(member_id=self.member_id)
+                        ipaddress__contains=ip_address_list).exclude(member_id=self.member_id)
 
                     if members:
-                        raise ValidationError(
-                            {'ipaddress': _('IP address ' + ip_address_list + ' is already used!')})
+                        is_duplicate = False
+                        for member in members:
+                            if ',' in member.ipaddress:
+                                m_ipaddress = member.ipaddress.split(',')
+                                for m_ip in m_ipaddress:
+                                    if m_ip == ip_address_list:
+                                        is_duplicate = True
+                            elif member.ipaddress == ip_address_list:
+                                is_duplicate = True
+                        if is_duplicate:
+                            raise ValidationError(
+                                {'ipaddress': _('IP address ' + ip_address_list + ' is already used!')})
             else:
                 raise ValidationError(_('First, please setup IP Network in ' + self.network.name))
 
