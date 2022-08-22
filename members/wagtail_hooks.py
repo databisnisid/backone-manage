@@ -170,8 +170,8 @@ class MembersAdmin(ModelAdmin):
         tags_panels = MultiFieldPanel([FieldPanel('tags')], heading=_('Tagging Features'))
 
         current_user = get_current_user()
-        print('Handler Instance', instance)
-        print('Handler Request', request)
+        #print('Handler Instance', instance)
+        #print('Handler Request', request)
         #if not instance.id:
         custom_panels = basic_panels
         #else:
