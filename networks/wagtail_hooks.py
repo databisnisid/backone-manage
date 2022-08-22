@@ -38,14 +38,7 @@ class NetworksPermissionHelper(PermissionHelper):
             return True
 
     def user_can_delete_obj(self, user, obj):
-        if user.is_superuser:
-            controllers = Controllers.objects.all().count()
-            if controllers > 1:
-                return False
-            else:
-                return True
-        else:
-            return True
+        return True
 
     def user_can_edit_obj(self, user, obj):
         return True
