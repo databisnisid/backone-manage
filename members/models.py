@@ -179,7 +179,7 @@ class Members(models.Model):
                 for ip_address_list in ip_address_lists:
 
                     members = Members.objects.filter(
-                        ipaddress__contains=ip_address_list).exclude(member_id=self.member_id)
+                        ipaddress=ip_address_list).exclude(member_id=self.member_id)
 
                     if members:
                         raise ValidationError(
