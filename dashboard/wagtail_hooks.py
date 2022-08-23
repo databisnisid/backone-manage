@@ -26,6 +26,8 @@ def hide_reports_menu_item(request, menu_items):
 
 @hooks.register('construct_main_menu', order=2)
 def hide_snippets_menu_item(request, menu_items):
+    for item in menu_items:
+        print(item.name)
     menu_items[:] = [item for item in menu_items if item.name != 'documents']
     menu_items[:] = [item for item in menu_items if item.name != 'explorer']
     menu_items[:] = [item for item in menu_items if item.name != 'images']

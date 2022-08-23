@@ -182,6 +182,8 @@ class Networks(models.Model):
         return super(Networks, self).save()
 
     def clean(self):
+        if self.user is None:
+            self.user = get_current_user()
         if self.ip_address_networks is not None:
             self.ip_address_networks = self.ip_address_networks.replace(' ', '')
 
