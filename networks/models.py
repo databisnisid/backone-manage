@@ -182,8 +182,8 @@ class Networks(models.Model):
         return super(Networks, self).save()
 
     def clean(self):
-        if self.user is None:
-            self.user = get_current_user()
+        #if self.user is None:
+        #    self.user = get_current_user()
         if self.ip_address_networks is not None:
             self.ip_address_networks = self.ip_address_networks.replace(' ', '')
 
@@ -195,10 +195,11 @@ class Networks(models.Model):
             except ValueError:
                 raise ValidationError({'ip_address_networks': _('IP Format is not correct!')})
 
-        ctl_id = self.network_id[:10]
-        ctl_config = to_dictionary(self.user.organization.controller.configuration)
-        if ctl_id != ctl_config['address']:
-            raise ValidationError(_('Controller Miss Match! Network should be in same controllers'))
+        if self.id:
+            ctl_id = self.network_id[:10]
+            ctl_config = to_dictionary(self.user.organization.controller.configuration)
+            if ctl_id != ctl_config['address']:
+                raise ValidationError(_('Controller Miss Match! Network should be in same controllers'))
 
     def ip_allocation(self):
         text = ''
