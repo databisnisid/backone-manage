@@ -212,7 +212,7 @@ class MemberPeersAdmin(ModelAdmin):
     menu_icon = 'grip'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    list_display = ('member_id', 'network', 'updated_at')
+    list_display = ('member_id', 'updated_at', 'network')
     permission_helper_class = MemberPeersPermissionHelper
     list_filter = ('network',)
     #search_fields = ('name', 'member_id', 'ipaddress')
