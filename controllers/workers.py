@@ -211,6 +211,7 @@ def zt_check_member_peers(member):
         member_peer = MemberPeers()
         zt = Zerotier(member.network.controller.uri, member.network.controller.token)
         member_peer.peers = zt.get_member_peers(member_peer.member_id)
+        member_peer.network = member.network
         member_peer.save()
 
     member.peers = member_peer
