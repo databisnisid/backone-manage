@@ -202,3 +202,23 @@ def zt_synchronize_member_peers(network=None):
         member_peer.peers = zt.get_member_peers(member_peer.member_id)
         member_peer.save()
     print(localtime(), 'DONE - Synchronize Member Peers')
+
+
+def zt_check_member_peers(member):
+    try:
+        member_peer = MemberPeers.objects.get(member_id=member.member_id)
+    except ObjectDoesNotExist:
+        member_peer = MemberPeers()
+        zt = Zerotier(member.network.controller.uri, member.network.controller.token)
+        member_peer.peers = zt.get_member_peers(member_peer.member_id)
+        member_peer.save()
+
+    member.peers = member_peer
+    member.save()
+
+
+def zt_check_all_member_peers():
+    members = Members.objects.all()
+    for member in members:
+        zt_check_member_peers(member)
+
