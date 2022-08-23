@@ -35,8 +35,8 @@ def hide_snippets_menu_item(request, menu_items):
     if not request.user.is_superuser:
         menu_items[:] = [item for item in menu_items if item.name != 'memberpeers']
 
-    for panel in menu_items:
-        print(panel.name)
+    #for panel in menu_items:
+    #    print(panel.name)
 
 
 @hooks.register("construct_settings_menu", order=3)
