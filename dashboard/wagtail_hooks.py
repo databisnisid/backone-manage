@@ -26,18 +26,17 @@ def hide_reports_menu_item(request, menu_items):
 
 @hooks.register('construct_main_menu', order=2)
 def hide_snippets_menu_item(request, menu_items):
-    for item in menu_items:
-        print(item.name)
     menu_items[:] = [item for item in menu_items if item.name != 'documents']
     menu_items[:] = [item for item in menu_items if item.name != 'explorer']
     menu_items[:] = [item for item in menu_items if item.name != 'images']
 
-    if not request.user.organization.features.network_rules and not request.user.is_superuser:
+    if not request.user.organization.features.network_rules:
         menu_items[:] = [item for item in menu_items if item.name != 'network-rules']
+    if not request.user.is_superuser:
         menu_items[:] = [item for item in menu_items if item.name != 'memberpeers']
 
-    #for panel in menu_items:
-    #    print(panel.name)
+    for panel in menu_items:
+        print(panel.name)
 
 
 @hooks.register("construct_settings_menu", order=3)
