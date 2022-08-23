@@ -205,17 +205,18 @@ def zt_synchronize_member_peers(network=None):
 
 
 def zt_check_member_peers(member):
-    try:
-        member_peer = MemberPeers.objects.get(member_id=member.member_id)
-    except ObjectDoesNotExist:
-        member_peer = MemberPeers()
-        zt = Zerotier(member.network.controller.uri, member.network.controller.token)
-        member_peer.peers = zt.get_member_peers(member_peer.member_id)
-        member_peer.network = member.network
-        member_peer.save()
+    if member.peers is None:
+        try:
+            member_peer = MemberPeers.objects.get(member_id=member.member_id)
+        except ObjectDoesNotExist:
+            member_peer = MemberPeers()
+            zt = Zerotier(member.network.controller.uri, member.network.controller.token)
+            member_peer.peers = zt.get_member_peers(member_peer.member_id)
+            member_peer.network = member.network
+            member_peer.save()
 
-    member.peers = member_peer
-    member.save()
+        member.peers = member_peer
+        member.save()
 
 
 def zt_check_all_member_peers():
