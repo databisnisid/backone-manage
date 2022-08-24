@@ -220,7 +220,9 @@ def zt_check_member_peers(member):
 
 
 def zt_check_all_member_peers():
-    members = Members.objects.all()
+    print(localtime(), 'START - Checking All Member Peers')
+    members = Members.objects.filter(peers=None)
+    #members = Members.objects.all()
     for member in members:
         zt_check_member_peers(member)
-
+    print(localtime(), 'END - Checking All Member Peers'

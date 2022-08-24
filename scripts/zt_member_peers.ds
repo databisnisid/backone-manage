@@ -11,3 +11,7 @@ source venv/bin/activate
 python manage.py shell \
     --command "from controllers.workers import zt_synchronize_member_peers; zt_synchronize_member_peers()" \
     >> /home/backone/server/backone-manage/logs/zt_member_peers.log 2>&1
+
+python manage.py shell \
+    --command "from controllers.workers import zt_synchronize_member_peers; zt_check_all_member_peers()" \
+    >> /home/backone/server/backone-manage/logs/zt_member_peers.log 2>&1
