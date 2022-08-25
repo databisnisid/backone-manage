@@ -28,8 +28,8 @@ class NetworksChartsPanel(Component):
             self.routes_per_network[network.network_id] = NetworkRoutes.objects.filter(network=network).count()
             self.member_per_network[network.network_id] = Members.objects.filter(network=network).count()
 
-        print(self.networks_name)
-        print(self.routes_per_network)
+        #print(self.networks_name)
+        #print(self.routes_per_network)
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
