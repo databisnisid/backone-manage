@@ -58,7 +58,7 @@ class NetworksChartsPanel(Component):
         context['backgroundColor_member'] = backgroundColor_member
         context['chart_title_route'] = chart_title_route
         context['chart_title_member'] = chart_title_member
-        print(context)
+        #print(context)
         return context
 
 
