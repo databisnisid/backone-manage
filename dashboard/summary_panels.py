@@ -126,10 +126,10 @@ class MemberChartsPanel(Component):
             if 'paths' in peers and len(peers['paths']) != 0:
                 version = peers['version']
                 latency = peers['latency']
-                if self.member_version[version]:
-                    self.member_version[version] += 1
-                else:
-                    self.member_version[version] = 1
+                #if self.member_version[version]:
+                self.member_version[version] += 1
+                #else:
+                #    self.member_version[version] = 1
 
                 if latency < 0:
                     self.member_status['RELAY'] += 1
