@@ -61,6 +61,7 @@ def add_another_welcome_panel(request, panels):
 
     panels.append(NetworksSummaryPanel())
     panels.append(NetworksChartsPanel())
+    panels.append(MemberChartsPanel())
 
 
 @hooks.register("insert_global_admin_js", order=100)
