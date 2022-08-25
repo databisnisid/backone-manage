@@ -1,0 +1,84 @@
+{% load i18n wagtailadmin_tags %}
+
+    <section class="panel summary nice-padding">
+        <table style="width: 90%;">
+            <tr>
+                <td style="width: 40%;">
+                    <h1>{{ chart_title_route }}</h1>
+                        <div>
+                            <canvas id="chart_networks_1"></canvas>
+                        </div>
+                </td>
+                <td style="width: 20%"></td>
+                <td style="width: 40%">
+                    <h1>{{ chart_title_member }}</h1>
+                        <div>
+                            <canvas id="chart_networks_2"></canvas>
+                        </div>
+
+                </td>
+            </tr>
+        </table>
+    </section>
+
+{% block extra_js %}
+<script>
+
+const ctx1 = document.getElementById('chart_networks_1').getContext('2d');
+const myChart1 = new Chart(ctx1, {
+    type: 'polarArea',
+    data: {
+        labels: [{% for label in labels %}'{{ label | escape }}',{% endfor %}],
+        datasets: [{
+            label: '# of Votes',
+            data: {{ data_route }},
+            backgroundColor: [
+                {% for color in backgroundColor_route %}'{{ color | escape }}',{% endfor %}
+            ],
+            borderWidth: 1
+        }]
+    },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: false,
+        text: '{{ chart_title_route }}'
+      }
+    }
+  },
+});
+
+const ctx2 = document.getElementById('chart_networks_2').getContext('2d');
+const myChart2 = new Chart(ctx2, {
+    type: 'polarArea',
+    data: {
+        labels: [{% for label in labels %}'{{ label | escape }}',{% endfor %}],
+        datasets: [{
+            label: '# of Votes',
+            data: {{ data_member }},
+            backgroundColor: [
+                {% for color in backgroundColor_member %}'{{ color | escape }}',{% endfor %}
+            ],
+            borderWidth: 1
+        }]
+    },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: false,
+        text: '{{ chart_title_member }}'
+      }
+    }
+  },
+});
+
+</script>
+{% endblock extra_js %}

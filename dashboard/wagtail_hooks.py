@@ -5,6 +5,8 @@ from networks.models import Networks, NetworkRoutes
 from members.models import Members
 from crum import get_current_user
 from wagtail.contrib.modeladmin.views import CreateView, EditView
+from .summary_panels import *
+from django.utils.html import format_html
 
 
 #@hooks.register("insert_global_admin_css", order=100)
@@ -49,44 +51,6 @@ def hide_user_menu_item(request, menu_items):
     #pass
 
 
-class NetworksSummaryPanel(Component):
-    order = 50
-    template_name = "dashboard/site_summary.html"
-
-    def __init__(self):
-        user = get_current_user()
-        if user.is_superuser:
-            self.networks = Networks.objects.all().count()
-            self.network_routes = NetworkRoutes.objects.all().count()
-            self.members = Members.objects.all().count()
-        elif user.organization.is_no_org:
-            self.networks = Networks.objects.filter(user=user).count()
-            self.network_routes = NetworkRoutes.objects.filter(user=user).count()
-            self.members = Members.objects.filter(user=user).count()
-        else:
-            self.networks = Networks.objects.filter(organization=user.organization).count()
-            self.network_routes = NetworkRoutes.objects.filter(organization=user.organization).count()
-            self.members = Members.objects.filter(organization=user.organization).count()
-
-    def get_context_data(self, parent_context):
-        context = super().get_context_data(parent_context)
-        context['networks'] = self.networks
-        context['network_routes'] = self.network_routes
-        context['members'] = self.members
-
-        return context
-    '''
-    def render_html(self, parent_context):
-        return mark_safe("""
-        <section class="panel summary nice-padding">
-          <h1>Networks: """ + str(self.networks) +
-                         """<br />Routes: """ + str(self.network_routes) +
-                         """<br />Members: """ + str(self.members) + """</h1>
-        </section>
-        """)
-    '''
-
-
 @hooks.register('construct_homepage_panels', order=4)
 def add_another_welcome_panel(request, panels):
     panels[:] = [panel for panel in panels if panel.name != "site_summary"]
@@ -96,3 +60,12 @@ def add_another_welcome_panel(request, panels):
     panels[:] = [panel for panel in panels if panel.name != "locked_pages"]
 
     panels.append(NetworksSummaryPanel())
+    panels.append(NetworksChartsPanel())
+
+
+@hooks.register("insert_global_admin_js", order=100)
+def global_admin_js():
+    """Add /static/css/custom.js to the admin."""
+    return format_html(
+        '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>'
+    )

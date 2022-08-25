@@ -1,11 +1,26 @@
 {% load i18n wagtailadmin_tags %}
     <section class="panel summary nice-padding">
         <h2 class="visuallyhidden">{% trans "Site summary" %}</h2>
-            <h1>
-            Network: {{ networks }} <br />
-            Net Routes: {{ network_routes}} <br />
-            Members: {{ members }}
-            </h1>
+        <table style="width: 90%">
+            <tr>
+                <td>
+                    <h1>
+                    Network: {{ networks }}
+                    </h1>
+                </td>
+                <td>
+                    <h1>
+                    Network Routes: {{ network_routes}}
+                    </h1>
+                </td>
+                <td>
+                    <h1>
+                    Members: {{ members }}
+                    </h1>
+                </td>
+            </tr>
+
+        </table>
     </section>
 
 {% if summary_items %}
