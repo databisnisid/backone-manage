@@ -57,7 +57,7 @@ const member_myChart1 = new Chart(member_ctx1, {
 
 const member_ctx2 = document.getElementById('chart_members_2').getContext('2d');
 const member_myChart2 = new Chart(member_ctx2, {
-    type: 'pie',
+    type: 'doughnut',
     data: {
         labels: [{% for label in labels_version %}'{{ label | escape }}',{% endfor %}],
         datasets: [{
