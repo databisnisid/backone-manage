@@ -146,9 +146,9 @@ class MemberChartsPanel(Component):
         data_version = []
         labels = ['DIRECT', 'RELAY', 'OFFLINE']
         backgroundColor_status = [
-            'rgba(0, 255, 0, 0.7)',
-            'rgba(0, 0, 255, 0.7)',
-            'rgba(255, 0, 0, 0.7)'
+            'rgba(46, 125, 50, 0.7)',
+            'rgba(21, 101, 192, 0.7)',
+            'rgba(198, 40, 40, 0.7)'
         ]
         backgroundColor_version = []
 
