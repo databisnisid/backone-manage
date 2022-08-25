@@ -161,7 +161,7 @@ class MemberChartsPanel(Component):
             labels_version.append(version)
             data_version.append(self.member_version[version])
             backgroundColor_version.append('rgba({}, {}, {}, 0.7'.format(
-                randint(0, 200), randint(0, 200), 255))
+                randint(0, 200), 255, randint(0, 200)))
 
         is_data_status = False
         is_data_version = False
