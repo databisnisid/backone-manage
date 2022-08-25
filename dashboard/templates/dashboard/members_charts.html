@@ -29,7 +29,7 @@
 
 const member_ctx1 = document.getElementById('chart_members_1').getContext('2d');
 const member_myChart1 = new Chart(member_ctx1, {
-    type: 'pie',
+    type: 'doughnut',
     data: {
         labels: [{% for label in labels %}'{{ label | escape }}',{% endfor %}],
         datasets: [{

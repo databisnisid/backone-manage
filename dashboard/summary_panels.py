@@ -127,10 +127,10 @@ class MemberChartsPanel(Component):
                 version = str(peers['version'])
                 latency = peers['latency']
                 try:
-                    self.member_version[version]
-                    self.member_version[version] += 1
+                    self.member_version['v' + version]
+                    self.member_version['v' + version] += 1
                 except KeyError:
-                    self.member_version[version] = 1
+                    self.member_version['v' + version] = 1
 
                 if latency < 0:
                     self.member_status['RELAY'] += 1
@@ -179,11 +179,9 @@ class MemberChartsPanel(Component):
         context['backgroundColor_version'] = backgroundColor_version
         context['data_status'] = data_status
         context['data_version'] = data_version
-        context['chart_title_status'] = 'Member Status'
-        context['chart_title_version'] = 'Member Version'
+        context['chart_title_status'] = 'Members Status Distribution'
+        context['chart_title_version'] = 'Members Version Distribution'
         context['is_data_status'] = is_data_status
         context['is_data_version'] = is_data_version
-
-        print(context)
 
         return context
