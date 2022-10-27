@@ -135,7 +135,7 @@ class MembersAdmin(ModelAdmin):
     list_display = ('name', 'member_id', 'is_authorized', 'list_ipaddress', 'network',
                     'member_status', 'list_peers')
     list_filter = ('network',)
-    search_fields = ('name', 'member_id', 'ipaddress')
+    search_fields = ('name', 'member_id', 'ipaddress', 'member_status')
     #edit_view_class = MembersView
     create_template_name = 'modeladmin/create.html'
     edit_template_name = 'modeladmin/edit.html'
