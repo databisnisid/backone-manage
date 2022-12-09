@@ -263,6 +263,7 @@ class Members(models.Model):
 
     def is_online(self):
         online_status = False
+        peers = to_dictionary(self.peers.peers)
         if 'paths' in peers and len(peers['paths']) != 0:
             online_status = True
         return online_status
