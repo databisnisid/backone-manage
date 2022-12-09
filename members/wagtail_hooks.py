@@ -121,6 +121,7 @@ class MembersButtonHelper(ButtonHelper):
             else:
                 if current_user.organization.features.ssh:
                     buttons.append(self.ssh_button(obj))
+                if current_user.organization.features.web:
                     buttons.append(self.web_button(obj))
 
         return buttons
