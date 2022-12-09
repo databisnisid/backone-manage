@@ -77,7 +77,10 @@ class FeaturesAdmin(ModelAdmin):
         MultiFieldPanel([
             FieldRowPanel([FieldPanel('authorize'), FieldPanel('member_multi_ip')]),
             FieldRowPanel([FieldPanel('bridge'), FieldPanel('tags')])],
-            heading=_('Member Features'))
+            heading=_('Member Features')),
+        MultiFieldPanel([
+            FieldRowPanel([FieldPanel('web'), FieldPanel('ssh')])],
+            heading=_('Remote Access Features'))
     ]
 
 

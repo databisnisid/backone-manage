@@ -16,9 +16,11 @@ class Features(models.Model):
     # Member
     number_of_member = models.IntegerField(_('Number of Member'), default=10)
     member_multi_ip = models.BooleanField(_('Member Multi IP'), default=False)
-    authorize = models.BooleanField(_('Authorize Feature'), default=False)
-    bridge = models.BooleanField(_('Bridge Feature'), default=False)
-    tags = models.BooleanField(_('Tags Feature'), default=False)
+    authorize = models.BooleanField(_('Authorize'), default=False)
+    bridge = models.BooleanField(_('Bridge'), default=False)
+    tags = models.BooleanField(_('Tags'), default=False)
+    web = models.BooleanField(_('Remote Web'), default=False)
+    ssh = models.BooleanField(_('Remote SSH'), default=False)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
