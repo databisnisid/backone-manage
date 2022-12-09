@@ -112,7 +112,11 @@ class MembersButtonHelper(ButtonHelper):
             obj, exclude, classnames_add, classnames_exclude
         )
         if 'synchronize_button' not in (exclude or []):
-            buttons.append(self.synchronize_button(obj))
+            if current_user.is_superuser:
+                buttons.append(self.synchronize_button(obj))
+            else:
+                if current_user.organization.features.synchronize:
+                    buttons.append(self.synchronize_button(obj))
 
         if 'ssh_button' not in (exclude or []) and obj.is_online():
             if current_user.is_superuser:

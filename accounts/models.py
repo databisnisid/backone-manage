@@ -21,6 +21,7 @@ class Features(models.Model):
     tags = models.BooleanField(_('Tags'), default=False)
     web = models.BooleanField(_('Remote Web'), default=False)
     ssh = models.BooleanField(_('Remote SSH'), default=False)
+    synchronize = models.BooleanField(_('Synchronize'), default=False)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
