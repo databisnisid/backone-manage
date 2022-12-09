@@ -72,6 +72,7 @@ class ControllersAdmin(ModelAdmin):
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('name', 'uri', 'node_id', 'version', 'status')
     search_fields = ('name', 'node_id')
+    list_filter = ('controller',)
     permission_helper_class = ControllersPermissionHelper
 
     panels = [
