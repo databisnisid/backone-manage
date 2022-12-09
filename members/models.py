@@ -260,3 +260,10 @@ class Members(models.Model):
         return text
 
     member_status.short_description = _('Status')
+
+    def is_online(self):
+        online_status = False
+        if 'paths' in peers and len(peers['paths']) != 0:
+            online_status = True
+        return online_status
+    is_online.short_description = _('Online')

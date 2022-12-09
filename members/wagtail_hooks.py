@@ -62,6 +62,8 @@ class MembersButtonHelper(ButtonHelper):
     # Define classes for our button, here we can set an icon for example
     #import_button_classnames = ["button-small", "icon", "icon-site"]
     synchronize_classnames = ['button button-small button-primary']
+    current_classnames = ['button button-small button-primary']
+    ssh_uri = 'https://remotessh.backone.cloud'
 
     def synchronize_button(self, obj):
         if obj.configuration == '{}' and obj.is_authorized:
@@ -80,9 +82,21 @@ class MembersButtonHelper(ButtonHelper):
             'title': text,
         }
 
+    def ssh_button(self, obj):
+        text = _('Connect SSH')
+        return {
+            'url': self.ssh_uri, # Modify this to get correct action
+            'label': text,
+            'classname': self.finalise_classname(self.current_classnames),
+            'title': text,
+        }
+
+        pass
+
     def get_buttons_for_obj(
         self, obj, exclude=None, classnames_add=None, classnames_exclude=None
     ):
+        current_user = get_current_user
         """
         This function is used to gather all available buttons.
         We append our custom button to the btns list.
@@ -92,6 +106,15 @@ class MembersButtonHelper(ButtonHelper):
         )
         if 'synchronize_button' not in (exclude or []):
             buttons.append(self.synchronize_button(obj))
+
+        if current_user.is_superuser:
+            if 'ssh_button' not in (exclude or []) and obj.is_online:
+                buttons.append(self.ssh_button(obj))
+        else:
+            if current_user.organization.features.ssh:
+                if 'ssh_button' not in (exclude or []) and obj.is_online:
+                    buttons.append(self.ssh_button(obj))
+
         return buttons
 
 
