@@ -83,7 +83,7 @@ class MembersButtonHelper(ButtonHelper):
         }
 
     def ssh_button(self, obj):
-        text = _('Connect SSH')
+        text = _('SSH')
         return {
             'url': self.ssh_uri, # Modify this to get correct action
             'label': text,
@@ -107,13 +107,14 @@ class MembersButtonHelper(ButtonHelper):
         if 'synchronize_button' not in (exclude or []):
             buttons.append(self.synchronize_button(obj))
 
-        if current_user.is_superuser:
-            if 'ssh_button' not in (exclude or []) and obj.is_online:
-                buttons.append(self.ssh_button(obj))
-        else:
-            if current_user.organization.features.ssh:
-                if 'ssh_button' not in (exclude or []) and obj.is_online:
+        if obj.is_online:
+            if current_user.is_superuser:
+                if 'ssh_button' not in (exclude or []):
                     buttons.append(self.ssh_button(obj))
+            else:
+                if current_user.organization.features.ssh:
+                    if 'ssh_button' not in (exclude or []):
+                        buttons.append(self.ssh_button(obj))
 
         return buttons
 
