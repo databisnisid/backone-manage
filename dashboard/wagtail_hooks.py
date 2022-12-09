@@ -31,6 +31,7 @@ def hide_snippets_menu_item(request, menu_items):
     menu_items[:] = [item for item in menu_items if item.name != 'documents']
     menu_items[:] = [item for item in menu_items if item.name != 'explorer']
     menu_items[:] = [item for item in menu_items if item.name != 'images']
+    menu_items[:] = [item for item in menu_items if item.name != 'help']
 
     if not request.user.organization.features.network_rules:
         menu_items[:] = [item for item in menu_items if item.name != 'network-rules']

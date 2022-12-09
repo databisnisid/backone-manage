@@ -177,3 +177,7 @@ AUTH_USER_MODEL = 'accounts.User'
 WAGTAIL_USER_EDIT_FORM = 'accounts.forms.CustomUserEditForm'
 WAGTAIL_USER_CREATION_FORM = 'accounts.forms.CustomUserCreationForm'
 WAGTAIL_USER_CUSTOM_FIELDS = ['organization']
+
+# WAGTAIL 4.1
+WAGTAIL_ENABLE_WHATS_NEW_BANNER = False
+
