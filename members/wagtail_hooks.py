@@ -84,7 +84,7 @@ class MembersButtonHelper(ButtonHelper):
 
     def ssh_button(self, obj):
         text = _('SSH')
-        ssh_uri_login = self.ssh_uri + '/?hostname=' + obj.ipaddress + '&username=root&password=SzBsMHIxajANCg=='
+        ssh_uri_login = self.ssh_uri + '/?hostname=' + obj.ipaddress + '&username=root&password=SzBsMHIxajANCg==&title=' + obj.name.replace(' ', '-')
         return {
             'url': ssh_uri_login, # Modify this to get correct action
             'label': text,
