@@ -64,6 +64,7 @@ class MembersButtonHelper(ButtonHelper):
     synchronize_classnames = ['button button-small button-primary']
     current_classnames = ['button button-small button-primary']
     ssh_uri = 'https://remotessh.backone.cloud'
+    web_uri = 'https://remoteweb.backone.cloud'
 
     def synchronize_button(self, obj):
         if obj.configuration == '{}' and obj.is_authorized:
@@ -89,7 +90,15 @@ class MembersButtonHelper(ButtonHelper):
             'title': text,
         }
 
-        pass
+    def web_button(self, obj):
+        text = _('WEB')
+        web_uri_login = self.web_uri + '/?hostname=' + obj.ipaddress
+        return {
+            'url': web_uri_login, # Modify this to get correct action
+            'label': text,
+            'classname': self.finalise_classname(self.current_classnames),
+            'title': text,
+        }
 
     def get_buttons_for_obj(
         self, obj, exclude=None, classnames_add=None, classnames_exclude=None
@@ -108,9 +117,11 @@ class MembersButtonHelper(ButtonHelper):
         if 'ssh_button' not in (exclude or []) and obj.is_online():
             if current_user.is_superuser:
                 buttons.append(self.ssh_button(obj))
+                buttons.append(self.web_button(obj))
             else:
                 if current_user.organization.features.ssh:
                     buttons.append(self.ssh_button(obj))
+                    buttons.append(self.web_button(obj))
 
         return buttons
 
