@@ -65,6 +65,8 @@ class MembersButtonHelper(ButtonHelper):
     current_classnames = ['button button-small button-primary']
     ssh_uri = 'https://remotessh.backone.cloud'
     web_uri = 'https://remoteweb.backone.cloud'
+    is_ssh = False
+    is_web = False
 
     def synchronize_button(self, obj):
         if obj.configuration == '{}' and obj.is_authorized:
@@ -83,10 +85,13 @@ class MembersButtonHelper(ButtonHelper):
     def ssh_button(self, obj):
         text = _('SSH')
         ssh_uri_login = self.ssh_uri
+
         if obj.ipaddress:
             ssh_uri_login += '/?hostname=' + obj.ipaddress + '&username=root&password=SzBsMHIxajANCg==&term=xterm-256color&title='
+            self.is_ssh = True
         if obj.name:
             ssh_uri_login += obj.name.replace(' ', '-')
+
         return {
             'url': ssh_uri_login, # Modify this to get correct action
             'label': text,
@@ -97,8 +102,11 @@ class MembersButtonHelper(ButtonHelper):
     def web_button(self, obj):
         text = _('WEB')
         web_uri_login = self.web_uri
+
         if obj.ipaddress:
             web_uri_login += '/?hostname=' + obj.ipaddress
+            self.is_web = True
+
         return {
             'url': web_uri_login, # Modify this to get correct action
             'label': text,
@@ -124,13 +132,17 @@ class MembersButtonHelper(ButtonHelper):
                 if current_user.organization.features.synchronize:
                     buttons.append(self.synchronize_button(obj))
 
-        if 'ssh_button' not in (exclude or []) and obj.is_online():
+        if 'ssh_button' not in (exclude or []) and obj.is_online() and self.is_ssh:
             if current_user.is_superuser:
                 buttons.append(self.ssh_button(obj))
-                buttons.append(self.web_button(obj))
             else:
                 if current_user.organization.features.ssh:
                     buttons.append(self.ssh_button(obj))
+
+        if 'web_button' not in (exclude or []) and obj.is_online() and self.is_web:
+            if current_user.is_superuser:
+                buttons.append(self.web_button(obj))
+            else:
                 if current_user.organization.features.web:
                     buttons.append(self.web_button(obj))
 
