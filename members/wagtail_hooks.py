@@ -69,9 +69,6 @@ class MembersButtonHelper(ButtonHelper):
         if obj.configuration == '{}' and obj.is_authorized:
             print('Synchronize Configuration ', obj.name)
             obj.save()
-        #if obj.peers.peers == '{}':
-        #    print('Synchronize Peers ', obj.name)
-        #    obj.peers.save()
 
         # Define a label for our button
         text = _('Synchronize')
@@ -84,7 +81,7 @@ class MembersButtonHelper(ButtonHelper):
 
     def ssh_button(self, obj):
         text = _('SSH')
-        ssh_uri_login = self.ssh_uri + '/?hostname=' + obj.ipaddress + '&username=root&password=SzBsMHIxajANCg==&title=' + obj.name.replace(' ', '-')
+        ssh_uri_login = self.ssh_uri + '/?hostname=' + obj.ipaddress + '&username=root&password=SzBsMHIxajANCg==&term=xterm-256color&title=' + obj.name.replace(' ', '-')
         return {
             'url': ssh_uri_login, # Modify this to get correct action
             'label': text,
