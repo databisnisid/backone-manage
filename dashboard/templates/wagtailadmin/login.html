@@ -5,7 +5,12 @@
 
 {% block furniture %}
     <main class="content-wrapper" id="main">
+        <!--
         <h1>{% block branding_login %}{% trans "BackOne Manage" %}{% endblock %}</h1>
+        -->
+            <div class="login-logo" style="width: 20rem;">
+                <img src="{% versioned_static 'dashboard/images/backone-manage-alt.png' %}" alt=""/>
+            </div>
 
         <div class="messages" role="status">
             {# Always show messages div so it can be appended to by JS #}
@@ -58,12 +63,11 @@
         {% block below_login %}{% endblock %}
 
         {% block branding_logo %}
+        <!--
             <div class="login-logo">
-                <!--
                 <img src="{% versioned_static 'wagtailadmin/images/wagtail-logo.svg' %}" alt=""/>
-                -->
-                <img src="{% versioned_static 'dashboard/images/backone-manage-new.png' %}" alt=""/>
             </div>
+        -->
         {% endblock %}
     </main>
 {% endblock %}
