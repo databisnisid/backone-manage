@@ -96,7 +96,7 @@ class MembersButtonHelper(ButtonHelper):
     def get_buttons_for_obj(
         self, obj, exclude=None, classnames_add=None, classnames_exclude=None
     ):
-        current_user = get_current_user
+        current_user = get_current_user()
         """
         This function is used to gather all available buttons.
         We append our custom button to the btns list.
