@@ -187,7 +187,7 @@ class MembersAdmin(ModelAdmin):
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('name', 'member_id', 'is_authorized', 'list_ipaddress', 'network',
-                    'member_status', 'list_peers', 'network.controller')
+                    'member_status', 'list_peers',)
     list_filter = ('network',)
     search_fields = ('name', 'member_id', 'ipaddress',)
     #edit_view_class = MembersView
