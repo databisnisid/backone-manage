@@ -271,14 +271,14 @@ class Members(models.Model):
     is_online.short_description = _('Online')
 
     def model_release(self):
+        text = None
         try:
             mqtt = Mqtt.objects.get(member_id=self.member_id)
             model = mqtt.model
             release_version = mqtt.release_version
+            text = format_html("<small>{}<br />({})</small>", model, release_version)
         except ObjectDoesNotExist:
             model = release_version = '-'
-
-        text = format_html("<small>{}<br />({})</small>", model, release_version)
 
         return text
     model_release.short_description = _('Model Release')
