@@ -7,6 +7,11 @@
 	python manage.py migrate
 	python manage createsuperuser
 
+## Running
+	- Modify .env -> Copy from env.example
+	- source /venv/bin/activate
+	- ./start.ds (use screen to run as daemon)
+
 ## Settings
 	- Login as superuser
 	- Create Controllter
@@ -14,10 +19,6 @@
 	- Create Organizations
 	- Create user with Organizations
 	
-## Running
-	- source /venv/bin/activate
-	- ./start.ds
-
 ## MQTT
 	- Running MQTT workers
 
