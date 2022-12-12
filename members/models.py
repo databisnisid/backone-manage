@@ -9,6 +9,7 @@ from config.utils import to_dictionary
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from crum import get_current_user
+from mqtt.models import Mqtt
 
 
 class MemberPeers(models.Model):
@@ -268,3 +269,16 @@ class Members(models.Model):
             online_status = True
         return online_status
     is_online.short_description = _('Online')
+
+    def model_release(self):
+        try:
+            mqtt = Mqtt.objects.get(member_id=self.member_id)
+            model = mqtt.model
+            release_version = mqtt.release_version
+        except ObjectDoesNotExist:
+            model = release = '-'
+
+        text = format_html("<small>{}<br />({})</small>", model, release_version)
+
+        return text
+    model_release.short_description = _('Model Release')
