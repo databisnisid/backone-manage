@@ -276,7 +276,7 @@ class Members(models.Model):
             model = mqtt.model
             release_version = mqtt.release_version
         except ObjectDoesNotExist:
-            model = release = '-'
+            model = release_version = '-'
 
         text = format_html("<small>{}<br />({})</small>", model, release_version)
 
