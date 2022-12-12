@@ -10,7 +10,7 @@ class MqttAdmin(ModelAdmin):
     model = Mqtt
     inspect_view_enabled = True
     menu_label = 'MQTT'  # ditch this to use verbose_name_plural from model
-    menu_icon = 'link'  # change as required
+    menu_icon = 'doc-full'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('member_id', 'model', 'board_name',
