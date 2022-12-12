@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'controllers',
     'networks',
     'members',
+    'mqtt',
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.embeds',
@@ -181,3 +182,9 @@ WAGTAIL_USER_CUSTOM_FIELDS = ['organization']
 # WAGTAIL 4.1
 WAGTAIL_ENABLE_WHATS_NEW_BANNER = False
 
+# MQTT
+MQTT_USER = str(os.getenv('MQTT_USER'))
+MQTT_PASS = str(os.getenv('MQTT_PASS'))
+MQTT_HOST = str(os.getenv('MQTT_HOST'))
+MQTT_PORT = str(os.getenv('MQTT_PORT'))
+MQTT_TOPIC_PRESENCE = str(os.getenv('MQTT_TOPIC_PRESENCE'))

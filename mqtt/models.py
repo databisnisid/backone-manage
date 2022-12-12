@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext as _
 
 
 class Mqtt(models.Model):
@@ -20,3 +21,4 @@ class Mqtt(models.Model):
 
     def __str__(self):
         return '{}'.format(self.member_id)
+
