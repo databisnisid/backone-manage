@@ -214,8 +214,8 @@ class Members(models.Model):
             ipaddress_list = self.ipaddress.split(',')
             text = format_html('<br />'.join([str(p) for p in ipaddress_list]))
 
-        text = '<small>' + text + '</small>'
-        return text
+        #return text
+        return format_html('<small>' + text + '</small>')
     list_ipaddress.short_description = _('IP Address')
 
     def list_peers(self):
