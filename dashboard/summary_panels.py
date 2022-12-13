@@ -121,7 +121,9 @@ class MemberChartsPanel(Component):
             members = Members.objects.filter(organization=user.organization)
 
         for member in members:
-            peers = to_dictionary(member.peers.peers)
+            peers = to_dictionary('{}')
+            if member.peers:
+                peers = to_dictionary(member.peers.peers)
 
             if 'paths' in peers and len(peers['paths']) != 0:
                 version = str(peers['version'])
