@@ -258,9 +258,12 @@ class Members(models.Model):
             if self.member_id == controller_configuration['address']:
                 version = controller_configuration['version']
                 text = format_html("<small style='color: blue;'>CONTROLLER ({})</small>", version)
-            elif 'role' in self.peers.peers and 'latency' in self.peers.peers \
+            elif self.peers: 
+                if 'role' in self.peers.peers and 'latency' in self.peers.peers \
                     and 'version' in self.peers.peers: # and int(self.peers.peers['latency']) == -1:
-                text = format_html("<small style='color: green;'>RELAY ({})</small>", peers['version'])
+                    text = format_html("<small style='color: green;'>RELAY ({})</small>", peers['version'])
+                else:
+                    text = format_html("<small style='color: red;'>OFFLINE</small>")
             else:
                 text = format_html("<small style='color: red;'>OFFLINE</small>")
 
