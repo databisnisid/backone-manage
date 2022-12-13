@@ -218,7 +218,9 @@ class Members(models.Model):
     list_ipaddress.short_description = _('IP Address')
 
     def list_peers(self):
-        peers = to_dictionary(self.peers.peers)
+        peers = to_dictionary('{}')
+        if self.peers:
+            peers = to_dictionary(self.peers.peers)
         if 'paths' in peers and len(peers['paths']) != 0:
             paths = peers['paths']
             ip_peers = []
