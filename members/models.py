@@ -1,6 +1,7 @@
 from datetime import datetime
 from crum import get_current_user
 from django.db import models
+from django.utils import timezone
 from accounts.models import User, Organizations
 from networks.models import Networks
 from django.utils.translation import gettext as _
