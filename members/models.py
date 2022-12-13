@@ -235,7 +235,7 @@ class Members(models.Model):
     list_peers.short_description = _('Peers')
 
     def member_status(self):
-        peers = None
+        peers = to_dictionary('{}')
         if self.peers:
             peers = to_dictionary(self.peers.peers)
 
