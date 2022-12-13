@@ -188,8 +188,8 @@ class MembersAdmin(ModelAdmin):
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('name', 'member_id', 'is_authorized', 'list_ipaddress', 'network',
                     'member_status', 'list_peers', 'model_release')
-    list_filter = ('network',)
-    search_fields = ('name', 'member_id', 'ipaddress',)
+    #list_filter = ('network',)
+    search_fields = ('name', 'member_id', 'ipaddress', 'network')
     #edit_view_class = MembersView
     create_template_name = 'modeladmin/create.html'
     edit_template_name = 'modeladmin/edit.html'
