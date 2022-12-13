@@ -186,8 +186,8 @@ class MembersAdmin(ModelAdmin):
     menu_icon = 'list-ul'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    list_display = ('name', 'list_ipaddress', 'is_authorized', 'network',
-                    'member_status', 'list_peers', 'model_release')
+    list_display = ('name', 'network', 'list_ipaddress',
+                    'member_status', 'list_peers', 'model_release', 'is_authorized', )
     list_filter = ('network',)
     search_fields = ('name', 'member_id', 'ipaddress',)
     #edit_view_class = MembersView
