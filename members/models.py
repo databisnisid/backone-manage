@@ -236,7 +236,7 @@ class Members(models.Model):
 
     def member_status(self):
         peers = None
-        if self.peers.peers:
+        if self.peers:
             peers = to_dictionary(self.peers.peers)
 
         if 'paths' in peers and len(peers['paths']) != 0:
