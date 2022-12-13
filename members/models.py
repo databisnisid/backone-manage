@@ -235,7 +235,10 @@ class Members(models.Model):
     list_peers.short_description = _('Peers')
 
     def member_status(self):
-        peers = to_dictionary(self.peers.peers)
+        peers = None
+        if self.peers.peers:
+            peers = to_dictionary(self.peers.peers)
+
         if 'paths' in peers and len(peers['paths']) != 0:
             version = peers['version']
             latency = peers['latency']
