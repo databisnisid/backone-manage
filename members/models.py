@@ -275,7 +275,9 @@ class Members(models.Model):
 
     def is_online(self):
         online_status = False
-        peers = to_dictionary(self.peers.peers)
+        peers = to_dictionary('{}')
+        if self.peers:
+            peers = to_dictionary(self.peers.peers)
         if 'paths' in peers and len(peers['paths']) != 0 and self.ipaddress:
             online_status = True
         return online_status
@@ -302,8 +304,8 @@ class Members(models.Model):
             mqtt = Mqtt.objects.get(member_id=self.member_id)
             model = mqtt.model
             release_version = mqtt.release_version
-            now = timezone.now()
-            delta = now - mqtt.updated_at
+            #now = timezone.now()
+            #delta = now - mqtt.updated_at
             #if delta.minutes < 660:
             if self.is_mqtt_online:
                 text = format_html("<small style='color: green;'>{}<br />({})</small>", model, release_version)
