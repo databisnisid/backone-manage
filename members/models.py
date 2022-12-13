@@ -252,7 +252,8 @@ class Members(models.Model):
                                version, peers['role'], str(latency), direct_or_relay)
         else:
             controller_configuration = to_dictionary(self.network.controller.configuration)
-            peers = to_dictionary(self.peers.peers)
+            if self.peers:
+                peers = to_dictionary(self.peers.peers)
 
             if self.member_id == controller_configuration['address']:
                 version = controller_configuration['version']
