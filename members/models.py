@@ -1,3 +1,5 @@
+from datetime import datetime
+from crum import get_current_user
 from django.db import models
 from accounts.models import User, Organizations
 from networks.models import Networks
@@ -8,7 +10,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from config.utils import to_dictionary
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
-from crum import get_current_user
 from mqtt.models import Mqtt
 
 
@@ -265,10 +266,25 @@ class Members(models.Model):
     def is_online(self):
         online_status = False
         peers = to_dictionary(self.peers.peers)
-        if 'paths' in peers and len(peers['paths']) != 0:
+        if 'paths' in peers and len(peers['paths']) != 0 and self.ipaddress:
             online_status = True
         return online_status
-    is_online.short_description = _('Online')
+    is_online.short_description = _('BackOne Online')
+
+    def is_mqtt_online(self):
+        online_status = False
+        try:
+            mqtt = Mqtt.objects.get(member_id=self.member_id)
+            now = timezone.now()
+            delta = now - mqtt.updated_at
+            if delta.minutes < 660:
+               online_status = True
+        except ObjectDoesNotExist:
+            pass
+
+        return online_status
+    is_mqtt_online.short_description = _('Internet Online')
+
 
     def model_release(self):
         text = None
@@ -276,10 +292,17 @@ class Members(models.Model):
             mqtt = Mqtt.objects.get(member_id=self.member_id)
             model = mqtt.model
             release_version = mqtt.release_version
-            text = format_html("<small>{}<br />({})</small>", model, release_version)
+            now = timezone.now()
+            delta = now - mqtt.updated_at
+            #if delta.minutes < 660:
+            if self.is_mqtt_online:
+                text = format_html("<small style='color: green;'>{}<br />({})</small>", model, release_version)
+            else:
+                text = format_html("<small style='color: red;'>{}<br />({})</small>", model, release_version)
         except ObjectDoesNotExist:
             pass
             #model = release_version = None
 
         return text
     model_release.short_description = _('Model Release')
+
