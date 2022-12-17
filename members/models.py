@@ -290,7 +290,7 @@ class Members(models.Model):
             mqtt = Mqtt.objects.get(member_id=self.member_id)
             now = timezone.now()
             delta = now - mqtt.updated_at
-            if delta.minutes < 660:
+            if delta.seconds < 660:
                online_status = True
         except ObjectDoesNotExist:
             pass
