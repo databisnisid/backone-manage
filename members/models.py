@@ -308,7 +308,7 @@ class Members(models.Model):
             #now = timezone.now()
             #delta = now - mqtt.updated_at
             #if delta.minutes < 660:
-            if self.is_mqtt_online:
+            if self.is_mqtt_online():
                 text = format_html("<small style='color: green;'>{}<br />({})</small>", model, release_version)
             else:
                 text = format_html("<small style='color: red;'>{}<br />({})</small>", model, release_version)
