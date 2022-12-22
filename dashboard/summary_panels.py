@@ -214,7 +214,7 @@ class ModelChartsPanel(Component):
             labels_model.append(model['model'])
             data_model.append(model['mcount'])
             backgroundColor_model.append('rgba({}, {}, {}, 0.7'.format(
-                randint(0, 100), 125, randint(100, 255)))
+                randint(0, 100), 88, randint(100, 255)))
 
         for version in self.version:
             labels_version.append(version['release_version'])
@@ -226,6 +226,8 @@ class ModelChartsPanel(Component):
         context['labels_version'] = labels_version
         context['data_model'] = data_model
         context['data_version'] = data_version
+        context['backgroundColor_model'] = backgroundColor_model
+        context['backgroundColor_version'] = backgroundColor_version
         context['chart_title_model'] = 'Model Distribution'
         context['chart_title_version'] = 'Platform Distribution'
         context['is_data_model'] = True
