@@ -228,6 +228,8 @@ class ModelChartsPanel(Component):
         context['data_version'] = data_version
         context['chart_title_model'] = 'Model Distribution'
         context['chart_title_version'] = 'Platform Distribution'
+        context['is_data_model'] = True
+        context['is_data_version'] = True
 
 
         return context
