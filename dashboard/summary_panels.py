@@ -1,6 +1,8 @@
 from wagtail.admin.ui.components import Component
+from django.db.models import Count
 from networks.models import Networks, NetworkRoutes
 from members.models import Members
+from mqtt.models import Mqtt
 from crum import get_current_user
 from random import randint
 from django.utils.translation import gettext as _
@@ -187,3 +189,46 @@ class MemberChartsPanel(Component):
         context['is_data_version'] = is_data_version
 
         return context
+
+
+class ModelChartsPanel(Component):
+    order = 80
+    template_name = "dashboard/models_charts.html"
+
+    def __init__(self):
+        #user = get_current_user()
+        self.model = (Mqtt.objects.values('model').annotate(mcount=Count('model')).order_by())
+        self.version = (Mqtt.objects.values('release_version').annotate(mcount=Count('release_version')).order_by())
+
+    def get_context_data(self, parent_context):
+        context = super().get_context_data(parent_context)
+
+        labels_model = []
+        data_model = []
+        backgroundColor_model = []
+        labels_version = []
+        data_version = []
+        backgroundColor_version = []
+
+        for model in self.model:
+            labels_model.append(model['model'])
+            data_model.append(model['mcount'])
+            backgroundColor_model.append('rgba({}, {}, {}, 0.7'.format(
+                randint(0, 100), 125, randint(100, 255)))
+
+        for version in self.version:
+            labels_version.append(version['release_version'])
+            data_version.append(model['mcount'])
+            backgroundColor_version.append('rgba({}, {}, {}, 0.7'.format(
+                randint(0, 200), 200, randint(200, 255)))
+
+        context['labels_model'] = labels_model
+        context['labels_version'] = labels_version
+        context['data_model'] = data_model
+        context['data_version'] = data_version
+        context['chart_title_model'] = 'Model Distribution'
+        context['chart_title_version'] = 'Platform Distribution'
+
+
+        return context
+
