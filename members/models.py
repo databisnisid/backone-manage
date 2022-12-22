@@ -311,7 +311,7 @@ class Members(models.Model):
             if self.is_mqtt_online():
                 text = format_html("<small style='color: green;'>{}<br />({})</small>", model, release_version)
             else:
-                text = format_html("<small style='color: red;'>{}<br />({})</small>", model, release_version)
+                text = format_html("<small style='color: red;'>{}<br />({})<br /></small>", model, release_version, updated_at)
         except ObjectDoesNotExist:
             pass
             #model = release_version = None
