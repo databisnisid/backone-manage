@@ -305,13 +305,14 @@ class Members(models.Model):
             mqtt = Mqtt.objects.get(member_id=self.member_id)
             model = mqtt.model
             release_version = mqtt.release_version
+            updated_at = mqtt.updated_at.strftime("%d-%m-%Y, %H:%M:%S")
             #now = timezone.now()
             #delta = now - mqtt.updated_at
             #if delta.minutes < 660:
             if self.is_mqtt_online():
                 text = format_html("<small style='color: green;'>{}<br />({})</small>", model, release_version)
             else:
-                text = format_html("<small style='color: red;'>{}<br />({})<br />{}</small>", model, release_version, mqtt.updated_at)
+                text = format_html("<small style='color: red;'>{}<br />({})<br />{}</small>", model, release_version, updated_at)
         except ObjectDoesNotExist:
             pass
             #model = release_version = None
