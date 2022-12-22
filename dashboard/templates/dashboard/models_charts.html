@@ -27,8 +27,8 @@
 {% block extra_js %}
 <script>
 
-const member_ctx1 = document.getElementById('chart_models_1').getContext('2d');
-const member_myChart1 = new Chart(member_ctx1, {
+const model_ctx1 = document.getElementById('chart_models_1').getContext('2d');
+const model_myChart1 = new Chart(model_ctx1, {
     type: 'doughnut',
     data: {
         labels: [{% for label in labels_model %}'{{ label | escape }}',{% endfor %}],
@@ -55,8 +55,8 @@ const member_myChart1 = new Chart(member_ctx1, {
   },
 });
 
-const member_ctx2 = document.getElementById('chart_models_2').getContext('2d');
-const member_myChart2 = new Chart(member_ctx2, {
+const model_ctx2 = document.getElementById('chart_models_2').getContext('2d');
+const model_myChart2 = new Chart(model_ctx2, {
     type: 'doughnut',
     data: {
         labels: [{% for label in labels_version %}'{{ label | escape }}',{% endfor %}],
