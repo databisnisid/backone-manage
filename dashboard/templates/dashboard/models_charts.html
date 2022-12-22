@@ -33,7 +33,7 @@ const model_myChart1 = new Chart(model_ctx1, {
     data: {
         labels: [{% for label in labels_model %}'{{ label | escape }}',{% endfor %}],
         datasets: [{
-            label: '# of Votes',
+            label: '# ',
             data: {{ data_model }},
             backgroundColor: [
                 {% for color in backgroundColor_model %}'{{ color | escape }}',{% endfor %}
@@ -61,7 +61,7 @@ const model_myChart2 = new Chart(model_ctx2, {
     data: {
         labels: [{% for label in labels_version %}'{{ label | escape }}',{% endfor %}],
         datasets: [{
-            label: '# of Votes',
+            label: '# ',
             data: {{ data_version }},
             backgroundColor: [
                 {% for color in backgroundColor_version %}'{{ color | escape }}',{% endfor %}

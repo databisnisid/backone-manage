@@ -30,7 +30,7 @@ const myChart1 = new Chart(ctx1, {
     data: {
         labels: [{% for label in labels %}'{{ label | escape }}',{% endfor %}],
         datasets: [{
-            label: '# of Votes',
+            label: '# ',
             data: {{ data_route }},
             backgroundColor: [
                 {% for color in backgroundColor_route %}'{{ color | escape }}',{% endfor %}
@@ -58,7 +58,7 @@ const myChart2 = new Chart(ctx2, {
     data: {
         labels: [{% for label in labels %}'{{ label | escape }}',{% endfor %}],
         datasets: [{
-            label: '# of Votes',
+            label: '# ',
             data: {{ data_member }},
             backgroundColor: [
                 {% for color in backgroundColor_member %}'{{ color | escape }}',{% endfor %}
