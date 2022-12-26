@@ -7,6 +7,7 @@ from crum import get_current_user
 from random import randint
 from django.utils.translation import gettext as _
 from config.utils import to_dictionary
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class NetworksChartsPanel(Component):
