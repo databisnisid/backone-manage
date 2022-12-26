@@ -191,6 +191,28 @@ class MemberChartsPanel(Component):
         return context
 
 
+class MembersProblemPanel(Component):
+    order = 55
+    template_name = "dashboard/members_problem.html"
+
+    def __init__(self):
+        self.members_problem = []
+        members = Members.objects.all()
+        for member in members:
+            if member.is_online() and not member.is_mqtt_online():
+                try:
+                    Mqtt.objects.get(member_id=member.member_id)
+                    self.members_problem.append(member)
+                except ObjectDoesNotExist:
+                    pass
+
+    def get_context_data(self, parent_context):
+        context = super().get_context_data(parent_context)
+
+        context['members_problem'] = self.members_problem
+        return context
+
+
 class ModelChartsPanel(Component):
     order = 80
     template_name = "dashboard/models_charts.html"

@@ -61,6 +61,7 @@ def add_another_welcome_panel(request, panels):
     panels[:] = [panel for panel in panels if panel.name != "locked_pages"]
 
     panels.append(NetworksSummaryPanel())
+    panels.append(MembersProblemPanel())
     panels.append(NetworksChartsPanel())
     panels.append(MemberChartsPanel())
     panels.append(ModelChartsPanel())

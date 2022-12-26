@@ -1,0 +1,23 @@
+{% load i18n wagtailadmin_tags %}
+    {% if members_problem %}
+    <section class="panel summary nice-padding">
+        <h2>{% trans "Members Problem" %}</h2>
+        <table class="listing full-width">
+            {% for member in members_problem %}
+            <tr>
+                <td class="title nowrap">
+                    {{ member.name }}
+                </td>
+                <td class="title">
+                    {{ member.member_id}}
+                </td>
+                <td class="title">
+                    {{ member.network }}
+                </td>
+            </tr>
+            {% endfor %}
+
+        </table>
+    </section>
+    {% endif %}
+
