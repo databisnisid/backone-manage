@@ -37,6 +37,7 @@ def hide_snippets_menu_item(request, menu_items):
         menu_items[:] = [item for item in menu_items if item.name != 'network-rules']
     if not request.user.is_superuser:
         menu_items[:] = [item for item in menu_items if item.name != 'memberpeers']
+        menu_items[:] = [item for item in menu_items if item.name != 'controllers']
 
     #for panel in menu_items:
     #    print(panel.name)
