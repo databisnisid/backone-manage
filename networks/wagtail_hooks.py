@@ -125,7 +125,7 @@ class NetworksAdmin(ModelAdmin):
     list_display = ('name', 'network_id', 'ip_allocation', 'controller')
     #list_filter = ('name',)
     search_fields = ('name',)
-    list_filter = ('controller',)
+    #list_filter = ('controller',)
     #base_form_class = NetworksForm
     permission_helper_class = NetworksPermissionHelper
 
