@@ -215,7 +215,11 @@ class Members(models.Model):
             text = format_html('<br />'.join([str(p) for p in ipaddress_list]))
 
         #return text
-        return format_html('<small>' + self.member_id + '<br />' + text + '</small>')
+        return format_html('<small>'
+                           + self.member_id
+                           + '<br />' + text
+                           + '<br />' + self.network + '</small>'
+                           )
     list_ipaddress.short_description = _('ID and IP Address')
 
     def list_peers(self):

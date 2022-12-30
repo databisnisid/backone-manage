@@ -21,26 +21,43 @@ def on_message(client, userdata, message):
     release_version = mqtt_msg[3]
     release_target = mqtt_msg[4]
     ipaddress = mqtt_msg[5]
+
+    try:
+        is_rcall = True if int(mqtt_msq[6]) > 0 else False
+    except IndexError:
+        is_rcall = False
+
+    try:
+        uptime = mqtt_msq[7]
+    except IndexError:
+        uptime = None
+
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
 
     try:
         mqtt_member = Mqtt.objects.get(member_id=member_id)
-        mqtt_member.member_id = member_id
-        mqtt_member.model = model
-        mqtt_member.board_name = board_name
-        mqtt_member.release_version = release_version
-        mqtt_member.release_target = release_target
-        mqtt_member.ipaddress = ipaddress
+        #mqtt_member.member_id = member_id
+        #mqtt_member.model = model
+        #mqtt_member.board_name = board_name
+        #mqtt_member.release_version = release_version
+        #mqtt_member.release_target = release_target
+        #mqtt_member.ipaddress = ipaddress
 
     except ObjectDoesNotExist:
         mqtt_member = Mqtt()
-        mqtt_member.member_id = member_id
-        mqtt_member.model = model
-        mqtt_member.board_name = board_name
-        mqtt_member.release_version = release_version
-        mqtt_member.release_target = release_target
-        mqtt_member.ipaddress = ipaddress
+        #mqtt_member.member_id = member_id
+        #mqtt_member.model = model
+        #mqtt_member.board_name = board_name
+        #mqtt_member.release_version = release_version
+        #mqtt_member.release_target = release_target
+        #mqtt_member.ipaddress = ipaddress
 
+    mqtt_member.member_id = member_id
+    mqtt_member.model = model
+    mqtt_member.board_name = board_name
+    mqtt_member.release_version = release_version
+    mqtt_member.release_target = release_target
+    mqtt_member.ipaddress = ipaddress
     mqtt_member.save()
 
 class Command(BaseCommand):

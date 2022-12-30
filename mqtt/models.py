@@ -11,6 +11,9 @@ class Mqtt(models.Model):
 
     ipaddress = models.GenericIPAddressField(_('IP Address'), blank=True, null=True)
 
+    is_rcall = models.BooleanField(_('RCALL Running'), default=False)
+    uptime = models.CharField(_('Uptime'), max_length=100, blank=True, null=True)
+
     class Meta:
         db_table = 'mqtt'
         verbose_name = 'MQTT'
