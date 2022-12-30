@@ -218,7 +218,7 @@ class Members(models.Model):
         return format_html('<small>'
                            + self.member_id
                            + '<br />' + text
-                           + '<br />' + self.network + '</small>'
+                           + '<br />' + self.network.name + '</small>'
                            )
     list_ipaddress.short_description = _('ID and IP Address')
 
