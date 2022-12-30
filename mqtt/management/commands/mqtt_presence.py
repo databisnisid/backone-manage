@@ -23,12 +23,12 @@ def on_message(client, userdata, message):
     ipaddress = mqtt_msg[5]
 
     try:
-        is_rcall = True if int(mqtt_msq[6]) > 0 else False
+        is_rcall = True if int(mqtt_msg[6]) > 0 else False
     except IndexError:
         is_rcall = False
 
     try:
-        uptime = mqtt_msq[7]
+        uptime = mqtt_msg[7]
     except IndexError:
         uptime = None
 
