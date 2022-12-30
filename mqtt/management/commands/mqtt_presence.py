@@ -58,6 +58,8 @@ def on_message(client, userdata, message):
     mqtt_member.release_version = release_version
     mqtt_member.release_target = release_target
     mqtt_member.ipaddress = ipaddress
+    mqtt_member.is_rcall = is_rcall
+    mqtt_member.uptime = uptime
     mqtt_member.save()
 
 class Command(BaseCommand):

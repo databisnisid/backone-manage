@@ -220,7 +220,7 @@ class Members(models.Model):
                            + '<br />' + text
                            + '<br />' + self.network.name + '</small>'
                            )
-    list_ipaddress.short_description = _('ID and IP Address')
+    list_ipaddress.short_description = _('ID, IP and Network')
 
     def list_peers(self):
         peers = to_dictionary('{}')
