@@ -217,10 +217,11 @@ class Members(models.Model):
         is_authorized = "icon-yes.svg" if self.is_authorized else "icon-no.svg"
         #return text
         return format_html('<small>'
-                           + '<strong>' + self.member_id + '</strong>'
-                           + '<img src="/static/admin/img/' + is_authorized + '>'
-                           + '<br />' + text
-                           + '<br />' + self.network.name + '</small>'
+                           + '<strong>{}</strong>'
+                           + "<img src='/static/admin/img/{}'>"
+                           + '<br />{}'
+                           + '<br />{}</small>',
+                           self.member_id, is_authorized, text, self.network.name
                            )
     list_ipaddress.short_description = _('ID, IP and Network')
 
