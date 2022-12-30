@@ -311,13 +311,13 @@ class Members(models.Model):
             release_version = mqtt.release_version
             updated_at = mqtt.updated_at.strftime("%d-%m-%Y, %H:%M:%S")
             #is_rcall = 'R' if mqtt.is_rcall else 'S'
-            is_rcall = "<img src='/static/admin/img/icon-yes.svg' alt='True'>" if mqtt.is_rcall else "<img src='/static/admin/img/icon-no.svg' alt='False'>"
+            is_rcall = "icon-yes.svg" if mqtt.is_rcall else "icon-no.svg"
             uptime = mqtt.uptime
             #now = timezone.now()
             #delta = now - mqtt.updated_at
             #if delta.minutes < 660:
             if self.is_mqtt_online():
-                text = format_html("<small style='color: green;'>{}<br />({}){}<br />{}</small>", model, release_version, is_rcall, uptime)
+                text = format_html("<small style='color: green;'>{}<br />({})<img src='/static/admin/img/{}'><br />{}</small>", model, release_version, is_rcall, uptime)
             else:
                 text = format_html("<small style='color: red;'>{}<br />({})<br />{}</small>", model, release_version, updated_at)
         except ObjectDoesNotExist:
