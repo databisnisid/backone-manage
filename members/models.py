@@ -214,9 +214,11 @@ class Members(models.Model):
             ipaddress_list = self.ipaddress.split(',')
             text = format_html('<br />'.join([str(p) for p in ipaddress_list]))
 
+        is_authorized = "icon-yes.svg" if self.is_authorized else "icon-no.svg"
         #return text
         return format_html('<small>'
                            + '<strong>' + self.member_id + '</strong>'
+                           + '<img src="/static/admin/img/' + is_authorized
                            + '<br />' + text
                            + '<br />' + self.network.name + '</small>'
                            )
