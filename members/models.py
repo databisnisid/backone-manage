@@ -216,7 +216,7 @@ class Members(models.Model):
 
         #return text
         return format_html('<small>'
-                           + self.member_id
+                           + '<strong>' + self.member_id + '</strong>'
                            + '<br />' + text
                            + '<br />' + self.network.name + '</small>'
                            )
