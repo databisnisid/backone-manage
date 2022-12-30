@@ -218,7 +218,7 @@ class Members(models.Model):
         #return text
         return format_html('<small>'
                            + '<strong>' + self.member_id + '</strong>'
-                           + '<img src="/static/admin/img/' + is_authorized
+                           + '<img src="/static/admin/img/' + is_authorized + '>'
                            + '<br />' + text
                            + '<br />' + self.network.name + '</small>'
                            )
