@@ -32,6 +32,11 @@ def on_message(client, userdata, message):
     except IndexError:
         uptime = None
 
+    try:
+        serialnumber = mqtt_msg[8]
+    except IndexError:
+        serialnumber = None
+
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
 
     try:
@@ -60,6 +65,7 @@ def on_message(client, userdata, message):
     mqtt_member.ipaddress = ipaddress
     mqtt_member.is_rcall = is_rcall
     mqtt_member.uptime = uptime
+    mqtt_member.serialnumber = serialnumber
     mqtt_member.save()
 
 class Command(BaseCommand):

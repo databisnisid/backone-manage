@@ -13,6 +13,7 @@ class Mqtt(models.Model):
 
     is_rcall = models.BooleanField(_('RCALL Running'), default=False)
     uptime = models.CharField(_('Uptime'), max_length=100, blank=True, null=True)
+    serialnumber = models.CharField(_('SN'), max_length=100, blank=True, null=True)
 
     class Meta:
         db_table = 'mqtt'
