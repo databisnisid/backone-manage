@@ -314,7 +314,7 @@ class Members(models.Model):
             release_version = mqtt.release_version
             updated_at = mqtt.updated_at.strftime("%d-%m-%Y, %H:%M:%S")
             #is_rcall = 'R' if mqtt.is_rcall else 'S'
-            is_rcall = "icon-yes.svg" if mqtt.is_rcall else "icon-no.svg"
+            is_rcall = "icon-yes.svg" if mqtt.is_rcall else None
             uptime = mqtt.uptime
             #now = timezone.now()
             #delta = now - mqtt.updated_at
