@@ -318,7 +318,7 @@ class Members(models.Model):
             uptime = mqtt.uptime
             serialnumber = mqtt.serialnumber
 
-            second_line = serialnumber + ' - ' release_version if serialnumber else release_version
+            second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
             #now = timezone.now()
             #delta = now - mqtt.updated_at
             #if delta.minutes < 660:
