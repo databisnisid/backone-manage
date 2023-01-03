@@ -326,7 +326,7 @@ class Members(models.Model):
                 #text = format_html("<small style='color: green;'>{}<br />{} - {} <img src='/static/admin/img/{}'><br />{}</small>", model, serialnumber, release_version, is_rcall, uptime)
                 text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />{}</small>", model, second_line, is_rcall, uptime)
             else:
-                text = format_html("<small style='color: red;'>{}<br />{} <br />{}</small>", model, second_line updated_at)
+                text = format_html("<small style='color: red;'>{}<br />{} <br />{}</small>", model, second_line, updated_at)
         except ObjectDoesNotExist:
             pass
             #model = release_version = None
