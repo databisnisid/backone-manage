@@ -218,7 +218,7 @@ class Members(models.Model):
         #return text
         return format_html('<small>'
                            + '<strong>{}</strong>'
-                           + "<img src='/static/admin/img/{}'>"
+                           + " <img src='/static/admin/img/{}'>"
                            + '<br />{}'
                            + '<br />{}</small>',
                            self.member_id, is_authorized, text, self.network.name
@@ -321,13 +321,13 @@ class Members(models.Model):
             #delta = now - mqtt.updated_at
             #if delta.minutes < 660:
             if self.is_mqtt_online():
-                text = format_html("<small style='color: green;'>{}<br />{}({})<img src='/static/admin/img/{}'><br />{}</small>", model, serialnumber, release_version, is_rcall, uptime)
+                text = format_html("<small style='color: green;'>{}<br />{} - {} <img src='/static/admin/img/{}'><br />{}</small>", model, serialnumber, release_version, is_rcall, uptime)
             else:
-                text = format_html("<small style='color: red;'>{}<br />{}({})<br />{}</small>", model, serialnumber, release_version, updated_at)
+                text = format_html("<small style='color: red;'>{}<br />{} - {} <br />{}</small>", model, serialnumber, release_version, updated_at)
         except ObjectDoesNotExist:
             pass
             #model = release_version = None
 
         return text
-    model_release.short_description = _('Model Release')
+    model_release.short_description = _('Model, SN, Release')
 
