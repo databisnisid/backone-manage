@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from mqtt.models import Mqtt
+from members.models import Members
 
 
 def on_connect(client, userdata, keepalive, bind_address):
@@ -41,32 +42,54 @@ def on_message(client, userdata, message):
 
     try:
         mqtt_member = Mqtt.objects.get(member_id=member_id)
-        #mqtt_member.member_id = member_id
-        #mqtt_member.model = model
-        #mqtt_member.board_name = board_name
-        #mqtt_member.release_version = release_version
-        #mqtt_member.release_target = release_target
-        #mqtt_member.ipaddress = ipaddress
 
     except ObjectDoesNotExist:
         mqtt_member = Mqtt()
-        #mqtt_member.member_id = member_id
-        #mqtt_member.model = model
-        #mqtt_member.board_name = board_name
-        #mqtt_member.release_version = release_version
-        #mqtt_member.release_target = release_target
-        #mqtt_member.ipaddress = ipaddress
+        mqtt_member.member_id = member_id
 
-    mqtt_member.member_id = member_id
-    mqtt_member.model = model
-    mqtt_member.board_name = board_name
-    mqtt_member.release_version = release_version
-    mqtt_member.release_target = release_target
-    mqtt_member.ipaddress = ipaddress
-    mqtt_member.is_rcall = is_rcall
-    mqtt_member.uptime = uptime
-    mqtt_member.serialnumber = serialnumber
-    mqtt_member.save()
+    is_save = False
+
+    if mqtt_member.model != model:
+        mqtt_member.model = model
+        is_save = True
+
+    if mqtt_member.board_name != board_name:
+        mqtt_member.board_name = board_name
+        is_save = True
+
+    if mqtt_member.release_version != release_version:
+        mqtt_member.release_version = release_version
+        is_save = True
+
+    if mqtt_member.release_target != release_target:
+        mqtt_member.release_target = release_target
+        is_save = True
+
+    if mqtt_member.ipaddress != ipaddress:
+        mqtt_member.ipaddress = ipaddress
+        is_save = True
+
+    if mqtt_member.is_rcall != is_rcall:
+        mqtt_member.is_rcall = is_rcall
+        is_save = True
+
+    if mqtt_member.uptime != uptime:
+        mqtt_member.uptime = uptime
+        is_save = True
+
+    if mqtt_member.serialnumber != serialnumber:
+        mqtt_member.serialnumber = serialnumber
+        is_save = True
+
+    if is_save:
+        mqtt_member.save()
+
+    members = Members.objects.filter(member_id=member_id)
+    for member in members:
+        if member.serialnumber != serialnumber:
+            member.serialnumber = serialnumber
+            member.save()
+
 
 class Command(BaseCommand):
     help = 'Daemon to receive MQTT Presence Message'
