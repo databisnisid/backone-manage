@@ -44,15 +44,15 @@ def get_string_between(start, end, s):
 
 
 def get_uptime_string(string):
-    start = 'up '
-    end = ', load'
-    return get_string_between(start, end, string)
+    upstart = 'up '
+    upend = ', load'
+    return get_string_between(upstart, upend, string)
 
 
 def get_load_string(string):
-    start = 'average: '
-    end = ''
-    return get_string_between(start, end, string)
+    loadstart = 'average: '
+    loadend = ''
+    return get_string_between(loadstart, loadend, string)
 
 
 def get_cpu_usage(string, cpu):
