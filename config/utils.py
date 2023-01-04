@@ -54,3 +54,9 @@ def get_load_string(string):
     end = ''
     return get_string_between(start, end, string)
 
+
+def get_cpu_usage(string, cpu):
+    load = get_load_string(string)
+    load_split = load.split(',')
+    return float(load_split[0])/cpu*100, float(load_split[1])/cpu*100, float(load_split[2])/cpu*100
+

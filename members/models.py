@@ -8,7 +8,7 @@ from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
-from config.utils import to_dictionary
+from config.utils import to_dictionary, get_cpu_usage, get_uptime_string
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
@@ -319,14 +319,21 @@ class Members(models.Model):
             is_rcall = "icon-yes.svg" if mqtt.is_rcall else "icon-no.svg"
             uptime = mqtt.uptime
             serialnumber = mqtt.serialnumber
+            num_core = mqtt.num_core
+            memory_usage = mqtt.memory_usage
 
             second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
             #now = timezone.now()
             #delta = now - mqtt.updated_at
             #if delta.minutes < 660:
+            if uptime:
+                load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
+            else:
+                load_1, load_5, load_15 = 0.0
+
             if self.is_mqtt_online():
                 #text = format_html("<small style='color: green;'>{}<br />{} - {} <img src='/static/admin/img/{}'><br />{}</small>", model, serialnumber, release_version, is_rcall, uptime)
-                text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />{}</small>", model, second_line, is_rcall, uptime)
+                text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />{}<br />UP: {} - CPU: {}% - MEM: {}%</small>", model, second_line, is_rcall, uptime, get_uptime_string(uptime), load_15, memory_usage)
             else:
                 text = format_html("<small style='color: red;'>{}<br />{} <br />{}</small>", model, second_line, updated_at)
         except ObjectDoesNotExist:
