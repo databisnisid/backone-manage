@@ -36,11 +36,11 @@ def get_user():
     return user
 
 
-def get_string_between(start, end, s):
-    if s is None:
+def get_string_between(start, end, susu):
+    if susu is None:
         return ''
     else:
-        return s[s.find(start)+len(start):s.rfind(end)]
+        return susu[susu.find(start)+len(start):susu.rfind(end)]
 
 
 def get_uptime_string(uptime_string):
