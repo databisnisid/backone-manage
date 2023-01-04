@@ -14,6 +14,8 @@ class Mqtt(models.Model):
     is_rcall = models.BooleanField(_('RCALL Running'), default=False)
     uptime = models.CharField(_('Uptime'), max_length=100, blank=True, null=True)
     serialnumber = models.CharField(_('SN'), max_length=100, blank=True, null=True)
+    num_core = models.IntegerField(_('Number of Core'), default=1)
+    memory_usage = models.FloatField(_('Memory Usage'), default=0.0)
 
     class Meta:
         db_table = 'mqtt'

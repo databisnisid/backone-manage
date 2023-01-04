@@ -34,3 +34,23 @@ def get_user():
             user = None
 
     return user
+
+
+def get_string_between(start, end, s):
+    if s is None:
+        return ''
+    else:
+        return s[s.find(start)+len(start):s.rfind(end)]
+
+
+def get_uptime_string(string):
+    start = 'up '
+    end = ', load'
+    return get_string_between(start, end, string)
+
+
+def get_load_string(string):
+    start = 'average: '
+    end = ''
+    return get_string_between(start, end, string)
+
