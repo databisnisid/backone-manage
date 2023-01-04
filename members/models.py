@@ -329,7 +329,7 @@ class Members(models.Model):
             if uptime:
                 load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
             else:
-                load_1, load_5, load_15 = 0.0
+                load_1 = load_5 = load_15 = 0.0
 
             if self.is_mqtt_online():
                 #text = format_html("<small style='color: green;'>{}<br />{} - {} <img src='/static/admin/img/{}'><br />{}</small>", model, serialnumber, release_version, is_rcall, uptime)
