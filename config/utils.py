@@ -43,16 +43,16 @@ def get_string_between(start, end, s):
         return s[s.find(start)+len(start):s.rfind(end)]
 
 
-def get_uptime_string(string):
+def get_uptime_string(uptime_string):
     start = 'up '
     end = ', load average:'
-    return get_string_between(start, end, string)
+    return get_string_between(start, end, uptime_string)
 
 
-def get_load_string(string):
+def get_load_string(uptime_string):
     start = 'average: '
     end = ''
-    return get_string_between(start, end, string)
+    return get_string_between(start, end, uptime_string)
 
 
 def get_cpu_usage(string, cpu):

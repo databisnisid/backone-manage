@@ -8,7 +8,7 @@ from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
-from config.utils import to_dictionary, get_cpu_usage, get_uptime_string
+from config.utils import to_dictionary, get_cpu_usage, get_uptime_string, get_string_between
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
