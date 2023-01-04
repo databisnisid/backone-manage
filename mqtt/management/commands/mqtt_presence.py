@@ -39,13 +39,17 @@ def on_message(client, userdata, message):
         serialnumber = None
 
     try:
+        mqtt_msg[9]
         num_core = int(mqtt_msg[9])
-    except IndexError or ValueError:
+    #except IndexError or ValueError:
+    except IndexError:
         num_core = 1
 
     try:
+        mqtt_msg[10]
         memory_usage = float(mqtt_msg[10])
-    except IndexError or ValueError:
+    #except IndexError or ValueError:
+    except IndexError:
         memory_usage = 0.0
 
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
