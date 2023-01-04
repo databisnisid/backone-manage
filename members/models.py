@@ -335,6 +335,9 @@ class Members(models.Model):
                 #text = format_html("<small style='color: green;'>{}<br />{} - {} <img src='/static/admin/img/{}'><br />{}</small>", model, serialnumber, release_version, is_rcall, uptime)
                 #text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />{}<br />UP: {} - CPU: {}% - MEM: {}%</small>", model, second_line, is_rcall, uptime, get_uptime_string(uptime), load_15, memory_usage)
                 text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - CPU: {}% - MEM: {}%</small>", model, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
+                if load_5 > 50 or memory_usage > 50:
+                    text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", model, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
+
             else:
                 text = format_html("<small style='color: red;'>{}<br />{} <br />{}</small>", model, second_line, updated_at)
         except ObjectDoesNotExist:
