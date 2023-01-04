@@ -333,7 +333,7 @@ class Members(models.Model):
 
             if self.is_mqtt_online():
                 #text = format_html("<small style='color: green;'>{}<br />{} - {} <img src='/static/admin/img/{}'><br />{}</small>", model, serialnumber, release_version, is_rcall, uptime)
-                text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />{}<br />UP: {} - CPU: {}% - MEM: {}%</small>", model, second_line, is_rcall, uptime, get_uptime_string(uptime), load_15, memory_usage)
+                text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />{}<br />UP: {} - CPU: {:.1f}% - MEM: {:.1f}%</small>", model, second_line, is_rcall, uptime, get_uptime_string(uptime), load_15, memory_usage)
             else:
                 text = format_html("<small style='color: red;'>{}<br />{} <br />{}</small>", model, second_line, updated_at)
         except ObjectDoesNotExist:
