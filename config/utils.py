@@ -36,22 +36,22 @@ def get_user():
     return user
 
 
-def get_string_between(start, end, susu):
-    if susu is None:
+def get_string_between(start, end, s):
+    if s is None:
         return ''
     else:
-        return susu[susu.find(start)+len(start):susu.rfind(end)]
-
-
-def get_uptime_string(uptime_string):
-    start = 'up '
-    end = ', load average:'
-    return get_string_between(start, end, uptime_string)
+        return s[s.find(start)+len(start):s.rfind(end)]
 
 
 def get_load_string(uptime_string):
     start = 'average: '
     end = ''
+    return get_string_between(start, end, uptime_string)
+
+
+def get_uptime_string(uptime_string):
+    start = 'up '
+    end = ', load average:'
     return get_string_between(start, end, uptime_string)
 
 
