@@ -40,12 +40,12 @@ def on_message(client, userdata, message):
 
     try:
         num_core = int(mqtt_msg[9])
-    except IndexError:
+    except IndexError or ValueError:
         num_core = 1
 
     try:
         memory_usage = float(mqtt_msg[10])
-    except IndexError:
+    except IndexError or ValueError:
         memory_usage = 0.0
 
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
