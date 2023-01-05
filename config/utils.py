@@ -4,6 +4,7 @@ from crum import get_current_user
 #from django.contrib.auth.models import User
 from accounts.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 
 def to_json(data):
@@ -61,7 +62,9 @@ def get_cpu_usage(string, cpu):
     return float(load_split[0])/cpu*100, float(load_split[1])/cpu*100, float(load_split[2])/cpu*100
 
 
-def readable_timedelta(duration):
+def readable_timedelta(last_online):
+    now = timezone.now()
+    duration = now - timezone.localtime(last_online)
     data = {}
     data['days'], remaining = divmod(duration.total_seconds(), 86_400)
     data['hours'], remaining = divmod(remaining, 3_600)
