@@ -203,6 +203,7 @@ class MembersProblemPanel(Component):
             if member.is_online() and not member.is_mqtt_online():
                 try:
                     Mqtt.objects.get(member_id=member.member_id)
+                    member.problem_reason = 'Inconsistent Online Status'
                     self.members_problem.append(member)
                 except ObjectDoesNotExist:
                     pass
