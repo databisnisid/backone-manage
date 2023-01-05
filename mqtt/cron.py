@@ -3,7 +3,7 @@ from mqtt.models import Mqtt
 from django.core.exceptions import ObjectDoesNotExist
 from connectors.drivers import mqtt
 
-def cron_fix_inconsistent_online():
+def fix_inconsistent_online():
     '''
     To fix status Online in BackOne
     But not online in Mqtt
