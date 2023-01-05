@@ -205,12 +205,21 @@ class MembersProblemPanel(Component):
                 self.members_problem.append(member)
 
             if member.memory_usage() > 50:
-                member.problem_reason = 'High Memory Usage'
-                self.members_problem.append(member)
+                if member in members_problem:
+                    member_index = members_problem.index(member)
+                    members_problem[member_index].problem_reason .= ', High Memory Usage'
+                else:
+                    member.problem_reason = 'High Memory Usage'
+                    self.members_problem.append(member)
 
             if member.cpu_usage() > 50:
-                member.problem_reason = 'High CPU Usage'
-                self.members_problem.append(member)
+                if member in members_problem:
+                    member_index = members_problem.index(member)
+                    members_problem[member_index].problem_reason .= ', High CPU Usage'
+                else:
+                    member.problem_reason = 'High CPU Usage'
+                    self.members_problem.append(member)
+
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
