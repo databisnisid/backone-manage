@@ -3,7 +3,7 @@ from django.conf import settings
 
 
 def on_publish(client, userdata, result):
-    print('Message: {}'.format(userdata))
+    pass
 
 
 def mqtt_rcall_send(network_id, member_id, command):
@@ -15,6 +15,6 @@ def mqtt_rcall_send(network_id, member_id, command):
 
     client.connect(settings.MQTT_HOST, int(settings.MQTT_PORT))
 
-    result = client.publish('backone/rcall', rcall_command)
+    result = client.publish(settings.MQTT_TOPIC_RCALL, rcall_command)
 
     return result

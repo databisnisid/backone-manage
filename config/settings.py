@@ -189,4 +189,4 @@ MQTT_PASS = str(os.getenv('MQTT_PASS'))
 MQTT_HOST = str(os.getenv('MQTT_HOST'))
 MQTT_PORT = str(os.getenv('MQTT_PORT'))
 MQTT_TOPIC_PRESENCE = str(os.getenv('MQTT_TOPIC_PRESENCE'))
-MQTT_TOPIC_RCALL = 'backone/rcall'
+MQTT_TOPIC_RCALL = str(os.getenv('MQTT_TOPIC_RCALL'))
