@@ -203,25 +203,27 @@ class MembersProblemPanel(Component):
         for member in members:
             is_problem = False
             problem_text = []
-            if member.is_online() and not member.is_mqtt_online():
-                try:
-                    Mqtt.objects.get(member_id=member.member_id)
-                    problem_text.append('Inconsistent Online Status')
+
+            if member.is_online():
+                if not member.is_mqtt_online():
+                    try:
+                        Mqtt.objects.get(member_id=member.member_id)
+                        problem_text.append('Inconsistent Online Status')
+                        is_problem = True
+                    except ObjectDoesNotExist:
+                        pass
+
+                if member.memory_usage() > 50:
+                    problem_text.append('High Memory Usage')
                     is_problem = True
-                except ObjectDoesNotExist:
-                    pass
 
-            if member.memory_usage() > 50:
-                problem_text.append('High Memory Usage')
-                is_problem = True
+                if member.cpu_usage() > 50:
+                    problem_text.append('High CPU Usage')
+                    is_problem = True
 
-            if member.cpu_usage() > 50:
-                problem_text.append('High CPU Usage')
-                is_problem = True
-
-            if is_problem:
-                member.problem_reason = ', '.join(problem_text)
-                self.members_problem.append(member)
+                if is_problem:
+                    member.problem_reason = ', '.join(problem_text)
+                    self.members_problem.append(member)
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
