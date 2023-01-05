@@ -1,0 +1,28 @@
+{% load i18n wagtailadmin_tags %}
+    {% if members_problem %}
+    <section class="panel summary nice-padding">
+        <h2>{% trans "Members Problem" %}</h2>
+        <table class="listing full-width">
+            {% for member in members_problem %}
+            <tr>
+                <td class="title nowrap">
+                    <div class="title-wrapper">
+                        <a href="members/members/?q={{ member.member_id }}">{{ member.name }}</a>
+                    </div>
+                </td>
+                <td class="title">
+                    {{ member.member_id}}
+                </td>
+                <td class="title">
+                    {{ member.network }}
+                </td>
+                <td class="title">
+                    <span style="color: red;">{{ member.problem_reason }}</span>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </table>
+    </section>
+    {% endif %}
+
