@@ -200,9 +200,9 @@ class MembersProblemPanel(Component):
         self.members_problem = []
         members = Members.objects.all()
 
-        problem_text = []
         for member in members:
             is_problem = False
+            problem_text = []
             if member.is_online() and not member.is_mqtt_online():
                 try:
                     Mqtt.objects.get(member_id=member.member_id)
