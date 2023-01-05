@@ -6,7 +6,7 @@ def on_publish(client, userdata, result):
     pass
 
 
-def mqtt_rcall_send(network_id, member_id, command):
+def rcall_cmd(network_id, member_id, command):
     rcall_command = '!'.join([network_id, member_id, command])
 
     client = mqtt.Client()
