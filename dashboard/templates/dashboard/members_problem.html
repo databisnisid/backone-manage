@@ -6,7 +6,9 @@
             {% for member in members_problem %}
             <tr>
                 <td class="title nowrap">
-                    <a href="members/members/?q={{ member.member_id }}">{{ member.name }}</a>
+                    <div class="title-wrapper">
+                        <a href="members/members/?q={{ member.member_id }}">{{ member.name }}</a>
+                    </div>
                 </td>
                 <td class="title">
                     {{ member.member_id}}
