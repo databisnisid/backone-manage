@@ -212,9 +212,6 @@ class MembersProblemPanel(Component):
                 member.problem_reason = 'High CPU Usage'
                 self.members_problem.append(member)
 
-            except ObjectDoesNotExist:
-                    pass
-
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
 
