@@ -358,7 +358,7 @@ class Members(models.Model):
                     text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", first_line, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
 
             else:
-                text = format_html("<small style='color: red;'>{}<br />{} <br />Last Online: {} ago</small>", first_line, second_line, readable_timedelta(updated_at))
+                text = format_html("<small style='color: red;'>{}<br />{} <br />Last Online: {} ago</small>", first_line, second_line, readable_timedelta(mqtt.updated_at))
         except ObjectDoesNotExist:
             pass
             #model = release_version = None
