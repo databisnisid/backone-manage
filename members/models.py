@@ -8,7 +8,7 @@ from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
-from config.utils import to_dictionary, get_cpu_usage, get_uptime_string, get_string_between
+from config.utils import to_dictionary, get_cpu_usage, get_uptime_string, get_string_between, readable_timedelta
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
@@ -347,9 +347,6 @@ class Members(models.Model):
 
             first_line = '{} ({})'.format(model, num_core)
             second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
-            #now = timezone.now()
-            #delta = now - mqtt.updated_at
-            #if delta.minutes < 660:
             if uptime:
                 load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
             else:
@@ -361,7 +358,7 @@ class Members(models.Model):
                     text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", first_line, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
 
             else:
-                text = format_html("<small style='color: red;'>{}<br />{} <br />{}</small>", first_line, second_line, updated_at)
+                text = format_html("<small style='color: red;'>{}<br />{} <br />Last Online: {} ago</small>", first_line, second_line, readable_timedelta(updated_at))
         except ObjectDoesNotExist:
             pass
             #model = release_version = None
