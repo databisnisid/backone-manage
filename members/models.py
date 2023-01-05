@@ -322,7 +322,7 @@ class Members(models.Model):
         try:
             mqtt = Mqtt.objects.get(member_id=self.member_id)
             if mqtt.uptime:
-                load_1, load_5, load_15 = get_cpu_usage(mqtt.uptime, num_core)
+                load_1, load_5, load_15 = get_cpu_usage(mqtt.uptime, mqtt.num_core)
             else:
                 load_1 = load_5 = load_15 = 0.0
             result = round(load_5, 1)
