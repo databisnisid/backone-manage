@@ -201,11 +201,18 @@ class MembersProblemPanel(Component):
         members = Members.objects.all()
         for member in members:
             if member.is_online() and not member.is_mqtt_online():
-                try:
-                    Mqtt.objects.get(member_id=member.member_id)
-                    member.problem_reason = 'Inconsistent Online Status'
-                    self.members_problem.append(member)
-                except ObjectDoesNotExist:
+                member.problem_reason = 'Inconsistent Online Status'
+                self.members_problem.append(member)
+
+            if mqtt.memory_usage() > 50:
+                member.problem_reason = 'High Memory Usage'
+                self.members_problem.append(member)
+
+            if mqtt.cpu_usage() > 50:
+                member.problem_reason = 'High CPU Usage'
+                self.members_problem.append(member)
+
+            except ObjectDoesNotExist:
                     pass
 
     def get_context_data(self, parent_context):

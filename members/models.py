@@ -307,6 +307,29 @@ class Members(models.Model):
         return online_status
     is_mqtt_online.short_description = _('Internet Online')
 
+    def memory_usage(self):
+        result = 0.0
+        try:
+            mqtt = Mqtt.objects.get(member_id=self.member_id)
+            result = mqtt.memory_usage
+        except ObjectDoesNotExist:
+            pass
+
+        return result
+
+    def cpu_usage(self):
+        result = 0.0
+        try:
+            mqtt = Mqtt.objects.get(member_id=self.member_id)
+            if mqtt.uptime:
+                load_1, load_5, load_15 = get_cpu_usage(mqtt.uptime, num_core)
+            else:
+                load_1 = load_5 = load_15 = 0.0
+            result = round(load_5, 1)
+        except ObjectDoesNotExist:
+            pass
+
+        return result
 
     def model_release(self):
         text = None
@@ -333,8 +356,6 @@ class Members(models.Model):
                 load_1 = load_5 = load_15 = 0.0
 
             if self.is_mqtt_online():
-                #text = format_html("<small style='color: green;'>{}<br />{} - {} <img src='/static/admin/img/{}'><br />{}</small>", model, serialnumber, release_version, is_rcall, uptime)
-                #text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />{}<br />UP: {} - CPU: {}% - MEM: {}%</small>", model, second_line, is_rcall, uptime, get_uptime_string(uptime), load_15, memory_usage)
                 text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - CPU: {}% - MEM: {}%</small>", first_line, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
                 if load_5 > 50 or memory_usage > 50:
                     text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", first_line, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
