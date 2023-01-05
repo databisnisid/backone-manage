@@ -199,29 +199,29 @@ class MembersProblemPanel(Component):
     def __init__(self):
         self.members_problem = []
         members = Members.objects.all()
-        for member in members:
-            if member.is_online() and not member.is_mqtt_online():
-                member.problem_reason = 'Inconsistent Online Status'
-                self.members_problem.append(member)
 
-            '''
+        problem_text = []
+        for member in members:
+            is_problem = False
+            if member.is_online() and not member.is_mqtt_online():
+                try:
+                    Mqtt.objects.get(member_id=member.member_id)
+                    problem_text.append('Inconsistent Online Status')
+                    is_problem = True
+                except ObjectDoesNotExist:
+                    pass
+
             if member.memory_usage() > 50:
-                if member in members_problem:
-                    member_index = members_problem.index(member)
-                    members_problem[member_index].problem_reason .= ', High Memory Usage'
-                else:
-                    member.problem_reason = 'High Memory Usage'
-                    self.members_problem.append(member)
+                problem_text.append('High Memory Usage')
+                is_problem = True
 
             if member.cpu_usage() > 50:
-                if member in members_problem:
-                    member_index = members_problem.index(member)
-                    members_problem[member_index].problem_reason .= ', High CPU Usage'
-                else:
-                    member.problem_reason = 'High CPU Usage'
-                    self.members_problem.append(member)
-             '''
+                problem_text.append('High CPU Usage')
+                is_problem = True
 
+            if is_problem:
+                member.problem_reason = ', '.join(problem_text)
+                self.members_problem.append(member)
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
