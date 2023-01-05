@@ -15,7 +15,7 @@ def cron_fix_inconsistent_online():
         if member.is_online() and not member.is_mqtt_online():
             try:
                 Mqtt.objects.get(member_id=member.member_id)
-                mqtt.rcall_cmd(member.network.id, member.member_id, command)
+                mqtt.rcall_cmd(member.network.network_id, member.member_id, command)
             except ObjectDoesNotExist:
                 pass
 

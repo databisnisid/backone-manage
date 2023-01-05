@@ -17,4 +17,6 @@ def rcall_cmd(network_id, member_id, command):
 
     result = client.publish(settings.MQTT_TOPIC_RCALL, rcall_command)
 
+    print('RCALL_CMD: {}'.format(rcall_command))
+
     return result
