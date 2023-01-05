@@ -322,6 +322,7 @@ class Members(models.Model):
             num_core = mqtt.num_core
             memory_usage = mqtt.memory_usage
 
+            first_line = '{} ({})'.format(model, num_core)
             second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
             #now = timezone.now()
             #delta = now - mqtt.updated_at
@@ -334,12 +335,12 @@ class Members(models.Model):
             if self.is_mqtt_online():
                 #text = format_html("<small style='color: green;'>{}<br />{} - {} <img src='/static/admin/img/{}'><br />{}</small>", model, serialnumber, release_version, is_rcall, uptime)
                 #text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />{}<br />UP: {} - CPU: {}% - MEM: {}%</small>", model, second_line, is_rcall, uptime, get_uptime_string(uptime), load_15, memory_usage)
-                text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - CPU: {}% - MEM: {}%</small>", model, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
+                text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - CPU: {}% - MEM: {}%</small>", first_line, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
                 if load_5 > 50 or memory_usage > 50:
-                    text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", model, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
+                    text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", first_line, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
 
             else:
-                text = format_html("<small style='color: red;'>{}<br />{} <br />{}</small>", model, second_line, updated_at)
+                text = format_html("<small style='color: red;'>{}<br />{} <br />{}</small>", first_line, second_line, updated_at)
         except ObjectDoesNotExist:
             pass
             #model = release_version = None
