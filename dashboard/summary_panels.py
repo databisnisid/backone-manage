@@ -205,6 +205,7 @@ class MembersProblemPanel(Component):
             problem_text = []
 
             if member.is_online():
+                '''
                 if not member.is_mqtt_online():
                     try:
                         Mqtt.objects.get(member_id=member.member_id)
@@ -212,6 +213,7 @@ class MembersProblemPanel(Component):
                         is_problem = True
                     except ObjectDoesNotExist:
                         pass
+                '''
 
                 if member.memory_usage() > 50:
                     problem_text.append('High Memory Usage')
