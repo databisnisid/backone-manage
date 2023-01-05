@@ -60,13 +60,15 @@ def get_cpu_usage(string, cpu):
     load_split = load.split(',')
     return float(load_split[0])/cpu*100, float(load_split[1])/cpu*100, float(load_split[2])/cpu*100
 
-def readable_timedelta(duration: timedelta):
+
+def readable_timedelta(duration):
     data = {}
     data['days'], remaining = divmod(duration.total_seconds(), 86_400)
     data['hours'], remaining = divmod(remaining, 3_600)
     data['minutes'], data['seconds'] = divmod(remaining, 60)
 
-    time_parts = [f'{round(value)} {name}' for name, value in data.items() if value > 0]
+    time_parts = ((name, round(value)) for name, value in data.items())
+    time_parts = [f'{value} {name[:-1] if value == 1 else name}' for name, value in time_parts if value > 0]
     if time_parts:
         return ' '.join(time_parts)
     else:
