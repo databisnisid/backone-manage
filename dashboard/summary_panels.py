@@ -204,11 +204,11 @@ class MembersProblemPanel(Component):
                 member.problem_reason = 'Inconsistent Online Status'
                 self.members_problem.append(member)
 
-            if mqtt.memory_usage() > 50:
+            if member.memory_usage() > 50:
                 member.problem_reason = 'High Memory Usage'
                 self.members_problem.append(member)
 
-            if mqtt.cpu_usage() > 50:
+            if member.cpu_usage() > 50:
                 member.problem_reason = 'High CPU Usage'
                 self.members_problem.append(member)
 
