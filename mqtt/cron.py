@@ -23,5 +23,3 @@ def fix_inconsistent_online():
             else:
                 zt_check_member_peers(member)
 
-
-
