@@ -55,6 +55,7 @@ def monitor_members() :
                         member_problem = MemberProblems()
                         member_problem.member = member.member
                         member_problem.problem = problem
+                        member_problem.mqtt = mqtt
             else:
                 member_problems = MemberProblems.objects.(
                     member=member,is_done=False
