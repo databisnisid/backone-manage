@@ -65,6 +65,12 @@ class MemberProblems(models.Model):
         on_delete=models.RESTRICT,
         verbose_name=_('Problem')
     )
+    mqtt = models.ForeignKey(
+        Mqtt,
+        on_delete=models.SET_NULL,
+        verbose_name=_('Mqtt'),
+        null=True
+    )
 
     is_done = models.BooleanField(_('Problem Solved'), default=False)
 
