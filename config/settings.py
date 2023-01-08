@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'members',
     'mqtt',
     'connectors',
+    'monitor',
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.embeds',
