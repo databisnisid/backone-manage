@@ -192,7 +192,7 @@ class MembersAdmin(ModelAdmin):
     list_filter = ('network',)
     search_fields = ('name', 'member_id', 'ipaddress', 
                      'mqtt__serialnumber', 'mqtt__model', 'mqtt__uptime',
-                     'mqtt__release_version', 'mqtt__num_core')
+                     'mqtt__release_version')
     #edit_view_class = MembersView
     create_template_name = 'modeladmin/create.html'
     edit_template_name = 'modeladmin/edit.html'

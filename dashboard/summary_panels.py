@@ -240,8 +240,19 @@ class ModelChartsPanel(Component):
 
     def __init__(self):
         user = get_current_user()
-        self.model = (Mqtt.objects.values('model').annotate(mcount=Count('model')).order_by())
-        self.version = (Mqtt.objects.values('release_version').annotate(mcount=Count('release_version')).order_by())
+
+
+        if user.is_superuser:
+            self.model = (Members.objects.values('mqtt__model').annotate(mcount=Count('mqtt__model')).order_by())
+            self.version = (Members.objects.values('mqtt__release_version').annotate(mcount=Count('release_version')).order_by())
+        elif user.organization.is_no_org:
+            self.model = (Members.objects.values('mqtt__model').annotate(mcount=Count('mqtt__model')).filter(user=user).order_by())
+            self.version = (Members.objects.values('mqtt__release_version').annotate(mcount=Count('release_version')).filter(user=user).order_by())
+        else:
+            self.model = (Members.objects.values('mqtt__model').annotate(mcount=Count('mqtt__model')).filter(organization=user.organization).order_by())
+            self.version = (Members.objects.values('mqtt__release_version').annotate(mcount=Count('release_version')).filter(organization=user.organization).order_by())
+        #self.model = (Mqtt.objects.values('model').annotate(mcount=Count('model')).order_by())
+        #self.version = (Mqtt.objects.values('release_version').annotate(mcount=Count('release_version')).order_by())
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
@@ -254,13 +265,13 @@ class ModelChartsPanel(Component):
         backgroundColor_version = []
 
         for model in self.model:
-            labels_model.append(model['model'])
+            labels_model.append(model['mqtt__model'])
             data_model.append(model['mcount'])
             backgroundColor_model.append('rgba({}, {}, {}, 0.7'.format(
                 randint(0, 100), randint(100, 255), 100))
 
         for version in self.version:
-            labels_version.append(version['release_version'])
+            labels_version.append(version['mqtt__release_version'])
             data_version.append(version['mcount'])
             backgroundColor_version.append('rgba({}, {}, {}, 0.7'.format(
                 200, randint(0, 200), randint(200, 255)))
