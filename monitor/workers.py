@@ -91,3 +91,4 @@ def monitor_members() :
         except ObjectDoesNotExist:
             pass
 
+    print("Fin.")
