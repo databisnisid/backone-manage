@@ -74,6 +74,15 @@ class MonitorRulesAdmin(ModelAdmin):
     menu_label = 'Rules'
     menu_icon = 'tick'
     list_display = ('name', 'item', 'item_threshold')
+    panels = [
+        MultiFieldPanel([FieldPanel('name')], heading=_('Name')),
+        MultiFieldPanel(
+            [
+            FieldPanel('item'),
+            FieldPanel('item_threshold')
+            ],
+            heading=_('Item Detail'))
+    ]
 
 
 class MemberProblemsAdmin(ModelAdmin):
