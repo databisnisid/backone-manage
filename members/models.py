@@ -348,8 +348,10 @@ class Members(models.Model):
     def model_release(self):
         text = None
         try:
-            #mqtt = Mqtt.objects.get(member_id=self.member_id)
-            mqtt = self.mqtt
+            mqtt = Mqtt.objects.get(member_id=self.member_id)
+            if self.mqtt is None:
+                self.mqtt = mqtt
+                self.save()
             model = mqtt.model
             release_version = mqtt.release_version
             updated_at = timezone.localtime(mqtt.updated_at).strftime("%d-%m-%Y, %H:%M:%S")
