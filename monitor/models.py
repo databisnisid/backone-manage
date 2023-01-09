@@ -143,7 +143,7 @@ class MemberProblems(models.Model):
 
     def save(self):
         if self.user is None:
-            self.user = get_current_user()
+            self.user = self.member.user
 
         #print('Network Model', self.user)
 
