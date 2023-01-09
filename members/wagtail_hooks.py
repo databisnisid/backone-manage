@@ -190,7 +190,7 @@ class MembersAdmin(ModelAdmin):
                     'member_status', 'model_release',
                     'list_peers', )
     list_filter = ('network',)
-    search_fields = ('name', 'member_id', 'ipaddress', 
+    search_fields = ('name', 'member_id', 'ipaddress',
                      'mqtt__serialnumber', 'mqtt__model', 'mqtt__uptime',
                      'mqtt__release_version')
     #edit_view_class = MembersView

@@ -241,7 +241,6 @@ class ModelChartsPanel(Component):
     def __init__(self):
         user = get_current_user()
 
-
         if user.is_superuser:
             self.model = (Members.objects.values('mqtt__model').annotate(mcount=Count('mqtt__model')).order_by())
             self.version = (Members.objects.values('mqtt__release_version').annotate(mcount=Count('mqtt__release_version')).order_by())
