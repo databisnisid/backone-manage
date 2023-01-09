@@ -70,7 +70,7 @@ def monitor_members() :
                         member_problem.save()
                         print(".")
                         print('Problem {} ({}) - {}'. format(
-                            member.name, 
+                            member.name,
                             member.member_id,
                             problem
                         ))
@@ -83,7 +83,7 @@ def monitor_members() :
                         member_problem.save()
                         print(".")
                         print('Solved {} ({}) - {}'. format(
-                            member.name, 
+                            member.name,
                             member.member_id,
                             member_problem.problem
                         ))
