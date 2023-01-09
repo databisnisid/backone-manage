@@ -19,6 +19,11 @@ class MonitorItems(models.Model):
     def __str__(self):
         return '{}'.format(self.name)
 
+    def save(self):
+        self.item_id = self.item_id.lower()
+
+        return super(MonitorItems, self).save()
+
 
 class MonitorRules(models.Model):
     name = models.CharField(_('Problem Name'), max_length=100)
