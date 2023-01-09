@@ -19,9 +19,9 @@ def is_problem_memory(mqtt, threshold):
 def is_problem(mqtt, rule):
     result = False
     if rule.item.item_id == 'cpu_usage':
-        result = is_problem_cpu(mqtt, rule.item_threshold):
+        result = is_problem_cpu(mqtt, rule.item_threshold)
     if rule.item.item_id == 'memory_usage':
-        result = is_problem_memory(mqtt, rule.item_threshold):
+        result = is_problem_memory(mqtt, rule.item_threshold)
 
     return result
 
