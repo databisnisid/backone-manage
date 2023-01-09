@@ -30,7 +30,7 @@ def is_problem(mqtt, rule):
 def check_members_vs_rules(member, mqtt):
     result = []
     #rules = MonitorRules.objects.all()
-    rules = MonitorRules.objects.filter(user=member.user)
+    rules = MonitorRules.objects.filter(organization=member.user.organization)
     for rule in rules:
         if is_problem(mqtt, rule):
             result.append(rule)
