@@ -143,14 +143,3 @@ class MemberProblems(models.Model):
     def __str__(self):
         return '{}'.format(self.member)
 
-    def save(self):
-        if self.user is None:
-            self.user = self.member.user
-
-        #print('Network Model', self.user)
-
-        self.organization = self.user.organization
-
-        return super(MemberProblems, self).save()
-
-

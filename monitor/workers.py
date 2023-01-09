@@ -51,7 +51,7 @@ def monitor_members() :
             #mqtt = Mqtt.objects.get(member_id=member.member_id)
             mqtt = member.mqtt
             problems = []
-            if ping.ping(member.ipaddress):
+            if member.is_online() and ping.ping(member.ipaddress):
                 #print('Checking {} ({})'. format(member.name, member.member_id))
                 print(".", end = '')
                 problems = check_members_vs_rules(member, mqtt)
