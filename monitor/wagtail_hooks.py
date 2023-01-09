@@ -58,7 +58,7 @@ class MemberProblemsHelper(PermissionHelper):
         return False
 
     def user_can_edit_obj(self, user, obj):
-        return True
+        return False
 
 
 
