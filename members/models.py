@@ -90,6 +90,13 @@ class Members(models.Model):
         null=True
     )
 
+    mqtt = models.ForeignKey(
+        Mqtt,
+        on_delete=models.SET_NULL,
+        verbose_name=_('Mqtt'),
+        null=True
+    )
+
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
@@ -138,6 +145,13 @@ class Members(models.Model):
         member_peers.network = self.network
         member_peers.save()
         self.peers = member_peers
+
+        if self.mqtt is None:
+            try:
+                mqtt = Mqtt.objects.get(member_id=self.member_id)
+                self.mqtt = mqtt
+            except ObjectDoesNotExist:
+                pass
 
         return super(Members, self).save()
 

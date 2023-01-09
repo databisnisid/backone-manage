@@ -239,7 +239,7 @@ class ModelChartsPanel(Component):
     template_name = "dashboard/models_charts.html"
 
     def __init__(self):
-        #user = get_current_user()
+        user = get_current_user()
         self.model = (Mqtt.objects.values('model').annotate(mcount=Count('model')).order_by())
         self.version = (Mqtt.objects.values('release_version').annotate(mcount=Count('release_version')).order_by())
 
