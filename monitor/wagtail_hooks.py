@@ -169,7 +169,7 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
             else:
                 return MemberProblemsDone.objects.filter(member__organization=current_user.organization)
         else:
-            return MemberProblemsDone.Done.all()
+            return MemberProblemsDone.objects.all()
 
 
 class MonitorAdminGroup(ModelAdminGroup):
