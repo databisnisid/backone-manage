@@ -74,15 +74,37 @@ class MonitorRulesAdmin(ModelAdmin):
     menu_label = 'Rules'
     menu_icon = 'tick'
     list_display = ('name', 'item', 'item_threshold')
-    panels = [
-        MultiFieldPanel([FieldPanel('name')], heading=_('Name')),
-        MultiFieldPanel(
-            [
-            FieldPanel('item'),
-            FieldPanel('item_threshold')
-            ],
-            heading=_('Item Detail'))
-    ]
+
+    def get_edit_handler(self, instance, request):
+        basic_panels = [
+            MultiFieldPanel([FieldPanel('name')], heading=_('Name')),
+            MultiFieldPanel(
+                [
+                    FieldPanel('item'),
+                    FieldPanel('item_threshold')
+                ],
+                heading=_('Item Detail'))
+        ]
+
+        user_org_panels = [
+            MultiFieldPanel(
+                [
+                    FieldPanel('user'),
+                    FieldPanel('organization')
+                ],
+                heading=_('User and Organization')
+            )
+        ]
+
+        custom_panels = basic_panels
+
+        current_user = get_current_user()
+
+        if current_user.is_superuser:
+            custom_panels.append(user_org_panels)
+
+        return ObjectList(custom_panels)
+
 
     def get_queryset(self, request):
         current_user = get_current_user()
