@@ -323,11 +323,10 @@ class Members(models.Model):
 
     def memory_usage(self):
         result = 0.0
-        try:
-            mqtt = Mqtt.objects.get(member_id=self.member_id)
+        if self.mqtt:
+            #mqtt = Mqtt.objects.get(member_id=self.member_id)
+            mqtt = self.mqtt
             result = mqtt.memory_usage
-        except ObjectDoesNotExist:
-            pass
 
         return result
 
