@@ -44,6 +44,8 @@ class MemberProblemsButtonHelper(ButtonHelper):
                 #if current_user.organization.features.synchronize:
                 buttons.append(self.check_button(obj))
 
+        return buttons
+
 
 class MemberProblemsHelper(PermissionHelper):
     def user_can_list(self, user):
