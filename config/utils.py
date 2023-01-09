@@ -58,8 +58,11 @@ def get_uptime_string(uptime_string):
 
 def get_cpu_usage(string, cpu):
     load = get_load_string(string)
-    load_split = load.split(',')
-    return float(load_split[0])/cpu*100, float(load_split[1])/cpu*100, float(load_split[2])/cpu*100
+    if load:
+        load_split = load.split(',')
+        return float(load_split[0])/cpu*100, float(load_split[1])/cpu*100, float(load_split[2])/cpu*100
+    else:
+        return 0, 0, 0
 
 
 def readable_timedelta(last_online):

@@ -65,6 +65,8 @@ def monitor_members() :
                             member_problem.member = member
                             member_problem.problem = problem
                             member_problem.mqtt = mqtt
+
+                        member_problem.save()
                 else:
                     member_problems = MemberProblems.objects.filter(
                         member=member
