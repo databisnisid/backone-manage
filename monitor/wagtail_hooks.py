@@ -10,7 +10,54 @@ from django.utils.translation import gettext as _
 
 
 class MemberProblemsButtonHelper(ButtonHelper):
-    pass
+
+    # Define classes for our button, here we can set an icon for example
+    #import_button_classnames = ["button-small", "icon", "icon-site"]
+    current_classnames = ['button button-small button-primary']
+
+    def check_button(self, obj):
+        # Define a label for our button
+        text = _('Check')
+        return {
+            'url': '/members/members/?q=' + obj.member.member_id,
+            'label': text,
+            'classname': self.finalise_classname(self.current_classnames),
+            'title': text,
+        }
+
+    def get_buttons_for_obj(
+        self, obj, exclude=None, classnames_add=None, classnames_exclude=None
+    ):
+        current_user = get_current_user()
+
+        """
+        This function is used to gather all available buttons.
+        We append our custom button to the btns list.
+        """
+        buttons = super().get_buttons_for_obj(
+            obj, exclude, classnames_add, classnames_exclude
+        )
+        if 'check_button' not in (exclude or []):
+            if current_user.is_superuser:
+                buttons.append(self.check_button(obj))
+            else:
+                #if current_user.organization.features.synchronize:
+                buttons.append(self.check_button(obj))
+
+
+class MemberProblemsHelper(PermissionHelper):
+    def user_can_list(self, user):
+        return True
+
+    def user_can_create(self, user):
+        return False
+
+    def user_can_delete_obj(self, user, obj):
+        return False
+
+    def user_can_edit_obj(self, user, obj):
+        return False
+
 
 
 class MonitorItemsAdmin(ModelAdmin):
@@ -29,6 +76,8 @@ class MonitorRulesAdmin(ModelAdmin):
 
 class MemberProblemsAdmin(ModelAdmin):
     model = MemberProblems
+    button_helper_class = MemberProblemsButtonHelper
+    permission_helper_class = MemberProblemsHelper
     menu_label = 'Monitor'
     menu_icon = 'cog'
     add_to_settings_menu = False
