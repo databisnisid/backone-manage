@@ -42,27 +42,28 @@ def monitor_members() :
         try:
             mqtt = Mqtt.objects.get(member=member)
             problems = []
-            problems = check_members_vs_rules(member, mqtt)
-            if problems:
-                for problem in problems:
-                    try:
-                        member_problem = MemberProblems.objects.get(
-                            member=member,
-                            problem=problem,
-                            is_done=False
-                        )
-                    except ObjectDoesNotExist:
-                        member_problem = MemberProblems()
-                        member_problem.member = member.member
-                        member_problem.problem = problem
-                        member_problem.mqtt = mqtt
-            else:
-                member_problems = MemberProblems.objects.(
-                    member=member,is_done=False
-                )
-                for member_problem in member_problems:
-                    member_problem.is_done = True
-                    member_problem.save()
+            if ping.ping(member.ipaddress):
+                problems = check_members_vs_rules(member, mqtt)
+                if problems:
+                    for problem in problems:
+                        try:
+                            member_problem = MemberProblems.objects.get(
+                                member=member,
+                                problem=problem,
+                                is_done=False
+                            )
+                        except ObjectDoesNotExist:
+                            member_problem = MemberProblems()
+                            member_problem.member = member.member
+                            member_problem.problem = problem
+                            member_problem.mqtt = mqtt
+                else:
+                    member_problems = MemberProblems.objects.(
+                        member=member,is_done=False
+                    )
+                    for member_problem in member_problems:
+                        member_problem.is_done = True
+                        member_problem.save()
 
         except ObjectDoesNotExist:
             pass
