@@ -309,14 +309,13 @@ class Members(models.Model):
 
     def is_mqtt_online(self):
         online_status = False
-        try:
-            mqtt = Mqtt.objects.get(member_id=self.member_id)
+        if self.mqtt:
+            #mqtt = Mqtt.objects.get(member_id=self.member_id)
+            mqtt = self.mqtt
             now = timezone.now()
             delta = now - timezone.localtime(mqtt.updated_at)
             if delta.seconds < 660:
                online_status = True
-        except ObjectDoesNotExist:
-            pass
 
         return online_status
     is_mqtt_online.short_description = _('Internet Online')
@@ -332,21 +331,20 @@ class Members(models.Model):
 
     def cpu_usage(self):
         result = 0.0
-        try:
-            mqtt = Mqtt.objects.get(member_id=self.member_id)
+        if self.mqtt:
+            #mqtt = Mqtt.objects.get(member_id=self.member_id)
+            mqtt = self.mqtt
             if mqtt.uptime:
                 load_1, load_5, load_15 = get_cpu_usage(mqtt.uptime, mqtt.num_core)
             else:
                 load_1 = load_5 = load_15 = 0.0
             result = round(load_5, 1)
-        except ObjectDoesNotExist:
-            pass
 
         return result
 
     def model_release(self):
         text = None
-        try:
+        if self.mqtt:
             mqtt = Mqtt.objects.get(member_id=self.member_id)
             model = mqtt.model
             release_version = mqtt.release_version
@@ -372,9 +370,6 @@ class Members(models.Model):
 
             else:
                 text = format_html("<small style='color: red;'>{}<br />{} <br />LO: {} ago</small>", first_line, second_line, readable_timedelta(mqtt.updated_at))
-        except ObjectDoesNotExist:
-            pass
-            #model = release_version = None
 
         return text
     model_release.short_description = _('Model, SN, Release')
