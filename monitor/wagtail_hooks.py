@@ -143,9 +143,9 @@ class MemberProblemsAdmin(ModelAdmin):
         current_user = get_current_user()
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
-                return MemberProblems.objects.filter(user=current_user)
+                return MemberProblems.objects.filter(member__user=current_user)
             else:
-                return MemberProblems.objects.filter(organization=current_user.organization)
+                return MemberProblems.objects.filter(member__organization=current_user.organization)
         else:
             return MemberProblems.objects.all()
 
