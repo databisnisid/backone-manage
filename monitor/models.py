@@ -91,5 +91,5 @@ class MemberProblems(models.Model):
         verbose_name_plural = _('Member Problems')
 
     def __str__(self):
-        return '{}'.format(self.name)
+        return '{}'.format(self.member)
 
