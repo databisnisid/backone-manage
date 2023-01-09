@@ -40,7 +40,7 @@ def monitor_members() :
 
     for member in members:
         try:
-            mqtt = Mqtt.objects.get(member=member)
+            mqtt = Mqtt.objects.get(member=member.member_id)
             problems = []
             if ping.ping(member.ipaddress):
                 problems = check_members_vs_rules(member, mqtt)
@@ -54,7 +54,7 @@ def monitor_members() :
                             )
                         except ObjectDoesNotExist:
                             member_problem = MemberProblems()
-                            member_problem.member = member.member
+                            member_problem.member = member
                             member_problem.problem = problem
                             member_problem.mqtt = mqtt
                 else:
