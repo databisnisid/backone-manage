@@ -2,7 +2,7 @@ from wagtail.contrib.modeladmin.options import (
     ModelAdmin, ModelAdminGroup, modeladmin_register, ButtonHelper, PermissionHelper)
 from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
 
-from .models import MemberProblems, MonitorItems, MonitorRules
+from .models import MemberProblems, MonitorItems, MonitorRules, MemberProblemsDone
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
@@ -151,7 +151,7 @@ class MemberProblemsAdmin(ModelAdmin):
             return MemberProblems.unsolved.all()
 
 class MemberProblemsHistoryAdmin(ModelAdmin):
-    model = MemberProblems
+    model = MemberProblemsDone
     permission_helper_class = MemberProblemsHelper
     menu_label = 'History'
     menu_icon = 'tick-inverse'
@@ -165,11 +165,11 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
                 #return MemberProblems.objects.filter(member__user=current_user)
-                return MemberProblems.solved.filter(member__user=current_user)
+                return MemberProblemsDone.objects.filter(member__user=current_user)
             else:
-                return MemberProblems.solved.filter(member__organization=current_user.organization)
+                return MemberProblemsDone.objects.filter(member__organization=current_user.organization)
         else:
-            return MemberProblems.solved.all()
+            return MemberProblemsDone.Done.all()
 
 
 class MonitorAdminGroup(ModelAdminGroup):

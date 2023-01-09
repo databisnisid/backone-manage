@@ -151,3 +151,11 @@ class MemberProblems(models.Model):
     def __str__(self):
         return '{}'.format(self.member)
 
+
+class MemberProblemsDone(MemberProblems):
+
+    objects = MemberProblemManagerDone
+
+    class Meta:
+        proxy = True
+
