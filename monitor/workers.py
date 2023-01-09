@@ -85,7 +85,7 @@ def monitor_members() :
                         print('Solved {} ({}) - {}'. format(
                             member.name, 
                             member.member_id,
-                            member_problem
+                            member_problem.problem
                         ))
 
         except ObjectDoesNotExist:
