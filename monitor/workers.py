@@ -67,6 +67,11 @@ def monitor_members() :
                             member_problem.mqtt = mqtt
 
                         member_problem.save()
+                        print('Problem {} ({}) - {}'. format(
+                            member.name, 
+                            member.member_id,
+                            problem
+                        ))
                 else:
                     member_problems = MemberProblems.objects.filter(
                         member=member
@@ -74,6 +79,11 @@ def monitor_members() :
                     for member_problem in member_problems:
                         member_problem.is_done = True
                         member_problem.save()
+                        print('Solved {} ({}) - {}'. format(
+                            member.name, 
+                            member.member_id,
+                            problem
+                        ))
 
         except ObjectDoesNotExist:
             pass

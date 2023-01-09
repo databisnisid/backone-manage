@@ -29,7 +29,7 @@ class MonitorRulesAdmin(ModelAdmin):
 
 class MemberProblemsAdmin(ModelAdmin):
     model = MemberProblems
-    menu_label = 'Member Problems'
+    menu_label = 'Monitor'
     menu_icon = 'cog'
     add_to_settings_menu = False
     exclude_from_explorer = False
