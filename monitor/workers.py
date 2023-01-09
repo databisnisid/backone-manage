@@ -21,10 +21,10 @@ def check_members_vs_rules(member, mqtt):
     rules = MonitorRules.objects.all()
     for rule in rules:
         if rule.item.item_id == 'cpu_usage':
-            if is_problem_cpu(mqtt, rule.item.threshold)
+            if is_problem_cpu(mqtt, rule.item.threshold):
                 result.append(rule)
         if rule.item.item_id == 'memory_usage':
-            if is_problem_memory(mqtt, rule.item.threshold)
+            if is_problem_memory(mqtt, rule.item.threshold):
                 result.append(rule)
 
     return result
