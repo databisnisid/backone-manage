@@ -154,7 +154,7 @@ class MemberProblems(models.Model):
 
 class MemberProblemsDone(MemberProblems):
 
-    objects = MemberProblemManagerDone
+    objects = MemberProblemManagerDone()
 
     class Meta:
         proxy = True
