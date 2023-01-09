@@ -50,7 +50,8 @@ def monitor_members() :
             mqtt = Mqtt.objects.get(member_id=member.member_id)
             problems = []
             if ping.ping(member.ipaddress):
-                print('Checking {} ({})'. format(member.name, member.member_id))
+                #print('Checking {} ({})'. format(member.name, member.member_id))
+                print(".", end = '')
                 problems = check_members_vs_rules(member, mqtt)
                 if problems:
                     for problem in problems:
@@ -67,6 +68,7 @@ def monitor_members() :
                             member_problem.mqtt = mqtt
 
                         member_problem.save()
+                        print(".")
                         print('Problem {} ({}) - {}'. format(
                             member.name, 
                             member.member_id,
@@ -79,6 +81,7 @@ def monitor_members() :
                     for member_problem in member_problems:
                         member_problem.is_done = True
                         member_problem.save()
+                        print(".")
                         print('Solved {} ({}) - {}'. format(
                             member.name, 
                             member.member_id,
