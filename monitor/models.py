@@ -93,6 +93,12 @@ class MemberProblemManagerUndone(models.Manager):
             is_done=False
         ).exclude(member=None)
 
+class MemberProblemManagerDone(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            is_done=True
+        ).exclude(member=None)
+
 
 class MemberProblems(models.Model):
     member = models.ForeignKey(
@@ -130,6 +136,8 @@ class MemberProblems(models.Model):
     is_done = models.BooleanField(_('Problem Solved'), default=False)
 
     objects = MemberProblemManagerUndone()
+    unsolved = MemberProblemManagerUndone()
+    solved = MemberProblemManagerDone()
     alls = models.Manager()
 
     start_at = models.DateTimeField(auto_now=False, auto_now_add=True)

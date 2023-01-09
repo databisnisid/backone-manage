@@ -143,19 +143,39 @@ class MemberProblemsAdmin(ModelAdmin):
         current_user = get_current_user()
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
-                return MemberProblems.objects.filter(member__user=current_user)
+                #return MemberProblems.objects.filter(member__user=current_user)
+                return MemberProblems.unsolved.filter(member__user=current_user)
             else:
-                return MemberProblems.objects.filter(member__organization=current_user.organization)
+                return MemberProblems.unsolved.filter(member__organization=current_user.organization)
         else:
-            return MemberProblems.objects.all()
+            return MemberProblems.unsolved.all()
+
+class MemberProblemsHistoryAdmin(ModelAdmin):
+    model = MemberProblems
+    permission_helper_class = MemberProblemsHelper
+    menu_label = 'History'
+    menu_icon = 'tick-inverse'
+    add_to_settings_menu = False
+    exclude_from_explorer = False
+
+    list_display = ('member', 'problem')
+
+    def get_queryset(self, request):
+        current_user = get_current_user()
+        if not current_user.is_superuser:
+            if current_user.organization.is_no_org:
+                #return MemberProblems.objects.filter(member__user=current_user)
+                return MemberProblems.solved.filter(member__user=current_user)
+            else:
+                return MemberProblems.solved.filter(member__organization=current_user.organization)
+        else:
+            return MemberProblems.solved.all()
 
 
 class MonitorAdminGroup(ModelAdminGroup):
     menu_label = _("Monitor")
-    items = (MonitorItemsAdmin, MonitorRulesAdmin, MemberProblemsAdmin)
+    items = (MonitorItemsAdmin, MonitorRulesAdmin,
+             MemberProblemsAdmin, MemberProblemsHistoryAdmin)
 
 
-#modeladmin_register(MemberProblemsAdmin)
-#modeladmin_register(MonitorItemsAdmin)
-#modeladmin_register(MonitorRulesAdmin)
 modeladmin_register(MonitorAdminGroup)

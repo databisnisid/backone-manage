@@ -53,7 +53,8 @@ def monitor_members() :
             problems = []
             if member.is_online() and ping.ping(member.ipaddress):
                 #print('Checking {} ({})'. format(member.name, member.member_id))
-                print(".", end = '')
+                print("Start", end='')
+                print(".", end='')
                 problems = check_members_vs_rules(member, mqtt)
                 if problems:
                     for problem in problems:
