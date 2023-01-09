@@ -47,8 +47,9 @@ def monitor_members() :
     members = Members.objects.all()
 
     for member in members:
-        try:
-            mqtt = Mqtt.objects.get(member_id=member.member_id)
+        if member.mqtt:
+            #mqtt = Mqtt.objects.get(member_id=member.member_id)
+            mqtt = member.mqtt
             problems = []
             if ping.ping(member.ipaddress):
                 #print('Checking {} ({})'. format(member.name, member.member_id))
@@ -66,7 +67,7 @@ def monitor_members() :
                             member_problem = MemberProblems()
                             member_problem.member = member
                             member_problem.problem = problem
-                            member_problem.mqtt = mqtt
+                            #member_problem.mqtt = mqtt
 
                         member_problem.save()
                         print(".")
@@ -89,7 +90,5 @@ def monitor_members() :
                             member_problem.problem
                         ))
 
-        except ObjectDoesNotExist:
-            pass
-
+    print(".")
     print("Fin.")
