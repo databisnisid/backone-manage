@@ -16,16 +16,23 @@ def is_problem_cpu(mqtt, threshold):
 def is_problem_memory(mqtt, threshold):
     return compare_values(mqtt.memory_usage, threshold)
 
+def is_problem(mqtt, rule):
+    result = False
+    if rule.item.item_id == 'cpu_usage':
+        result = is_problem_cpu(mqtt, rule.item_threshold):
+    if rule.item.item_id == 'memory_usage':
+        result = is_problem_memory(mqtt, rule.item_threshold):
+
+    return result
+
+
+
 def check_members_vs_rules(member, mqtt):
     result = []
     rules = MonitorRules.objects.all()
     for rule in rules:
-        if rule.item.item_id == 'cpu_usage':
-            if is_problem_cpu(mqtt, rule.item_threshold):
-                result.append(rule)
-        if rule.item.item_id == 'memory_usage':
-            if is_problem_memory(mqtt, rule.item_threshold):
-                result.append(rule)
+        if is_problem(mqtt, rule):
+            result.append(rule)
 
     return result
 

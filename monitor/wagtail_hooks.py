@@ -17,12 +17,14 @@ class MonitorItemsAdmin(ModelAdmin):
     model = MonitorItems
     menu_label = 'Items'
     menu_icon = 'list-ul'
+    list_display = ('name', 'item_id')
 
 
 class MonitorRulesAdmin(ModelAdmin):
     model = MonitorRules
     menu_label = 'Rules'
     menu_icon = 'tick'
+    list_display = ('name', 'item', 'item_threshold')
 
 
 class MemberProblemsAdmin(ModelAdmin):
