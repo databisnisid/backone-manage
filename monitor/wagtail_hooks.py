@@ -106,6 +106,16 @@ class MemberProblemsAdmin(ModelAdmin):
 
     list_display = ('member', 'problem')
 
+    def get_queryset(self, request):
+        current_user = get_current_user()
+        if not current_user.is_superuser:
+            if current_user.organization.is_no_org:
+                return MemberProblems.objects.filter(user=current_user)
+            else:
+                return MemberProblems.objects.filter(organization=current_user.organization)
+        else:
+            return MemberProblems.objects.all()
+
 
 class MonitorAdminGroup(ModelAdminGroup):
     menu_label = _("Monitor")

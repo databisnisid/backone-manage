@@ -80,7 +80,7 @@ class MonitorRules(models.Model):
         if self.user is None:
             self.user = get_current_user()
 
-        print('Network Model', self.user)
+        #print('MonitorRules Model', self.user)
 
         self.organization = self.user.organization
 
@@ -112,6 +112,18 @@ class MemberProblems(models.Model):
         verbose_name=_('Mqtt'),
         null=True
     )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        verbose_name=_('Owner'),
+        null=True
+    )
+    organization = models.ForeignKey(
+        Organizations,
+        on_delete=models.SET_NULL,
+        verbose_name=_('Organization'),
+        null=True
+    )
 
     is_done = models.BooleanField(_('Problem Solved'), default=False)
 
@@ -128,4 +140,15 @@ class MemberProblems(models.Model):
 
     def __str__(self):
         return '{}'.format(self.member)
+
+    def save(self):
+        if self.user is None:
+            self.user = get_current_user()
+
+        #print('Network Model', self.user)
+
+        self.organization = self.user.organization
+
+        return super(MemberProblems, self).save()
+
 
