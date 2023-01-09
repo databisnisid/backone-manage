@@ -28,6 +28,7 @@ class MonitorItems(models.Model):
 
 
 class MonitorRules(models.Model):
+    '''
     def limit_choices_to_current_user():
         user = get_current_user()
         if not user.is_superuser:
@@ -37,6 +38,7 @@ class MonitorRules(models.Model):
                 return {'organization': user.organization}
         else:
             return {}
+    '''
     name = models.CharField(_('Problem Name'), max_length=100)
     item = models.ForeignKey(
         MonitorItems,

@@ -84,6 +84,16 @@ class MonitorRulesAdmin(ModelAdmin):
             heading=_('Item Detail'))
     ]
 
+    def get_queryset(self, request):
+        current_user = get_current_user()
+        if not current_user.is_superuser:
+            if current_user.organization.is_no_org:
+                return MonitorRules.objects.filter(user=current_user)
+            else:
+                return MonitorRules.objects.filter(organization=current_user.organization)
+        else:
+            return MonitorRules.objects.all()
+
 
 class MemberProblemsAdmin(ModelAdmin):
     model = MemberProblems
