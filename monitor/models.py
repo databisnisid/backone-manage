@@ -138,10 +138,11 @@ class MemberProblems(models.Model):
     is_done = models.BooleanField(_('Problem Solved'), default=False)
     duration = models.IntegerField(_('Duration'), default=0)
 
-    objects = MemberProblemManagerUndone()
+    #objects = MemberProblemManagerUndone()
     unsolved = MemberProblemManagerUndone()
     solved = MemberProblemManagerDone()
     alls = models.Manager()
+    objects = models.Manager()
 
     start_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     end_at = models.DateTimeField(auto_now=True, auto_now_add=False)
