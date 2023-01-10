@@ -162,6 +162,12 @@ class MemberProblems(models.Model):
         return super(MemberProblems, self).save()
 
 
+    def duration_text_undone(self):
+        delta = timezone.now() - timezone.localtime(self.start_at)
+        return readable_timedelta_seconds(delta.seconds)
+    duration_text_undone.short_description = _('Duration')
+
+
 class MemberProblemsDone(MemberProblems):
 
     objects = MemberProblemManagerDone()
