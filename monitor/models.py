@@ -4,6 +4,7 @@ from accounts.models import User, Organizations
 from mqtt.models import Mqtt
 from members.models import Members
 from django.utils.translation import gettext as _
+from django.utils import timezone
 from config.utils import readable_timedelta_seconds
 
 
@@ -135,6 +136,7 @@ class MemberProblems(models.Model):
     '''
 
     is_done = models.BooleanField(_('Problem Solved'), default=False)
+    duration = models.IntegerField(_('Duration'), default=0)
 
     objects = MemberProblemManagerUndone()
     unsolved = MemberProblemManagerUndone()
@@ -152,6 +154,13 @@ class MemberProblems(models.Model):
     def __str__(self):
         return '{}'.format(self.member)
 
+    def save(self):
+        if self.is_done:
+            delta = timezone.now() - timezone.localtime(self.start_at)
+            self.duration = delta.seconds
+
+        return super(MemberProblems, self).save()
+
 
 class MemberProblemsDone(MemberProblems):
 
@@ -161,6 +170,6 @@ class MemberProblemsDone(MemberProblems):
         proxy = True
 
     def duration(self):
-        delta = self.end_at - self.start_at
-        return readable_timedelta_seconds(delta.seconds)
+        #delta = self.end_at - self.start_at
+        return readable_timedelta_seconds(self.duration)
 
