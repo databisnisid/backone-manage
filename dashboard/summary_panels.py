@@ -191,6 +191,17 @@ class MemberChartsPanel(Component):
 
         return context
 
+class MemberProblemsAnalyticPanel(Component):
+    """
+
+    Query total problem  per member
+    -------------------------------
+    user = get_current_user()
+    m = MemberProblemsDone.objects.filter(member__user=user).values('member__name').annotate(count=Count('pk', distinct=True)).order_by('-count')
+
+    m = MemberProblemsDone.objects.filter(member__user=user).order_by('-duration')
+    """
+    pass
 
 class MembersProblemPanel(Component):
     order = 55

@@ -158,6 +158,7 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
     exclude_from_explorer = False
 
     list_display = ('member', 'problem', 'duration_text')
+    search_fields = ('member__name')
 
     def get_queryset(self, request):
         current_user = get_current_user()
