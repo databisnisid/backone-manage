@@ -163,3 +163,4 @@ class MemberProblemsDone(MemberProblems):
     def duration(self):
         delta = self.end_at - self.start_at
         return readable_timedelta_seconds(delta.seconds)
+

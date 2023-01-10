@@ -81,6 +81,7 @@ def readable_timedelta(last_online):
         return 'below 1 second'
 
 def readable_timedelta_seconds(seconds):
+    data = {}
     data['days'], remaining = divmod(seconds, 86_400)
     data['hours'], remaining = divmod(remaining, 3_600)
     data['minutes'], data['seconds'] = divmod(remaining, 60)
