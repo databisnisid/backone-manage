@@ -27,12 +27,13 @@ def is_problem(mqtt, rule):
 
 
 
-def check_members_vs_rules(member, mqtt):
+#def check_members_vs_rules(member, mqtt):
+def check_members_vs_rules(member):
     result = []
     #rules = MonitorRules.objects.all()
     rules = MonitorRules.objects.filter(organization=member.user.organization)
     for rule in rules:
-        if is_problem(mqtt, rule):
+        if is_problem(member.mqtt, rule):
             result.append(rule)
 
     return result
@@ -46,6 +47,7 @@ def monitor_members() :
 
     members = Members.objects.all()
 
+    print("Start", end='')
     for member in members:
         if member.mqtt:
             #mqtt = Mqtt.objects.get(member_id=member.member_id)
@@ -53,9 +55,8 @@ def monitor_members() :
             problems = []
             if member.is_online() and ping.ping(member.ipaddress):
                 #print('Checking {} ({})'. format(member.name, member.member_id))
-                print("Start", end='')
                 print(".", end='')
-                problems = check_members_vs_rules(member, mqtt)
+                problems = check_members_vs_rules(member)
                 if problems:
                     for problem in problems:
                         try:
