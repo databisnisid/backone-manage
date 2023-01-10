@@ -4,6 +4,7 @@ from accounts.models import User, Organizations
 from mqtt.models import Mqtt
 from members.models import Members
 from django.utils.translation import gettext as _
+from config.utils import readable_timedelta_seconds
 
 
 class MonitorItems(models.Model):
@@ -161,4 +162,4 @@ class MemberProblemsDone(MemberProblems):
 
     def duration(self):
         delta = self.end_at - self.start_at
-        return delta.seconds
+        return readable_timedelta_seconds(delta.seconds)

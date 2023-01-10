@@ -8,7 +8,6 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, Obj
 from django.utils.translation import gettext as _
 
 
-
 class MemberProblemsButtonHelper(ButtonHelper):
 
     # Define classes for our button, here we can set an icon for example

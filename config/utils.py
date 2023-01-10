@@ -80,3 +80,15 @@ def readable_timedelta(last_online):
     else:
         return 'below 1 second'
 
+def readable_timedelta_seconds(seconds):
+    data['days'], remaining = divmod(seconds, 86_400)
+    data['hours'], remaining = divmod(remaining, 3_600)
+    data['minutes'], data['seconds'] = divmod(remaining, 60)
+
+    time_parts = ((name, round(value)) for name, value in data.items())
+    time_parts = [f'{value} {name[:-1] if value == 1 else name}' for name, value in time_parts if value > 0]
+    if time_parts:
+        return ' '.join(time_parts)
+    else:
+        return 'below 1 second'
+
