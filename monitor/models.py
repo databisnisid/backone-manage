@@ -138,7 +138,7 @@ class MemberProblems(models.Model):
     is_done = models.BooleanField(_('Problem Solved'), default=False)
     duration = models.IntegerField(_('Duration'), default=0)
 
-    #objects = MemberProblemManagerUndone()
+    objects = MemberProblemManagerUndone()
     unsolved = MemberProblemManagerUndone()
     solved = MemberProblemManagerDone()
     alls = models.Manager()
