@@ -169,7 +169,8 @@ class MemberProblemsDone(MemberProblems):
     class Meta:
         proxy = True
 
-    def duration(self):
+    def duration_text(self):
         #delta = self.end_at - self.start_at
         return readable_timedelta_seconds(self.duration)
+    duration_text.short_description = _('Duration')
 

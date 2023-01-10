@@ -157,18 +157,18 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
     add_to_settings_menu = False
     exclude_from_explorer = False
 
-    list_display = ('member', 'problem', 'duration')
+    list_display = ('member', 'problem', 'duration_text')
 
     def get_queryset(self, request):
         current_user = get_current_user()
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
                 #return MemberProblems.objects.filter(member__user=current_user)
-                return MemberProblemsDone.objects.filter(member__user=current_user)
+                return MemberProblemsDone.objects.filter(member__user=current_user).order_by('duration')
             else:
-                return MemberProblemsDone.objects.filter(member__organization=current_user.organization)
+                return MemberProblemsDone.objects.filter(member__organization=current_user.organization).order_by('duration')
         else:
-            return MemberProblemsDone.objects.all()
+            return MemberProblemsDone.objects.all().order_by('duration')
 
 
 class MonitorAdminGroup(ModelAdminGroup):
