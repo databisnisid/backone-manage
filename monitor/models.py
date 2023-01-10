@@ -159,3 +159,6 @@ class MemberProblemsDone(MemberProblems):
     class Meta:
         proxy = True
 
+    def duration(self):
+        delta = self.end_at - self.end_at
+        return delta.seconds

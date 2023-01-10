@@ -137,7 +137,7 @@ class MemberProblemsAdmin(ModelAdmin):
     add_to_settings_menu = False
     exclude_from_explorer = False
 
-    list_display = ('member', 'problem')
+    list_display = ('member', 'problem', 'start_at')
 
     def get_queryset(self, request):
         current_user = get_current_user()
@@ -158,7 +158,7 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
     add_to_settings_menu = False
     exclude_from_explorer = False
 
-    list_display = ('member', 'problem')
+    list_display = ('member', 'problem', 'duration')
 
     def get_queryset(self, request):
         current_user = get_current_user()
