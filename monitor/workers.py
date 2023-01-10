@@ -59,10 +59,9 @@ def monitor_members() :
                 if problems:
                     for problem in problems:
                         try:
-                            member_problem = MemberProblems.objects.get(
+                            member_problem = MemberProblems.unsolved.get(
                                 member=member,
-                                problem=problem,
-                                is_done=False
+                                problem=problem
                             )
                         except ObjectDoesNotExist:
                             member_problem = MemberProblems()
@@ -78,7 +77,7 @@ def monitor_members() :
                             problem
                         ))
                 else:
-                    member_problems = MemberProblems.objects.filter(
+                    member_problems = MemberProblems.unsolved.filter(
                         member=member
                     )
                     for member_problem in member_problems:
