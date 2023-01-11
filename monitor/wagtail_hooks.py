@@ -6,7 +6,7 @@ from .models import MemberProblems, MonitorItems, MonitorRules, MemberProblemsDo
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
-from django.config import settings
+from django.conf import settings
 
 
 class MemberProblemsButtonHelper(ButtonHelper):
