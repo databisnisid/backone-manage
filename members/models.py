@@ -358,15 +358,18 @@ class Members(models.Model):
 
             first_line = '{} ({})'.format(model, num_core)
             second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
+            uptime_load = get_uptime_string(uptime)
+            uptime_split = uptime_load.split(', load average:')
+            uptime_string = uptime_split[0]
             if uptime:
                 load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
             else:
                 load_1 = load_5 = load_15 = 0.0
 
             if self.is_mqtt_online():
-                text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - CPU: {}% - MEM: {}%</small>", first_line, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
+                text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - CPU: {}% - MEM: {}%</small>", first_line, second_line, is_rcall, uptime_string, round(load_5, 1), round(memory_usage, 1))
                 if load_5 > 50 or memory_usage > 50:
-                    text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", first_line, second_line, is_rcall, get_uptime_string(uptime), round(load_5, 1), round(memory_usage, 1))
+                    text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", first_line, second_line, is_rcall, uptime_string, round(load_5, 1), round(memory_usage, 1))
 
             else:
                 text = format_html("<small style='color: red;'>{}<br />{} <br />LO: {} ago</small>", first_line, second_line, readable_timedelta(mqtt.updated_at))
