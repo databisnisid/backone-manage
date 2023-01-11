@@ -364,7 +364,7 @@ class Members(models.Model):
 
             first_line = "<small style='color: {};'>{} ({})<br />".format(color, model, num_core)
             second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
-            second_line = "{} <img src='/static/admin/img/{}'><br />".format(is_rcall, second_line_var)
+            second_line = "{} <img src='/static/admin/img/{}'><br />".format(second_line_var, is_rcall)
 
             uptime_load = get_uptime_string(uptime)
             uptime_split = uptime_load.split('load average:')
