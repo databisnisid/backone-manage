@@ -360,8 +360,8 @@ class Members(models.Model):
             second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
             uptime_load = get_uptime_string(uptime)
             uptime_split = uptime_load.split('load average:')
-            print(uptime_split)
-            uptime_string = uptime_split[0]
+            #print(uptime_split)
+            uptime_string = uptime_split[0].replace(', ', '')
             if uptime:
                 load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
             else:
