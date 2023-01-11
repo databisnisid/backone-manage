@@ -156,9 +156,8 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
     menu_icon = 'tick-inverse'
     add_to_settings_menu = False
     exclude_from_explorer = False
-    inspect_view_enabled = True
 
-    list_display = ('member', 'problem', 'duration_text')
+    list_display = ('member', 'problem', 'duration_text', 'start_at', 'end_at')
 
     def get_queryset(self, request):
         current_user = get_current_user()
