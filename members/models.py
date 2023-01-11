@@ -359,6 +359,7 @@ class Members(models.Model):
             first_line = '{} ({})'.format(model, num_core)
             second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
             uptime_load = get_uptime_string(uptime)
+            print(uptime_load)
             uptime_split = uptime_load.split(', load average:')
             uptime_string = uptime_split[0]
             if uptime:
