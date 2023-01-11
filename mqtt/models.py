@@ -37,8 +37,8 @@ class Mqtt(models.Model):
     def save(self):
         if self.packet_loss_string:
             packet_loss_split = self.packet_loss_string.split(',')
-            packet_lost_digit_string = packet_loss_split[2].split('%')
-            self.packet_loss = float(packet_lost_digit_string[0])
+            packet_loss_digit_string = packet_loss_split[2].split('%')
+            self.packet_loss = float(packet_loss_digit_string[0])
 
         if self.round_trip_string:
             round_trip_string = self.round_trip_string.split('=')
