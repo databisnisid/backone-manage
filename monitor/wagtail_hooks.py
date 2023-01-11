@@ -156,6 +156,7 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
     menu_icon = 'tick-inverse'
     add_to_settings_menu = False
     exclude_from_explorer = False
+    inspect_view_enabled = True
 
     list_display = ('member', 'problem', 'duration_text')
 
