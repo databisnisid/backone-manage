@@ -16,7 +16,12 @@ class Mqtt(models.Model):
     uptime = models.CharField(_('Uptime'), max_length=100, blank=True, null=True)
     serialnumber = models.CharField(_('SN'), max_length=100, blank=True, null=True)
     num_core = models.IntegerField(_('Number of Core'), default=1)
+    cpu_usage = models.FloatField(_('CPU Usage'), default=0.0)
     memory_usage = models.FloatField(_('Memory Usage'), default=0.0)
+    packet_loss_string = models.CharField(_('Packet Loss String'),  max_length=100, blank=True, null=True)
+    round_trip_string = models.CharField(_('Round Trip String'),  max_length=100, blank=True, null=True)
+    packet_loss = models.FloatField(_('Packet Lost'), default=0)
+    round_trip = models.FloatField(_('Round Trip'), default=0)
 
     class Meta:
         db_table = 'mqtt'
@@ -28,4 +33,22 @@ class Mqtt(models.Model):
 
     def __str__(self):
         return '{}'.format(self.member_id)
+
+    def save(self):
+        if self.packet_loss_string:
+            packet_loss_split = self.packet_loss_string.split(',')
+            packet_lost_digit_string = packet_loss_split[2].split('%')
+            self.packet_lost = float(packet_lost_digit_string[0])
+
+        if self.round_trip_string:
+            round_trip_string = self.round_trip_string.split('=')
+            round_trip_digit = round_trip_string[1].split('/')
+            self.round_trip = float(round_trip_digit[1])
+
+        if self.uptime:
+            load_string = self.uptime.split('load average:')
+            load_digit = load_string[1].split(',')
+            self.cpu_usage = float(load_digit[1]) / self.num_core * 100
+
+        return super(Mqtt, self).save()
 

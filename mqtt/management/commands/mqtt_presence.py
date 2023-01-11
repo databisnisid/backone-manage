@@ -14,6 +14,7 @@ def on_connect(client, userdata, keepalive, bind_address):
 def on_message(client, userdata, message):
     current_time = timezone.now()
     msg = str(message.payload.decode("utf-8"))
+
     print(str(current_time) ,msg)
     mqtt_msg = msg.split(';')
     member_id = mqtt_msg[0]
@@ -44,12 +45,26 @@ def on_message(client, userdata, message):
     except IndexError:
         num_core = 1
 
+    # Memory Usage
     try:
         mqtt_msg[10]
         memory_usage = float(mqtt_msg[10]) if mqtt_msg[10] else 0.0
-    #except IndexError or ValueError:
     except IndexError:
         memory_usage = 0.0
+
+    # Packet Loss
+    try:
+        mqtt_msg[11]
+        packet_loss_string = mqtt_msg[11]
+    except IndexError:
+        packet_loss_string = None
+
+    # Round Trip
+    try:
+        mqtt_msg[12]
+        round_trip_string = mqtt_msg[12]
+    except IndexError:
+        round_trip_string = None
 
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
 
@@ -100,6 +115,14 @@ def on_message(client, userdata, message):
 
     if mqtt_member.memory_usage != memory_usage:
         mqtt_member.memory_usage = memory_usage
+        is_save = True
+
+    if mqtt_member.packet_loss_string != packet_loss_string:
+        mqtt_member.packet_loss_string = packet_loss_string
+        is_save = True
+
+    if mqtt_member.round_trip_string != round_trip_string:
+        mqtt_member.round_trip_string = round_trip_string
         is_save = True
 
     if is_save:
