@@ -6,6 +6,7 @@ from .models import MemberProblems, MonitorItems, MonitorRules, MemberProblemsDo
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
+from django.config import settings
 
 
 class MemberProblemsButtonHelper(ButtonHelper):
@@ -164,11 +165,11 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
                 #return MemberProblems.objects.filter(member__user=current_user)
-                return MemberProblemsDone.objects.filter(member__user=current_user, duration__gt=600).order_by('-duration')
+                return MemberProblemsDone.objects.filter(member__user=current_user, duration__gt=settings.MONITOR_DELAY).order_by('-duration')
             else:
-                return MemberProblemsDone.objects.filter(member__organization=current_user.organization, duration__gt=600).order_by('-duration')
+                return MemberProblemsDone.objects.filter(member__organization=current_user.organization, duration__gt=settings.MONITOR_DELAY).order_by('-duration')
         else:
-            return MemberProblemsDone.objects.filter(duration__gt=600).order_by('-duration')
+            return MemberProblemsDone.objects.filter(duration__gt=settings.MONITOR_DELAY).order_by('-duration')
 
 
 class MonitorAdminGroup(ModelAdminGroup):

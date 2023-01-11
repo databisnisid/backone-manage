@@ -192,6 +192,9 @@ MQTT_PORT = str(os.getenv('MQTT_PORT'))
 MQTT_TOPIC_PRESENCE = str(os.getenv('MQTT_TOPIC_PRESENCE'))
 MQTT_TOPIC_RCALL = str(os.getenv('MQTT_TOPIC_RCALL'))
 
+# Monitor
+MONITOR_DELAY = 720 # 12 minutes
+
 
 # SSH
 SSH_DEFAULT_USER = str(os.getenv('SSH_DEFAULT_USER'))
