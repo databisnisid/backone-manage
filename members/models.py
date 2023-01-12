@@ -365,6 +365,14 @@ class Members(models.Model):
             first_line = "<small style='color: {};'>{} ({})<br />".format(color, model, num_core)
             second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
             second_line = "{} <img src='/static/admin/img/{}'><br />".format(second_line_var, is_rcall)
+            third_line = "UP: {} - CPU: {}% - MEM: {}%".format(uptime_string, round(load_5, 1), round(memory_usage, 1))
+
+            if self.mqtt.packet_loss_string:
+                third_line += " - PL: {}%".format(self.mqtt.packet_loss)
+            if self.mqtt.round_trip_string:
+                third_line += " - RT: {}%".format(self.mqtt.round_trip)
+
+            third_line += "</small>"
 
             uptime_load = get_uptime_string(uptime)
             uptime_split = uptime_load.split('load average:')
@@ -376,10 +384,12 @@ class Members(models.Model):
                 load_1 = load_5 = load_15 = 0.0
 
             if self.is_mqtt_online():
-                text = format_html(first_line + second_line + "UP: {} - CPU: {}% - MEM: {}%</small>", uptime_string, round(load_5, 1), round(memory_usage, 1))
+                text = format_html(first_line + second_line + third_line)
+                #text = format_html(first_line + second_line + "UP: {} - CPU: {}% - MEM: {}%</small>", uptime_string, round(load_5, 1), round(memory_usage, 1))
                 #text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - CPU: {}% - MEM: {}%</small>", first_line, second_line, is_rcall, uptime_string, round(load_5, 1), round(memory_usage, 1))
                 if load_5 > 50 or memory_usage > 50:
-                    text = format_html(first_line + second_line + "UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", uptime_string, round(load_5, 1), round(memory_usage, 1))
+                    text = format_html(first_line + second_line + third_line)
+                    #text = format_html(first_line + second_line + "UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", uptime_string, round(load_5, 1), round(memory_usage, 1))
                     #text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", first_line, second_line, is_rcall, uptime_string, round(load_5, 1), round(memory_usage, 1))
 
             else:
