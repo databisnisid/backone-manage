@@ -355,6 +355,8 @@ class Members(models.Model):
             serialnumber = mqtt.serialnumber
             num_core = mqtt.num_core
             memory_usage = mqtt.memory_usage
+            packet_loss = mqtt.packet_loss
+            round_trip = mqtt.round_trip
 
             #first_line = '{} ({})'.format(model, num_core)
             #second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
@@ -376,14 +378,38 @@ class Members(models.Model):
             else:
                 load_1 = load_5 = load_15 = 0.0
 
-            third_line = "UP: {} - CPU: {}% - MEM: {}%".format(uptime_string, round(load_5, 1), round(memory_usage, 1))
 
+            third_line = "UP: {}".format(uptime_string)
+
+            # CPU
+            color = 'green'
+            if load_5 > 50:
+                color = 'red'
+            third_line += " - <span style='color: {};>'CPU: {}%</span>".format(round(load_5, 1))
+
+            # MEMORY
+            color = 'green'
+            if memory_usage > 50:
+                color = 'red'
+            third_line += " - <span style='color: {};>'MEM: {}%</span>".format(memory_usage)
+
+            # PACKET LOSS
+            if packet_loss > 5:
+                color = 'red'
+            third_line += " - <span style='color: {};>'PL: {}%</span>".format(packet_loss)
+
+            # ROUND_TRIP
+            if round_trip > 200:
+                color = 'red'
+            third_line += " - <span style='color: {};>'RT: {}%</span>".format(round_trip)
+
+            third_line += "</small>"
+            '''
             if self.mqtt.packet_loss_string:
                 third_line += " - PL: {}%".format(self.mqtt.packet_loss)
             if self.mqtt.round_trip_string:
-                third_line += " - RT: {}%".format(self.mqtt.round_trip)
-
-            third_line += "</small>"
+                third_line += " - RT: {}ms".format(round(self.mqtt.round_trip, 1))
+            '''
 
             uptime_load = get_uptime_string(uptime)
 
@@ -391,8 +417,8 @@ class Members(models.Model):
                 text = format_html(first_line + second_line + third_line)
                 #text = format_html(first_line + second_line + "UP: {} - CPU: {}% - MEM: {}%</small>", uptime_string, round(load_5, 1), round(memory_usage, 1))
                 #text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - CPU: {}% - MEM: {}%</small>", first_line, second_line, is_rcall, uptime_string, round(load_5, 1), round(memory_usage, 1))
-                if load_5 > 50 or memory_usage > 50:
-                    text = format_html(first_line + second_line + third_line)
+                #if load_5 > 50 or memory_usage > 50:
+                #    text = format_html(first_line + second_line + third_line)
                     #text = format_html(first_line + second_line + "UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", uptime_string, round(load_5, 1), round(memory_usage, 1))
                     #text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", first_line, second_line, is_rcall, uptime_string, round(load_5, 1), round(memory_usage, 1))
 
@@ -401,5 +427,5 @@ class Members(models.Model):
                 #text = format_html("<small style='color: red;'>{}<br />{} <br />LO: {} ago</small>", first_line, second_line, readable_timedelta(mqtt.updated_at))
 
         return text
-    model_release.short_description = _('Model, SN, Release')
+    model_release.short_description = _('Parameters')
 
