@@ -391,7 +391,7 @@ class Members(models.Model):
             color = 'green'
             if memory_usage > 50:
                 color = 'red'
-            third_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, memory_usage)
+            third_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(memory_usage, 1))
 
             # PACKET LOSS
             if packet_loss > 5:
@@ -401,7 +401,7 @@ class Members(models.Model):
             # ROUND_TRIP
             if round_trip > 200:
                 color = 'red'
-            third_line += " - <span style='color: {};'>RT: {}%</span>".format(color, round_trip)
+            third_line += " - <span style='color: {};'>RT: {}%</span>".format(color, round(round_trip, 1))
 
             third_line += "</small>"
             '''
