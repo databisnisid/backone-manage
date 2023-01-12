@@ -144,11 +144,11 @@ class MemberProblemsAdmin(ModelAdmin):
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
                 #return MemberProblems.objects.filter(member__user=current_user)
-                return MemberProblems.unsolved.filter(member__user=current_user).order_by('-start_at')
+                return MemberProblems.unsolved.filter(member__user=current_user).order_by('start_at')
             else:
-                return MemberProblems.unsolved.filter(member__organization=current_user.organization).order_by('-start_at')
+                return MemberProblems.unsolved.filter(member__organization=current_user.organization).order_by('start_at')
         else:
-            return MemberProblems.unsolved.all().order_by('-start_at')
+            return MemberProblems.unsolved.all().order_by('start_at')
 
 class MemberProblemsHistoryAdmin(ModelAdmin):
     model = MemberProblemsDone
