@@ -169,7 +169,7 @@ class MemberProblems(models.Model):
     duration_text_undone.short_description = _('Duration')
 
     def get_network(self):
-        return self.network
+        return self.member.network
     get_network.short_description = _('Network')
 
 
