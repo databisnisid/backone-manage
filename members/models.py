@@ -394,14 +394,16 @@ class Members(models.Model):
             third_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(memory_usage, 1))
 
             # PACKET LOSS
-            if 'packet loss' in self.mqtt.packet_loss_string:
+            #if 'packet loss' in self.mqtt.packet_loss_string:
+            if self.mqtt.packet_loss_string:
                 color = 'green'
                 if packet_loss > 5:
                     color = 'red'
                 third_line += " - <span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
 
             # ROUND_TRIP
-            if 'round-trip' in self.mqtt.round_trip_string:
+            #if 'round-trip' in self.mqtt.round_trip_string:
+            if self.mqtt.round_trip_string:
                 color = 'green'
                 if round_trip > 200:
                     color = 'red'
