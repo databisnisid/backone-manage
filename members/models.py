@@ -405,7 +405,7 @@ class Members(models.Model):
                 color = 'green'
                 if round_trip > 200:
                     color = 'red'
-                third_line += " - <span style='color: {};'>RT: {}%</span>".format(color, round(round_trip, 1))
+                third_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
 
             third_line += "</small>"
             '''
