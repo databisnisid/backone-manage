@@ -388,10 +388,11 @@ class Members(models.Model):
             third_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, round(load_5, 1))
 
             # MEMORY
-            color = 'green'
-            if memory_usage > 50:
-                color = 'red'
-            third_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(memory_usage, 1))
+            if self.mqtt.memory_usage:
+                color = 'green'
+                if memory_usage > 50:
+                    color = 'red'
+                third_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(memory_usage, 1))
 
             # PACKET LOSS
             #if 'packet loss' in self.mqtt.packet_loss_string:

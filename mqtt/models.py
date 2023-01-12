@@ -38,17 +38,29 @@ class Mqtt(models.Model):
         if self.packet_loss_string:
             packet_loss_split = self.packet_loss_string.split(',')
             packet_loss_digit_string = packet_loss_split[2].split('%')
-            self.packet_loss = float(packet_loss_digit_string[0])
+
+            try:
+                self.packet_loss = float(packet_loss_digit_string[0])
+            except:
+                self.packet_loss = 0
 
         if self.round_trip_string:
             round_trip_string = self.round_trip_string.split('=')
             round_trip_digit = round_trip_string[1].split('/')
-            self.round_trip = float(round_trip_digit[1])
+
+            try:
+                self.round_trip = float(round_trip_digit[1])
+            except:
+                self.round_trip = 0
 
         if self.uptime:
             load_string = self.uptime.split('load average:')
             load_digit = load_string[1].split(',')
-            self.cpu_usage = float(load_digit[1]) / self.num_core * 100
+
+            try:
+                self.cpu_usage = float(load_digit[1]) / self.num_core * 100
+            except:
+                self.cpu_usage = 0
 
         return super(Mqtt, self).save()
 
