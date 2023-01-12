@@ -365,6 +365,17 @@ class Members(models.Model):
             first_line = "<small style='color: {};'>{} ({})<br />".format(color, model, num_core)
             second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
             second_line = "{} <img src='/static/admin/img/{}'><br />".format(second_line_var, is_rcall)
+
+            uptime_load = get_uptime_string(uptime)
+            uptime_split = uptime_load.split('load average:')
+            #print(uptime_split)
+            uptime_string = uptime_split[0][:-3:]
+
+            if uptime:
+                load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
+            else:
+                load_1 = load_5 = load_15 = 0.0
+
             third_line = "UP: {} - CPU: {}% - MEM: {}%".format(uptime_string, round(load_5, 1), round(memory_usage, 1))
 
             if self.mqtt.packet_loss_string:
@@ -375,13 +386,6 @@ class Members(models.Model):
             third_line += "</small>"
 
             uptime_load = get_uptime_string(uptime)
-            uptime_split = uptime_load.split('load average:')
-            #print(uptime_split)
-            uptime_string = uptime_split[0][:-3:]
-            if uptime:
-                load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
-            else:
-                load_1 = load_5 = load_15 = 0.0
 
             if self.is_mqtt_online():
                 text = format_html(first_line + second_line + third_line)
