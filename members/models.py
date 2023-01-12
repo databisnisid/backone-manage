@@ -252,10 +252,10 @@ class Members(models.Model):
                 ip_path = path['address'].split('/')
                 if ip_path[0] not in ip_peers:
                     ip_info = "<a href='https://ipinfo.io/{}'>{}</a>".format(ip_path[0], ip_path[0])
-                    #ip_peers.append(ip_path[0])
-                    ip_peers.append(ip_info)
+                    ip_peers.append(ip_path[0])
+                    ip_peers_html.append(ip_info)
 
-            result = '<br />'.join([str(p) for p in ip_peers])
+            result = '<br />'.join([str(p) for p in ip_peers_html])
             return format_html('<small>' + result + '</small>')
         else:
             return ''
