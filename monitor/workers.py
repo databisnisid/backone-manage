@@ -22,6 +22,10 @@ def is_problem(mqtt, rule):
         result = is_problem_cpu(mqtt, rule.item_threshold)
     if rule.item.item_id == 'memory_usage':
         result = is_problem_memory(mqtt, rule.item_threshold)
+    if rule.item.item_id == 'packet_loss':
+        result = compare_values(mqtt.packet_loss, rule.item_threshold)
+    if rule.item.item_id == 'round_trip':
+        result = compare_values(mqtt.round_trip), rule.item_threshold)
 
     return result
 
