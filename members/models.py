@@ -385,23 +385,23 @@ class Members(models.Model):
             color = 'green'
             if load_5 > 50:
                 color = 'red'
-            third_line += " - <span style='color: {};>'CPU: {}%</span>".format(color, round(load_5, 1))
+            third_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, round(load_5, 1))
 
             # MEMORY
             color = 'green'
             if memory_usage > 50:
                 color = 'red'
-            third_line += " - <span style='color: {};>'MEM: {}%</span>".format(color, memory_usage)
+            third_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, memory_usage)
 
             # PACKET LOSS
             if packet_loss > 5:
                 color = 'red'
-            third_line += " - <span style='color: {};>'PL: {}%</span>".format(color, packet_loss)
+            third_line += " - <span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
 
             # ROUND_TRIP
             if round_trip > 200:
                 color = 'red'
-            third_line += " - <span style='color: {};>'RT: {}%</span>".format(color, round_trip)
+            third_line += " - <span style='color: {};'>RT: {}%</span>".format(color, round_trip)
 
             third_line += "</small>"
             '''
