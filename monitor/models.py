@@ -168,6 +168,10 @@ class MemberProblems(models.Model):
         return readable_timedelta_seconds(delta.seconds)
     duration_text_undone.short_description = _('Duration')
 
+    def get_network(self):
+        return self.network
+    get_network.short_description = _('Network')
+
 
 class MemberProblemsDone(MemberProblems):
 

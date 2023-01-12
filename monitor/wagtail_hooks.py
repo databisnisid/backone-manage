@@ -137,7 +137,7 @@ class MemberProblemsAdmin(ModelAdmin):
     add_to_settings_menu = False
     exclude_from_explorer = False
 
-    list_display = ('member', 'member.network' ,'problem', 'duration_text_undone')
+    list_display = ('member', 'get_network' ,'problem', 'duration_text_undone')
 
     def get_queryset(self, request):
         current_user = get_current_user()
