@@ -41,7 +41,7 @@ class Mqtt(models.Model):
 
             try:
                 self.packet_loss = float(packet_loss_digit_string[0])
-            except:
+            except ValueError:
                 self.packet_loss = 0
 
         if self.round_trip_string:
@@ -50,7 +50,7 @@ class Mqtt(models.Model):
 
             try:
                 self.round_trip = float(round_trip_digit[1])
-            except:
+            except ValueError:
                 self.round_trip = 0
 
         if self.uptime:
@@ -59,7 +59,7 @@ class Mqtt(models.Model):
 
             try:
                 self.cpu_usage = float(load_digit[1]) / self.num_core * 100
-            except:
+            except ValueError:
                 self.cpu_usage = 0
 
         return super(Mqtt, self).save()
