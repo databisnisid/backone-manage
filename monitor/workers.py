@@ -57,11 +57,13 @@ def monitor_members() :
             #mqtt = Mqtt.objects.get(member_id=member.member_id)
             mqtt = member.mqtt
             problems = []
+            is_solved = True
             if member.is_online() and ping.ping(member.ipaddress):
                 #print('Checking {} ({})'. format(member.name, member.member_id))
                 print(".", end='')
                 problems = check_members_vs_rules(member)
                 if problems:
+                    is_solved = False
                     for problem in problems:
                         try:
                             member_problem = MemberProblems.unsolved.get(
@@ -81,19 +83,20 @@ def monitor_members() :
                             member.member_id,
                             problem
                         ))
-                else:
-                    member_problems = MemberProblems.unsolved.filter(
-                        member=member
-                    )
-                    for member_problem in member_problems:
-                        member_problem.is_done = True
-                        member_problem.save()
-                        print(".")
-                        print('Solved {} ({}) - {}'. format(
-                            member.name,
-                            member.member_id,
-                            member_problem.problem
-                        ))
+
+            if is_solved:
+                member_problems = MemberProblems.unsolved.filter(
+                    member=member
+                )
+                for member_problem in member_problems:
+                    member_problem.is_done = True
+                    member_problem.save()
+                    print(".")
+                    print('Solved {} ({}) - {}'. format(
+                        member.name,
+                        member.member_id,
+                        member_problem.problem
+                    ))
 
     print(".")
     print("Fin.")
