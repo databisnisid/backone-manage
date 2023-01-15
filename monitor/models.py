@@ -173,7 +173,7 @@ class MemberProblems(models.Model):
             color = 'red'
 
         duration_html = format_html("<span style='style: {}'>{}</span>",
-                                    readable_timedelta_seconds(delta.seconds))
+                                    color, readable_timedelta_seconds(delta.seconds))
         return duration_html 
     duration_text_undone.short_description = _('Duration')
 
