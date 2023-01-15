@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.html import format_html
 from crum import get_current_user
 from accounts.models import User, Organizations
 from mqtt.models import Mqtt
@@ -7,6 +8,7 @@ from django.utils.translation import gettext as _
 from django.utils import timezone
 from config.utils import readable_timedelta_seconds
 
+DURATION_RED_ALERT = 3600
 
 class MonitorItems(models.Model):
     name = models.CharField(_('Item'), max_length=50)
@@ -165,7 +167,14 @@ class MemberProblems(models.Model):
 
     def duration_text_undone(self):
         delta = timezone.now() - timezone.localtime(self.start_at)
-        return readable_timedelta_seconds(delta.seconds)
+
+        color = 'black'
+        if delte.seconds > DURATION_RED_ALERT:
+            color = 'red'
+
+        duration_html = format_html("<span style='style: {}'>{}</span>",
+                                    readable_timedelta_seconds(delta.seconds))
+        return duration_html 
     duration_text_undone.short_description = _('Duration')
 
     def get_network(self):
