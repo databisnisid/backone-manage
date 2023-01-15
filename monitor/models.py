@@ -169,7 +169,7 @@ class MemberProblems(models.Model):
         delta = timezone.now() - timezone.localtime(self.start_at)
 
         color = 'black'
-        if delte.seconds > DURATION_RED_ALERT:
+        if delta.seconds > DURATION_RED_ALERT:
             color = 'red'
 
         duration_html = format_html("<span style='style: {}'>{}</span>",
