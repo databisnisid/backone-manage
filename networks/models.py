@@ -328,6 +328,16 @@ class NetworkRoutes(models.Model):
             except ValueError:
                 raise ValidationError(_("Wrong IP Format!"))
 
+    def get_member(self):
+        member = None
+        if self.gateway:
+            import members
+            try:
+                member = members.models.Members.objects.get(ipaddress=self.gateway)
+            except ObjectDoesNotExist:
+                member = None
+        return member
+    get_member.short_description = 'Member'
 
 DEFAULT_RULE_DEFINITION = """
 # This is a default rule set that allows IPv4 and IPv6 traffic.

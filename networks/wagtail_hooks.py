@@ -181,7 +181,7 @@ class NetworkRoutesAdmin(ModelAdmin):
     menu_icon = 'redirect'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    list_display = ('ip_network', 'gateway', 'network',)
+    list_display = ('ip_network', 'gateway', 'network', 'get_member')
     list_filter = ('network',)
     search_fields = ('ip_network', 'gateway')
     ordering = ['network', 'gateway']
