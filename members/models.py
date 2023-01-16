@@ -3,7 +3,7 @@ from crum import get_current_user
 from django.db import models
 from django.utils import timezone
 from accounts.models import User, Organizations
-from networks.models import Networks
+from networks.models import Networks, NetworkRoutes
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
@@ -310,6 +310,13 @@ class Members(models.Model):
         return online_status
     is_online.short_description = _('BackOne Online')
 
+    def get_routes(self):
+        routes = []
+        net_routes = NetworkRoutes.objects.filter(network=self.network, gateway=self.ipaddress)
+        text = format_html('<br />'.join([str(p) for p in net_routes]))
+        return text
+    get_routes.short_description = 'Routes'
+
     def is_mqtt_online(self):
         online_status = False
         if self.mqtt:
@@ -425,16 +432,9 @@ class Members(models.Model):
 
             if self.is_mqtt_online():
                 text = format_html(first_line + second_line + third_line)
-                #text = format_html(first_line + second_line + "UP: {} - CPU: {}% - MEM: {}%</small>", uptime_string, round(load_5, 1), round(memory_usage, 1))
-                #text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - CPU: {}% - MEM: {}%</small>", first_line, second_line, is_rcall, uptime_string, round(load_5, 1), round(memory_usage, 1))
-                #if load_5 > 50 or memory_usage > 50:
-                #    text = format_html(first_line + second_line + third_line)
-                    #text = format_html(first_line + second_line + "UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", uptime_string, round(load_5, 1), round(memory_usage, 1))
-                    #text = format_html("<small style='color: green;'>{}<br />{} <img src='/static/admin/img/{}'><br />UP: {} - <span style='color: red; font-weight: bold;'>CPU: {}% - MEM: {}%</span></small>", first_line, second_line, is_rcall, uptime_string, round(load_5, 1), round(memory_usage, 1))
 
             else:
                 text = format_html(first_line + second_line + "LO: {} ago</small>", readable_timedelta(mqtt.updated_at))
-                #text = format_html("<small style='color: red;'>{}<br />{} <br />LO: {} ago</small>", first_line, second_line, readable_timedelta(mqtt.updated_at))
 
         return text
     model_release.short_description = _('Parameters')
