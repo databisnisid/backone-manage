@@ -338,7 +338,7 @@ class NetworkRoutes(models.Model):
                 member = None
         #gateway_html = self.gateway
         if member:
-            gateway_html = format_html('{}<br />({})', self.gateway, member)
+            gateway_html = format_html("{}<br /><a href='members/members/?q={}'>{}</a>", self.gateway, member.member_id, member)
         else:
             gateway_html = format_html('{}', self.gateway)
 
