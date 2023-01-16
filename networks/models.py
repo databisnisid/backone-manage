@@ -339,7 +339,7 @@ class NetworkRoutes(models.Model):
         gateway_html = self.gateway
         if member:
             gateway_html += format_html('<br />{}', member)
-        return format_html('<span>{}</span>', gateway_html)
+        return format_html('<small>{}</small>', gateway_html)
     get_member.short_description = 'Gateway'
 
 DEFAULT_RULE_DEFINITION = """
