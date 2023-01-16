@@ -338,7 +338,7 @@ class NetworkRoutes(models.Model):
                 member = None
         gateway_html = self.gateway
         if member:
-            gateway_html += '<br />{}'.format(member)
+            gateway_html += format_html('<br />{}', member)
         return format_html('<span>{}</span>', gateway_html)
     get_member.short_description = 'Gateway'
 
