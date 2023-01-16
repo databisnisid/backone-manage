@@ -313,7 +313,7 @@ class Members(models.Model):
     def get_routes(self):
         routes = []
         net_routes = NetworkRoutes.objects.filter(network=self.network, gateway=self.ipaddress)
-        text = format_html('<small>{}</small>','<br />'.join([str(p) for p in net_routes]))
+        text = format_html('<small>' + '<br />'.join([str(p) for p in net_routes]) + '</small>')
         return text
     get_routes.short_description = 'Routes'
 
