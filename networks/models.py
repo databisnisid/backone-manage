@@ -336,8 +336,12 @@ class NetworkRoutes(models.Model):
                 member = members.models.Members.objects.get(ipaddress=self.gateway)
             except ObjectDoesNotExist:
                 member = None
-        return member
-    get_member.short_description = 'Member'
+        gateway_html = self.gateway
+        if member:
+            gateway_html += '<br />{}'.format(member)
+        #return member
+        return format_html(gateway_html) 
+    get_member.short_description = 'Gateway'
 
 DEFAULT_RULE_DEFINITION = """
 # This is a default rule set that allows IPv4 and IPv6 traffic.
