@@ -337,9 +337,13 @@ class NetworkRoutes(models.Model):
             except ObjectDoesNotExist:
                 member = None
         #gateway_html = self.gateway
-        #if member:
-            #gateway_html += format_html('<br />{}', member)
-        return format_html('{}<br />{}', self.gateway, member)
+        if member:
+            gateway_html = format_html('{}<br />({})', self.gateway, member)
+        else:
+            gateway_html = format_html('{}', self.gateway)
+
+        return gateway_html
+
     get_member.short_description = 'Gateway'
 
 DEFAULT_RULE_DEFINITION = """
