@@ -1,4 +1,4 @@
-from controllers.models import zt_import_members
+from controllers.workers import zt_import_members
 from django.core.exceptions import ObjectDoesNotExist
 from networks.models import Networks, NetworkRoutes
 
