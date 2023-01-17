@@ -17,6 +17,18 @@ def zt_import_members(network):
     """
     zt = Zerotier(network.controller.uri, network.controller.token)
 
+    '''
+    zt = Zerotier(network.controller.uri, network.controller.token)
+    zt_members = zt.list_members(network.network_id)
+    db_members = Members.objects.filter(network=network,
+                                        configuration=None).values_list('member_id', flat=True)
+    zt_members = to_list(zt_members)
+    db_members = to_list(db_members)
+    # print('ZT: ', zt_members)
+    # print('DB: ', db_members)
+    new_members = set(zt_members) ^ set(db_members)
+    '''
+
     members = zt.list_members(network.network_id)
 
     for member in members:
@@ -146,6 +158,7 @@ def zt_import_all_controllers():
 
 def zt_synchronize_network(network):
     """
+    Is it used? Please review!!!
     Scheduled job hourly
     Call by zt_synchronize_all_networks()
     :param network:
@@ -166,7 +179,11 @@ def zt_synchronize_network(network):
             try:
                 zt_members.index(new_member)
                 try:
-                    member = Members.objects.get(member_id=new_member, is_authorized=True)
+                    member = Members.objects.get(member_id=new_member,
+                                                 is_authorized=True)
+                    #member = Members.objects.get(member_id=new_member,
+                                                 #is_authorized=True,
+                                                 #network=network)
                     member.save()
                     print('Adding New Members :', new_member)
                 except ObjectDoesNotExist:
