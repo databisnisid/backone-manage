@@ -8,6 +8,52 @@ from config.utils import get_user
 from django.utils.timezone import localtime
 
 
+
+def zt_import_members_delete(network):
+    """
+    This is for first time when importing the controllers
+    Call by zt_import_networks()
+    :param network:
+    :return:
+    """
+    zt = Zerotier(network.controller.uri, network.controller.token)
+
+    '''
+    zt = Zerotier(network.controller.uri, network.controller.token)
+    zt_members = zt.list_members(network.network_id)
+    db_members = Members.objects.filter(network=network,
+                                        configuration=None).values_list('member_id', flat=True)
+    zt_members = to_list(zt_members)
+    db_members = to_list(db_members)
+    # print('ZT: ', zt_members)
+    # print('DB: ', db_members)
+    new_members = set(zt_members) ^ set(db_members)
+    '''
+
+    members = zt.list_members(network.network_id)
+
+    for member in members:
+        member_info = zt.get_member_info(network.network_id, member)
+        """
+        Only authorized member is imported
+        """
+
+        try:
+            mem = Members.objects.get(member_id=member, network=network)
+        except ObjectDoesNotExist:
+            mem = Members()
+            mem.name = 'NET-' + network.network_id + ' MEMBER-' +  member
+
+        ip_address_list = ','.join([str(ip) for ip in member_info['ipAssignments']])
+        mem.ipaddress = ip_address_list
+        mem.member_id = member_info['id']
+        mem.is_bridge = member_info['activeBridge']
+        mem.is_no_auto_ip = member_info['noAutoAssignIps']
+        mem.network = network
+        #print(mem.member_id)
+        mem.save()
+
+
 def zt_import_members(network):
     """
     This is for first time when importing the controllers
