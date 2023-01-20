@@ -301,7 +301,7 @@ class Members(models.Model):
         #return text
         return format_html(self.list_ipaddress() + '<br />' + text)
 
-    member_status.short_description = _('Status')
+    member_status.short_description = _('Member Status   ')
 
     def is_online(self):
         online_status = False
