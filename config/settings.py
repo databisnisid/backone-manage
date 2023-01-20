@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'wagtail',
     'modelcluster',
     'taggit',
+    'wagtailgeowidget',
     'wagtail.contrib.modeladmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -200,3 +201,7 @@ MONITOR_DELAY = 720 # 12 minutes
 SSH_DEFAULT_USER = str(os.getenv('SSH_DEFAULT_USER'))
 SSH_DEFAULT_PASS = str(os.getenv('SSH_DEFAULT_PASS'))
 
+# GOOGLE_MAPS
+GOOGLE_MAPS_V3_APIKEY = str(os.getenv('GOOGLE_MAPS_V3_APIKEY'))
+GEO_WIDGET_DEFAULT_LOCATION = {'lat': -6.208607177377037, 'lng': 106.81812009975364}
+GEO_WIDGET_ZOOM = 12

@@ -31,6 +31,7 @@ sqlparse==0.4.2
 tablib==3.2.1
 telepath==0.2
 urllib3==1.26.11
+wagtailgeowidget==7.0.0
 wagtail==4.1.1
 webencodings==0.5.1
 Willow==1.4.1

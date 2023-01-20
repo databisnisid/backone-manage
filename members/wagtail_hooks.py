@@ -6,6 +6,8 @@ from .models import Members, MemberPeers
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
+from wagtailgeowidget import geocoders
+from wagtailgeowidget.panels import GeoAddressPanel, GoogleMapsPanel
 #from django.forms import HiddenInput
 #from django.core.exceptions import ObjectDoesNotExist
 #from wagtail.admin.forms import WagtailAdminModelForm
@@ -205,6 +207,10 @@ class MembersAdmin(ModelAdmin):
                             heading=_('Network Name and Description')),
             MultiFieldPanel([FieldPanel('member_id'), FieldPanel('network')],
                             heading=_('Member ID and Network')),
+            MultiFieldPanel([
+                GeoAddressPanel("address", geocoder=geocoders.GOOGLE_MAPS),
+                GoogleMapsPanel('location', address_field='address'),
+            ], _('Geo details')),
             # MultiFieldPanel([FieldPanel('is_authorized'), FieldPanel('ipaddress')],
             #                heading=_('Authorization and IP Address')),
         ]
