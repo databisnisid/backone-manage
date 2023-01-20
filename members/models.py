@@ -263,7 +263,7 @@ class Members(models.Model):
         else:
             return ''
 
-    list_peers.short_description = _('Peers')
+    list_peers.short_description = _('Peers          ')
 
     def member_status(self):
         peers = to_dictionary('{}')
@@ -318,7 +318,7 @@ class Members(models.Model):
         net_routes = NetworkRoutes.objects.filter(network=self.network, gateway=self.ipaddress)
         text = format_html('<small>' + '<br />'.join([str(p) for p in net_routes]) + '</small>')
         return text
-    get_routes.short_description = 'Routes'
+    get_routes.short_description = _('Routes        ')
 
     def is_mqtt_online(self):
         online_status = False
@@ -440,7 +440,7 @@ class Members(models.Model):
                 text = format_html(first_line + second_line + "LO: {} ago</small>", readable_timedelta(mqtt.updated_at))
 
         return text
-    model_release.short_description = _('Parameters')
+    model_release.short_description = _('Parameters             ')
 
     def member_name_with_address(self):
         text = self.name
