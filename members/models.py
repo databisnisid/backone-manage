@@ -299,7 +299,7 @@ class Members(models.Model):
                 text = format_html("<small style='color: red;'>OFFLINE</small>")
 
         #return text
-        return self.list_ipaddress + '<br />' + text
+        return self.list_ipaddress() + '<br />' + text
 
     member_status.short_description = _('Status')
 
