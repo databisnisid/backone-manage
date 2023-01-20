@@ -441,3 +441,10 @@ class Members(models.Model):
         return text
     model_release.short_description = _('Parameters')
 
+    def member_name_with_address(self):
+        text = self.name
+        if self.address:
+            text = format_html('{}<br /><small>{}</small>', self.name, self.address)
+        return text
+    member_name_with_address.short_description = _('Member Name')
+
