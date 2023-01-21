@@ -281,7 +281,7 @@ class Members(models.Model):
 
             #text = format_html("<small style='color: green;'>ONLINE ({})<br />{}({}ms)<br />{}</small>",
             #                   version, peers['role'], str(latency), direct_or_relay)
-            text = format_html("<small style='color: green;'>ONLINE ({})({}ms)</small>",
+            text = format_html("<small style='color: green;'>ONLINE ({}/{}ms)</small>",
                                version, str(latency))
         else:
             controller_configuration = to_dictionary(self.network.controller.configuration)
