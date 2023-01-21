@@ -413,7 +413,7 @@ class Members(models.Model):
                 color = 'green'
                 if packet_loss > 5:
                     color = 'red'
-                third_line += " - <span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
+                third_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
 
             # ROUND_TRIP
             #if 'round-trip' in self.mqtt.round_trip_string:
@@ -445,7 +445,7 @@ class Members(models.Model):
     def member_name_with_address(self):
         text = self.name
         if self.address:
-            text = format_html('{}<br /><small>{}</small>', self.name, self.address)
+            text = format_html('{}<br /><small>{}</small>', self.name, self.address.replace(',','<br />'))
         return text
     member_name_with_address.short_description = _('Member Name')
 
