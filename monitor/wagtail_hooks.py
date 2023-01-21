@@ -1,12 +1,13 @@
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, ModelAdminGroup, modeladmin_register, ButtonHelper, PermissionHelper)
 from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
-
 from .models import MemberProblems, MonitorItems, MonitorRules, MemberProblemsDone
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
 from django.conf import settings
+#from django.utils import timezone
+from datetime import datetime, timedelta
 
 
 class MemberProblemsButtonHelper(ButtonHelper):
@@ -141,14 +142,15 @@ class MemberProblemsAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         current_user = get_current_user()
+        problem_time = datetime.now() - timedelta(seconds=settings.MONITOR_DELAY)
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
                 #return MemberProblems.objects.filter(member__user=current_user)
-                return MemberProblems.unsolved.filter(member__user=current_user).order_by('start_at')
+                return MemberProblems.unsolved.filter(member__user=current_user, start_at__lt=problem_time).order_by('start_at')
             else:
-                return MemberProblems.unsolved.filter(member__organization=current_user.organization).order_by('start_at')
+                return MemberProblems.unsolved.filter(member__organization=current_user.organization, start_at__lt=problem_time).order_by('start_at')
         else:
-            return MemberProblems.unsolved.all().order_by('start_at')
+            return MemberProblems.unsolved.filter(start_at__lt=problem_time).order_by('start_at')
 
 class MemberProblemsHistoryAdmin(ModelAdmin):
     model = MemberProblemsDone
