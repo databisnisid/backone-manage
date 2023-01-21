@@ -393,7 +393,7 @@ class Members(models.Model):
             color = 'green'
             if 'min' in uptime_string_first[0]:
                 color = 'red'
-            third_line = "<span style='color: {};>'UP: {}</span>".format(color, uptime_string)
+            third_line = "<span style='color: {};''>UP: {}</span>".format(color, uptime_string)
 
             if uptime:
                 load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
