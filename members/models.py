@@ -276,13 +276,17 @@ class Members(models.Model):
 
             if latency < 0:
                 direct_or_relay = 'RELAY'
+                text = format_html("<small style='color: green;'>{} ({})</small>",
+                                    direct_or_relay, version)
             else:
                 direct_or_relay = 'DIRECT'
+                text = format_html("<small style='color: green;'>{} ({}/{}ms)</small>",
+                                    direct_or_relay, version, str(latency))
 
             #text = format_html("<small style='color: green;'>ONLINE ({})<br />{}({}ms)<br />{}</small>",
             #                   version, peers['role'], str(latency), direct_or_relay)
-            text = format_html("<small style='color: green;'>ONLINE ({}/{}ms)</small>",
-                               version, str(latency))
+            #text = format_html("<small style='color: green;'>{} ({}/{}ms)</small>",
+            #                   direct_or_relay, version, str(latency))
         else:
             controller_configuration = to_dictionary(self.network.controller.configuration)
             if self.peers:
