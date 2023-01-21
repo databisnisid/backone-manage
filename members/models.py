@@ -445,7 +445,8 @@ class Members(models.Model):
     def member_name_with_address(self):
         text = self.name
         if self.address:
-            text = format_html('{}<br /><small>{}</small>', self.name, self.address.replace(',','<br />'))
+            address_html = format_html(self.address.replace(',', '<br />'))
+            text = format_html('{}<br /><small>{}</small>', self.name, address_html)
         return text
     member_name_with_address.short_description = _('Member Name')
 
