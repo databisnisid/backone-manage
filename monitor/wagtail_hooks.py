@@ -6,8 +6,8 @@ from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
 from django.conf import settings
-#from django.utils import timezone
-from datetime import datetime, timedelta
+from django.utils import timezone
+#from datetime import datetime, timedelta
 
 
 class MemberProblemsButtonHelper(ButtonHelper):
@@ -142,7 +142,8 @@ class MemberProblemsAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         current_user = get_current_user()
-        problem_time = datetime.now() - timedelta(seconds=settings.MONITOR_DELAY)
+        #problem_time = datetime.now() - timedelta(seconds=settings.MONITOR_DELAY)
+        problem_time = timezone.now() - timezone.timedelta(seconds=settings.MONITOR_DELAY)
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
                 #return MemberProblems.objects.filter(member__user=current_user)
