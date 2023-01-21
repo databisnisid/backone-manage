@@ -388,13 +388,19 @@ class Members(models.Model):
             #print(uptime_split)
             uptime_string = uptime_split[0][:-3:]
 
+            uptime_string_first = uptime_string.split(',')
+
+            color = 'green'
+            if 'min' in uptime_string_first[0]:
+                color = 'red'
+            third_line = "<span style='color: {};>'UP: {}</span>".format(color, uptime_string)
+
             if uptime:
                 load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
             else:
                 load_1 = load_5 = load_15 = 0.0
 
-
-            third_line = "UP: {}".format(uptime_string)
+            #third_line = "UP: {}".format(uptime_string)
 
             # CPU
             color = 'green'
