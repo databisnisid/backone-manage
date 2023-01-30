@@ -7,7 +7,7 @@ from networks.models import Networks, NetworkRoutes
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from config.utils import to_dictionary, get_cpu_usage, get_uptime_string, get_string_between, readable_timedelta
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
@@ -143,6 +143,8 @@ class Members(models.Model):
             member_peers = MemberPeers.objects.get(member_id=self.member_id)
         except ObjectDoesNotExist:
             member_peers = MemberPeers(member_id=self.member_id)
+        except MultipleObjectsReturned:
+            member_peers = MemberPeers.objects.filter(member_id=self.member_id).first()
         member_peers.peers = zt.get_member_peers(self.member_id)
         member_peers.network = self.network
         member_peers.save()
