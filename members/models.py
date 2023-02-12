@@ -318,6 +318,10 @@ class Members(models.Model):
             peers = to_dictionary(self.peers.peers)
         if 'paths' in peers and len(peers['paths']) != 0 and self.ipaddress:
             online_status = True
+        if 'role' in self.peers.peers and 'latency' in self.peers.peers \
+            and 'version' in self.peers.peers: # and int(self.peers.peers['latency']) == -1:
+            online_status = True
+
         return online_status
     is_online.short_description = _('BackOne Online')
 
