@@ -82,6 +82,7 @@ class Members(models.Model):
     #serialnumber = models.CharField(_('SN'), max_length=100, blank=True, null=True)
     address = models.CharField(max_length=250, blank=True, null=True)
     location = models.CharField(max_length=250, blank=True, null=True)
+    online_at = models.DateTimeField(_('Start Online'), blank=True, null=True)
 
 
     configuration = models.TextField(_('Configuration'), blank=True)
@@ -331,6 +332,13 @@ class Members(models.Model):
         text = format_html('<small>' + '<br />'.join([str(p) for p in net_routes]) + '</small>')
         return text
     get_routes.short_description = _('Routes')
+
+    def get_routes_plain(self):
+        routes = []
+        net_routes = NetworkRoutes.objects.filter(network=self.network, gateway=self.ipaddress)
+        text = ', '.join([str(p) for p in net_routes])
+        return text
+    get_routes_plain.short_description = _('Local Routes')
 
     def is_mqtt_online(self):
         online_status = False

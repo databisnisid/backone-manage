@@ -187,7 +187,7 @@ class MembersAdmin(ModelAdmin):
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     #list_display = ('member_name_with_address', 'list_ipaddress',
-    list_export = ('name', 'member_id', 'ipaddress', 'network', 'address', 'location', 'get_routes')
+    list_export = ('name', 'member_id', 'ipaddress', 'network', 'address', 'location', 'get_routes_plain')
     list_display = ('member_name_with_address',
                     'member_status', 'model_release',
                     'get_routes', 'list_peers')
@@ -203,7 +203,7 @@ class MembersAdmin(ModelAdmin):
 
     def get_edit_handler(self, instance, request):
         basic_panels = [
-            MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
+            MultiFieldPanel([FieldPanel('name'), FieldPanel('description'), FieldPanel('online_at')],
                             heading=_('Network Name and Description')),
             MultiFieldPanel([FieldPanel('member_id'), FieldPanel('network')],
                             heading=_('Member ID and Network')),
