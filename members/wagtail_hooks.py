@@ -187,10 +187,10 @@ class MembersAdmin(ModelAdmin):
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     #list_display = ('member_name_with_address', 'list_ipaddress',
-    list_export = ('name', 'member_id', 'ipaddress', 'network', 'address', 'location', 'get_routes_plain')
+    list_export = ('name', 'member_id', 'ipaddress', 'network', 'address', 'location', 'get_routes_plain', 'online_at')
     list_display = ('member_name_with_address',
                     'member_status', 'model_release',
-                    'get_routes', 'list_peers')
+                    'get_routes', 'list_peers', 'online_at')
     list_filter = ('network',)
     search_fields = ('name', 'member_id', 'ipaddress', 'address',
                      'mqtt__serialnumber', 'mqtt__model', 'mqtt__uptime',
