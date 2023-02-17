@@ -82,7 +82,7 @@ class Members(models.Model):
     #serialnumber = models.CharField(_('SN'), max_length=100, blank=True, null=True)
     address = models.CharField(max_length=250, blank=True, null=True)
     location = models.CharField(max_length=250, blank=True, null=True)
-    online_at = models.DateTimeField(_('Start Online'), blank=True, null=True)
+    online_at = models.DateField(_('Start Online'), blank=True, null=True)
 
 
     configuration = models.TextField(_('Configuration'), blank=True)
