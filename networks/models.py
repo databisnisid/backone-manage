@@ -210,6 +210,13 @@ class Networks(models.Model):
     ip_allocation.short_description = 'IP Allocations'
 
 
+    def qr_network_id(self):
+        text = format_html('<a href="../qr_code/' + self.network_id + '/" target="_blank"><img src="../../static/networks/qr.png"></a>')
+        return text
+    qr_network_id.short_description = 'QR Code'
+
+
+
 class NetworkRoutes(models.Model):
     def limit_choices_to_current_user():
         """
