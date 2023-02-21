@@ -93,6 +93,7 @@ class NetworkRoutesPermissionHelper(PermissionHelper):
             else:
                 return True
 
+    '''
     def user_can_edit_obj(self, user, obj):
         if user.is_superuser:
             controllers = Controllers.objects.all().count()
@@ -102,6 +103,7 @@ class NetworkRoutesPermissionHelper(PermissionHelper):
                 return True
         else:
             return True
+    '''
 
 '''
 class RestrictedFieldPanel(FieldPanel):
