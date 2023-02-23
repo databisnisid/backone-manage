@@ -163,7 +163,10 @@ class Members(models.Model):
     def clean(self):
         try:
             self.network.network_id
-        except ValueError:
+        except ObjectDoesNotExist:
+            raise ValidationError({'Network': _('Please choose Network')})
+
+        if self.network is None:
             raise ValidationError({'Network': _('Please choose Network')})
 
         # Check if member_id is already in this network
