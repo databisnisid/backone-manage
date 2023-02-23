@@ -161,6 +161,9 @@ class Members(models.Model):
         return super(Members, self).save()
 
     def clean(self):
+        if self.network is None:
+            raise ValidationError({'Network': _('Please choose Network')})
+
         # Check if member_id is already in this network
 
         if self.member_id:
@@ -170,12 +173,6 @@ class Members(models.Model):
                     raise ValidationError({'member_id': _('Member ID already exist in this network!')})
                 except ObjectDoesNotExist:
                     pass
-
-        try:
-            self.network.network_id
-        except ValueError:
-            raise ValidationError({'Network': _('Please choose Network')})
-
 
         # CHECK: For multiple IP in self.ipaddress
         # Check for list IP_address
