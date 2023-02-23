@@ -171,7 +171,9 @@ class Members(models.Model):
                 except ObjectDoesNotExist:
                     pass
 
-        if self.network is None:
+        try:
+            self.network.network_id
+        except ValueError:
             raise ValidationError({'Network': _('Please choose Network')})
 
 
