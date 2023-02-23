@@ -171,6 +171,10 @@ class Members(models.Model):
                 except ObjectDoesNotExist:
                     pass
 
+        if self.network is None:
+            raise ValidationError({'Network': _('Please choose Network')})
+
+
         # CHECK: For multiple IP in self.ipaddress
         # Check for list IP_address
         if self.ipaddress is not None:
