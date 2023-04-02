@@ -14,6 +14,9 @@ from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
 
 
+'''
+MemberPeers Model
+'''
 class MemberPeers(models.Model):
     peers = models.TextField(_('Peers'))
     member_id = models.CharField(_('Member ID'), max_length=50)
