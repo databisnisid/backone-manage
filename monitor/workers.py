@@ -58,31 +58,32 @@ def monitor_members() :
             mqtt = member.mqtt
             problems = []
             is_solved = True
-            if member.is_online() and ping.ping(member.ipaddress):
-                #print('Checking {} ({})'. format(member.name, member.member_id))
-                print(".", end='')
-                problems = check_members_vs_rules(member)
-                if problems:
-                    is_solved = False
-                    for problem in problems:
-                        try:
-                            member_problem = MemberProblems.unsolved.get(
-                                member=member,
-                                problem=problem
-                            )
-                        except ObjectDoesNotExist:
-                            member_problem = MemberProblems()
-                            member_problem.member = member
-                            member_problem.problem = problem
-                            #member_problem.mqtt = mqtt
+            if member.ipaddress:
+                if member.is_online() and ping.ping(member.ipaddress):
+                    #print('Checking {} ({})'. format(member.name, member.member_id))
+                    print(".", end='')
+                    problems = check_members_vs_rules(member)
+                    if problems:
+                        is_solved = False
+                        for problem in problems:
+                            try:
+                                member_problem = MemberProblems.unsolved.get(
+                                    member=member,
+                                    problem=problem
+                                )
+                            except ObjectDoesNotExist:
+                                member_problem = MemberProblems()
+                                member_problem.member = member
+                                member_problem.problem = problem
+                                #member_problem.mqtt = mqtt
 
-                        member_problem.save()
-                        print(".")
-                        print('Problem {} ({}) - {}'. format(
-                            member.name,
-                            member.member_id,
-                            problem
-                        ))
+                            member_problem.save()
+                            print(".")
+                            print('Problem {} ({}) - {}'. format(
+                                member.name,
+                                member.member_id,
+                                problem
+                            ))
 
             if is_solved:
                 member_problems = MemberProblems.unsolved.filter(
