@@ -25,7 +25,7 @@ RUN pip install --no-cache-dir  -r requirements.txt
 COPY . /app
 
 # Remove Package
-RUN apk del mariadb-dev build-base
+RUN apk del build-base
 
 EXPOSE 8008
 
