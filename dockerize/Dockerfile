@@ -22,10 +22,10 @@ COPY requirements.txt /app
 RUN pip install --no-cache-dir  -r requirements.txt
 
 # copy project
-COPY . /app
+COPY ../. /app
 
-# Change login page to BVN
-RUN cp -f /app/dashboard/templates/wagtailadmin/login.html.bvn /app/dashboard/templates/wagtailadmin/login.html
+# copy cronjobs
+COPY cronjobs /etc/crontabs/root
 
 # Remove Package
 RUN apk del build-base
