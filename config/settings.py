@@ -12,14 +12,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = str(os.getenv('SECRET_KEY'))
+SECRET_KEY = str(os.getenv('SECRET_KEY', 'CHANGE-ME-SECRET'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 #DEVELOPMENT = os.getenv('DEVELOPMENT', 'False').lower() in ('true', '1', 't')
 
 
-ALLOWED_HOSTS = [str(os.getenv('ALLOWED_HOSTS'))]
+ALLOWED_HOSTS = [str(os.getenv('ALLOWED_HOSTS', '*'))]
 
 
 # Application definition
@@ -162,17 +162,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 # SITE NAME
-WAGTAIL_SITE_NAME = 'BackOne Manage'
+WAGTAIL_SITE_NAME = str(os.getenv('WAGTAIL_SITE_NAME', 'BackOne Manage'))
 
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
-WAGTAILADMIN_BASE_URL = "https://manage.backone.cloud"
+#WAGTAILADMIN_BASE_URL = "https://manage.backone.cloud"
+WAGTAILADMIN_BASE_URL = str(os.getenv('WAGTAILADMIN_BASE_URL', 'https://manage.backone.cloud'))
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL]
+#CSRF_TRUSTED_ORIGINS = ['https://*.backone.cloud']
 
 # Controller Rule Compiler
-NODEJS = str(os.getenv('NODEJS'))
+NODEJS = str(os.getenv('NODEJS', '/usr/bin/node'))
 CLIJS = str(BASE_DIR) + '/controllers/rule-compiler/cli.js'
 
 # User
@@ -189,14 +191,14 @@ WAGTAIL_ENABLE_WHATS_NEW_BANNER = False
 # MQTT
 MQTT_USER = str(os.getenv('MQTT_USER'))
 MQTT_PASS = str(os.getenv('MQTT_PASS'))
-MQTT_HOST = str(os.getenv('MQTT_HOST'))
-MQTT_PORT = str(os.getenv('MQTT_PORT'))
-MQTT_TOPIC_PRESENCE = str(os.getenv('MQTT_TOPIC_PRESENCE'))
-MQTT_TOPIC_RCALL = str(os.getenv('MQTT_TOPIC_RCALL'))
+MQTT_HOST = str(os.getenv('MQTT_HOST', 'mqtt.backone.cloud'))
+MQTT_PORT = str(os.getenv('MQTT_PORT', '1883'))
+MQTT_TOPIC_PRESENCE = str(os.getenv('MQTT_TOPIC_PRESENCE', 'backone/presence'))
+MQTT_TOPIC_RCALL = str(os.getenv('MQTT_TOPIC_RCALL', 'backone/rcall'))
 
 # Monitor
 #MONITOR_DELAY = 720 # 12 minutes
-MONITOR_DELAY = int(os.getenv('MONITOR_DELAY'))
+MONITOR_DELAY = int(os.getenv('MONITOR_DELAY', '1800'))
 
 # SSH
 SSH_DEFAULT_USER = str(os.getenv('SSH_DEFAULT_USER'))
@@ -205,4 +207,4 @@ SSH_DEFAULT_PASS = str(os.getenv('SSH_DEFAULT_PASS'))
 # GOOGLE_MAPS
 GOOGLE_MAPS_V3_APIKEY = str(os.getenv('GOOGLE_MAPS_V3_APIKEY'))
 GEO_WIDGET_DEFAULT_LOCATION = {'lat': -6.208607177377037, 'lng': 106.81812009975364}
-GEO_WIDGET_ZOOM = int(os.getenv('GEO_WIDGET_ZOOM'))
+GEO_WIDGET_ZOOM = int(os.getenv('GEO_WIDGET_ZOOM', '15'))
