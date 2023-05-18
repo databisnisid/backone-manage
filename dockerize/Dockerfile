@@ -18,14 +18,14 @@ ENV PYTHONUNBUFFERED 1
 #RUN apt update
 # install dependencies
 RUN pip install --no-cache-dir  --upgrade pip
-COPY ../requirements.txt /app
+COPY requirements.txt /app
 RUN pip install --no-cache-dir  -r requirements.txt
 
 # copy project
-COPY ../. /app
+COPY . /app
 
 # copy cronjobs
-COPY cronjobs /etc/crontabs/root
+COPY dockerize/cronjobs /etc/crontabs/root
 
 # Remove Package
 RUN apk del build-base
