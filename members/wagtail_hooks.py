@@ -205,7 +205,7 @@ class MembersAdmin(ModelAdmin):
         basic_panels = [
             #MultiFieldPanel([FieldPanel('name'), FieldPanel('description'), FieldPanel('online_at')],
             MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
-                            heading=_('Network Name and Description')),
+                            heading=_('Member Name and Description')),
             MultiFieldPanel([FieldPanel('member_id'), FieldPanel('network')],
                             heading=_('Member ID and Network'), classname="collapsed"),
             #MultiFieldPanel([
