@@ -187,10 +187,10 @@ class MembersAdmin(ModelAdmin):
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     #list_display = ('member_name_with_address', 'list_ipaddress',
-    list_export = ('name', 'member_id', 'ipaddress', 'network', 'address', 'location', 'get_routes_plain', 'online_at')
+    list_export = ('name', 'member_id', 'ipaddress', 'network', 'address', 'location', 'get_routes_plain', 'online_at', 'offline_at')
     list_display = ('member_name_with_address',
                     'member_status', 'model_release',
-                    'get_routes', 'list_peers', 'online_at')
+                    'get_routes', 'list_peers', 'online_at', 'offline_at')
     list_filter = ('network',)
     search_fields = ('name', 'member_id', 'ipaddress', 'address',
                      'mqtt__serialnumber', 'mqtt__model', 'mqtt__uptime',
@@ -203,14 +203,15 @@ class MembersAdmin(ModelAdmin):
 
     def get_edit_handler(self, instance, request):
         basic_panels = [
-            MultiFieldPanel([FieldPanel('name'), FieldPanel('description'), FieldPanel('online_at')],
+            #MultiFieldPanel([FieldPanel('name'), FieldPanel('description'), FieldPanel('online_at')],
+            MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
                             heading=_('Network Name and Description')),
             MultiFieldPanel([FieldPanel('member_id'), FieldPanel('network')],
-                            heading=_('Member ID and Network')),
-            MultiFieldPanel([
-                GeoAddressPanel("address", geocoder=geocoders.GOOGLE_MAPS),
-                GoogleMapsPanel('location', address_field='address'),
-            ], _('Geo details')),
+                            heading=_('Member ID and Network'), classname="collapsed"),
+            #MultiFieldPanel([
+            #    GeoAddressPanel("address", geocoder=geocoders.GOOGLE_MAPS),
+            #    GoogleMapsPanel('location', address_field='address'),
+            #], _('Geo details')),
             # MultiFieldPanel([FieldPanel('is_authorized'), FieldPanel('ipaddress')],
             #                heading=_('Authorization and IP Address')),
         ]
@@ -224,13 +225,27 @@ class MembersAdmin(ModelAdmin):
             #                heading=_('Authorization and IP Address')),
         ]
 
+        geolocation_panels = MultiFieldPanel([
+                GeoAddressPanel("address", geocoder=geocoders.GOOGLE_MAPS),
+                GoogleMapsPanel('location', address_field='address'),
+            ], heading=_('Geo Location'), classname="collapsed")
+
+        connection_panels = MultiFieldPanel([
+                FieldRowPanel([
+                    FieldPanel('online_at'),
+                    FieldPanel('offline_at')
+                    ])
+            ], heading=_('Online/Offline'), classname="collapsed")
+
         bridge_panels = MultiFieldPanel([FieldRowPanel([FieldPanel('is_bridge'), FieldPanel('is_no_auto_ip')])],
-                                        heading=_('Bridge Features'))
-        authorize_panels = MultiFieldPanel([FieldPanel('is_authorized'), FieldPanel('ipaddress')],
-                                           heading=_('Authorization and IP Address'))
+                                        heading=_('Bridge Features'), classname="collapsed")
+        authorize_panels = MultiFieldPanel([
+                FieldPanel('is_authorized'), 
+                FieldPanel('ipaddress')
+            ], heading=_('Authorization and IP Address'), classname="collapsed")
         ipaddress_panels = FieldPanel('ipaddress')
 
-        tags_panels = MultiFieldPanel([FieldPanel('tags')], heading=_('Tagging Features'))
+        tags_panels = MultiFieldPanel([FieldPanel('tags')], heading=_('Tagging Features'), classname="collapsed")
 
         current_user = get_current_user()
         #print('Handler Instance', instance)
@@ -241,6 +256,8 @@ class MembersAdmin(ModelAdmin):
         #    custom_panels = basic_no_network_panels
 
         if current_user.is_superuser:
+            custom_panels.append(connection_panels)
+            custom_panels.append(geolocation_panels)
             custom_panels.append(authorize_panels)
             custom_panels.append(bridge_panels)
             custom_panels.append(tags_panels)

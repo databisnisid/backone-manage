@@ -86,6 +86,7 @@ class Members(models.Model):
     address = models.CharField(max_length=250, blank=True, null=True)
     location = models.CharField(max_length=250, blank=True, null=True)
     online_at = models.DateField(_('Start Online'), blank=True, null=True)
+    offline_at = models.DateTimeField(_('Stop Online'), blank=True, null=True)
 
 
     configuration = models.TextField(_('Configuration'), blank=True)
