@@ -12,7 +12,10 @@ def to_json(data):
 
 
 def to_dictionary(data):
-    return ast.literal_eval(data.replace("\'", "\""))
+    if type(data) is not dict:
+        return ast.literal_eval(data.replace("\'", "\""))
+    else:
+        return data
 
 
 def to_list(data):
