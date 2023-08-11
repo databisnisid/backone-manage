@@ -23,6 +23,9 @@ class Features(models.Model):
     ssh = models.BooleanField(_('Remote SSH'), default=False)
     synchronize = models.BooleanField(_('Synchronize'), default=False)
 
+    geolocation = models.BooleanField(_('GeoLocation'), default=False)
+    online_offline = models.BooleanField(_('Online/Offline'), default=False)
+
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 

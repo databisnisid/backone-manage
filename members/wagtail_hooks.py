@@ -262,6 +262,10 @@ class MembersAdmin(ModelAdmin):
             custom_panels.append(bridge_panels)
             custom_panels.append(tags_panels)
         else:
+            if current_user.organization.features.online_offline:
+                custom_panels.append(connection_panels)
+            if current_user.organization.features.geolocation:
+                custom_panels.append(geolocation_panels)
             if current_user.organization.features.authorize:
                 custom_panels.append(authorize_panels)
             else:
