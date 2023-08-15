@@ -1,5 +1,6 @@
 */10 * * * * python /app/manage.py shell --command "from controllers.workers import zt_synchronize_member_peers; zt_synchronize_member_peers()"
 #*/6 * * * * python /app/manage.py shell --command "from mqtt import cron; cron.fix_inconsistent_online()" 
 */5 * * * *  python /app/manage.py shell --command "from monitor import cron; cron.cron_monitor_members()"
+0 * * * *  python /app/manage.py shell --command "from members.utils import deauthorize_member_offline_at; deauthorize_member_offline_at()"
 #*/3 * * * *  python /app/manage.py shell --command "from controllers.custom import import_members_for_network; import_members_for_network('3cc1a2690fed6ab4')"
 #*/3 * * * *  python /app/manage.py shell --command "from controllers.custom import import_members_for_network; import_members_for_network('3cc1a2690f6ac319')"
