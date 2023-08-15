@@ -10,7 +10,7 @@ def deauthorize_member_offline_at():
     Run every hour at cronjob
     '''
 
-    print('Start - deauthorize_member_offline_at() function')
+    print(timezone.localtime(), 'START - deauthorize_member_offline_at() function')
     members = Members.objects.exclude(offline_at__isnull=True)
 
     for member in members:
@@ -22,5 +22,5 @@ def deauthorize_member_offline_at():
             member.is_authorized = False
             member.save()
 
-    print('Fin - deauthorize_member_offline_at() function')
+    print(timezone.localtime(), 'DONE - deauthorize_member_offline_at() function')
 
