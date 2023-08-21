@@ -22,6 +22,7 @@ class Mqtt(models.Model):
     round_trip_string = models.CharField(_('Round Trip String'),  max_length=100, blank=True, null=True)
     packet_loss = models.FloatField(_('Packet Lost'), default=0)
     round_trip = models.FloatField(_('Round Trip'), default=0)
+    switchport_up = models.CharField(_('Switch Port Up'), max_length=20, blank=True, null=True)
 
     class Meta:
         db_table = 'mqtt'
