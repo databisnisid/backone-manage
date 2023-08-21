@@ -66,6 +66,13 @@ def on_message(client, userdata, message):
     except IndexError:
         round_trip_string = None
 
+    # Switch Port UP
+    try:
+        mqtt_msg[13]
+        switchport_up = mqtt_msg[13]
+    except IndexError:
+        switchport_up = None
+
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
 
     try:
@@ -74,13 +81,6 @@ def on_message(client, userdata, message):
     except ObjectDoesNotExist:
         mqtt_member = Mqtt()
         mqtt_member.member_id = member_id
-
-    # Switch Port UP
-    try:
-        mqtt_msg[13]
-        switchport_up = mqtt_msg[13]
-    except IndexError:
-        switchport_up = None
 
     mqtt_member.model = model
     mqtt_member.board_name = board_name
