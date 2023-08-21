@@ -461,6 +461,10 @@ class Members(models.Model):
                     color = 'red'
                 third_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
 
+            if self.mqtt.switchport_up:
+                color = 'green'
+                third_line += "<br /><span style='color: {};'>PORT UP: {}</span>".format(color, self.mqtt.switchport_up)
+
             third_line += "</small>"
             '''
             if self.mqtt.packet_loss_string:
