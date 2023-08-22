@@ -26,6 +26,9 @@ class Features(models.Model):
     geolocation = models.BooleanField(_('GeoLocation'), default=False)
     online_offline = models.BooleanField(_('Online/Offline'), default=False)
 
+    # Project Related
+    is_telkomsel = models.BooleanField(_('Telkomsel Project'), default=False)
+
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 

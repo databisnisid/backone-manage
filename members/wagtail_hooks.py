@@ -201,6 +201,20 @@ class MembersAdmin(ModelAdmin):
     #base_form_class = MembersForm
     #ordering = ['name']
 
+
+    def get_list_display(self, request):
+        current_user = get_current_user()
+        list_display_default = ('member_name_with_address',
+                        'member_status', 'model_release',
+                        'get_routes', 'list_peers', 'online_at', 'offline_at')
+        list_display_telkomsel = ('name', 'address')
+        if current_user.organization.features.is_telkomsel:
+            return list_display_telkomsel
+        else:
+            return list_display_default
+
+        #return super().get_list_display(request)
+
     def get_edit_handler(self, instance, request):
         basic_panels = [
             #MultiFieldPanel([FieldPanel('name'), FieldPanel('description'), FieldPanel('online_at')],
