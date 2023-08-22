@@ -497,3 +497,11 @@ class Members(models.Model):
         return text
     member_name_with_address.short_description = _('Member Name')
 
+    def switchport_up(self):
+        text = ''
+        if self.mqtt:
+            if self.mqtt.switchport_up:
+                text = self.mqtt.switchport_up
+
+        return text
+    switchport_up.short_description = _('Switch Port UP')
