@@ -55,6 +55,7 @@ class Members(models.Model):
             return {}
 
     name = models.CharField(_('Member Name'), max_length=50)
+    member_code = models.CharField(_('Member Code'), max_length=20, blank=True, null=True)
     description = models.TextField(_('Description'), blank=True)
     member_id = models.CharField(_('Member ID'), max_length=50)
     network = models.ForeignKey(
@@ -87,7 +88,6 @@ class Members(models.Model):
     location = models.CharField(max_length=250, blank=True, null=True)
     online_at = models.DateField(_('Start Online'), blank=True, null=True)
     offline_at = models.DateTimeField(_('Stop Online'), blank=True, null=True)
-
 
     configuration = models.TextField(_('Configuration'), blank=True)
     peers = models.ForeignKey(
