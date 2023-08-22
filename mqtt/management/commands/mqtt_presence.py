@@ -2,7 +2,7 @@ from paho.mqtt import client as mqtt
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from mqtt.models import Mqtt
 from members.models import Members
 
@@ -86,6 +86,11 @@ def on_message(client, userdata, message):
         mqtt_member = Mqtt.objects.get(member_id=member_id)
 
     except ObjectDoesNotExist:
+        mqtt_member = Mqtt()
+        mqtt_member.member_id = member_id
+
+    except MultipleObjectsReturned:
+        Mqtt.objects.filter(member_id=member_id).delete()
         mqtt_member = Mqtt()
         mqtt_member.member_id = member_id
 
