@@ -73,6 +73,13 @@ def on_message(client, userdata, message):
     except IndexError:
         switchport_up = None
 
+    # Port Status
+    try:
+        mqtt_msg[14]
+        port_status = mqtt_msg[14]
+    except IndexError:
+        port_status = None
+
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
 
     try:
@@ -95,6 +102,7 @@ def on_message(client, userdata, message):
     mqtt_member.packet_loss_string = packet_loss_string
     mqtt_member.round_trip_string = round_trip_string
     mqtt_member.switchport_up = switchport_up
+    mqtt_member.port_status = port_status
     mqtt_member.save()
 
     members = Members.objects.filter(member_id=member_id, mqtt=None)
