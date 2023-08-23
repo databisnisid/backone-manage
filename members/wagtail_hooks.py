@@ -221,7 +221,7 @@ class MembersAdmin(ModelAdmin):
         list_export_default = ('member_name_with_address',
                         'member_status', 'model_release',
                         'get_routes', 'list_peers', 'online_at', 'offline_at')
-        list_export_telkomsel = ('name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'is_online')
+        list_export_telkomsel = ('name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'online_status')
         
         if current_user.organization.features.is_export:
             if current_user.organization.features.is_telkomsel:

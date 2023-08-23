@@ -340,6 +340,14 @@ class Members(models.Model):
         return online_status
     is_online.short_description = _('BackOne Online')
 
+    def online_status(self):
+        text = 'OFFLINE'
+        if self.is_online():
+            text = 'ONLINE'
+
+        return text
+    online_status.short_description = _('Online Status')
+
     def get_routes(self):
         routes = []
         net_routes = NetworkRoutes.objects.filter(network=self.network, gateway=self.ipaddress)
