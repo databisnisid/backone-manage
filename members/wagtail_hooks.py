@@ -215,6 +215,23 @@ class MembersAdmin(ModelAdmin):
 
         #return super().get_list_display(request)
 
+    def get_list_export(self, request):
+        current_user = get_current_user()
+        list_export = []
+        list_export_default = ('member_name_with_address',
+                        'member_status', 'model_release',
+                        'get_routes', 'list_peers', 'online_at', 'offline_at')
+        list_export_telkomsel = ('name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'is_online')
+        
+        if current_user.organization.features.is_export:
+            if current_user.organization.features.is_telkomsel:
+                list_export =  list_export_telkomsel
+            else:
+                list_export =  list_export_default
+
+        return list_export
+        #return super().get_list_export(request)
+
     def get_edit_handler(self, instance, request):
         basic_panels = [
             #MultiFieldPanel([FieldPanel('name'), FieldPanel('description'), FieldPanel('online_at')],

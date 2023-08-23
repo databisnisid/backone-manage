@@ -25,6 +25,7 @@ class Features(models.Model):
 
     geolocation = models.BooleanField(_('GeoLocation'), default=False)
     online_offline = models.BooleanField(_('Online/Offline'), default=False)
+    is_export = models.BooleanField(_('Export Data'), default=False)
 
     # Project Related
     is_telkomsel = models.BooleanField(_('Telkomsel Project'), default=False)
