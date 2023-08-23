@@ -207,7 +207,7 @@ class MembersAdmin(ModelAdmin):
         list_display_default = ('member_name_with_address',
                         'member_status', 'model_release',
                         'get_routes', 'list_peers', 'online_at', 'offline_at')
-        list_display_telkomsel = ('name', 'member_code', 'address', 'ipaddress', 'switchport_up')
+        list_display_telkomsel = ('name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'is_online')
         if current_user.organization.features.is_telkomsel:
             return list_display_telkomsel
         else:
