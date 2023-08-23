@@ -180,7 +180,7 @@ class MembersPermissionHelper(PermissionHelper):
 class MembersAdmin(ModelAdmin):
     model = Members
     button_helper_class = MembersButtonHelper
-    permission_helper_class = MembersPermissionHelper
+    #permission_helper_class = MembersPermissionHelper
     inspect_view_enabled = True
     menu_label = 'Members'  # ditch this to use verbose_name_plural from model
     menu_icon = 'list-ul'  # change as required

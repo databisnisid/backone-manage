@@ -129,7 +129,7 @@ class NetworksAdmin(ModelAdmin):
     search_fields = ('name',)
     #list_filter = ('controller',)
     #base_form_class = NetworksForm
-    permission_helper_class = NetworksPermissionHelper
+    #permission_helper_class = NetworksPermissionHelper
 
     def get_edit_handler(self, instance, request):
         basic_panels = [
@@ -187,7 +187,7 @@ class NetworkRoutesAdmin(ModelAdmin):
     list_filter = ('network',)
     search_fields = ('ip_network', 'gateway')
     ordering = ['network', 'gateway']
-    permission_helper_class = NetworkRoutesPermissionHelper
+    #permission_helper_class = NetworkRoutesPermissionHelper
     #base_form_class = NetworkRoutesForm
 
     panels = [
@@ -219,7 +219,7 @@ class NetworkRulesAdmin(ModelAdmin):
     list_filter = ('network',)
     #search_fields = ('__str__',)
     #ordering = ['network', 'gateway']
-    permission_helper_class = NetworkRulesPermissionHelper
+    #permission_helper_class = NetworkRulesPermissionHelper
 
     def get_edit_handler(self, instance=None, request=None):
         basic_panels = [
