@@ -173,6 +173,8 @@ WAGTAILADMIN_BASE_URL = str(os.getenv('WAGTAILADMIN_BASE_URL', 'https://manage.b
 CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL]
 #CSRF_TRUSTED_ORIGINS = ['https://*.backone.cloud']
 
+ADDITIONAL_DOMAINS = os.getenv('ADDITIONAL_DOMAINS', [])
+
 # Controller Rule Compiler
 NODEJS = str(os.getenv('NODEJS', '/usr/bin/node'))
 CLIJS = str(BASE_DIR) + '/controllers/rule-compiler/cli.js'

@@ -218,8 +218,8 @@ class MembersAdmin(ModelAdmin):
     def get_edit_handler(self, instance, request):
         basic_panels = [
             #MultiFieldPanel([FieldPanel('name'), FieldPanel('description'), FieldPanel('online_at')],
-            MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
-                            heading=_('Member Name and Description')),
+            MultiFieldPanel([FieldPanel('name'), FieldPanel('member_code'), FieldPanel('description')],
+                            heading=_('Member Name, Code and Description')),
             MultiFieldPanel([FieldPanel('member_id'), FieldPanel('network')],
                             heading=_('Member ID and Network'), classname="collapsed"),
             #MultiFieldPanel([

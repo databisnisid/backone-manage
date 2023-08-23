@@ -123,7 +123,8 @@ class Members(models.Model):
     def save(self):
         self.user = self.network.user
         self.organization = self.network.organization
-        self.member_code = self.member_code.upper()
+        if self.member_code:
+            self.member_code = self.member_code.upper()
 
         # Zerotier
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
