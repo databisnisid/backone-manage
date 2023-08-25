@@ -4,15 +4,26 @@
 {% block bodyclass %}login{% endblock %}
 
 {% block furniture %}
+<!-- particles.js container -->
+<!--<div id="particles-js"></div>-->
+
+<!-- scripts -->
+<script src="{% versioned_static 'dashboard/js/particles.min.js' %}"></script>
+<script src="{% versioned_static 'dashboard/js/app.js' %}"></script>
+
     <main class="content-wrapper" id="main">
         <!--
         <h1>{% block branding_login %}{% trans "Manage" %}{% endblock %}</h1>
         -->
-        <!--
+        {% if 'backone.cloud' in request.build_absolute_uri %}
             <div class="login-logo" style="width: 20rem;">
                 <img src="{% versioned_static 'dashboard/images/backone-manage-logo.png' %}" alt=""/>
             </div>
-        -->
+        {% else %}
+            <div class="login-logo" style="width: 20rem;">
+                <img src="{% versioned_static 'dashboard/images/dashboard-logo.png' %}" alt=""/>
+            </div>
+        {% endif %}
 
         <div class="messages" role="status">
             {# Always show messages div so it can be appended to by JS #}

@@ -4,8 +4,9 @@
 {% block branding_title %}Controller{% endblock %}
 
 {% block branding_logo %}
-<!--
-    <img src="{% static 'dashboard/images/backone-manage-new.png' %}" alt="BackOne"  width="512" />
--->
-    <img src="{% static 'dashboard/images/dashboard-logo.png' %}" alt="Home"  width="512" />
+    {% if 'backone.cloud' in request.build_absolute_uri %}
+        <img src="{% static 'dashboard/images/backone-manage-new.png' %}" alt="BackOne"  width="512" />
+    {% else %}
+        <img src="{% static 'dashboard/images/dashboard-logo.png' %}" alt="Home"  width="512" />
+    {% endif %}
 {% endblock %}

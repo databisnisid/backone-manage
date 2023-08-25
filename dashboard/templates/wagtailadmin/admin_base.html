@@ -1,8 +1,10 @@
 {% extends "wagtailadmin/admin_base.html" %}
 {% load static %}
+{% load wagtailadmin_tags %}
 
 {% block branding_title %}Controller{% endblock %}
 
 {% block branding_favicon %}
+    <link rel="stylesheet" href="{% versioned_static 'wagtailadmin/css/core-custom.css' %}" />
     <link rel="shortcut icon" href="{% static 'dashboard/images/favicon.ico' %}" />
 {% endblock %}
