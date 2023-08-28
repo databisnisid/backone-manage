@@ -204,23 +204,29 @@ class MembersAdmin(ModelAdmin):
 
     def get_list_display(self, request):
         current_user = get_current_user()
+        list_display = []
         list_display_default = ('member_name_with_address',
                         'member_status', 'model_release',
-                        'get_routes', 'list_peers', 'online_at', 'offline_at')
+                        'get_routes', 'list_peers')
         list_display_telkomsel = ('name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'online_status')
         if current_user.organization.features.is_telkomsel:
-            return list_display_telkomsel
+            list_display = list_display_telkomsel
         else:
-            return list_display_default
+            list_display = list_display_default
 
+        if current_user.organization.features.online_offline:
+            list_display.append('online_at')
+            list_display.append('offline_at')
         #return super().get_list_display(request)
+
+        return list_display
 
     def get_list_export(self, request):
         current_user = get_current_user()
         list_export = []
         list_export_default = ('member_name_with_address',
                         'member_status', 'model_release',
-                        'get_routes', 'list_peers', 'online_at', 'offline_at')
+                        'get_routes', 'list_peers')
         list_export_telkomsel = ('name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'online_status')
         
         if current_user.organization.features.is_export:
@@ -228,6 +234,10 @@ class MembersAdmin(ModelAdmin):
                 list_export =  list_export_telkomsel
             else:
                 list_export =  list_export_default
+
+        if current_user.organization.features.online_offline:
+            list_export.append('online_at')
+            list_export.append('offline_at')
 
         return list_export
         #return super().get_list_export(request)
