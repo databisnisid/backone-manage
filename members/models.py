@@ -2,6 +2,7 @@ from datetime import datetime
 from crum import get_current_user
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 from accounts.models import User, Organizations
 from networks.models import Networks, NetworkRoutes
 from django.utils.translation import gettext as _
@@ -369,7 +370,7 @@ class Members(models.Model):
             mqtt = self.mqtt
             now = timezone.now()
             delta = now - timezone.localtime(mqtt.updated_at)
-            if delta.seconds < 660:
+            if delta.seconds < settings.ONLINE_STATUS_DELAY:
                online_status = True
 
         return online_status

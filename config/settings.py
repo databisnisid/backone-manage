@@ -211,6 +211,9 @@ MQTT_TOPIC_RCALL = str(os.getenv('MQTT_TOPIC_RCALL', 'backone/rcall'))
 #MONITOR_DELAY = 720 # 12 minutes
 MONITOR_DELAY = int(os.getenv('MONITOR_DELAY', '1800'))
 
+# Online Status Delay
+ONLINE_STATUS_DELAY = int(os.getenv('ONLINE_STATUS_DELAY', '1250'))
+
 # SSH
 SSH_DEFAULT_USER = str(os.getenv('SSH_DEFAULT_USER'))
 SSH_DEFAULT_PASS = str(os.getenv('SSH_DEFAULT_PASS'))
