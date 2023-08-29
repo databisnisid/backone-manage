@@ -416,9 +416,9 @@ class Members(models.Model):
 
             #first_line = '{} ({})'.format(model, num_core)
             #second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
-            color = 'red'
-            if self.is_mqtt_online():
-                color = 'green'
+            #color = 'red'
+            #if self.is_mqtt_online():
+            color = 'blue'
 
             first_line = "<small style='color: {};'>{} ({})<br />".format(color, model, num_core)
             second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
@@ -499,7 +499,7 @@ class Members(models.Model):
                         first_line + 
                         second_line + 
                         third_line + 
-                        "<span style='color: red;'>LO: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
+                        "<br /><small style='color: red;'>LO: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
 
         return text
     model_release.short_description = _('Parameters')
