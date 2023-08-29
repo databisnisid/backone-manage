@@ -93,7 +93,7 @@ class Members(models.Model):
 
     # Mobile
     mobile_regex = RegexValidator(regex=r'^62\d{9,15}$', message=_("Mobile number must be entered in the format: '628XXXXXXXXXXX'. Up to 15 digits allowed."))
-    mobile_number = models.CharField(_('Mobile Number'), 
+    mobile_number_first = models.CharField(_('Mobile Number'), 
                                      validators=[mobile_regex], 
                                      max_length=20, blank=True, null=True)
 
@@ -182,6 +182,14 @@ class Members(models.Model):
 
         #if self.network is None:
         #    raise ValidationError({'Network': _('Please choose Network')})
+
+        # Check mobile_number_first is not Unique
+        if self.mobile_number_first is not None:
+            try:
+                Members.objects.get(mobile_number_first=self.mobile_number_first)
+                raise ValidationError({'mobile_number_first': _('Mobile Number is already used!')})
+            except ObjectDoesNotExist:
+                pass
 
         # Check if member_id is already in this network
 

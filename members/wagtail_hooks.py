@@ -270,6 +270,12 @@ class MembersAdmin(ModelAdmin):
             #                heading=_('Authorization and IP Address')),
         ]
 
+        mobile_connect_panels = MultiFieldPanel([
+            FieldRowPanel([
+                FieldPanel('mobile_number_first')
+                ])
+            ], heading=_('Mobile Connection'), classname="collapsed")
+
         geolocation_panels = MultiFieldPanel([
                 GeoAddressPanel("address", geocoder=geocoders.GOOGLE_MAPS),
                 GoogleMapsPanel('location', address_field='address'),
@@ -304,6 +310,7 @@ class MembersAdmin(ModelAdmin):
             custom_panels.append(connection_panels)
             custom_panels.append(geolocation_panels)
             custom_panels.append(authorize_panels)
+            custom_panels.append(mobile_connect_panels)
             custom_panels.append(bridge_panels)
             custom_panels.append(tags_panels)
         else:
@@ -315,6 +322,8 @@ class MembersAdmin(ModelAdmin):
                 custom_panels.append(authorize_panels)
             else:
                 custom_panels.append(ipaddress_panels)
+            if current_user.organization.features.mobile_connect:
+                custom_panels.append(mobile_connect_panels)
             if current_user.organization.features.bridge:
                 custom_panels.append(bridge_panels)
             if current_user.organization.features.tags:
