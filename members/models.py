@@ -425,7 +425,7 @@ class Members(models.Model):
             second_line = "{} <img src='/static/admin/img/{}'><br />".format(
                     second_line_var, is_rcall) if mqtt.is_rcall else second_line_var
 
-            third_line = ""
+            third_line = "<br />"
             if self.mqtt.switchport_up:
                 third_line += "<span style='color: {};'>SwPortUP: {}</span><br />".format(color, self.mqtt.switchport_up)
 
