@@ -1,4 +1,5 @@
 from datetime import datetime
+from os import walk
 from crum import get_current_user
 from django.db import models
 from django.utils import timezone
@@ -269,6 +270,10 @@ class Members(models.Model):
 
         is_authorized = "icon-yes.svg" if self.is_authorized else "icon-no.svg"
         #return text
+
+        if self.mobile_number_first is not None:
+            text += format_html('<br />{}', self.mobile_number_first)
+
         return format_html('<small>'
                            + '<strong>{}</strong>'
                            + " <img src='/static/admin/img/{}'>"
