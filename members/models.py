@@ -418,12 +418,21 @@ class Members(models.Model):
             #second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
             #color = 'red'
             #if self.is_mqtt_online():
-            color = 'blue'
+            color = 'black'
 
             first_line = "<small style='color: {};'>{} ({})<br />".format(color, model, num_core)
             second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
             second_line = "{} <img src='/static/admin/img/{}'><br />".format(
                     second_line_var, is_rcall) if mqtt.is_rcall else ""
+
+            third_line = ""
+            if self.mqtt.switchport_up:
+                color = 'green'
+                third_line += "<span style='color: {};'>SwPortUP: {}</span><br />".format(color, self.mqtt.switchport_up)
+
+            if self.mqtt.port_status:
+                color = 'green'
+                third_line += "<span style='color: {};'>PortStat: {}</span><br />".format(color, self.mqtt.port_status)
 
             uptime_load = get_uptime_string(uptime)
             uptime_split = uptime_load.split('load average:')
@@ -435,7 +444,7 @@ class Members(models.Model):
             color = 'green'
             #if 'min' in uptime_string_first[0]:
             #    color = 'red'
-            third_line = "<span style='color: {};''>UP: {}</span>".format(color, uptime_string)
+            fourth_line = "<span style='color: {};''>UP: {}</span>".format(color, uptime_string)
 
             if uptime:
                 load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
@@ -448,14 +457,14 @@ class Members(models.Model):
             color = 'green'
             if load_5 > 50:
                 color = 'red'
-            third_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, round(load_5, 1))
+            fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, round(load_5, 1))
 
             # MEMORY
             if self.mqtt.memory_usage:
                 color = 'green'
                 if memory_usage > 50:
                     color = 'red'
-                third_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(memory_usage, 1))
+                fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(memory_usage, 1))
 
             # PACKET LOSS
             #if 'packet loss' in self.mqtt.packet_loss_string:
@@ -463,7 +472,7 @@ class Members(models.Model):
                 color = 'green'
                 if packet_loss > 5:
                     color = 'red'
-                third_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
+                fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
 
             # ROUND_TRIP
             #if 'round-trip' in self.mqtt.round_trip_string:
@@ -471,17 +480,9 @@ class Members(models.Model):
                 color = 'green'
                 if round_trip > 200:
                     color = 'red'
-                third_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
+                fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
 
-            if self.mqtt.switchport_up:
-                color = 'green'
-                third_line += "<br /><span style='color: {};'>SwPortUP: {}</span>".format(color, self.mqtt.switchport_up)
-
-            if self.mqtt.port_status:
-                color = 'green'
-                third_line += "<br /><span style='color: {};'>PortStat: {}</span>".format(color, self.mqtt.port_status)
-
-            third_line += "</small>"
+            fourth_line += "</small>"
             '''
             if self.mqtt.packet_loss_string:
                 third_line += " - PL: {}%".format(self.mqtt.packet_loss)
@@ -492,14 +493,14 @@ class Members(models.Model):
             uptime_load = get_uptime_string(uptime)
 
             if self.is_mqtt_online():
-                text = format_html(first_line + second_line + third_line)
+                text = format_html(first_line + second_line + third_line + fourth_line)
 
             else:
                 text = format_html(
                         first_line + 
                         second_line + 
                         third_line + 
-                        "<br /><small style='color: red;'>LO: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
+                        "<br /><small style='color: red;'>LU: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
 
         return text
     model_release.short_description = _('Parameters')
