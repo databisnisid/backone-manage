@@ -8,6 +8,7 @@ from networks.models import Networks, NetworkRoutes
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
+from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from config.utils import to_dictionary, get_cpu_usage, get_uptime_string, get_string_between, readable_timedelta
 from ipaddress import ip_address, ip_network
@@ -89,6 +90,12 @@ class Members(models.Model):
     location = models.CharField(max_length=250, blank=True, null=True)
     online_at = models.DateField(_('Start Online'), blank=True, null=True)
     offline_at = models.DateTimeField(_('Stop Online'), blank=True, null=True)
+
+    # Mobile
+    mobile_regex = RegexValidator(regex=r'^62\d{9,15}$', message=_("Mobile number must be entered in the format: '628XXXXXXXXXXX'. Up to 15 digits allowed."))
+    mobile_number = models.CharField(_('Mobile Number'), 
+                                     validators=[mobile_regex], 
+                                     max_length=20, blank=True, null=True)
 
     configuration = models.TextField(_('Configuration'), blank=True)
     peers = models.ForeignKey(
