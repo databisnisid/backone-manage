@@ -422,7 +422,7 @@ class Members(models.Model):
 
             first_line = "<small style='color: {};'>{} ({})<br />".format(color, model, num_core)
             second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
-            second_line = "{} <img src='/static/admin/img/{}'><br />".format(
+            second_line = "{} <img src='/static/admin/img/{}'>".format(
                     second_line_var, is_rcall) if mqtt.is_rcall else second_line_var
 
             third_line = "<br />"
