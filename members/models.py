@@ -186,7 +186,9 @@ class Members(models.Model):
         # Check mobile_number_first is not Unique
         if self.mobile_number_first is not None:
             try:
-                Members.objects.get(mobile_number_first=self.mobile_number_first)
+                Members.objects.exclude(
+                        id=self.id
+                        ).get(mobile_number_first=self.mobile_number_first)
                 raise ValidationError({'mobile_number_first': _('Mobile Number is already used!')})
             except ObjectDoesNotExist:
                 pass
