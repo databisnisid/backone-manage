@@ -422,7 +422,8 @@ class Members(models.Model):
 
             first_line = "<small style='color: {};'>{} ({})<br />".format(color, model, num_core)
             second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
-            second_line = "{} <img src='/static/admin/img/{}'><br />".format(second_line_var, is_rcall)
+            second_line = "{} <img src='/static/admin/img/{}'><br />".format(
+                    second_line_var, is_rcall) if mqtt.is_rcall else ""
 
             uptime_load = get_uptime_string(uptime)
             uptime_split = uptime_load.split('load average:')
@@ -432,8 +433,8 @@ class Members(models.Model):
             uptime_string_first = uptime_string.split(',')
 
             color = 'green'
-            if 'min' in uptime_string_first[0]:
-                color = 'red'
+            #if 'min' in uptime_string_first[0]:
+            #    color = 'red'
             third_line = "<span style='color: {};''>UP: {}</span>".format(color, uptime_string)
 
             if uptime:
@@ -494,7 +495,11 @@ class Members(models.Model):
                 text = format_html(first_line + second_line + third_line)
 
             else:
-                text = format_html(first_line + second_line + "LO: {} ago</small>", readable_timedelta(mqtt.updated_at))
+                text = format_html(
+                        first_line + 
+                        second_line + 
+                        third_line + 
+                        "<span style='color: red;'>LO: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
 
         return text
     model_release.short_description = _('Parameters')
