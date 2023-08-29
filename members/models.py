@@ -427,11 +427,9 @@ class Members(models.Model):
 
             third_line = ""
             if self.mqtt.switchport_up:
-                color = 'green'
                 third_line += "<span style='color: {};'>SwPortUP: {}</span><br />".format(color, self.mqtt.switchport_up)
 
             if self.mqtt.port_status:
-                color = 'green'
                 third_line += "<span style='color: {};'>PortStat: {}</span><br />".format(color, self.mqtt.port_status)
 
             uptime_load = get_uptime_string(uptime)
