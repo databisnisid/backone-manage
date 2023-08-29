@@ -498,7 +498,8 @@ class Members(models.Model):
                         first_line + 
                         second_line + 
                         third_line + 
-                        "<br /><small style='color: red;'>LU: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
+                        fourth_line +
+                        "<small style='color: red;'>LU: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
 
         return text
     model_release.short_description = _('Parameters')
