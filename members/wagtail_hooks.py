@@ -61,11 +61,12 @@ class MembersButtonHelper(ButtonHelper):
 
     # Define classes for our button, here we can set an icon for example
     #import_button_classnames = ["button-small", "icon", "icon-site"]
-    synchronize_classnames = ['button button-small button-primary']
+    #synchronize_classnames = ['button button-small button-primary']
     current_classnames = ['button button-small button-primary']
     ssh_uri = 'https://remotessh.backone.cloud'
     web_uri = 'https://remoteweb.backone.cloud'
 
+    '''
     def synchronize_button(self, obj):
         if obj.configuration == '{}' and obj.is_authorized:
             print('Synchronize Configuration ', obj.name)
@@ -79,6 +80,7 @@ class MembersButtonHelper(ButtonHelper):
             'classname': self.finalise_classname(self.synchronize_classnames),
             'title': text,
         }
+    '''
 
     def ssh_button(self, obj):
         text = _('SSH')
@@ -125,12 +127,14 @@ class MembersButtonHelper(ButtonHelper):
         buttons = super().get_buttons_for_obj(
             obj, exclude, classnames_add, classnames_exclude
         )
+        '''
         if 'synchronize_button' not in (exclude or []):
             if current_user.is_superuser:
                 buttons.append(self.synchronize_button(obj))
             else:
                 if current_user.organization.features.synchronize:
                     buttons.append(self.synchronize_button(obj))
+        '''
 
         if 'ssh_button' not in (exclude or []) and obj.is_online() and is_ssh_web:
             if current_user.is_superuser:

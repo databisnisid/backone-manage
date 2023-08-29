@@ -76,8 +76,8 @@ class FeaturesAdmin(ModelAdmin):
                         heading=_('Network Features')),
         MultiFieldPanel([
             FieldRowPanel([FieldPanel('authorize'), FieldPanel('member_multi_ip')]),
-            FieldRowPanel([FieldPanel('bridge'), FieldPanel('tags')]),
-            FieldRowPanel([FieldPanel('synchronize')])],
+            FieldRowPanel([FieldPanel('bridge'), FieldPanel('tags')])],
+            #FieldRowPanel([FieldPanel('synchronize')])],
             heading=_('Member Features')),
         MultiFieldPanel([
             FieldRowPanel([FieldPanel('web'), FieldPanel('ssh')])],
