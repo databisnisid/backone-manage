@@ -24,6 +24,7 @@ class Mqtt(models.Model):
     round_trip = models.FloatField(_('Round Trip'), default=0)
     switchport_up = models.CharField(_('Switch Port Up'), max_length=20, blank=True, null=True)
     port_status = models.CharField(_('Port Status'), max_length=200, blank=True, null=True)
+    quota_first = models.CharField(_('Quota'), max_length=200, blank=True, null=True)
 
     class Meta:
         db_table = 'mqtt'
