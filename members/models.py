@@ -160,7 +160,9 @@ class Members(models.Model):
         except ObjectDoesNotExist:
             member_peers = MemberPeers(member_id=self.member_id)
         except MultipleObjectsReturned:
-            member_peers = MemberPeers.objects.filter(member_id=self.member_id).first()
+            #member_peers = MemberPeers.objects.filter(member_id=self.member_id).first()
+            member_peers = MemberPeers.objects.filter(member_id=self.member_id).delete()
+            member_peers = MemberPeers(member_id=self.member_id)
         member_peers.peers = zt.get_member_peers(self.member_id)
         member_peers.network = self.network
         member_peers.save()
