@@ -444,17 +444,29 @@ class Members(models.Model):
             #if self.is_mqtt_online():
             color = 'black'
 
-            first_line = "<small style='color: {};'>{} ({})<br />".format(color, model, num_core)
-            second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
-            second_line = "{} <img src='/static/admin/img/{}'>".format(
-                    second_line_var, is_rcall) if mqtt.is_rcall else second_line_var
+            ''' First Line: Model and CPU Core'''
+            first_line = "<small style='color: {};'>{} ({})</small>".format(color, model, num_core)
 
-            third_line = "<br />"
+            ''' Second Line: SerialNumber and Release Version'''
+            second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
+            second_line = "<br /><small>"
+            second_line += "{} <img src='/static/admin/img/{}'>".format(
+                    second_line_var, is_rcall) if mqtt.is_rcall else second_line_var
+            second_line += "</small>"
+
+            third_line = ""
+            ''' Third Line: SwitchPortUp and PortStatus'''
             if self.mqtt.switchport_up:
+                third_line += "<br /><small>"
                 third_line += "<span style='color: {};'>SwPortUP: {}</span><br />".format(color, self.mqtt.switchport_up)
+                third_line += "</small>"
 
             if self.mqtt.port_status:
+                third_line += "<br /><small>"
                 third_line += "<span style='color: {};'>PortStat: {}</span><br />".format(color, self.mqtt.port_status)
+                third_line += "</small>"
+
+            fourth_line = "<br /><small>"
 
             uptime_load = get_uptime_string(uptime)
             uptime_split = uptime_load.split('load average:')
@@ -463,10 +475,12 @@ class Members(models.Model):
 
             uptime_string_first = uptime_string.split(',')
 
+
+            ''' Fourth Line: Uptime, CPU and Memory '''
             color = 'green'
             #if 'min' in uptime_string_first[0]:
             #    color = 'red'
-            fourth_line = "<span style='color: {};''>UP: {}</span>".format(color, uptime_string)
+            fourth_line += "<span style='color: {};''>UP: {}</span>".format(color, uptime_string)
 
             if uptime:
                 load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
@@ -505,17 +519,21 @@ class Members(models.Model):
                 fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
 
             fourth_line += "</small>"
-            '''
-            if self.mqtt.packet_loss_string:
-                third_line += " - PL: {}%".format(self.mqtt.packet_loss)
-            if self.mqtt.round_trip_string:
-                third_line += " - RT: {}ms".format(round(self.mqtt.round_trip, 1))
-            '''
 
-            uptime_load = get_uptime_string(uptime)
+            fifth_line = ""
+
+            if self.mqtt.quota_first:
+                fifth_line = format_html("<br /><small>{}</small>", self.mqtt.quota_first)
+
+            #uptime_load = get_uptime_string(uptime)
 
             if self.is_mqtt_online():
-                text = format_html(first_line + second_line + third_line + fourth_line)
+                text = format_html(
+                        first_line + 
+                        second_line + 
+                        third_line + 
+                        fourth_line +
+                        fifth_line)
 
             else:
                 text = format_html(
@@ -523,6 +541,7 @@ class Members(models.Model):
                         second_line + 
                         third_line + 
                         fourth_line +
+                        fifth_line +
                         "<br /><small style='color: red;'>LU: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
 
         return text
