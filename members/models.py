@@ -539,7 +539,8 @@ class Members(models.Model):
                 color = 'green' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
                 quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
 
-                fifth_line = format_html("<br /><small>{}</small>", quota_text)
+                #fifth_line = format_html("<br /><small>{}</small>", quota_text)
+                fifth_line = "<br /><small>{}</small>".format(quota_text)
 
             #uptime_load = get_uptime_string(uptime)
 
