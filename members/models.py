@@ -531,11 +531,11 @@ class Members(models.Model):
                 quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
 
                 quota_text = ""
-                color = 'green' if quota_current > settins.QUOTA_GB_WARNING else 'red'
+                color = 'green' if quota_current > settings.QUOTA_GB_WARNING else 'red'
                 quota_text += format_html("<span style='color: {};'>{}GB</span>", color, quota_current)
                 quota_text += format_html("<span style='color: green;'>/{}GB/</span>", quota_total)
 
-                color = 'green' if quota_day > settins.QUOTA_DAY_WARNING else 'red'
+                color = 'green' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
                 quota_text += format_html("<span style='color: {};'>{}Hari</span>", color, quota_day)
 
                 fifth_line = format_html("<br /><small>{}</small>", quota_text)
