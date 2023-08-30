@@ -225,3 +225,7 @@ GEO_WIDGET_ZOOM = int(os.getenv('GEO_WIDGET_ZOOM', '15'))
 
 # INTERCONNECT TO data.backone.cloud
 DATA_URI_QUOTA = str(os.getenv('DATA_URI_QUOTA', 'https://data.backone.cloud/quota/'))
+
+# QUOTA
+QUOTA_GB_WARNING = int(os.getenv('QUOTA_GB_WARNING', 5))
+QUOTA_DAY_WARNING = int(os.getenv('QUOTA_DAY_WARNING', 5))

@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from os import walk
 from crum import get_current_user
@@ -523,7 +524,21 @@ class Members(models.Model):
             fifth_line = ""
 
             if self.mqtt.quota_first:
-                fifth_line = format_html("<br /><small>{}</small>", self.mqtt.quota_first)
+                #fifth_line = format_html("<br /><small>{}</small>", self.mqtt.quota_first)
+                quota_split = self.mqtt.quota_first.split('/')
+                quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
+                quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
+                quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
+
+                quota_text = ""
+                color = 'green' if quota_current > settins.QUOTA_GB_WARNING else 'red'
+                quota_text += format_html("<span style='color: {};'>{}GB</span>", color, quota_current)
+                quota_text += format_html("<span style='color: green;'>/{}GB/</span>", quota_total)
+
+                color = 'green' if quota_day > settins.QUOTA_DAY_WARNING else 'red'
+                quota_text += format_html("<span style='color: {};'>{}Hari</span>", color, quota_day)
+
+                fifth_line = format_html("<br /><small>{}</small>", quota_text)
 
             #uptime_load = get_uptime_string(uptime)
 
