@@ -131,7 +131,8 @@ class NetworksAdmin(ModelAdmin):
     #base_form_class = NetworksForm
     #permission_helper_class = NetworksPermissionHelper
 
-    def get_edit_handler(self, instance, request):
+    #def get_edit_handler(self, instance, request):
+    def get_edit_handler(self):
         basic_panels = [
             MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
                             heading=_('Network Name and Description')),
@@ -221,7 +222,8 @@ class NetworkRulesAdmin(ModelAdmin):
     #ordering = ['network', 'gateway']
     #permission_helper_class = NetworkRulesPermissionHelper
 
-    def get_edit_handler(self, instance=None, request=None):
+    #def get_edit_handler(self, instance=None, request=None):
+    def get_edit_handler(self):
         basic_panels = [
             MultiFieldPanel([FieldPanel('network'),
                              FieldPanel('rules_definition')],

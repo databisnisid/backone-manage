@@ -247,7 +247,8 @@ class MembersAdmin(ModelAdmin):
         return list_export
         #return super().get_list_export(request)
 
-    def get_edit_handler(self, instance, request):
+    #def get_edit_handler(self, instance, request):
+    def get_edit_handler(self):
         basic_panels = [
             #MultiFieldPanel([FieldPanel('name'), FieldPanel('description'), FieldPanel('online_at')],
             MultiFieldPanel([FieldPanel('name'), FieldPanel('member_code'), FieldPanel('description')],

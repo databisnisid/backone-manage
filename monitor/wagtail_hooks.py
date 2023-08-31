@@ -73,7 +73,8 @@ class MonitorItemsAdmin(ModelAdmin):
 class MonitorRulesAdmin(ModelAdmin):
     model = MonitorRules
     menu_label = 'Rules'
-    menu_icon = 'tick'
+    #menu_icon = 'tick' # Wagtail 4.2
+    menu_icon = 'check' # Wagtail 5.0
     list_display = ('name', 'item', 'item_threshold')
 
     panels = [

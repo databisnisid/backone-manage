@@ -450,10 +450,12 @@ class Members(models.Model):
 
             ''' Second Line: SerialNumber and Release Version'''
             second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
-            second_line = "<br /><small>"
-            second_line += "{} <img src='/static/admin/img/{}'>".format(
-                    second_line_var, is_rcall) if mqtt.is_rcall else second_line_var
-            second_line += "</small>"
+            second_line = ""
+            if second_line_var:
+                second_line = "<br /><small>"
+                second_line += "{} <img src='/static/admin/img/{}'>".format(
+                        second_line_var, is_rcall) if mqtt.is_rcall else second_line_var
+                second_line += "</small>"
 
             third_line = ""
             ''' Third Line: SwitchPortUp and PortStatus'''
