@@ -542,7 +542,7 @@ class Members(models.Model):
                 quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
 
                 #fifth_line = format_html("<br /><small>{}</small>", quota_text)
-                fifth_line = "<br /><small>{}</small>".format(quota_text)
+                fifth_line = "<br /><small>QUOTA: {}</small>".format(quota_text)
 
             #uptime_load = get_uptime_string(uptime)
 
