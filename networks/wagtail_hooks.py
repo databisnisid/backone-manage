@@ -66,6 +66,10 @@ class NetworkRulesPermissionHelper(PermissionHelper):
 
 
 class NetworkRoutesPermissionHelper(PermissionHelper):
+    def user_can_edit_obj(self, user, obj):
+        return False
+
+    '''
     def user_can_list(self, user):
         return True
 
@@ -93,7 +97,6 @@ class NetworkRoutesPermissionHelper(PermissionHelper):
             else:
                 return True
 
-    '''
     def user_can_edit_obj(self, user, obj):
         if user.is_superuser:
             controllers = Controllers.objects.all().count()
@@ -188,7 +191,7 @@ class NetworkRoutesAdmin(ModelAdmin):
     list_filter = ('network',)
     search_fields = ('ip_network', 'gateway')
     ordering = ['network', 'gateway']
-    #permission_helper_class = NetworkRoutesPermissionHelper
+    permission_helper_class = NetworkRoutesPermissionHelper
     #base_form_class = NetworkRoutesForm
 
     panels = [
