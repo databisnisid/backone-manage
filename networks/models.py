@@ -322,7 +322,9 @@ class NetworkRoutes(models.Model):
             try:
                 ip_network(self.ip_network)
                 try:
-                    NetworkRoutes.objects.get(ip_network=self.ip_network,
+                    NetworkRoutes.objects.exclude(
+                            id=self.id
+                            ).get(ip_network=self.ip_network,
                                               network=self.network)
                     raise ValidationError({'ip_network': _('IP Network is already used!')})
                 except ObjectDoesNotExist:
