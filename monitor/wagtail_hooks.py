@@ -1,5 +1,7 @@
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, ModelAdminGroup, modeladmin_register, ButtonHelper, PermissionHelper)
+from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSet
 from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
 from .models import MemberProblems, MonitorItems, MonitorRules, MemberProblemsDone
 from crum import get_current_user

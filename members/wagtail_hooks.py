@@ -1,7 +1,8 @@
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, modeladmin_register, ButtonHelper, PermissionHelper)
 from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
-
+from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSet
 from .models import Members, MemberPeers
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
@@ -348,19 +349,30 @@ class MembersAdmin(ModelAdmin):
             return Members.objects.all()
 
 
+
+#class MemberPeersAdmin(SnippetViewSet):
 class MemberPeersAdmin(ModelAdmin):
+
     model = MemberPeers
     inspect_view_enabled = True
     menu_label = 'MemberPeers'  # ditch this to use verbose_name_plural from model
-    menu_icon = 'grip'  # change as required
-    add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
+    #add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('member_id', 'updated_at', 'network')
     permission_helper_class = MemberPeersPermissionHelper
     list_filter = ('network',)
     #search_fields = ('name', 'member_id', 'ipaddress')
+    menu_icon = 'grip'
     #ordering = ['name']
+    list_per_page = 50
+
+    # Wagtail 5.1.1
+    #add_to_admin_menu = True
+    #menu_order = 999
+    #list_per_page = 50
+    #icon = 'grip'  # change as required
 
 
 modeladmin_register(MembersAdmin)
 modeladmin_register(MemberPeersAdmin)
+#register_snippet(MemberPeersAdmin)

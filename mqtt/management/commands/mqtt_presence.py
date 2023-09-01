@@ -110,12 +110,12 @@ def on_message(client, userdata, message):
     mqtt_member.port_status = port_status
     mqtt_member.save()
 
+    '''
     members = Members.objects.filter(member_id=member_id, mqtt=None)
 
     for member in members:
         member.save()
 
-    '''
     members = Members.objects.filter(member_id=member_id)
     for member in members:
         if member.serialnumber != serialnumber:
