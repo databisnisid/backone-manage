@@ -443,10 +443,9 @@ class Members(models.Model):
             #second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
             #color = 'red'
             #if self.is_mqtt_online():
-            color = 'black'
 
             ''' First Line: Model and CPU Core'''
-            first_line = "<small style='color: {};'>{} ({})</small>".format(color, model, num_core)
+            first_line = "<small>{} ({})</small>".format(color, model, num_core)
 
             ''' Second Line: SerialNumber and Release Version'''
             second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
@@ -461,12 +460,12 @@ class Members(models.Model):
             ''' Third Line: SwitchPortUp and PortStatus'''
             if self.mqtt.switchport_up:
                 third_line += "<br /><small>"
-                third_line += "<span style='color: {};'>SwPortUP: {}</span>".format(color, self.mqtt.switchport_up)
+                third_line += "<span>SwPortUP: {}</span>".format(color, self.mqtt.switchport_up)
                 third_line += "</small>"
 
             if self.mqtt.port_status:
                 third_line += "<br /><small>"
-                third_line += "<span style='color: {};'>PortStat: {}</span>".format(color, self.mqtt.port_status)
+                third_line += "<span>PortStat: {}</span>".format(color, self.mqtt.port_status)
                 third_line += "</small>"
 
             fourth_line = "<br /><small>"
