@@ -7,7 +7,7 @@ cffi==1.15.1
 charset-normalizer==2.1.0
 cryptography==39.0.0
 defusedxml==0.7.1
-Django==4.1.10
+Django==4.2.4
 django-crum==0.7.9
 django-filter==21.1
 django-modelcluster==6.0
@@ -42,7 +42,7 @@ tablib==3.2.1
 telepath==0.2
 typing_extensions==4.5.0
 urllib3==1.26.11
-wagtail==4.2.4
+wagtail==5.0.2
 wagtailgeowidget==8.0.0
 webencodings==0.5.1
 Willow==1.4.1

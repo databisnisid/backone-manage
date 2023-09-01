@@ -1,5 +1,7 @@
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, PermissionHelper, modeladmin_register)
+
+from members.models import Members
 #from wagtail.contrib.modeladmin.views import InspectView
 from .models import Networks, NetworkRoutes, NetworkRules
 from controllers.models import Controllers
@@ -10,6 +12,8 @@ from crum import get_current_user
 #from wagtail.admin.forms import WagtailAdminPageForm
 #from wagtail import hooks
 #from django.core.exceptions import ObjectDoesNotExist
+#from wagtail.snippets.models import register_snippet
+#from wagtail.snippets.views.snippets import SnippetViewSet
 
 
 '''
@@ -259,3 +263,11 @@ modeladmin_register(NetworksAdmin)
 modeladmin_register(NetworkRoutesAdmin)
 modeladmin_register(NetworkRulesAdmin)
 
+
+'''
+class NetworksViewSet(SnippetViewSet):
+    model = Networks
+    search_fields = ['name']
+
+register_snippet(NetworksViewSet)
+'''
