@@ -319,11 +319,11 @@ class Members(models.Model):
 
             if latency < 0:
                 direct_or_relay = 'RELAY'
-                text = format_html("<small style='color: green;'>{} ({})</small>",
+                text = format_html("<small>{} ({})</small>",
                                     direct_or_relay, version)
             else:
                 direct_or_relay = 'DIRECT'
-                text = format_html("<small style='color: green;'>{} ({}/{}ms)</small>",
+                text = format_html("<small>{} ({}/{}ms)</small>",
                                     direct_or_relay, version, str(latency))
 
             #text = format_html("<small style='color: green;'>ONLINE ({})<br />{}({}ms)<br />{}</small>",
@@ -341,7 +341,7 @@ class Members(models.Model):
             elif self.peers:
                 if 'role' in self.peers.peers and 'latency' in self.peers.peers \
                     and 'version' in self.peers.peers: # and int(self.peers.peers['latency']) == -1:
-                    text = format_html("<small style='color: green;'>RELAY ({})</small>", peers['version'])
+                    text = format_html("<small>RELAY ({})</small>", peers['version'])
                 else:
                     text = format_html("<small style='color: red;'>OFFLINE</small>")
             else:
@@ -479,10 +479,9 @@ class Members(models.Model):
 
 
             ''' Fourth Line: Uptime, CPU and Memory '''
-            color = 'green'
             #if 'min' in uptime_string_first[0]:
             #    color = 'red'
-            fourth_line += "<span style='color: {};''>UP: {}</span>".format(color, uptime_string)
+            fourth_line += "<span>UP: {}</span>".format(uptime_string)
 
             if uptime:
                 load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
@@ -492,14 +491,14 @@ class Members(models.Model):
             #third_line = "UP: {}".format(uptime_string)
 
             # CPU
-            color = 'green'
+            color = ''
             if load_5 > 50:
                 color = 'red'
             fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, round(load_5, 1))
 
             # MEMORY
             if self.mqtt.memory_usage:
-                color = 'green'
+                color = ''
                 if memory_usage > 50:
                     color = 'red'
                 fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(memory_usage, 1))
@@ -507,7 +506,7 @@ class Members(models.Model):
             # PACKET LOSS
             #if 'packet loss' in self.mqtt.packet_loss_string:
             if self.mqtt.packet_loss_string:
-                color = 'green'
+                color = ''
                 if packet_loss > 5:
                     color = 'red'
                 fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
@@ -515,7 +514,7 @@ class Members(models.Model):
             # ROUND_TRIP
             #if 'round-trip' in self.mqtt.round_trip_string:
             if self.mqtt.round_trip_string:
-                color = 'green'
+                color = ''
                 if round_trip > 200:
                     color = 'red'
                 fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
@@ -532,12 +531,12 @@ class Members(models.Model):
                 quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
 
                 quota_text = ""
-                color = 'green' if quota_current > settings.QUOTA_GB_WARNING else 'red'
+                color = '' if quota_current > settings.QUOTA_GB_WARNING else 'red'
                 quota_text += "<span style='color: {};'>{}GB</span>".format(color, quota_current)
 
-                quota_text += "<span style='color: green;'>/{}GB/</span>".format(quota_total)
+                quota_text += "<span>/{}GB/</span>".format(quota_total)
 
-                color = 'green' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
+                color = '' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
                 quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
 
                 #fifth_line = format_html("<br /><small>{}</small>", quota_text)
