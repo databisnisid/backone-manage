@@ -13,7 +13,6 @@ class MqttAdmin(SnippetViewSet):
     model = Mqtt
     inspect_view_enabled = True
     menu_label = 'MQTT'  # ditch this to use verbose_name_plural from model
-    menu_icon = 'doc-full'  # change as required
     #add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('member_id', 'model', 'board_name',
@@ -24,6 +23,7 @@ class MqttAdmin(SnippetViewSet):
     add_to_admin_menu = True
     menu_order = 999
     list_per_page = 50
+    icon = 'doc-full'  # change as required
 
 
 #modeladmin_register(MqttAdmin)
