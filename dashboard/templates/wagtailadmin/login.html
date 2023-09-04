@@ -15,6 +15,7 @@
         <!--
         <h1>{% block branding_login %}{% trans "Manage" %}{% endblock %}</h1>
         -->
+
         {% if 'backone.cloud' in request.build_absolute_uri %}
             <div class="login-logo" style="width: 20rem;">
                 <img src="{% versioned_static 'dashboard/images/backone-manage-logo.png' %}" alt=""/>
@@ -68,7 +69,16 @@
             {% endblock %}
             <footer class="form-actions">
                 {% block submit_buttons %}
-                    <button type="submit" class="button button-longrunning" data-clicked-text="{% trans 'Signing in…' %}">{% icon name="spinner" %}<em>{% trans 'Sign in' %}</em></button>
+                    <button
+                        type="submit"
+                        class="button button-longrunning"
+                        data-controller="w-progress"
+                        data-action="w-progress#activate"
+                        data-w-progress-active-value="{% trans 'Signing in…' %}"
+                    >
+                        {% icon name="spinner" %}
+                        <em data-w-progress-target="label">{% trans 'Sign in' %}</em>
+                    </button>
                 {% endblock %}
             </footer>
         </form>
@@ -78,7 +88,7 @@
         {% block branding_logo %}
         <!--
             <div class="login-logo">
-                <img src="{% versioned_static 'wagtailadmin/images/wagtail-logo.svg' %}" alt=""/>
+                {% include "wagtailadmin/logo.html" with wordmark="True" %}
             </div>
         -->
         {% endblock %}
