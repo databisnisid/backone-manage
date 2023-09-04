@@ -1,5 +1,6 @@
 from wagtail.admin.ui.components import Component
 from django.db.models import Count
+from django.conf import settings
 from networks.models import Networks, NetworkRoutes
 from members.models import Members
 from mqtt.models import Mqtt
@@ -13,6 +14,12 @@ from django.core.exceptions import ObjectDoesNotExist
 class MapSummaryPanel(Component):
     order = 40
     template_name = "dashboard/map_summary.html"
+
+    def get_context_data(self, parent_context):
+        context = super().get_context_data(parent_context)
+        context['settings'] = settings
+
+        return context
 
 
 class NetworksChartsPanel(Component):
