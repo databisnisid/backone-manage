@@ -40,19 +40,42 @@ async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
   const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
+
+  var locations = [
+      {% for member in members %}
+      ['{{ member.name }}', '{{ member.lat }}' , '{{ member.lng }}'],
+      {% endfor %}
+      ];
   // The map, centered at Uluru
   map = new Map(document.getElementById("map"), {
     zoom: 5,
     center: position,
-    mapId: "DEMO_MAP_ID",
+    mapId: "MAP_VIEW",
   });
 
+  var infowindow = new google.maps.InfoWindow();
+
+  var marker, i;
+    
+  for (i = 0; i < locations.length; i++) {  
+    marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+      map: map
+    });
+      
+    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+      return function() {
+        infowindow.setContent(locations[i][0]);
+        infowindow.open(map, marker);
+      }
+    })(marker, i));
+  }
   // The marker, positioned at Uluru
-  const marker = new AdvancedMarkerElement({
-    map: map,
-    position: position,
-    title: "Uluru",
-  });
+ // const marker = new AdvancedMarkerElement({
+ //   map: map,
+ //   position: position,
+ //   title: "Uluru",
+ // });
 }
 
 initMap();
