@@ -37,6 +37,7 @@ class MapSummaryPanel(Component):
             member_geo['address'] = member.address
             member_geo['lat'] = lat
             member_geo['lng'] = lng
+            member_geo['is_online'] = 1 if member.is_online() else 0
             new_members.append(member_geo)
 
         self.members = new_members
