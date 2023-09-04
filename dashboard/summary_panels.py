@@ -10,6 +10,11 @@ from config.utils import to_dictionary
 from django.core.exceptions import ObjectDoesNotExist
 
 
+class MapSummaryPanel(Component):
+    order = 40
+    template_name = "dashboard/map_summary.html"
+
+
 class NetworksChartsPanel(Component):
     order = 60
     template_name = 'dashboard/networks_charts.html'

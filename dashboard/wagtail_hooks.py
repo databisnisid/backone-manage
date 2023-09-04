@@ -61,6 +61,7 @@ def add_another_welcome_panel(request, panels):
     panels[:] = [panel for panel in panels if panel.name != "user_pages_in_workflow_moderation"]
     panels[:] = [panel for panel in panels if panel.name != "locked_pages"]
 
+    #panels.append(MapSummaryPanel())
     panels.append(NetworksSummaryPanel())
     #panels.append(MembersProblemPanel())
     panels.append(NetworksChartsPanel())
