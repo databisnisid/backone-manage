@@ -26,19 +26,19 @@ def prepare_data(members):
 
 
 def get_members_all(request):
-    members = Members.objects.exclude(address__isnull=True)
+    members = Members.objects.exclude(address__isnull=True, location__isnull=True)
     members_data = prepare_data(members)
 
     return JsonResponse(members_data, safe=False)
 
 def get_members_user(request, user):
-    members = Members.objects.exclude(address__isnull=True).filter(user__id=user)
+    members = Members.objects.exclude(address__isnull=True, location__isnull=True).filter(user__id=user)
     members_data = prepare_data(members)
 
     return JsonResponse(members_data, safe=False)
 
 def get_members_org(request, organization):
-    members = Members.objects.exclude(address__isnull=True).filter(organization__id=organization)
+    members = Members.objects.exclude(address__isnull=True, location__isnull=True).filter(organization__id=organization)
     members_data = prepare_data(members)
 
     return JsonResponse(members_data, safe=False)
