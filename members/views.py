@@ -9,18 +9,21 @@ def prepare_data(members):
 
     for member in members:
         member_geo = {}
-        point = member.location.split(';')
-        result = point[1].split(' ')
-        lng = result[0].replace('POINT(', '')
-        lat = result[1].replace(')', '')
-        member_geo['name'] = member.name
-        member_geo['member_id'] = member.member_id
-        member_geo['address'] = member.address
-        member_geo['ipaddress'] = member.ipaddress
-        member_geo['lat'] = lat
-        member_geo['lng'] = lng
-        member_geo['is_online'] = 1 if member.is_online() else 0
-        new_members.append(member_geo)
+        try:
+            point = member.location.split(';')
+            result = point[1].split(' ')
+            lng = result[0].replace('POINT(', '')
+            lat = result[1].replace(')', '')
+            member_geo['name'] = member.name
+            member_geo['member_id'] = member.member_id
+            member_geo['address'] = member.address
+            member_geo['ipaddress'] = member.ipaddress
+            member_geo['lat'] = lat
+            member_geo['lng'] = lng
+            member_geo['is_online'] = 1 if member.is_online() else 0
+            new_members.append(member_geo)
+        except AttributeError:
+            pass
 
     return new_members
 
