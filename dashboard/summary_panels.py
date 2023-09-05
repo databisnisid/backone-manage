@@ -17,6 +17,7 @@ class MapSummaryPanel(Component):
 
     def __init__(self):
         user = get_current_user()
+        '''
         if user.is_superuser:
             members = Members.objects.exclude(address__isnull=True)
         elif user.organization.is_no_org:
@@ -41,11 +42,14 @@ class MapSummaryPanel(Component):
             new_members.append(member_geo)
 
         self.members = new_members
+        '''
+        self.user = user
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
         context['settings'] = settings
-        context['members'] = self.members
+        context['user'] = self.user
+        #context['members'] = self.members
 
         return context
 

@@ -63,6 +63,8 @@ def add_another_welcome_panel(request, panels):
 
     if request.user.is_superuser:
         panels.append(MapSummaryPanel())
+    if request.user.organization.features.map_dashboard:
+        panels.append(MapSummaryPanel())
     panels.append(NetworksSummaryPanel())
     #panels.append(MembersProblemPanel())
     panels.append(NetworksChartsPanel())
