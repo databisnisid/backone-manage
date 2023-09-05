@@ -84,7 +84,8 @@ class FeaturesAdmin(ModelAdmin):
             heading=_('Remote Access Features')),
         MultiFieldPanel([
             FieldRowPanel([FieldPanel('geolocation'), FieldPanel('online_offline')]),
-            FieldRowPanel([FieldPanel('is_export'), FieldPanel('mobile_connect')])],
+            FieldRowPanel([FieldPanel('is_export'), FieldPanel('mobile_connect')]),
+            FieldRowPanel([FieldPanel('map_dashboard')])],
             heading=_('Additional Features')),
         MultiFieldPanel([
             FieldRowPanel([FieldPanel('is_telkomsel')])],

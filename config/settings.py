@@ -223,6 +223,8 @@ SSH_DEFAULT_PASS = str(os.getenv('SSH_DEFAULT_PASS'))
 GOOGLE_MAPS_V3_APIKEY = str(os.getenv('GOOGLE_MAPS_V3_APIKEY'))
 GEO_WIDGET_DEFAULT_LOCATION = {'lat': -6.208607177377037, 'lng': 106.81812009975364}
 GEO_WIDGET_ZOOM = int(os.getenv('GEO_WIDGET_ZOOM', '15'))
+MAP_CENTER = str(os.getenv('MAP_CENTER', 'lat: -1.233982000061532, lng: 116.83728437200422'))
+MAP_ZOOM = int(os.getenv('MAP_ZOOM', 5))
 
 # INTERCONNECT TO data.backone.cloud
 DATA_URI_QUOTA = str(os.getenv('DATA_URI_QUOTA', 'https://data.backone.cloud/quota/'))

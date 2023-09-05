@@ -27,6 +27,7 @@ class Features(models.Model):
     online_offline = models.BooleanField(_('Online/Offline'), default=False)
     is_export = models.BooleanField(_('Export Data'), default=False)
     mobile_connect = models.BooleanField(_('Mobile Connect'), default=False)
+    map_dashboard = models.BooleanField(_('Map Dashboard'), default=False)
 
     # Project Related
     is_telkomsel = models.BooleanField(_('Telkomsel Project'), default=False)
