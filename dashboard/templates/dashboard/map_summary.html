@@ -93,15 +93,20 @@ async function initMap() {
         map: map,
         title: data[i]['name']
       });
+
+      let contentString =
+            '<div id="content">' +
+            '<div id="siteNotice"></div>' +
+            '<a href="/members/members/?q=' + data[i]['id'] + '">CHECK</a>>' +
+            '</div>';
+
       
-    /*
     google.maps.event.addListener(marker, 'click', (function(marker, i) {
       return function() {
-        infowindow.setContent(locations[i][0]);
+        infowindow.setContent(contentString);
         infowindow.open(map, marker);
       }
     })(marker, i));
-    */
 
       if (data[i]['is_online'])
         marker.setIcon(icons['green_icon'].icon);

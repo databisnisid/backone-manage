@@ -14,6 +14,7 @@ def prepare_data(members):
             result = point[1].split(' ')
             lng = result[0].replace('POINT(', '')
             lat = result[1].replace(')', '')
+            member_geo['id'] = member.id
             member_geo['name'] = member.name
             member_geo['member_id'] = member.member_id
             member_geo['address'] = member.address
