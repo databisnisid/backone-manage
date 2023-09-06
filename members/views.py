@@ -28,8 +28,8 @@ def prepare_data(members, members_problems):
             lng = result[0].replace('POINT(', '')
             lat = result[1].replace(')', '')
         except AttributeError:
-            lat = settings.GEO_WIDGET_DEFAULT_LOCATION['lat'] + random.uniform(-0.01, 0.01)
-            lng = settings.GEO_WIDGET_DEFAULT_LOCATION['lng'] + random.uniform(-0.01, 0.01)
+            lat = settings.GEO_WIDGET_DEFAULT_LOCATION['lat'] + random.uniform(-0.005, 0.005)
+            lng = settings.GEO_WIDGET_DEFAULT_LOCATION['lng'] + random.uniform(-0.005, 0.005)
 
         member_geo['id'] = member.id
         member_geo['name'] = member.name
