@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import AbstractUser
 from controllers.models import Controllers
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 
 class Features(models.Model):
@@ -42,6 +42,11 @@ class Features(models.Model):
 
     def __str__(self):
         return '%s' % self.name
+
+    def clean(self):
+        if self.map_dashboard:
+            if self.geolocation is False:
+                raise ValidationError({'geolocation': _('MAP Dashboard require GeoLocation feature!')})
 
 
 class Organizations(models.Model):
