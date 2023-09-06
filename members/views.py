@@ -2,9 +2,20 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Members, Mqtt
+from monitor.models import MemberProblems
 
 
-def prepare_data(members):
+def is_problem(member, members_problems):
+    is_found = 0
+    for problem in members_problems:
+        if member.id == problem.member.id:
+            is_found = 1
+            break
+
+    return is_found
+
+
+def prepare_data(members, members_problems):
     new_members = []
 
     for member in members:
@@ -22,6 +33,7 @@ def prepare_data(members):
             member_geo['lat'] = lat
             member_geo['lng'] = lng
             member_geo['is_online'] = 1 if member.is_online() else 0
+            member_geo['is_problem'] = is_problem(member, members_problems)
             new_members.append(member_geo)
         except AttributeError:
             pass
@@ -31,19 +43,26 @@ def prepare_data(members):
 
 def get_members_all(request):
     members = Members.objects.exclude(address__isnull=True, location__isnull=True)
-    members_data = prepare_data(members)
+    members_problems = MemberProblems.unsolved.all()
+    members_data = prepare_data(members, members_problems)
 
     return JsonResponse(members_data, safe=False)
 
 def get_members_user(request, user):
-    members = Members.objects.exclude(address__isnull=True, location__isnull=True).filter(user__id=user)
-    members_data = prepare_data(members)
+    members = Members.objects.exclude(
+            address__isnull=True, location__isnull=True
+            ).filter(user__id=user)
+    members_problems = MemberProblems.unsolved.filter(member__user__id=user)
+    members_data = prepare_data(members, members_problems)
 
     return JsonResponse(members_data, safe=False)
 
 def get_members_org(request, organization):
-    members = Members.objects.exclude(address__isnull=True, location__isnull=True).filter(organization__id=organization)
-    members_data = prepare_data(members)
+    members = Members.objects.exclude(
+            address__isnull=True, location__isnull=True
+            ).filter(organization__id=organization)
+    members_problems = MemberProblems.unsolved.filter(member__organization__id=organization)
+    members_data = prepare_data(members, members_problems)
 
     return JsonResponse(members_data, safe=False)
 

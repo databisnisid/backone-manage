@@ -87,7 +87,8 @@ async function initMap() {
     
     //for (i = 0; i < locations.length; i++) {  
     for (i = 0; i < data.length; i++) {  
-        marker = new google.maps.Marker({
+
+      marker = new google.maps.Marker({
         //position: new google.maps.LatLng(locations[i][1], locations[i][2]),
         position: new google.maps.LatLng(data[i]['lat'], data[i]['lng']),
         map: map,
@@ -101,15 +102,19 @@ async function initMap() {
             '</div>';
 
       
-    google.maps.event.addListener(marker, 'click', (function(marker, i) {
-      return function() {
-        infowindow.setContent(contentString);
-        infowindow.open(map, marker);
-      }
-    })(marker, i));
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(contentString);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
 
-      if (data[i]['is_online'])
-        marker.setIcon(icons['green_icon'].icon);
+      if (data[i]['is_online']) {
+        if (data[i]['is_problem'])
+            marker.setIcon(icons['yellow_icon'].icon);
+        else
+            marker.setIcon(icons['green_icon'].icon);
+      }
       else
         marker.setIcon(icons['red_icon'].icon);
     }

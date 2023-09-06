@@ -9,6 +9,7 @@ from random import randint
 from django.utils.translation import gettext as _
 from config.utils import to_dictionary
 from django.core.exceptions import ObjectDoesNotExist
+from monitor.models import MemberProblems
 
 
 class MapSummaryPanel(Component):
@@ -17,39 +18,12 @@ class MapSummaryPanel(Component):
 
     def __init__(self):
         user = get_current_user()
-        '''
-        if user.is_superuser:
-            members = Members.objects.exclude(address__isnull=True)
-        elif user.organization.is_no_org:
-            members = Members.objects.exclude(address__isnull=True).filter(user=user)
-        else:
-            members = Networks.objects.exclude(address__isnull=True).filter(organization=user.organization)
-
-        new_members = []
-
-        for member in members:
-            member_geo = {}
-            point = member.location.split(';')
-            result = point[1].split(' ')
-            lng = result[0].replace('POINT(', '')
-            lat = result[1].replace(')', '')
-            member_geo['name'] = member.name
-            member_geo['member_id'] = member.member_id
-            member_geo['address'] = member.address
-            member_geo['lat'] = lat
-            member_geo['lng'] = lng
-            member_geo['is_online'] = 1 if member.is_online() else 0
-            new_members.append(member_geo)
-
-        self.members = new_members
-        '''
         self.user = user
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
         context['settings'] = settings
         context['user'] = self.user
-        #context['members'] = self.members
 
         return context
 
