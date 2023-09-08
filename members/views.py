@@ -51,7 +51,8 @@ def prepare_data(members, members_problems):
         member_geo['is_problem'] = is_problem(member, members_problems)
         new_members.append(member_geo)
 
-    return new_members
+    #return new_members
+    return randomize_coordinate(new_members)
 
 
 def problem_time():
