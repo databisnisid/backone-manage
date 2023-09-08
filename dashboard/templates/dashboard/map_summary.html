@@ -110,13 +110,17 @@ async function initMap() {
 
     console.log(data);
 
-    var data_clear = [];
+    var data_online = [];
+    var data_offline = [];
     var data_problem = [];
     for (i = 0; i < data.length; i++) {  
-        if (data[i]['is_problem'])
-            data_problem.push(data[i]);
+        if (data[i]['is_online'])
+            if (data[i]['is_problem'])
+                data_problem.push(data[i]);
+            else
+                data_online.push(data[i])
         else
-            data_clear.push(data[i]);
+            data_offline.push(data[i]);
     }
 
 
@@ -141,7 +145,8 @@ async function initMap() {
     var infowindow = new google.maps.InfoWindow();
 
     var marker, i;
-    drawMarker(data_clear);
+    drawMarker(data_online);
+    drawMarker(data_offline);
     drawMarker(data_problem);
 
     /*
