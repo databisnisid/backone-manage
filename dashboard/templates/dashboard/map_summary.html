@@ -80,7 +80,7 @@ function drawMarker(data_marker, map) {
             position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
             content: pinGlyph.element
             //map: map,
-            //title: data_marker[i]['name']
+            title: data_marker[i]['name']
         });
       else
         marker = new google.maps.marker.AdvancedMarkerElement({
@@ -107,17 +107,6 @@ function drawMarker(data_marker, map) {
           infowindow.open(map, marker);
         }
       })(marker, i));
-
-      /*
-      if (data_marker[i]['is_online']) {
-        if (data_marker[i]['is_problem'])
-            marker.setIcon(icons['yellow_icon'].icon);
-        else
-            marker.setIcon(icons['green_icon'].icon);
-      }
-      else
-        marker.setIcon(icons['red_icon'].icon);
-      */
 
       if (data_marker[i]['is_online'])
         markers.push(marker);
