@@ -15,6 +15,7 @@
 <!--
     <script type="module" src="{% versioned_static 'dashboard/js/map.js' %}"></script>
 -->
+<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 
     <hr />
     <section class="panel summary nice-padding">
@@ -28,6 +29,7 @@
         ({key: "{{ settings.GOOGLE_MAPS_V3_APIKEY }}", v: "beta"});</script>
 
 <script>
+
 // Initialize and add the map
 let map;
 const iconBase = "https://maps.google.com/mapfiles/ms/icons/";
@@ -53,8 +55,23 @@ const icons = {
 function drawMarker(data_marker, map) {
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
+    var markers = [];
 
     for (i = 0; i < data_marker.length; i++) {  
+
+/*
+        // Add some markers to the map.
+  const markers = locations.map((position, i) => {
+    const label = labels[i % labels.length];
+    const pinGlyph = new google.maps.marker.PinElement({
+      glyph: label,
+      glyphColor: "white",
+    });
+    const marker = new google.maps.marker.AdvancedMarkerElement({
+      position,
+      content: pinGlyph.element,
+    });
+*/
 
       marker = new google.maps.Marker({
         position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
@@ -87,15 +104,18 @@ function drawMarker(data_marker, map) {
       }
       else
         marker.setIcon(icons['red_icon'].icon);
+
+      markers.push(marker);
     }
+    // Add a marker clusterer to manage the markers.
+    new markerClusterer.MarkerClusterer({ markers, map });
 }
 
 async function initMap() {
   // The location of Citiwalk
   const position = { {{ settings.MAP_CENTER }} };
   // Request needed libraries.
-  //@ts-ignore
-  const { Map } = await google.maps.importLibrary("maps");
+  const { Map, InfoWindow } = await google.maps.importLibrary("maps");
   const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
   {% if user.is_superuser %}
