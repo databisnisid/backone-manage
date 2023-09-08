@@ -91,6 +91,7 @@ function drawMarker(data_marker, map) {
         markers.push(marker);
     }
 
+    /*
     let customRenderer = new markerClusterer.DefaultRenderer();
     customRenderer.render = function({ count, position }, stats, map) {
         // change color if this cluster has more markers than the mean cluster
@@ -132,6 +133,7 @@ function drawMarker(data_marker, map) {
         };
         return new google.maps.Marker(clusterOptions);
     }
+    */
     // Add a marker clusterer to manage the markers.
     new markerClusterer.MarkerClusterer({ 
         map: map,
