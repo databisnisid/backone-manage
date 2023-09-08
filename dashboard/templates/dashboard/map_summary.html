@@ -50,20 +50,20 @@ const icons = {
   },
 }
 
-function drawMarker(data) {
-    for (i = 0; i < data.length; i++) {  
+function drawMarker(data_marker, map) {
+    for (i = 0; i < data_marker.length; i++) {  
 
       marker = new google.maps.Marker({
         //position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-        position: new google.maps.LatLng(data[i]['lat'], data[i]['lng']),
+        position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
         map: map,
-        title: data[i]['name']
+        title: data_marker[i]['name']
       });
 
       let contentString =
             '<div id="content">' +
             '<div id="siteNotice"></div>' +
-            '<a href="/members/members/?q=' + data[i]['member_id'] + '">CHECK</a>' +
+            '<a href="/members/members/?q=' + data_marker[i]['member_id'] + '">CHECK</a>' +
             '</div>';
 
       
@@ -74,8 +74,8 @@ function drawMarker(data) {
         }
       })(marker, i));
 
-      if (data[i]['is_online']) {
-        if (data[i]['is_problem'])
+      if (data_marker[i]['is_online']) {
+        if (data_marker[i]['is_problem'])
             marker.setIcon(icons['yellow_icon'].icon);
         else
             marker.setIcon(icons['green_icon'].icon);
@@ -110,6 +110,7 @@ async function initMap() {
 
     console.log(data);
 
+    var data_clear = [];
     var data_online = [];
     var data_offline = [];
     var data_problem = [];
@@ -145,9 +146,9 @@ async function initMap() {
     var infowindow = new google.maps.InfoWindow();
 
     var marker, i;
-    drawMarker(data_online);
-    drawMarker(data_offline);
-    drawMarker(data_problem);
+    drawMarker(data_online, map);
+    drawMarker(data_offline, map);
+    drawMarker(data_problem, map);
 
     /*
     for (i = 0; i < data.length; i++) {  
