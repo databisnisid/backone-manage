@@ -41,7 +41,7 @@ function drawMarker(data_marker, map) {
 
     for (i = 0; i < data_marker.length; i++) {  
 
-      if (! data_marker[i]['is_online'])
+      if (data_marker[i]['is_online'])
         if (data_marker[i]['is_problem'])
             markerColor = '#ffc300'; // Yellow
         else
