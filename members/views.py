@@ -12,10 +12,10 @@ def randomize_coordinate(members):
     for i in range(0, len(members)):
         for j in range(i+1, len(members)):
             if members[i]['lat'] == members[j]['lat'] and members[i]['lng'] == members[j]['lng']:
-                print('Before', members[i]['lat'], members[i]['lng'])
-                members[i]['lat'] = round(float(members[i]['lat']) + random.uniform(-0.001, 0.001), 7)
-                members[i]['lng'] = round(float(members[i]['lng']) + random.uniform(-0.001, 0.001), 7)
-                print('After', members[i]['lat'], members[i]['lng'])
+                #print('Before', members[i]['lat'], members[i]['lng'])
+                members[i]['lat'] = float(members[i]['lat']) + random.uniform(-0.001, 0.001)
+                members[i]['lng'] = float(members[i]['lng']) + random.uniform(-0.001, 0.001)
+                #print('After', members[i]['lat'], members[i]['lng'])
 
     return members
 
@@ -41,8 +41,8 @@ def prepare_data(members, members_problems):
             lng = result[0].replace('POINT(', '')
             lat = result[1].replace(')', '')
         except AttributeError:
-            lat = round(settings.GEO_WIDGET_DEFAULT_LOCATION['lat'] + random.uniform(-0.0025, 0.0025), 7)
-            lng = round(settings.GEO_WIDGET_DEFAULT_LOCATION['lng'] + random.uniform(-0.0025, 0.0025), 7)
+            lat = settings.GEO_WIDGET_DEFAULT_LOCATION['lat'] + random.uniform(-0.0025, 0.0025)
+            lng = settings.GEO_WIDGET_DEFAULT_LOCATION['lng'] + random.uniform(-0.0025, 0.0025)
 
         member_geo['id'] = member.id
         member_geo['name'] = member.name
