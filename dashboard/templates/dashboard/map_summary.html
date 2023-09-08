@@ -55,7 +55,7 @@ function drawMarker(data_marker, map) {
           glyphColor: "black"
       });
 
-      if (data_marker[i]['is_online'])
+      if (data_marker[i]['is_problem'])
         marker = new google.maps.marker.AdvancedMarkerElement({
             position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
             content: pinGlyph.element,
@@ -87,15 +87,19 @@ function drawMarker(data_marker, map) {
         }
       })(marker, i));
 
-      if (data_marker[i]['is_online'])
+      if (! data_marker[i]['is_problem'])
         markers.push(marker);
     }
+
+    if (markerColor == "#3fff33")
+        markerColor = "#0000ff";
 
     let customRenderer = new markerClusterer.DefaultRenderer();
     customRenderer.render = function({ count, position }, stats, map) {
         // change color if this cluster has more markers than the mean cluster
         //const color = count > Math.max(10, stats.clusters.markers.mean) ? "#ff0000" : "#0000ff";
-        const color = "#0000ff";
+        //const color = "#0000ff";
+        const color = markerColor;
         // create svg literal with fill color
         const svg = `<svg fill="${color}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="50" height="50">
 <circle cx="120" cy="120" opacity=".6" r="70" />
