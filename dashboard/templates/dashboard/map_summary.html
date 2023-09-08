@@ -53,11 +53,19 @@ function drawMarker(data_marker, map) {
       else
           markerColor = '#ff5733'; // Red
 
-      pinGlyph = new google.maps.marker.PinElement({
-          background: markerColor,
-          borderColor: "black",
-          glyphColor: "black"
-      });
+      if (! data_marker[i]['is_problem'])
+        pinGlyph = new google.maps.marker.PinElement({
+            background: markerColor,
+            borderColor: "black",
+            glyphColor: "black",
+        });
+      else
+        pinGlyph = new google.maps.marker.PinElement({
+            background: markerColor,
+            borderColor: "black",
+            glyphColor: "black",
+            scale: 2
+        });
 
       if (! data_marker[i]['is_problem'])
         marker = new google.maps.marker.AdvancedMarkerElement({
@@ -67,12 +75,10 @@ function drawMarker(data_marker, map) {
         });
       else
       {
-        zIndex = Number(google.maps.Marker.MAX_ZINDEX) + i + 10000;
         marker = new google.maps.marker.AdvancedMarkerElement({
             position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
             content: pinGlyph.element,
             map: map,
-            zIndex: zIndex,
             title: data_marker[i]['name']
         });
       }
