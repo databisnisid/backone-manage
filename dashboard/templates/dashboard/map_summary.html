@@ -38,8 +38,12 @@ function drawMarker(data_marker, map) {
     var marker, i;
     var markers = [];
     var markerColor, pinGlyph;
+    var is_online = false;
 
     for (i = 0; i < data_marker.length; i++) {  
+
+      if (data_marker[i]['is_online'])
+        is_online = true;
 
       if (data_marker[i]['is_online'])
         if (data_marker[i]['is_problem'])
@@ -91,8 +95,10 @@ function drawMarker(data_marker, map) {
         markers.push(marker);
     }
 
-    if (markerColor == "#3fff33")
+    if (is_online)
         markerColor = "#0000ff";
+    else
+        markerColor = "#ff0000";
 
     let customRenderer = new markerClusterer.DefaultRenderer();
     customRenderer.render = function({ count, position }, stats, map) {
