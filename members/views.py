@@ -12,9 +12,10 @@ def randomize_coordinate(members):
     for i in range(0, len(members)):
         for j in range(i+1, len(members)):
             if members[i]['lat'] == members[j]['lat'] and members[i]['lng'] == members[j]['lng']:
+                print('Before', members[i]['lat'], members[i]['lng'])
                 members[i]['lat'] = str(float(members[i]['lat']) + random.uniform(-0.001, 0.001))
                 members[i]['lng'] = str(float(members[i]['lng']) + random.uniform(-0.001, 0.001))
-                print(member[i]['lat'], member[i]['lng'])
+                print('After', members[i]['lat'], members[i]['lng'])
 
 
 def is_problem(member, members_problems):
