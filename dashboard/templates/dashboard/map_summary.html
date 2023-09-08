@@ -92,7 +92,7 @@ function drawMarker(data_marker, map) {
     }
 
     let customRenderer = new markerClusterer.DefaultRenderer();
-    customRenderer.render = function({ count, position }, stats: clusterStats, map: google.maps.Map) {
+    customRenderer.render = function({ count, position }, stats, map) {
         // change color if this cluster has more markers than the mean cluster
         //const color = count > Math.max(10, stats.clusters.markers.mean) ? "#ff0000" : "#0000ff";
         const color = "#0000ff";
