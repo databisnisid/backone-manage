@@ -60,28 +60,13 @@ function drawMarker(data_marker, map) {
 
     for (i = 0; i < data_marker.length; i++) {  
 
-/*
-        // Add some markers to the map.
-  const markers = locations.map((position, i) => {
-    const label = labels[i % labels.length];
-    const pinGlyph = new google.maps.marker.PinElement({
-      glyph: label,
-      glyphColor: "white",
-    });
-    const marker = new google.maps.marker.AdvancedMarkerElement({
-      position,
-      content: pinGlyph.element,
-    });
-*/
-      var markerColor, pin;
       if (data_marker[i]['is_online'])
         if (data_marker[i]['is_problem'])
-            markerColor = '#FFC300'; // Yellow
+            markerColor = '#ffc300'; // Yellow
         else
             markerColor = '#3fff33';  // Green
       else
-          markerColor = '#3fff33'; // Red
-          //markerColor = '#FF5733'; // Red
+          markerColor = '#ff5733'; // Red
 
       pinGlyph = new google.maps.marker.PinElement({
           background: markerColor,
@@ -89,13 +74,22 @@ function drawMarker(data_marker, map) {
           glyphColor: "black"
       });
 
-      //marker = new google.maps.Marker({
-      marker = new google.maps.marker.AdvancedMarkerElement({
-        position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
-        content: pinGlyph.element
-        //map: map,
-        //title: data_marker[i]['name']
-      });
+      if (data_marker[i]['is_online'])
+        //marker = new google.maps.Marker({
+        marker = new google.maps.marker.AdvancedMarkerElement({
+            position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
+            content: pinGlyph.element
+            //map: map,
+            //title: data_marker[i]['name']
+        });
+      else
+        marker = new google.maps.marker.AdvancedMarkerElement({
+            position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
+            content: pinGlyph.element,
+            map: map
+            //title: data_marker[i]['name']
+        });
+
 
       let contentString =
             '<div id="content">' +
