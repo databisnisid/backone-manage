@@ -17,6 +17,8 @@ def randomize_coordinate(members):
                 members[i]['lng'] = round(float(members[i]['lng']) + random.uniform(-0.001, 0.001), 7)
                 print('After', members[i]['lat'], members[i]['lng'])
 
+    return members
+
 
 def is_problem(member, members_problems):
     is_found = 0
