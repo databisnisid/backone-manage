@@ -13,8 +13,8 @@ def randomize_coordinate(members):
         for j in range(i+1, len(members)):
             if members[i]['lat'] == members[j]['lat'] and members[i]['lng'] == members[j]['lng']:
                 #print('Before', members[i]['lat'], members[i]['lng'])
-                members[i]['lat'] = float(members[i]['lat']) + random.uniform(-0.001, 0.001)
-                members[i]['lng'] = float(members[i]['lng']) + random.uniform(-0.001, 0.001)
+                members[i]['lat'] = float(members[i]['lat']) + random.uniform(-0.0001, 0.0001)
+                members[i]['lng'] = float(members[i]['lng']) + random.uniform(-0.0001, 0.0001)
                 #print('After', members[i]['lat'], members[i]['lng'])
 
     return members
