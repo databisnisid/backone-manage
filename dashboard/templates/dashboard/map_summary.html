@@ -92,8 +92,7 @@ function drawMarker(data_marker, map) {
     }
 
     let customRenderer = new markerClusterer.DefaultRenderer();
-    /*
-    customRenderer.render = function({ count, position }, stats, map) {
+    customRenderer.render = function({ count, position }, stats: clusterStats, map: google.maps.Map) {
         // change color if this cluster has more markers than the mean cluster
         //const color = count > Math.max(10, stats.clusters.markers.mean) ? "#ff0000" : "#0000ff";
         const color = "#0000ff";
@@ -133,12 +132,11 @@ function drawMarker(data_marker, map) {
         };
         return new google.maps.Marker(clusterOptions);
     }
-    */
     // Add a marker clusterer to manage the markers.
     new markerClusterer.MarkerClusterer({ 
         map: map,
         markets: markers,
-        renderer: new markerClusterer.DefaultRenderer()
+        renderer: customRenderer
     });
 }
 
