@@ -232,3 +232,6 @@ DATA_URI_QUOTA = str(os.getenv('DATA_URI_QUOTA', 'https://data.backone.cloud/quo
 # QUOTA
 QUOTA_GB_WARNING = int(os.getenv('QUOTA_GB_WARNING', 5))
 QUOTA_DAY_WARNING = int(os.getenv('QUOTA_DAY_WARNING', 5))
+
+# MAP DASHBOARD
+MAP_REFRESH_INTERVAL = int(os.getenv('MAP_REFRESH_INTERVAL', 5))

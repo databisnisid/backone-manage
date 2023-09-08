@@ -233,7 +233,7 @@ initMap(api_url);
 setInterval(function() {
     // your code goes here...
     initMap(api_url);
-}, 5 * 60 * 1000); // every 5 minutes
+}, {{ settings.MAP_REFRESH_INTERVAL }} * 60 * 1000); // every 5 minutes
 //initMap(api_url);
 
 </script>
