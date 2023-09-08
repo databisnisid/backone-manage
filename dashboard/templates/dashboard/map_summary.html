@@ -78,15 +78,14 @@ function drawMarker(data_marker, map) {
         //marker = new google.maps.Marker({
         marker = new google.maps.marker.AdvancedMarkerElement({
             position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
-            content: pinGlyph.element
-            //map: map,
+            content: pinGlyph.element,
             title: data_marker[i]['name']
         });
       else
         marker = new google.maps.marker.AdvancedMarkerElement({
             position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
             content: pinGlyph.element,
-            map: map
+            map: map,
             title: data_marker[i]['name']
         });
 
