@@ -138,7 +138,7 @@ function drawMarker(data_marker, map) {
     new markerClusterer.MarkerClusterer({ 
         map: map,
         markets: markers,
-        renderer: customRenderer
+        renderer: markerClusterer.DefaultRenderer
     });
 }
 
