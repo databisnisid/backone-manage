@@ -160,22 +160,15 @@ function drawMarker(data_marker, map) {
     });
 }
 
-async function initMap() {
-  // The location of Citiwalk
-  const position = { {{ settings.MAP_CENTER }} };
-  // Request needed libraries.
-  const { Map, InfoWindow } = await google.maps.importLibrary("maps");
-  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+async function initMap(api_url) {
+    // The location of Citiwalk
+    //const position = { {{ settings.MAP_CENTER }} };
+    // Request needed libraries.
+    const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-  {% if user.is_superuser %}
-  const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_all";
-  {% elif user.organization.is_no_org %}
-    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_user/{{ user.id }}";
-  {% else %}
-    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_org/{{ user.organization.id }}";
-  {% endif %}
-
-  async function getapi(url) {
+    //async function getapi(url) {
+    let url = api_url;
     // Storing response
     const response = await fetch(url);
    
@@ -222,12 +215,20 @@ async function initMap() {
     drawMarker(data_offline, map);
     drawMarker(data_problem, map);
 
-  }
+  //}
 
-  getapi(api_url);
+  //getapi(api_url);
 
 }
 
-initMap();
+{% if user.is_superuser %}
+    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_all";
+{% elif user.organization.is_no_org %}
+    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_user/{{ user.id }}";
+{% else %}
+    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_org/{{ user.organization.id }}";
+{% endif %}
+
+initMap(api_url);
 
 </script>
