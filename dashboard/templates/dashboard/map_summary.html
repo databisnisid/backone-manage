@@ -88,6 +88,7 @@ function drawMarker(data_marker, map) {
           borderColor: "black",
           glyphColor: "black"
       });
+
       //marker = new google.maps.Marker({
       marker = new google.maps.marker.AdvancedMarkerElement({
         position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
@@ -124,7 +125,8 @@ function drawMarker(data_marker, map) {
         marker.setIcon(icons['red_icon'].icon);
       */
 
-      markers.push(marker);
+      if (data_marker[i]['is_online'])
+        markers.push(marker);
     }
     // Add a marker clusterer to manage the markers.
     new markerClusterer.MarkerClusterer({ markers, map });
