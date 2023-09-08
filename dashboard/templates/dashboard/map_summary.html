@@ -66,12 +66,16 @@ function drawMarker(data_marker, map) {
             title: data_marker[i]['name']
         });
       else
+      {
+        zIndex = Number(google.maps.Marker.MAX_ZINDEX) + i + 10000;
         marker = new google.maps.marker.AdvancedMarkerElement({
             position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
             content: pinGlyph.element,
             map: map,
+            zIndex: zIndex,
             title: data_marker[i]['name']
         });
+      }
 
 
       let contentString =
