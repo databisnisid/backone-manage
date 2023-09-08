@@ -56,6 +56,7 @@ function drawMarker(data_marker, map) {
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
     var markers = [];
+    var markerColor, pinGlyph;
 
     for (i = 0; i < data_marker.length; i++) {  
 
@@ -72,11 +73,27 @@ function drawMarker(data_marker, map) {
       content: pinGlyph.element,
     });
 */
+      var markerColor, pin;
+      if (data_marker[i]['is_online'])
+        if (data_marker[i]['is_problem'])
+            markerColor = '#FFC300'; // Yellow
+        else
+            markerColor = '#3fff33';  // Green
+      else
+          markerColor = '#3fff33'; // Red
+          //markerColor = '#FF5733'; // Red
 
-      marker = new google.maps.Marker({
+      pinGlyph = new google.maps.marker.PinElement({
+          background: markerColor,
+          borderColor: "black",
+          glyphColor: "black"
+      });
+      //marker = new google.maps.Marker({
+      marker = new google.maps.marker.AdvancedMarkerElement({
         position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
-        map: map,
-        title: data_marker[i]['name']
+        content: pinGlyph.element
+        //map: map,
+        //title: data_marker[i]['name']
       });
 
       let contentString =
@@ -96,6 +113,7 @@ function drawMarker(data_marker, map) {
         }
       })(marker, i));
 
+      /*
       if (data_marker[i]['is_online']) {
         if (data_marker[i]['is_problem'])
             marker.setIcon(icons['yellow_icon'].icon);
@@ -104,6 +122,7 @@ function drawMarker(data_marker, map) {
       }
       else
         marker.setIcon(icons['red_icon'].icon);
+      */
 
       markers.push(marker);
     }
