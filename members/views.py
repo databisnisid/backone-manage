@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 from .models import Members, Mqtt
 from monitor.models import MemberProblems
 
@@ -53,30 +54,33 @@ def prepare_data(members, members_problems):
     return new_members
 
 
+def problem_time():
+    return timezone.now() - timezone.timedelta(seconds=settings.MONITOR_DELAY)
+
+
 def get_members_all(request):
-    #members = Members.objects.exclude(address__isnull=True, location__isnull=True)
     members = Members.objects.all()
-    members_problems = MemberProblems.unsolved.all()
+    members_problems = MemberProblems.unsolved.filter(start_at__lt=problem_time())
     members_data = prepare_data(members, members_problems)
 
     return JsonResponse(members_data, safe=False)
+
 
 def get_members_user(request, user):
-    #members = Members.objects.exclude(
-    #        address__isnull=True, location__isnull=True
-    #        ).filter(user__id=user)
     members = Members.objects.filter(user__id=user)
-    members_problems = MemberProblems.unsolved.filter(member__user__id=user)
+    members_problems = MemberProblems.unsolved.filter(
+            member__user__id=user, start_at__lt=problem_time()
+            )
     members_data = prepare_data(members, members_problems)
 
     return JsonResponse(members_data, safe=False)
 
+
 def get_members_org(request, organization):
-    #members = Members.objects.exclude(
-    #        address__isnull=True, location__isnull=True
-    #        ).filter(organization__id=organization)
     members = Members.objects.filter(organization__id=organization)
-    members_problems = MemberProblems.unsolved.filter(member__organization__id=organization)
+    members_problems = MemberProblems.unsolved.filter(
+            member__organization__id=organization, start_at__lt=problem_time()
+            )
     members_data = prepare_data(members, members_problems)
 
     return JsonResponse(members_data, safe=False)
