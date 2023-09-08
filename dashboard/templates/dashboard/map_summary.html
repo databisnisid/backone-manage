@@ -30,73 +30,27 @@
 <script>
 // Initialize and add the map
 let map;
+const iconBase = "https://maps.google.com/mapfiles/ms/icons/";
+const icons = {
+  green_icon: {
+      name: "ONLINE",
+      icon: iconBase + "green-dot.png"
+  },
+  red_icon: {
+      name: "OFFLINE",
+      icon: iconBase + "red-dot.png"
+  },
+  yellow_icon: {
+      name: "WARNING",
+      icon: iconBase + "yellow-dot.png"
+  },
+  purple_icon: {
+      name: "UNKOWN",
+      icon: iconBase + "purple-dot.png"
+  },
+}
 
-async function initMap() {
-  // The location of Citiwalk
-  const position = { {{ settings.MAP_CENTER }} };
-  // Request needed libraries.
-  //@ts-ignore
-  const { Map } = await google.maps.importLibrary("maps");
-  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-
-  {% if user.is_superuser %}
-  const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_all";
-  {% elif user.organization.is_no_org %}
-    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_user/{{ user.id }}";
-  {% else %}
-    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_org/{{ user.organization.id }}";
-  {% endif %}
-
-  async function getapi(url) {
-    // Storing response
-    const response = await fetch(url);
-   
-    // Storing data in form of JSON
-    var data = await response.json();
-
-    console.log(data);
-
-    var latlngList = [];
-    for (i = 0; i < data.length; i++) {  
-        latlngList.push(new google.maps.LatLng(data[i]['lat'], data[i]['lng']));
-
-        var bounds = new google.maps.LatLngBounds();
-        latlngList.forEach(function(n) {
-            bounds.extend(n);
-        });
-    }
-
-    map = new Map(document.getElementById("map"), {
-      //zoom: {{ settings.MAP_ZOOM }},
-      //center: position,
-      mapId: "MAP_VIEW",
-    });
-    map.setCenter(bounds.getCenter()); //or use custom center
-    map.fitBounds(bounds);
-
-    var infowindow = new google.maps.InfoWindow();
-
-    var marker, i;
-    const iconBase = "https://maps.google.com/mapfiles/ms/icons/";
-    const icons = {
-      green_icon: {
-          name: "ONLINE",
-          icon: iconBase + "green-dot.png"
-      },
-      red_icon: {
-          name: "OFFLINE",
-          icon: iconBase + "red-dot.png"
-      },
-      yellow_icon: {
-          name: "WARNING",
-          icon: iconBase + "yellow-dot.png"
-      },
-      purple_icon: {
-          name: "UNKOWN",
-          icon: iconBase + "purple-dot.png"
-      },
-    }
-    
+function drawMarker(data) {
     for (i = 0; i < data.length; i++) {  
 
       marker = new google.maps.Marker({
@@ -129,6 +83,101 @@ async function initMap() {
       else
         marker.setIcon(icons['red_icon'].icon);
     }
+}
+
+async function initMap() {
+  // The location of Citiwalk
+  const position = { {{ settings.MAP_CENTER }} };
+  // Request needed libraries.
+  //@ts-ignore
+  const { Map } = await google.maps.importLibrary("maps");
+  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+  {% if user.is_superuser %}
+  const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_all";
+  {% elif user.organization.is_no_org %}
+    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_user/{{ user.id }}";
+  {% else %}
+    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_org/{{ user.organization.id }}";
+  {% endif %}
+
+  async function getapi(url) {
+    // Storing response
+    const response = await fetch(url);
+   
+    // Storing data in form of JSON
+    var data = await response.json();
+
+    console.log(data);
+
+    var data_clear = [];
+    var data_problem = [];
+    for (i = 0; i < data.length; i++) {  
+        if (data[i]['is_problem'])
+            data_problem.push(data[i]);
+        else
+            data_clear.push(data[i]);
+    }
+
+
+    var latlngList = [];
+    for (i = 0; i < data.length; i++) {  
+        latlngList.push(new google.maps.LatLng(data[i]['lat'], data[i]['lng']));
+
+        var bounds = new google.maps.LatLngBounds();
+        latlngList.forEach(function(n) {
+            bounds.extend(n);
+        });
+    }
+
+    map = new Map(document.getElementById("map"), {
+      //zoom: {{ settings.MAP_ZOOM }},
+      //center: position,
+      mapId: "MAP_VIEW",
+    });
+    map.setCenter(bounds.getCenter()); //or use custom center
+    map.fitBounds(bounds);
+
+    var infowindow = new google.maps.InfoWindow();
+
+    var marker, i;
+    drawMarker(data_clear);
+    drawMarker(data_problem);
+
+    /*
+    for (i = 0; i < data.length; i++) {  
+
+      marker = new google.maps.Marker({
+        //position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+        position: new google.maps.LatLng(data[i]['lat'], data[i]['lng']),
+        map: map,
+        title: data[i]['name']
+      });
+
+      let contentString =
+            '<div id="content">' +
+            '<div id="siteNotice"></div>' +
+            '<a href="/members/members/?q=' + data[i]['member_id'] + '">CHECK</a>' +
+            '</div>';
+
+      
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(contentString);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+
+      if (data[i]['is_online']) {
+        if (data[i]['is_problem'])
+            marker.setIcon(icons['yellow_icon'].icon);
+        else
+            marker.setIcon(icons['green_icon'].icon);
+      }
+      else
+        marker.setIcon(icons['red_icon'].icon);
+    }
+    */
   }
   getapi(api_url);
   // The marker, positioned at Uluru
