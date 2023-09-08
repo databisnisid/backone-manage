@@ -13,8 +13,8 @@ def randomize_coordinate(members):
     for i in range(0, len(members)):
         for j in range(i+1, len(members)):
             if members[i]['lat'] == members[j]['lat'] and members[i]['lng'] == members[j]['lng']:
-                members[i]['lat'] = members[i]['lat'] + random.uniform(-0.001, 0.001)
-                members[i]['lng'] = members[i]['lng'] + random.uniform(-0.001, 0.001)
+                members[i]['lat'] = float(members[i]['lat']) + random.uniform(-0.001, 0.001)
+                members[i]['lng'] = float(members[i]['lng']) + random.uniform(-0.001, 0.001)
 
 def is_problem(member, members_problems):
     is_found = 0
