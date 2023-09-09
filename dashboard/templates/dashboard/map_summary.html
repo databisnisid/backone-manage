@@ -121,7 +121,9 @@ function drawMarker(data_marker, map) {
             title: data_marker[i]['name']
         });
       }
-  const content = marker.content;
+
+      // Start - Animation Part
+      const content = marker.content;
 
       content.style.opacity = "0";
       content.addEventListener("animationend", (event) => {
@@ -129,12 +131,14 @@ function drawMarker(data_marker, map) {
         content.style.opacity = "1";
       });
 
-      const time = 2 + Math.random(); // 2s delay for easy to see the animation
+      const time = 1 + Math.random(); // 2s delay for easy to see the animation
 
-  content.style.setProperty("--delay-time", time + "s");
-  intersectionObserver.observe(content);
+      content.style.setProperty("--delay-time", time + "s");
+      intersectionObserver.observe(content);
+      // End - Animation Part
 
 
+      // Start - Content InfoWindow
       let contentString =
             '<div id="content">' +
             '<div id="siteNotice"></div>' +
@@ -151,6 +155,7 @@ function drawMarker(data_marker, map) {
           infowindow.open(map, marker);
         }
       })(marker, i));
+      // End - Content InfoWindow
 
       if (! data_marker[i]['is_problem'])
         markers.push(marker);
@@ -158,7 +163,6 @@ function drawMarker(data_marker, map) {
 
     if (is_online)
         markerColor = "#009009";
-        //markerColor = "#0000ff";
     else
         markerColor = "#ff0000";
 
@@ -212,16 +216,12 @@ function drawMarker(data_marker, map) {
 }
 
 async function initMap(api_url) {
-    // The location of Citiwalk
-    //const position = { {{ settings.MAP_CENTER }} };
     // Request needed libraries.
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-    //async function getapi(url) {
-    let url = api_url;
     // Storing response
-    const response = await fetch(url);
+    const response = await fetch(api_url);
    
     // Storing data in form of JSON
     var data = await response.json();
@@ -244,10 +244,6 @@ async function initMap(api_url) {
     map.setCenter(bounds.getCenter()); //or use custom center
     map.fitBounds(bounds);
 
-    //var infowindow = new google.maps.InfoWindow();
-
-    //var marker, i;
-
     var data_online = [];
     var data_offline = [];
     var data_problem = [];
@@ -265,10 +261,6 @@ async function initMap(api_url) {
     drawMarker(data_online, map);
     drawMarker(data_offline, map);
     drawMarker(data_problem, map);
-
-  //}
-
-  //getapi(api_url);
 
 }
 
