@@ -10,6 +10,35 @@
   height: 600px;
   width: 100%;
 }
+
+@keyframes drop {
+  0% {
+    transform: translateY(-200px) scaleY(0.9);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(0px) scaleY(1);
+    opacity: 1;
+  }
+  65% {
+    transform: translateY(-17px) scaleY(0.9);
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(-22px) scaleY(0.9);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0px) scaleY(1);
+    opacity: 1;
+  }
+}
+.drop {
+  animation: drop 0.3s linear forwards var(--delay-time);
+}
 </style>
 
 <!--
@@ -32,6 +61,15 @@
 
 // Initialize and add the map
 let map;
+
+const intersectionObserver = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("drop");
+      intersectionObserver.unobserve(entry.target);
+    }
+  }
+});
 
 function drawMarker(data_marker, map) {
     var infowindow = new google.maps.InfoWindow();
@@ -65,7 +103,7 @@ function drawMarker(data_marker, map) {
             background: markerColor,
             borderColor: "black",
             glyphColor: "black",
-            scale: 1.3
+            scale: 1.2
         });
 
       if (! data_marker[i]['is_problem'])
@@ -83,6 +121,18 @@ function drawMarker(data_marker, map) {
             title: data_marker[i]['name']
         });
       }
+  const content = marker.content;
+
+      content.style.opacity = "0";
+      content.addEventListener("animationend", (event) => {
+        content.classList.remove("drop");
+        content.style.opacity = "1";
+      });
+
+      const time = 2 + Math.random(); // 2s delay for easy to see the animation
+
+  content.style.setProperty("--delay-time", time + "s");
+  intersectionObserver.observe(content);
 
 
       let contentString =
