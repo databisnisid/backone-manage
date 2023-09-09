@@ -58,13 +58,14 @@ function drawMarker(data_marker, map) {
             background: markerColor,
             borderColor: "black",
             glyphColor: "black",
+            scale: 0.8
         });
       else
         pinGlyph = new google.maps.marker.PinElement({
             background: markerColor,
             borderColor: "black",
             glyphColor: "black",
-            scale: 1.5
+            scale: 1.3
         });
 
       if (! data_marker[i]['is_problem'])
