@@ -163,6 +163,8 @@ function drawMarker(data_marker) {
         // End - Animation Drop
         
       } else {
+        const time = 3 + Math.random(); // 2s delay for easy to see the animation
+        content.style.setProperty("--bounce-delay-time", time + "s");
         intersectionObserverBounce.observe(content);
       }
 
