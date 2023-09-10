@@ -32,6 +32,9 @@ function drawMarker(data_marker) {
 
     for (i = 0; i < data_marker.length; i++) {  
 
+      data_marker[i]['is_online'] = 1;
+      data_marker[i]['is_problem'] = 1;
+
       if (data_marker[i]['is_online'])
         is_online = true;
       
@@ -97,7 +100,7 @@ function drawMarker(data_marker) {
         */
 
       const content = marker.content;
-      if (!data_marker[i]['is_problem']) {
+      //if (!data_marker[i]['is_problem']) {
         //    marker.setOpacity(0);
 
         // Start - Animation Drop
@@ -114,9 +117,9 @@ function drawMarker(data_marker) {
         intersectionObserverDrop.observe(content);
         // End - Animation Drop
         
-      } else {
-        intersectionObserverBounce.observe(content);
-      }
+      //} else {
+      //  intersectionObserverBounce.observe(content);
+      //}
 
       // Start - Content InfoWindow
       let contentString =
@@ -133,6 +136,7 @@ function drawMarker(data_marker) {
         return function() {
           infowindow.setContent(contentString);
           infowindow.open(map, marker);
+          intersectionObserverBounce.observe(content);
         }
       })(marker, i));
       // End - Content InfoWindow
