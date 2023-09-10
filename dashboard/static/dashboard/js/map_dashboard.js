@@ -313,6 +313,13 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
         map.setCenter(bounds.getCenter()); //or use custom center
         map.fitBounds(bounds);
 
+        //remove one zoom level to ensure no marker is on the edge.
+        map.setZoom(map.getZoom() - 1);
+
+        if(map.getZoom() > 15){
+            map.setZoom(15);
+        }
+
         var data_online = [];
         var data_offline = [];
         var data_problem = [];
