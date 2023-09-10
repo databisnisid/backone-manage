@@ -1,6 +1,7 @@
 // Initialize and add the map
 let map;
 var markers = [];
+var markersCluster = [];
 var data_prev = [];
 var data_new = [];
 
@@ -28,6 +29,9 @@ function setMapOnAll(map) {
   for (let i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
   }
+  for (let i = 0; i < markersCluster.length; i++) {
+    markersCluster[i].setMap(map);
+  }
 }
 
 // Removes the markers from the map, but keeps them in the array.
@@ -44,6 +48,7 @@ function showMarkers() {
 function deleteMarkers() {
   hideMarkers();
   markers = [];
+  markersCluster = [];
 }
 
 var markerOpacity = markerOpacityIncrement = 0.05;
@@ -194,7 +199,7 @@ function drawMarker(data_marker) {
         // adjust zIndex to be above other markers
         zIndex = Number(google.maps.Marker.MAX_ZINDEX) + count;
         //if (markerClusterer.MarkerUtils.isAdvancedMarkerAvailable(map)) {
-            if (map.getMapCapabilities().isAdvancedMarkersAvailable) {
+        if (map.getMapCapabilities().isAdvancedMarkersAvailable) {
             // create cluster SVG element
             const div = document.createElement("div");
             div.innerHTML = svg;
@@ -207,6 +212,7 @@ function drawMarker(data_marker) {
                 title,
                 content: svgEl,
             };
+            maskersCluster.push(clusterOptions);
             return new google.maps.marker.AdvancedMarkerElement(clusterOptions);
         }
         const clusterOptions = {
@@ -218,6 +224,7 @@ function drawMarker(data_marker) {
                 anchor: new google.maps.Point(25, 25),
             },
         };
+        maskersCluster.push(clusterOptions);
         return new google.maps.Marker(clusterOptions);
     }
 
