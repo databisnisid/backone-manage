@@ -75,15 +75,18 @@ function drawMarker(data_marker) {
     //var markers = [];
     var markerColor, pinGlyph;
     var is_online = false;
+    var is_problem = false;
 
     for (i = 0; i < data_marker.length; i++) {  
 
-      //data_marker[i]['is_online'] = 1;
-      //data_marker[i]['is_problem'] = 1;
+      data_marker[i]['is_online'] = 1;
+      data_marker[i]['is_problem'] = 1;
 
-      if (data_marker[i]['is_online'])
+      if (data_marker[i]['is_online']) {
         is_online = true;
-      
+        if (data_marker[i]['is_problem'])
+            is_problem = true;
+      }
 
       if (data_marker[i]['is_online'])
         if (data_marker[i]['is_problem'])
@@ -125,13 +128,19 @@ function drawMarker(data_marker) {
       }
 
       const content = marker.content;
-      if (!data_marker[i]['is_problem']) {
+      //if (!data_marker[i]['is_problem']) {
+        //is_problem = true;
 
         // Start - Animation Drop
         content.style.opacity = "0";
         content.addEventListener("animationend", (event) => {
             content.classList.remove("drop");
             content.style.opacity = "1";
+            if (is_problem) {
+                const time = 5 + Math.random(); // 2s delay for easy to see the animation
+                content.style.setProperty("--bounce-delay-time", time + "s");
+                intersectionObserverBounce.observe(content);
+            }
         });
 
         const time = 1 + Math.random(); // 2s delay for easy to see the animation
@@ -141,11 +150,14 @@ function drawMarker(data_marker) {
         intersectionObserverDrop.observe(content);
         // End - Animation Drop
         
-      } else {
+      //} else {
+          /*
+      if (data_marker[i]['is_problem']) {
         const time = 5 + Math.random(); // 2s delay for easy to see the animation
         content.style.setProperty("--bounce-delay-time", time + "s");
         intersectionObserverBounce.observe(content);
       }
+          */
 
       // Start - Content InfoWindow
       let contentString =
