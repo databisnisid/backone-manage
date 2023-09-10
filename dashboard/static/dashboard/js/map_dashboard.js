@@ -32,8 +32,8 @@ function drawMarker(data_marker, map) {
 
     for (i = 0; i < data_marker.length; i++) {  
 
-      data_marker[i]['is_online'] = 1;
-      data_marker[i]['is_problem'] = 1;
+      //data_marker[i]['is_online'] = 1;
+      //data_marker[i]['is_problem'] = 1;
 
       if (data_marker[i]['is_online'])
         is_online = true;
@@ -59,7 +59,7 @@ function drawMarker(data_marker, map) {
             background: markerColor,
             borderColor: "black",
             glyphColor: "black",
-            scale: 1.2
+            scale: 1.1
         });
 
       if (! data_marker[i]['is_problem'])
