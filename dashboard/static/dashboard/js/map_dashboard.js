@@ -22,7 +22,7 @@ const intersectionObserverBounce = new IntersectionObserver((entries) => {
 });
 
 
-function drawMarker(data_marker, map) {
+function drawMarker(data_marker) {
 
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
@@ -31,9 +31,6 @@ function drawMarker(data_marker, map) {
     var is_online = false;
 
     for (i = 0; i < data_marker.length; i++) {  
-
-      //data_marker[i]['is_online'] = 1;
-      //data_marker[i]['is_problem'] = 1;
 
       if (data_marker[i]['is_online'])
         is_online = true;
@@ -78,6 +75,7 @@ function drawMarker(data_marker, map) {
         });
       }
 
+        /*
       var fadeInMarkers = function(markers) {
 
         if (markerOpacity <= 1) {
@@ -96,6 +94,7 @@ function drawMarker(data_marker, map) {
           markerOpacity = markerOpacityIncrement; // reset for next use
         }
       }
+        */
 
       const content = marker.content;
       if (!data_marker[i]['is_problem']) {
@@ -276,9 +275,9 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
             data_offline.push(data[i]);
     }
     deleteMarkers();
-    drawMarker(data_online, map);
-    drawMarker(data_offline, map);
-    drawMarker(data_problem, map);
+    drawMarker(data_online);
+    drawMarker(data_offline);
+    drawMarker(data_problem);
 }
 
 //async function initMap(base_api, is_all, is_no_org, query_id) {
