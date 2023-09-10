@@ -81,8 +81,8 @@ function drawMarker(data_marker, map) {
             content.style.opacity = "1";
         });
 
-        //const time = 1 + Math.random(); // 2s delay for easy to see the animation
-        const time = Math.random(); // Randomize drop
+        const time = 1 + Math.random(); // 2s delay for easy to see the animation
+        //const time = Math.random(); // Randomize drop
 
         content.style.setProperty("--delay-time", time + "s");
         intersectionObserverDrop.observe(content);
