@@ -1,6 +1,8 @@
 // Initialize and add the map
 let map;
 var markers = [];
+var data_prev = [];
+var data_new = [];
 
 const intersectionObserverDrop = new IntersectionObserver((entries) => {
   for (const entry of entries) {
@@ -77,6 +79,9 @@ function drawMarker(data_marker) {
     var is_online = false;
     var is_problem = false;
 
+    // Reset Markers
+    markers = [];
+
     for (i = 0; i < data_marker.length; i++) {  
 
       //data_marker[i]['is_online'] = 1;
@@ -128,36 +133,24 @@ function drawMarker(data_marker) {
       }
 
       const content = marker.content;
-      //if (!data_marker[i]['is_problem']) {
-        //is_problem = true;
-
         // Start - Animation Drop
-        content.style.opacity = "0";
-        content.addEventListener("animationend", (event) => {
-            content.classList.remove("drop");
-            content.style.opacity = "1";
-            if (is_problem) {
-                const time = 5 + Math.random(); // 2s delay for easy to see the animation
-                content.style.setProperty("--bounce-delay-time", time + "s");
-                intersectionObserverBounce.observe(content);
-            }
-        });
+      content.style.opacity = "0";
+      content.addEventListener("animationend", (event) => {
+          content.classList.remove("drop");
+          content.style.opacity = "1";
+          if (is_problem) {
+              const time = 5 + Math.random(); // 2s delay for easy to see the animation
+              content.style.setProperty("--bounce-delay-time", time + "s");
+              intersectionObserverBounce.observe(content);
+          }
+      });
 
-        const time = 1 + Math.random(); // 2s delay for easy to see the animation
-        //const time = Math.random(); // Randomize drop
+      const time = 1 + Math.random(); // 2s delay for easy to see the animation
+      //const time = Math.random(); // Randomize drop
 
-        content.style.setProperty("--delay-time", time + "s");
-        intersectionObserverDrop.observe(content);
-        // End - Animation Drop
-        
-      //} else {
-          /*
-      if (data_marker[i]['is_problem']) {
-        const time = 5 + Math.random(); // 2s delay for easy to see the animation
-        content.style.setProperty("--bounce-delay-time", time + "s");
-        intersectionObserverBounce.observe(content);
-      }
-          */
+      content.style.setProperty("--delay-time", time + "s");
+      intersectionObserverDrop.observe(content);
+      // End - Animation Drop
 
       // Start - Content InfoWindow
       let contentString =
@@ -173,9 +166,6 @@ function drawMarker(data_marker) {
         return function() {
           infowindow.setContent(contentString);
           infowindow.open(map, marker);
-          //if (data_marker[i]['is_problem']) {
-          //  intersectionObserverBounce.observe(content);
-          //}
         }
       })(marker, i));
       // End - Content InfoWindow
@@ -237,10 +227,11 @@ function drawMarker(data_marker) {
         markers: markers,
         renderer: customRenderer
     });
+    //markers = [];
     //setTimeout(function() {
     //    fadeInMarkers(markers);
     //}, 2000);
-    markers = [];
+    //markers = [];
 }
 
 //async function get_api(api_url) {
@@ -266,42 +257,69 @@ async function get_api(base_api, is_all, is_no_org, query_id) {
     return data;
 }
 
+function arraysEqual(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length !== b.length) return false;
+
+  // If you don't care about the order of the elements inside
+  // the array, you should sort both arrays here.
+  // Please note that calling sort on an array will modify that array.
+  // you might want to clone your array first.
+
+  for (var i = 0; i < a.length; ++i) {
+    if (JSON.stringify(a[i]) != JSON.stringify(b[i])) {
+        return false;
+    }
+  }
+  return true;
+}
+
 async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-    let data = await get_api(base_api, is_all, is_no_org, query_id);
+    var data;
 
-    var latlngList = [];
-    for (i = 0; i < data.length; i++) {  
-        latlngList.push(new google.maps.LatLng(data[i]['lat'], data[i]['lng']));
+    data_new = await get_api(base_api, is_all, is_no_org, query_id);
 
-        var bounds = new google.maps.LatLngBounds();
-        latlngList.forEach(function(n) {
-            bounds.extend(n);
-        });
-    }
+    let is_equal = arraysEqual(data_prev, data_new);
+    //console.log(is_equal);
+    if (! is_equal) {
+        data_prev = data_new;
+        data = data_new;
 
-    map.setCenter(bounds.getCenter()); //or use custom center
-    map.fitBounds(bounds);
+        var latlngList = [];
+        for (i = 0; i < data.length; i++) {  
+            latlngList.push(new google.maps.LatLng(data[i]['lat'], data[i]['lng']));
 
-    var data_online = [];
-    var data_offline = [];
-    var data_problem = [];
+            var bounds = new google.maps.LatLngBounds();
+            latlngList.forEach(function(n) {
+                bounds.extend(n);
+            });
+        }
 
-    for (i = 0; i < data.length; i++) {  
-        if (data[i]['is_online'])
-            if (data[i]['is_problem'])
-                data_problem.push(data[i]);
+        map.setCenter(bounds.getCenter()); //or use custom center
+        map.fitBounds(bounds);
+
+        var data_online = [];
+        var data_offline = [];
+        var data_problem = [];
+
+        for (i = 0; i < data.length; i++) {  
+            if (data[i]['is_online'])
+                if (data[i]['is_problem'])
+                    data_problem.push(data[i]);
+                else
+                    data_online.push(data[i])
             else
-                data_online.push(data[i])
-        else
-            data_offline.push(data[i]);
+                data_offline.push(data[i]);
+        }
+        deleteMarkers();
+        drawMarker(data_online);
+        drawMarker(data_offline);
+        drawMarker(data_problem);
     }
-    deleteMarkers();
-    drawMarker(data_online);
-    drawMarker(data_offline);
-    drawMarker(data_problem);
 }
 
 //async function initMap(base_api, is_all, is_no_org, query_id) {
@@ -314,81 +332,4 @@ async function initMap() {
       mapId: "MAP_VIEW",
     });
 
-    /*
-    var api_url;
-
-    if (is_all)
-        api_url = base_api + '/api/members/get_all';
-    else
-        if (is_no_org)
-            api_url = base_api + '/api/members/get_by_user/' + query_id;
-        else
-            api_url = base_api + '/api/members/get_by_org/' + query_id;
-    */
-
-//setInterval(function() {
-    //deleteMarkers();
-
-    /*
-    // Storing response
-    const response = await fetch(api_url);
-   
-    // Storing data in form of JSON
-    var data = await response.json();
-
-    console.log(data);
-    let data = await get_api(base_api, is_all, is_no_org, query_id);
-
-    var latlngList = [];
-    for (i = 0; i < data.length; i++) {  
-        latlngList.push(new google.maps.LatLng(data[i]['lat'], data[i]['lng']));
-
-        var bounds = new google.maps.LatLngBounds();
-        latlngList.forEach(function(n) {
-            bounds.extend(n);
-        });
-    }
-    */
-
-    //map = new Map(document.getElementById("map"), {
-    //  mapId: "MAP_VIEW",
-    //});
-    //map.setCenter(bounds.getCenter()); //or use custom center
-    //map.fitBounds(bounds);
-
-/*
-  document
-    .getElementById("show-markers")
-    .addEventListener("click", showMarkers);
-  document
-    .getElementById("hide-markers")
-    .addEventListener("click", hideMarkers);
-  document
-    .getElementById("delete-markers")
-    .addEventListener("click", deleteMarkers);
-*/
-  // Adds a marker at the center of the map.
-        //
-    //let data = await redrawMarkers(base_api, is_all, is_no_org, query_id);
-
-    /*
-    var data_online = [];
-    var data_offline = [];
-    var data_problem = [];
-
-    for (i = 0; i < data.length; i++) {  
-        if (data[i]['is_online'])
-            if (data[i]['is_problem'])
-                data_problem.push(data[i]);
-            else
-                data_online.push(data[i])
-        else
-            data_offline.push(data[i]);
-    }
-
-    drawMarker(data_online, map);
-    drawMarker(data_offline, map);
-    drawMarker(data_problem, map);
-    */
-//}, 60 * 1000);
 }

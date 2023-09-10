@@ -42,10 +42,10 @@ const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}";
 {% endif %}
 
     //initMap(api_url, is_all, is_no_org, query_id);
+    var data;
     initMap();
     redrawMarkers(api_url, is_all, is_no_org, query_id);
     setInterval(function() {
-        //initMap(api_url, is_all, is_no_org, query_id);
         redrawMarkers(api_url, is_all, is_no_org, query_id);
     }, {{ settings.MAP_REFRESH_INTERVAL }} * 60 * 1000); // every 5 minutes
 </script>
