@@ -194,6 +194,7 @@ function drawMarker(data_marker) {
         markers: markers,
         renderer: customRenderer
     });
+    markers = [];
 }
 
 // Sets the map on all markers in the array.
