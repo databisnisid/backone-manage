@@ -1,5 +1,6 @@
 // Initialize and add the map
 let map;
+var markers = [];
 
 const intersectionObserverDrop = new IntersectionObserver((entries) => {
   for (const entry of entries) {
@@ -10,6 +11,7 @@ const intersectionObserverDrop = new IntersectionObserver((entries) => {
   }
 });
 
+
 const intersectionObserverBounce = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     if (entry.isIntersecting) {
@@ -19,14 +21,19 @@ const intersectionObserverBounce = new IntersectionObserver((entries) => {
   }
 });
 
+
 function drawMarker(data_marker, map) {
+
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
-    var markers = [];
+    //var markers = [];
     var markerColor, pinGlyph;
     var is_online = false;
 
     for (i = 0; i < data_marker.length; i++) {  
+
+      data_marker[i]['is_online'] = 1;
+      data_marker[i]['is_problem'] = 1;
 
       if (data_marker[i]['is_online'])
         is_online = true;
@@ -71,8 +78,28 @@ function drawMarker(data_marker, map) {
         });
       }
 
+      var fadeInMarkers = function(markers) {
+
+        if (markerOpacity <= 1) {
+
+            marker[i].setOpacity(markerOpacity);
+
+          // increment opacity
+          markerOpacity += markerOpacityIncrement;
+
+          // call this method again
+          setTimeout(function() {
+            fadeInMarkers(markers);
+          }, 50);
+
+        } else {
+          markerOpacity = markerOpacityIncrement; // reset for next use
+        }
+      }
+
       const content = marker.content;
-      if (! data_marker[i]['is_problem']) {
+      if (!data_marker[i]['is_problem']) {
+        //    marker.setOpacity(0);
 
         // Start - Animation Drop
         content.style.opacity = "0";
@@ -120,6 +147,7 @@ function drawMarker(data_marker, map) {
     else
         markerColor = "#ff0000";
 
+    // Start - Renderer
     let customRenderer = new markerClusterer.DefaultRenderer();
     customRenderer.render = function({ count, position }, stats, map) {
         const color = markerColor;
@@ -169,10 +197,31 @@ function drawMarker(data_marker, map) {
     });
 }
 
-async function initMap(base_api, is_all, is_no_org, query_id) {
-    // Request needed libraries.
-    const { Map, InfoWindow } = await google.maps.importLibrary("maps");
-    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+
+// Removes the markers from the map, but keeps them in the array.
+function hideMarkers() {
+  setMapOnAll(null);
+}
+
+// Shows any markers currently in the array.
+function showMarkers() {
+  setMapOnAll(map);
+}
+
+// Deletes all markers in the array by removing references to them.
+function deleteMarkers() {
+  hideMarkers();
+  markers = [];
+}
+
+//async function get_api(api_url) {
+async function get_api(base_api, is_all, is_no_org, query_id) {
 
     var api_url;
 
@@ -191,6 +240,14 @@ async function initMap(base_api, is_all, is_no_org, query_id) {
     var data = await response.json();
 
     console.log(data);
+    return data;
+}
+
+async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
+    const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+    let data = await get_api(base_api, is_all, is_no_org, query_id);
 
     var latlngList = [];
     for (i = 0; i < data.length; i++) {  
@@ -202,12 +259,96 @@ async function initMap(base_api, is_all, is_no_org, query_id) {
         });
     }
 
-    map = new Map(document.getElementById("map"), {
-      mapId: "MAP_VIEW",
-    });
     map.setCenter(bounds.getCenter()); //or use custom center
     map.fitBounds(bounds);
 
+    var data_online = [];
+    var data_offline = [];
+    var data_problem = [];
+
+    for (i = 0; i < data.length; i++) {  
+        if (data[i]['is_online'])
+            if (data[i]['is_problem'])
+                data_problem.push(data[i]);
+            else
+                data_online.push(data[i])
+        else
+            data_offline.push(data[i]);
+    }
+    deleteMarkers();
+    drawMarker(data_online, map);
+    drawMarker(data_offline, map);
+    drawMarker(data_problem, map);
+}
+
+//async function initMap(base_api, is_all, is_no_org, query_id) {
+async function initMap() {
+    // Request needed libraries.
+    const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+    //const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+    map = new Map(document.getElementById("map"), {
+      mapId: "MAP_VIEW",
+    });
+
+    /*
+    var api_url;
+
+    if (is_all)
+        api_url = base_api + '/api/members/get_all';
+    else
+        if (is_no_org)
+            api_url = base_api + '/api/members/get_by_user/' + query_id;
+        else
+            api_url = base_api + '/api/members/get_by_org/' + query_id;
+    */
+
+//setInterval(function() {
+    //deleteMarkers();
+
+    /*
+    // Storing response
+    const response = await fetch(api_url);
+   
+    // Storing data in form of JSON
+    var data = await response.json();
+
+    console.log(data);
+    let data = await get_api(base_api, is_all, is_no_org, query_id);
+
+    var latlngList = [];
+    for (i = 0; i < data.length; i++) {  
+        latlngList.push(new google.maps.LatLng(data[i]['lat'], data[i]['lng']));
+
+        var bounds = new google.maps.LatLngBounds();
+        latlngList.forEach(function(n) {
+            bounds.extend(n);
+        });
+    }
+    */
+
+    //map = new Map(document.getElementById("map"), {
+    //  mapId: "MAP_VIEW",
+    //});
+    //map.setCenter(bounds.getCenter()); //or use custom center
+    //map.fitBounds(bounds);
+
+/*
+  document
+    .getElementById("show-markers")
+    .addEventListener("click", showMarkers);
+  document
+    .getElementById("hide-markers")
+    .addEventListener("click", hideMarkers);
+  document
+    .getElementById("delete-markers")
+    .addEventListener("click", deleteMarkers);
+*/
+  // Adds a marker at the center of the map.
+        //
+    //let data = await redrawMarkers(base_api, is_all, is_no_org, query_id);
+
+    /*
     var data_online = [];
     var data_offline = [];
     var data_problem = [];
@@ -225,5 +366,6 @@ async function initMap(base_api, is_all, is_no_org, query_id) {
     drawMarker(data_online, map);
     drawMarker(data_offline, map);
     drawMarker(data_problem, map);
-
+    */
+//}, 60 * 1000);
 }

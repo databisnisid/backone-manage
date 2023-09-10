@@ -32,6 +32,19 @@
   animation: drop 0.3s linear forwards var(--delay-time);
 }
 
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.fadeInAnimation {
+  animation: fadeInAnimation ease 3s linear forwards;
+}
+
 @keyframes bounce {
 	0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
 	40% {transform: translateY(-30px);}

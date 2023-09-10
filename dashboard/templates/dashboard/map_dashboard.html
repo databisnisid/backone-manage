@@ -8,6 +8,13 @@
 
     <hr />
     <section class="panel summary nice-padding">
+        <!--
+        <div id="floating-panel">
+        <input id="hide-markers" type="button" value="Hide Markers" />
+        <input id="show-markers" type="button" value="Show Markers" />
+        <input id="delete-markers" type="button" value="Delete Markers" />
+        </div>
+        -->
         <!--The div element for the map -->
         <div id="map"></div>
     </section>
@@ -34,8 +41,11 @@ const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}";
     const query_id = {{ user.organization.id }};
 {% endif %}
 
-    initMap(api_url, is_all, is_no_org, query_id);
+    //initMap(api_url, is_all, is_no_org, query_id);
+    initMap();
+    redrawMarkers(api_url, is_all, is_no_org, query_id);
     setInterval(function() {
-        initMap(api_url);
+        //initMap(api_url, is_all, is_no_org, query_id);
+        redrawMarkers(api_url, is_all, is_no_org, query_id);
     }, {{ settings.MAP_REFRESH_INTERVAL }} * 60 * 1000); // every 5 minutes
 </script>
