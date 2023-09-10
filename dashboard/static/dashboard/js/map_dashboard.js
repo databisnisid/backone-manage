@@ -232,6 +232,7 @@ function drawMarker(data_marker) {
         return new google.maps.Marker(clusterOptions);
     }
 
+    console.log(markersCluster);
     // Add a marker clusterer to manage the markers.
     new markerClusterer.MarkerClusterer({ 
         map: map,
