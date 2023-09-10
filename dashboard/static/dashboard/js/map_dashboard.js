@@ -29,9 +29,11 @@ function setMapOnAll(map) {
   for (let i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
   }
+    /*
   for (let i = 0; i < markersCluster.length; i++) {
     markersCluster[i].setMap(map);
   }
+    */
 }
 
 // Removes the markers from the map, but keeps them in the array.
