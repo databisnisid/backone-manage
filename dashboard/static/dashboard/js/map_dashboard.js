@@ -214,7 +214,7 @@ function drawMarker(data_marker) {
                 title,
                 content: svgEl,
             };
-            maskersCluster.push(clusterOptions);
+            //maskersCluster.push(clusterOptions);
             return new google.maps.marker.AdvancedMarkerElement(clusterOptions);
         }
         const clusterOptions = {
@@ -226,7 +226,7 @@ function drawMarker(data_marker) {
                 anchor: new google.maps.Point(25, 25),
             },
         };
-        maskersCluster.push(clusterOptions);
+        //maskersCluster.push(clusterOptions);
         return new google.maps.Marker(clusterOptions);
     }
 
