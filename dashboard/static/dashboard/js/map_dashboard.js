@@ -79,7 +79,6 @@ function drawMarker(data_marker) {
 
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
-    //var markers = [];
     var markerColor, pinGlyph;
     var is_online = false;
     var is_problem = false;
@@ -195,11 +194,14 @@ function drawMarker(data_marker) {
 <circle cx="120" cy="120" opacity=".2" r="110" />
 <text x="50%" y="50%" style="fill:#fff" text-anchor="middle" font-size="50" dominant-baseline="middle" font-family="roboto,arial,sans-serif">${count}</text>
 </svg>`;
+        //const title = `Cluster of ${count} markers`,
+        // adjust zIndex to be above other markers
+        //zIndex: number = Number(google.maps.Marker.MAX_ZINDEX) + count;
         //const title = `Cluster of ${count} markers`, 
         const title = `Cluster of ${count} markers`;
         // adjust zIndex to be above other markers
         zIndex = Number(google.maps.Marker.MAX_ZINDEX) + count;
-        //if (markerClusterer.MarkerUtils.isAdvancedMarkerAvailable(map)) {
+
         if (map.getMapCapabilities().isAdvancedMarkersAvailable) {
             // create cluster SVG element
             const div = document.createElement("div");
@@ -213,7 +215,6 @@ function drawMarker(data_marker) {
                 title,
                 content: svgEl,
             };
-            //const copyOptions = clusterOptions;
             markersCluster.push(clusterOptions);
             return new google.maps.marker.AdvancedMarkerElement(clusterOptions);
         }
@@ -226,12 +227,11 @@ function drawMarker(data_marker) {
                 anchor: new google.maps.Point(25, 25),
             },
         };
-        //const copyOptions = clusterOptions;
         markersCluster.push(clusterOptions);
         return new google.maps.Marker(clusterOptions);
     }
 
-    console.log(markersCluster)
+    //console.log(markersCluster)
     // Add a marker clusterer to manage the markers.
     new markerClusterer.MarkerClusterer({ 
         map: map,
