@@ -197,7 +197,8 @@ function drawMarker(data_marker) {
 <circle cx="120" cy="120" opacity=".2" r="110" />
 <text x="50%" y="50%" style="fill:#fff" text-anchor="middle" font-size="50" dominant-baseline="middle" font-family="roboto,arial,sans-serif">${count}</text>
 </svg>`;
-        const title = `Cluster of ${count} markers`, 
+        //const title = `Cluster of ${count} markers`, 
+        const title = `Cluster of ${count} markers`;
         // adjust zIndex to be above other markers
         zIndex = Number(google.maps.Marker.MAX_ZINDEX) + count;
         //if (markerClusterer.MarkerUtils.isAdvancedMarkerAvailable(map)) {
@@ -215,7 +216,7 @@ function drawMarker(data_marker) {
                 content: svgEl,
             };
             const copyOptions = clusterOptions;
-            maskersCluster.push(copyOptions);
+            //maskersCluster.push(copyOptions);
             return new google.maps.marker.AdvancedMarkerElement(clusterOptions);
         }
         const clusterOptions = {
@@ -228,11 +229,11 @@ function drawMarker(data_marker) {
             },
         };
         const copyOptions = clusterOptions;
-        maskersCluster.push(copyOptions);
+        //maskersCluster.push(copyOptions);
         return new google.maps.Marker(clusterOptions);
     }
 
-    console.log(markersCluster);
+    console.log(markersCluster)
     // Add a marker clusterer to manage the markers.
     new markerClusterer.MarkerClusterer({ 
         map: map,
