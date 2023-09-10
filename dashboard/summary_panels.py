@@ -14,7 +14,8 @@ from monitor.models import MemberProblems
 
 class MapSummaryPanel(Component):
     order = 40
-    template_name = "dashboard/map_summary.html"
+    template_name = "dashboard/map_dashboard.html"
+    #template_name = "dashboard/map_summary.html"
 
     def __init__(self):
         user = get_current_user()

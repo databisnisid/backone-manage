@@ -1,73 +1,3 @@
-{% load i18n wagtailadmin_tags %}
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-
-<!--
-    <link rel="stylesheet" type="text/css" href="{% versioned_static 'dashboard/css/map.css' %}" />
--->
-
-<style>
-#map {
-  height: 600px;
-  width: 100%;
-}
-
-@keyframes drop {
-  0% {
-    transform: translateY(-200px) scaleY(0.9);
-    opacity: 0;
-  }
-  5% {
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateY(0px) scaleY(1);
-    opacity: 1;
-  }
-  65% {
-    transform: translateY(-17px) scaleY(0.9);
-    opacity: 1;
-  }
-  75% {
-    transform: translateY(-22px) scaleY(0.9);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(0px) scaleY(1);
-    opacity: 1;
-  }
-}
-.drop {
-  animation: drop 0.3s linear forwards var(--delay-time);
-}
-
-@keyframes bounce {
-	0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-	40% {transform: translateY(-30px);}
-	60% {transform: translateY(-15px);}
-}
-.bounce {
-  animation: bounce 2s ease infinite;
-}
-</style>
-
-<!--
-    <script type="module" src="{% versioned_static 'dashboard/js/map.js' %}"></script>
--->
-<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
-
-    <hr />
-    <section class="panel summary nice-padding">
-        <!--The div element for the map -->
-        <div id="map"></div>
-    </section>
-    <hr />
-
-    <!-- prettier-ignore -->
-    <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
-        ({key: "{{ settings.GOOGLE_MAPS_V3_APIKEY }}", v: "beta"});</script>
-
-<script>
-
 // Initialize and add the map
 let map;
 
@@ -97,9 +27,6 @@ function drawMarker(data_marker, map) {
     var is_online = false;
 
     for (i = 0; i < data_marker.length; i++) {  
-
-      //data_marker[i]['is_problem'] = 1;
-      //data_marker[i]['is_online'] = 1;
 
       if (data_marker[i]['is_online'])
         is_online = true;
@@ -146,28 +73,24 @@ function drawMarker(data_marker, map) {
 
       const content = marker.content;
       if (! data_marker[i]['is_problem']) {
-        // Start - Animation Drop
-        //const content = marker.content;
 
+        // Start - Animation Drop
         content.style.opacity = "0";
         content.addEventListener("animationend", (event) => {
             content.classList.remove("drop");
             content.style.opacity = "1";
-            //if (data_marker[i]['is_problem'])
-            //    intersectionObserverBounce.observe(content);
         });
 
-        const time = 1 + Math.random(); // 2s delay for easy to see the animation
+        //const time = 1 + Math.random(); // 2s delay for easy to see the animation
+        const time = Math.random(); // Randomize drop
 
         content.style.setProperty("--delay-time", time + "s");
         intersectionObserverDrop.observe(content);
         // End - Animation Drop
         
       } else {
-        // const content = marker.content;
         intersectionObserverBounce.observe(content);
       }
-
 
       // Start - Content InfoWindow
       let contentString =
@@ -246,10 +169,20 @@ function drawMarker(data_marker, map) {
     });
 }
 
-async function initMap(api_url) {
+async function initMap(base_api, is_all, is_no_org, query_id) {
     // Request needed libraries.
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+    var api_url;
+
+    if (is_all)
+        api_url = base_api + '/api/members/get_all';
+    else
+        if (is_no_org)
+            api_url = base_api + '/api/members/get_by_user/' + query_id;
+        else
+            api_url = base_api + '/api/members/get_by_org/' + query_id;
 
     // Storing response
     const response = await fetch(api_url);
@@ -294,20 +227,3 @@ async function initMap(api_url) {
     drawMarker(data_problem, map);
 
 }
-
-{% if user.is_superuser %}
-    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_all";
-{% elif user.organization.is_no_org %}
-    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_user/{{ user.id }}";
-{% else %}
-    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_org/{{ user.organization.id }}";
-{% endif %}
-
-initMap(api_url);
-setInterval(function() {
-    // your code goes here...
-    initMap(api_url);
-}, {{ settings.MAP_REFRESH_INTERVAL }} * 60 * 1000); // every 5 minutes
-//initMap(api_url);
-
-</script>
