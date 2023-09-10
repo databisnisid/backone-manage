@@ -29,11 +29,9 @@ function setMapOnAll(map) {
   for (let i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
   }
-    /*
   for (let i = 0; i < markersCluster.length; i++) {
     markersCluster[i].setMap(map);
   }
-    */
 }
 
 // Removes the markers from the map, but keeps them in the array.
@@ -215,8 +213,8 @@ function drawMarker(data_marker) {
                 title,
                 content: svgEl,
             };
-            const copyOptions = clusterOptions;
-            //maskersCluster.push(copyOptions);
+            //const copyOptions = clusterOptions;
+            markersCluster.push(clusterOptions);
             return new google.maps.marker.AdvancedMarkerElement(clusterOptions);
         }
         const clusterOptions = {
@@ -228,8 +226,8 @@ function drawMarker(data_marker) {
                 anchor: new google.maps.Point(25, 25),
             },
         };
-        const copyOptions = clusterOptions;
-        //maskersCluster.push(copyOptions);
+        //const copyOptions = clusterOptions;
+        markersCluster.push(clusterOptions);
         return new google.maps.Marker(clusterOptions);
     }
 
