@@ -124,27 +124,6 @@ function drawMarker(data_marker) {
         });
       }
 
-        /*
-      var fadeInMarkers = function(markers) {
-
-        if (markerOpacity <= 1) {
-
-            marker[i].setOpacity(markerOpacity);
-
-          // increment opacity
-          markerOpacity += markerOpacityIncrement;
-
-          // call this method again
-          setTimeout(function() {
-            fadeInMarkers(markers);
-          }, 50);
-
-        } else {
-          markerOpacity = markerOpacityIncrement; // reset for next use
-        }
-      }
-        */
-
       const content = marker.content;
       if (!data_marker[i]['is_problem']) {
 
@@ -163,7 +142,7 @@ function drawMarker(data_marker) {
         // End - Animation Drop
         
       } else {
-        const time = 3 + Math.random(); // 2s delay for easy to see the animation
+        const time = 5 + Math.random(); // 2s delay for easy to see the animation
         content.style.setProperty("--bounce-delay-time", time + "s");
         intersectionObserverBounce.observe(content);
       }
