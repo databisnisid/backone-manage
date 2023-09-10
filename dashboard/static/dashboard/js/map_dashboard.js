@@ -314,7 +314,7 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
         map.fitBounds(bounds);
 
         //remove one zoom level to ensure no marker is on the edge.
-        map.setZoom(map.getZoom() - 1);
+        //map.setZoom(map.getZoom() - 1);
 
         if(map.getZoom() > 15){
             map.setZoom(15);
