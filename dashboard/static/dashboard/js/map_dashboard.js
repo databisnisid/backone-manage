@@ -21,6 +21,52 @@ const intersectionObserverBounce = new IntersectionObserver((entries) => {
   }
 });
 
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+
+// Removes the markers from the map, but keeps them in the array.
+function hideMarkers() {
+  setMapOnAll(null);
+}
+
+// Shows any markers currently in the array.
+function showMarkers() {
+  setMapOnAll(map);
+}
+
+// Deletes all markers in the array by removing references to them.
+function deleteMarkers() {
+  hideMarkers();
+  markers = [];
+}
+
+var markerOpacity = markerOpacityIncrement = 0.05;
+
+var fadeInMarkers = function(markers) {
+    var markerConntet;
+
+    if (markerOpacity <= 1) {
+
+        for (var i = 0, len = markers.length; i < len; ++i) {
+            markers[i].content.style.opacity = markerOpacity;
+        }
+
+        // increment opacity
+        markerOpacity += markerOpacityIncrement;
+
+        // call this method again
+        setTimeout(function() {
+          fadeInMarkers(markers);
+        }, 50);
+
+    } else {
+          markerOpacity = markerOpacityIncrement; // reset for next use
+    }
+}
 
 function drawMarker(data_marker) {
 
@@ -205,30 +251,10 @@ function drawMarker(data_marker) {
         markers: markers,
         renderer: customRenderer
     });
+    //setTimeout(function() {
+    //    fadeInMarkers(markers);
+    //}, 2000);
     markers = [];
-}
-
-// Sets the map on all markers in the array.
-function setMapOnAll(map) {
-  for (let i = 0; i < markers.length; i++) {
-    markers[i].setMap(map);
-  }
-}
-
-// Removes the markers from the map, but keeps them in the array.
-function hideMarkers() {
-  setMapOnAll(null);
-}
-
-// Shows any markers currently in the array.
-function showMarkers() {
-  setMapOnAll(map);
-}
-
-// Deletes all markers in the array by removing references to them.
-function deleteMarkers() {
-  hideMarkers();
-  markers = [];
 }
 
 //async function get_api(api_url) {
