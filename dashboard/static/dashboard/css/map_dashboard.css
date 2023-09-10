@@ -42,7 +42,7 @@
 }
 
 .fadeInAnimation {
-  animation: fadeInAnimation ease 3s linear forwards var(--delay-time);
+  animation: fadeInAnimation ease 3s linear forwards;
 }
 
 @keyframes bounce {
@@ -52,4 +52,5 @@
 }
 .bounce {
   animation: bounce 2s ease infinite;
+  animation-delay: var(--bounce-delay-time);
 }
