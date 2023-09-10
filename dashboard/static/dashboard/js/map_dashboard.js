@@ -75,7 +75,6 @@ function drawMarker(data_marker) {
     //var markers = [];
     var markerColor, pinGlyph;
     var is_online = false;
-    var markerClicked;
 
     for (i = 0; i < data_marker.length; i++) {  
 
@@ -147,8 +146,7 @@ function drawMarker(data_marker) {
         */
 
       const content = marker.content;
-      //if (!data_marker[i]['is_problem']) {
-        //    marker.setOpacity(0);
+      if (!data_marker[i]['is_problem']) {
 
         // Start - Animation Drop
         content.style.opacity = "0";
@@ -164,9 +162,9 @@ function drawMarker(data_marker) {
         intersectionObserverDrop.observe(content);
         // End - Animation Drop
         
-      //} else {
-      //  intersectionObserverBounce.observe(content);
-      //}
+      } else {
+        intersectionObserverBounce.observe(content);
+      }
 
       // Start - Content InfoWindow
       let contentString =
@@ -178,18 +176,13 @@ function drawMarker(data_marker) {
             '</div>' +
             '</div>';
 
-      var contentClicked;  
       google.maps.event.addListener(marker, 'click', (function(marker, i) {
         return function() {
           infowindow.setContent(contentString);
           infowindow.open(map, marker);
-          if (data_marker[i]['is_problem']) {
-            intersectionObserverBounce.observe(content);
-            if (markerClicked)
-                contentClicked = markerClicked.content;
-            contentClicked.classList.remove("bounce");
-            contentClicked.style.opacity = "1";
-          }
+          //if (data_marker[i]['is_problem']) {
+          //  intersectionObserverBounce.observe(content);
+          //}
         }
       })(marker, i));
       // End - Content InfoWindow
