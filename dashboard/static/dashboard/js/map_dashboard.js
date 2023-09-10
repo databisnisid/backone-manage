@@ -29,11 +29,12 @@ function drawMarker(data_marker) {
     //var markers = [];
     var markerColor, pinGlyph;
     var is_online = false;
+    var markerClicked;
 
     for (i = 0; i < data_marker.length; i++) {  
 
-      data_marker[i]['is_online'] = 1;
-      data_marker[i]['is_problem'] = 1;
+      //data_marker[i]['is_online'] = 1;
+      //data_marker[i]['is_problem'] = 1;
 
       if (data_marker[i]['is_online'])
         is_online = true;
@@ -131,12 +132,18 @@ function drawMarker(data_marker) {
             '</div>' +
             '</div>';
 
-      
+      var contentClicked;  
       google.maps.event.addListener(marker, 'click', (function(marker, i) {
         return function() {
           infowindow.setContent(contentString);
           infowindow.open(map, marker);
-          intersectionObserverBounce.observe(content);
+          if (data_marker[i]['is_problem']) {
+            intersectionObserverBounce.observe(content);
+            if (markerClicked)
+                contentClicked = markerClicked.content;
+            contentClicked.classList.remove("bounce");
+            contentClicked.style.opacity = "1";
+          }
         }
       })(marker, i));
       // End - Content InfoWindow
