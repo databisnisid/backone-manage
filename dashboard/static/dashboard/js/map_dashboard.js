@@ -424,7 +424,7 @@ function createCenterControl(map) {
   controlButton.title = "Click to recenter the map and show all sites";
   controlButton.type = "button";
   // Setup the click event listeners: simply set the map to Chicago.
-  controlButton.addEventListener("click", () => {
+  controlButton.addEventListener("gmp-click", () => {
     setCenterZoom();
   });
   return controlButton;
