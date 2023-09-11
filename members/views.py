@@ -22,12 +22,14 @@ def randomize_coordinate(members):
 
 def is_problem(member, members_problems):
     is_found = 0
+    problem_string = ''
     for problem in members_problems:
         if member.id == problem.member.id:
             is_found = 1
+            problem_string = problem.problem.name
             break
 
-    return is_found
+    return is_found, problem_string
 
 
 def prepare_data(members, members_problems):
@@ -52,7 +54,11 @@ def prepare_data(members, members_problems):
         member_geo['lat'] = lat
         member_geo['lng'] = lng
         member_geo['is_online'] = 1 if member.is_online() else 0
-        member_geo['is_problem'] = is_problem(member, members_problems)
+        is_found, problem_string = is_problem(member, members_problems)
+        #member_geo['is_problem'] = is_problem(member, members_problems)
+        member_geo['is_problem'] = is_found
+        member_geo['problem_string'] = problem_string
+        member_geo['created_at'] = member.created_at.strftime('%s')
         new_members.append(member_geo)
 
     #return new_members

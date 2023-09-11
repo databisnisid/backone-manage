@@ -162,6 +162,7 @@ function drawMarker(data_marker) {
             '<div id="siteNotice"></div>' +
             '<h2 id="firstHeading" class="firstHeading">' + data_marker[i]['name'] + '</h2>' +
             '<div id="bodyContent">' +
+            '<p>' + data_marker[i]['problem_string'] + '</p>' +
             '<a href="/members/members/?q=' + data_marker[i]['member_id'] + '">CHECK</a>' +
             '</div>' +
             '</div>';
@@ -194,10 +195,7 @@ function drawMarker(data_marker) {
 <circle cx="120" cy="120" opacity=".2" r="110" />
 <text x="50%" y="50%" style="fill:#fff" text-anchor="middle" font-size="50" dominant-baseline="middle" font-family="roboto,arial,sans-serif">${count}</text>
 </svg>`;
-        //const title = `Cluster of ${count} markers`,
-        // adjust zIndex to be above other markers
-        //zIndex: number = Number(google.maps.Marker.MAX_ZINDEX) + count;
-        //const title = `Cluster of ${count} markers`, 
+
         const title = `Cluster of ${count} markers`;
         // adjust zIndex to be above other markers
         zIndex = Number(google.maps.Marker.MAX_ZINDEX) + count;
@@ -231,18 +229,12 @@ function drawMarker(data_marker) {
         return new google.maps.Marker(clusterOptions);
     }
 
-    //console.log(markersCluster)
     // Add a marker clusterer to manage the markers.
     new markerClusterer.MarkerClusterer({ 
         map: map,
         markers: markers,
         renderer: customRenderer
     });
-    //markers = [];
-    //setTimeout(function() {
-    //    fadeInMarkers(markers);
-    //}, 2000);
-    //markers = [];
 }
 
 //async function get_api(api_url) {
