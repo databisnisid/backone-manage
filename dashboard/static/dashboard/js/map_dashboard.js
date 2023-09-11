@@ -13,7 +13,8 @@ var marker_property = {
         'title': 'NEW',
         'markerColor': '#0000ff', // Yellow
         'glyph': backoneTrans,
-        'glyphColor': "white",
+        //'glyphColor': "white",
+        'glyphColor': "#0000ff",
         'glyphBorder': "white",
         'glyphScale': 1.0,
         'map': null,
@@ -28,7 +29,8 @@ var marker_property = {
         'title': 'ONLINE',
         'markerColor': '#009900', // Yellow
         'glyph': backoneTrans,
-        'glyphColor': "white",
+        //'glyphColor': "white",
+        'glyphColor': "#009900",
         'glyphBorder': "white",
         'glyphScale': 0.8,
         'map': null,
@@ -43,7 +45,8 @@ var marker_property = {
         'title': 'OFFLINE',
         'markerColor': '#ff0000', // Yellow
         'glyph': backoneTrans,
-        'glyphColor': "white",
+        //'glyphColor': "black",
+        'glyphColor': "#ff0000",
         'glyphBorder': "white",
         'glyphScale': 0.9,
         'map': null,
@@ -58,7 +61,8 @@ var marker_property = {
         'title': 'PROBLEM',
         'markerColor': '#ffc300', // Yellow
         'glyph': backoneTrans,
-        'glyphColor': "black",
+        //'glyphColor': "black",
+        'glyphColor': "#ffc300",
         'glyphBorder': "black",
         'glyphScale': 1.1,
         'map': null,
@@ -161,7 +165,7 @@ function drawMarker(key) {
           background: marker_property[key].markerColor,
           borderColor: marker_property[key].glyphBorder,
           glyphColor: marker_property[key].glyphColor,
-          //glyph: marker_property[key].glyph,
+          glyph: marker_property[key].glyph,
           scale: marker_property[key].glyphScale
       });
 

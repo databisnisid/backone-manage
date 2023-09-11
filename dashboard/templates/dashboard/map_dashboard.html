@@ -55,6 +55,7 @@ const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}";
     redrawMarkers();
     setInterval(function() {
         //redrawMarkers(api_url, is_all, is_no_org, query_id);
+        api_params.new_query = true;
         redrawMarkers();
     }, {{ settings.MAP_REFRESH_INTERVAL }} * 60 * 1000); // every 5 minutes
 </script>
