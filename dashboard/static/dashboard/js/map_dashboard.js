@@ -169,6 +169,7 @@ function drawMarker(key) {
       content.addEventListener("animationend", (event) => {
           content.classList.remove("drop");
           content.style.opacity = "1";
+          console.log(is_problem);
           if (is_problem) {
               const time = 5 + Math.random(); // 2s delay for easy to see the animation
               content.style.setProperty("--bounce-delay-time", time + "s");
