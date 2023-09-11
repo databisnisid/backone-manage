@@ -201,9 +201,9 @@ function drawMarker(key) {
       })(marker, i));
       // End - Content InfoWindow
 
-      if (key == 'is_online' || key == 'is_offline') {
+      //if (key == 'is_online' || key == 'is_offline') {
         marker_property[key].markers.push(marker);
-      }
+      //}
     }
 
     // Start - Renderer
