@@ -2,9 +2,7 @@
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 
 <link rel="stylesheet" type="text/css" href="{% versioned_static 'dashboard/css/map_dashboard.css' %}" />
-<!--
 <script src="{% versioned_static 'dashboard/js/map_dashboard.js' %}"></script>
--->
 
 <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 
@@ -45,12 +43,6 @@ const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}";
 
     //initMap(api_url, is_all, is_no_org, query_id);
     //var data;
-    const backoneTrans = document.createElement("img");
-    backoneTrans.src = api_url + "/static/dashboard/images/backone.svg";
-</script>
-
-<script src="{% versioned_static 'dashboard/js/map_dashboard.js' %}"></script>
-<script>
     initMap();
     redrawMarkers(api_url, is_all, is_no_org, query_id);
     setInterval(function() {

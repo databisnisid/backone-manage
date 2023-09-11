@@ -5,8 +5,8 @@ let map;
 var data_prev = [];
 var data_new = [];
 var bounds;
-//const backoneTrans = document.createElement("img");
-//backoneTrans.src = "/static/dashboard/images/backone.svg";
+const backoneTrans = document.createElement("img");
+backoneTrans.src = "/static/dashboard/images/backone-black.svg";
 
 var marker_property = {
     'is_problem': {
