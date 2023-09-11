@@ -1,14 +1,14 @@
 // Initialize and add the map
 let map;
-var markers = [];
-var markersCluster = [];
+//var markers = [];
+//var markersCluster = [];
 var data_prev = [];
 var data_new = [];
 var bounds;
 
 var marker_property = {
     'is_problem': {
-        'markerColor': '#ffc300', // Yellow
+        'markerColor': '#ffcc00', // Yellow
         'glyphColor': "black",
         'glyphBorder': "black",
         'glyphScale': 1.1,
@@ -18,10 +18,10 @@ var marker_property = {
         'markersCluster': [],
     },
     'is_online': {
-        'markerColor': '#00aa00', // Yellow
+        'markerColor': '#009900', // Yellow
         'glyphColor': "white",
         'glyphBorder': "white",
-        'glyphScale': 0.9,
+        'glyphScale': 0.8,
         'map': null,
         'data': [],
         'markers': [],
@@ -31,7 +31,7 @@ var marker_property = {
         'markerColor': '#ff0000', // Yellow
         'glyphColor': "white",
         'glyphBorder': "white",
-        'glyphScale': 0.8,
+        'glyphScale': 0.9,
         'map': null,
         'data': [],
         'markers': [],
@@ -70,12 +70,14 @@ const intersectionObserverBounce = new IntersectionObserver((entries) => {
 
 // Sets the map on all markers in the array.
 function setMapOnAll(map) {
+    /*
   for (let i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
   }
   for (let i = 0; i < markersCluster.length; i++) {
     markersCluster[i].setMap(map);
   }
+    */
   for (let key in marker_property) {
     for (let i = 0; i < marker_property[key].markers.length; i++) {
         marker_property[key].markers.setMap(map);
@@ -102,8 +104,8 @@ function showMarkers() {
 // Deletes all markers in the array by removing references to them.
 function deleteMarkers() {
   hideMarkers();
-  markers = [];
-  markersCluster = [];
+  //markers = [];
+  //markersCluster = [];
   for (let key in marker_property) {
       marker_property[key].markers = [];
       marker_property[key].markersCluster = [];
@@ -112,6 +114,7 @@ function deleteMarkers() {
 
 var markerOpacity = markerOpacityIncrement = 0.05;
 
+/*
 var fadeInMarkers = function(markers) {
     var markerConntet;
 
@@ -133,6 +136,7 @@ var fadeInMarkers = function(markers) {
           markerOpacity = markerOpacityIncrement; // reset for next use
     }
 }
+*/
 
 //function drawMarker(data_marker) {
 function drawMarker(key) {
@@ -285,7 +289,7 @@ function drawMarker(key) {
 
       //if (! data_marker[i]['is_problem']==1 || ! data_marker[i]['is_new']==1) {
       if (key == 'is_online' || key == 'is_offline') {
-        markers.push(marker);
+        //markers.push(marker);
         marker_property[key].markers.push(marker);
       }
     }
@@ -327,7 +331,7 @@ function drawMarker(key) {
                 title,
                 content: svgEl,
             };
-            markersCluster.push(clusterOptions);
+            //markersCluster.push(clusterOptions);
             marker_property[key].markersCluster.push(clusterOptions);
             return new google.maps.marker.AdvancedMarkerElement(clusterOptions);
         }
@@ -340,7 +344,7 @@ function drawMarker(key) {
                 anchor: new google.maps.Point(25, 25),
             },
         };
-        markersCluster.push(clusterOptions);
+        //markersCluster.push(clusterOptions);
         marker_property[key].markersCluster.push(clusterOptions);
         return new google.maps.Marker(clusterOptions);
     }
@@ -484,6 +488,36 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
     }
 }
 
+/**
+ * Creates a control that recenters the map on Chicago.
+ */
+function createCenterControl(map) {
+  const controlButton = document.createElement("button");
+
+  // Set CSS for the control.
+  controlButton.style.backgroundColor = "#fff";
+  controlButton.style.border = "2px solid #fff";
+  controlButton.style.borderRadius = "3px";
+  controlButton.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+  controlButton.style.color = "rgb(25,25,25)";
+  controlButton.style.cursor = "pointer";
+  controlButton.style.fontFamily = "Roboto,Arial,sans-serif";
+  controlButton.style.fontSize = "16px";
+  controlButton.style.lineHeight = "38px";
+  controlButton.style.margin = "8px 0 22px";
+  controlButton.style.padding = "0 5px";
+  controlButton.style.textAlign = "center";
+  controlButton.textContent = "Show All Sites";
+  controlButton.title = "Click to recenter the map and show all sites";
+  controlButton.type = "button";
+  // Setup the click event listeners: simply set the map to Chicago.
+  controlButton.addEventListener("click", () => {
+    //map.setCenter(chicago);
+    setCenterZoom();
+  });
+  return controlButton;
+}
+
 //async function initMap(base_api, is_all, is_no_org, query_id) {
 async function initMap() {
     // Request needed libraries.
@@ -494,6 +528,20 @@ async function initMap() {
       mapId: "MAP_VIEW",
       center: {lat: -1.233982000061532, lng: 116.83728437200422},
       zoom: 5,
+      mapTypeControl: true,
+      mapTypeControlOptions: {
+        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+        mapTypeIds: ["roadmap", "terrain"],
+    },
     });
+
+      // Create the DIV to hold the control.
+  const centerControlDiv = document.createElement("div");
+  // Create the control.
+  const centerControl = createCenterControl(map);
+
+  // Append the control to the DIV.
+  centerControlDiv.appendChild(centerControl);
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
 
 }
