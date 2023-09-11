@@ -226,7 +226,7 @@ function drawMarker(key) {
             '</div>' +
             '</div>';
 
-      google.maps.event.addListener(marker, 'gmp-click', (function(marker, i) {
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
         return function() {
           infowindow.setContent(contentString);
           infowindow.open(map, marker);
@@ -424,7 +424,7 @@ function createCenterControl(map) {
   controlButton.title = "Click to recenter the map and show all sites";
   controlButton.type = "button";
   // Setup the click event listeners: simply set the map to Chicago.
-  controlButton.addEventListener("gmp-click", () => {
+  controlButton.addEventListener("click", () => {
     setCenterZoom();
   });
   return controlButton;
