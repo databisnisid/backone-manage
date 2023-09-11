@@ -5,12 +5,15 @@ let map;
 var data_prev = [];
 var data_new = [];
 var bounds;
+const backoneTrans = document.createElement("img");
+backoneTrans.src = "/static/dashboard/images/backone.svg";
 
 var marker_property = {
     'is_problem': {
         'markerColor': '#ffcc00', // Yellow
-        'glyphColor': "black",
-        'glyphBorder': "black",
+        'glyph': backoneTrans,
+        'glyphColor': "ffcc00",
+        'glyphBorder': "white",
         'glyphScale': 1.1,
         'map': null,
         'data': [],
@@ -19,7 +22,8 @@ var marker_property = {
     },
     'is_online': {
         'markerColor': '#009900', // Yellow
-        'glyphColor': "white",
+        'glyph': backoneTrans,
+        'glyphColor': "#009900",
         'glyphBorder': "white",
         'glyphScale': 0.8,
         'map': null,
@@ -29,7 +33,8 @@ var marker_property = {
     },
     'is_offline': {
         'markerColor': '#ff0000', // Yellow
-        'glyphColor': "white",
+        'glyph': backoneTrans,
+        'glyphColor': "#ff0000",
         'glyphBorder': "white",
         'glyphScale': 0.9,
         'map': null,
@@ -39,7 +44,8 @@ var marker_property = {
     },
     'is_new': {
         'markerColor': '#0000ff', // Yellow
-        'glyphColor': "white",
+        'glyph': backoneTrans,
+        'glyphColor': "#0000ff",
         'glyphBorder': "white",
         'glyphScale': 1.0,
         'map': null,
@@ -210,10 +216,14 @@ function drawMarker(key) {
       //if (! data_marker[i]['is_problem'])
 
       //if (data_marker[i]['is_problem']==1 || data_marker[i]['is_new']==1) {
+      // A marker with a with a URL pointing to a PNG.
+      //const backoneWhite = document.createElement("img");
+      //backoneImg.src = "/static/dashboard/images/backone.svg";
       pinGlyph = new google.maps.marker.PinElement({
           background: marker_property[key].markerColor,
           borderColor: marker_property[key].glyphBorder,
           glyphColor: marker_property[key].glyphColor,
+          glyph: marker_property[key].glyph,
           scale: marker_property[key].glyphScale
       });
           /*
