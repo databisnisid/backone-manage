@@ -122,8 +122,8 @@ function drawMarker(key) {
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
     var pinGlyph;
-    var is_online;
-    var is_problem;
+    //var is_online;
+    //var is_problem;
     var data_marker = [];
 
     // Reset Markers
@@ -139,14 +139,17 @@ function drawMarker(key) {
       data_marker['is_online'] = true;
       data_marker['is_problem'] = true;
 
+      /*
       is_online = false;
       is_problem = false;
 
       if (key == 'is_online') {
+      if (data_marker['is_online'] == 'is_online') {
         is_online = true;
         if (key == 'is_problem')
             is_problem = true;
       }
+      */
 
       pinGlyph = new google.maps.marker.PinElement({
           background: marker_property[key].markerColor,
@@ -170,7 +173,7 @@ function drawMarker(key) {
           content.classList.remove("drop");
           content.style.opacity = "1";
           console.log(is_problem);
-          if (is_problem) {
+          if (key == 'is_problem') {
               const time = 5 + Math.random(); // 2s delay for easy to see the animation
               content.style.setProperty("--bounce-delay-time", time + "s");
               intersectionObserverBounce.observe(content);
