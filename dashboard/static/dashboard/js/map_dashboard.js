@@ -10,10 +10,10 @@ backoneTrans.src = "/static/dashboard/images/backone.svg";
 
 var marker_property = {
     'is_problem': {
-        'markerColor': '#ffcc00', // Yellow
+        'markerColor': '#ffc300', // Yellow
         'glyph': backoneTrans,
-        'glyphColor': "white",
-        'glyphBorder': "white",
+        'glyphColor': "black",
+        'glyphBorder': "black",
         'glyphScale': 1.1,
         'map': null,
         'data': [],
@@ -110,77 +110,44 @@ function showMarkers() {
 // Deletes all markers in the array by removing references to them.
 function deleteMarkers() {
   hideMarkers();
-  //markers = [];
-  //markersCluster = [];
   for (let key in marker_property) {
       marker_property[key].markers = [];
       marker_property[key].markersCluster = [];
   }
 }
 
-var markerOpacity = markerOpacityIncrement = 0.05;
 
-/*
-var fadeInMarkers = function(markers) {
-    var markerConntet;
-
-    if (markerOpacity <= 1) {
-
-        for (var i = 0, len = markers.length; i < len; ++i) {
-            markers[i].content.style.opacity = markerOpacity;
-        }
-
-        // increment opacity
-        markerOpacity += markerOpacityIncrement;
-
-        // call this method again
-        setTimeout(function() {
-          fadeInMarkers(markers);
-        }, 50);
-
-    } else {
-          markerOpacity = markerOpacityIncrement; // reset for next use
-    }
-}
-*/
-
-//function drawMarker(data_marker) {
 function drawMarker(key) {
 
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
-    var markerColor, pinGlyph;
-    var is_online = false;
-    var is_problem = false;
-    var glyphColor = "black";
-    var glyphBorder = "black";
-    var glyphScale = 0.8;
+    var pinGlyph;
+    var is_online;
+    var is_problem;
     var data_marker = [];
 
     // Reset Markers
-    //markers = [];
     marker_property[key].markers = [];
     marker_property[key].markersCluster = [];
 
     if (key == 'is_new' || key == 'is_problem')
         marker_property[key].map = map;
 
-    //for (i = 0; i < data_marker.length; i++) {  
     for (i = 0; i < marker_property[key].data.length; i++) {  
 
       data_marker = marker_property[key].data[i];
-      //data_marker[i]['is_online'] = 1;
-      //data_marker[i]['is_problem'] = 1;
+      data_marker['is_online'] = true;
+      data_marker['is_problem'] = true;
 
-      //if (data_marker[i]['is_online']) {
-      //if (data_marker['is_online']) {
+      is_online = false;
+      is_problem = false;
+
       if (key == 'is_online') {
         is_online = true;
-        //if (data_marker[i]['is_problem'])
-        //if (data_marker['is_problem'])
         if (key == 'is_problem')
             is_problem = true;
       }
+
       pinGlyph = new google.maps.marker.PinElement({
           background: marker_property[key].markerColor,
           borderColor: marker_property[key].glyphBorder,
@@ -234,9 +201,7 @@ function drawMarker(key) {
       })(marker, i));
       // End - Content InfoWindow
 
-      //if (! data_marker[i]['is_problem']==1 || ! data_marker[i]['is_new']==1) {
       if (key == 'is_online' || key == 'is_offline') {
-        //markers.push(marker);
         marker_property[key].markers.push(marker);
       }
     }
@@ -387,13 +352,10 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
                 if (data[i]['is_online'])
                     if (data[i]['is_problem'])
                         marker_property.is_problem.data.push(data[i]);
-                        //data_problem.push(data[i]);
                     else
                         marker_property.is_online.data.push(data[i]);
-                        //data_online.push(data[i])
                 else
                     marker_property.is_offline.data.push(data[i]);
-                    //data_offline.push(data[i]);
         }
         deleteMarkers();
         for (let key in marker_property)
