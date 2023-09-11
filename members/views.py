@@ -32,6 +32,16 @@ def is_problem(member, members_problems):
     return is_found, problem_string
 
 
+def is_new(timestamp):
+    timedelta = timezone.now() - timestamp
+
+    #print(timedelta.days)
+    if timedelta.days > settings.MEMBER_NEW_DAY:
+        return False
+    else:
+        return True
+
+
 def prepare_data(members, members_problems):
     new_members = []
 
@@ -58,7 +68,8 @@ def prepare_data(members, members_problems):
         #member_geo['is_problem'] = is_problem(member, members_problems)
         member_geo['is_problem'] = is_found
         member_geo['problem_string'] = problem_string
-        member_geo['created_at'] = member.created_at.strftime('%s')
+        #member_geo['created_at'] = member.created_at.strftime('%s')
+        member_geo['is_new'] = 1 if is_new(member.created_at) else 0 
         new_members.append(member_geo)
 
     #return new_members

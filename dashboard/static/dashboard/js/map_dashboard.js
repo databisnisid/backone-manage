@@ -4,6 +4,50 @@ var markers = [];
 var markersCluster = [];
 var data_prev = [];
 var data_new = [];
+var bounds;
+
+var marker_property = {
+    'is_problem': {
+        'markerColor': '#ffc300', // Yellow
+        'glyphColor': "black",
+        'glyphBorder': "black",
+        'glyphScale': 1.1,
+        'map': null,
+        'data': [],
+        'markers': [],
+        'markersCluster': [],
+    },
+    'is_online': {
+        'markerColor': '#00aa00', // Yellow
+        'glyphColor': "white",
+        'glyphBorder': "white",
+        'glyphScale': 0.9,
+        'map': null,
+        'data': [],
+        'markers': [],
+        'markersCluster': [],
+    },
+    'is_offline': {
+        'markerColor': '#ff0000', // Yellow
+        'glyphColor': "white",
+        'glyphBorder': "white",
+        'glyphScale': 0.8,
+        'map': null,
+        'data': [],
+        'markers': [],
+        'markersCluster': [],
+    },
+    'is_new': {
+        'markerColor': '#0000ff', // Yellow
+        'glyphColor': "white",
+        'glyphBorder': "white",
+        'glyphScale': 1.0,
+        'map': null,
+        'data': [],
+        'markers': [],
+        'markersCluster': [],
+    }
+};
 
 const intersectionObserverDrop = new IntersectionObserver((entries) => {
   for (const entry of entries) {
@@ -32,6 +76,17 @@ function setMapOnAll(map) {
   for (let i = 0; i < markersCluster.length; i++) {
     markersCluster[i].setMap(map);
   }
+  for (let key in marker_property) {
+    for (let i = 0; i < marker_property[key].markers.length; i++) {
+        marker_property[key].markers.setMap(map);
+    }
+    for (let i = 0; i < marker_property[key].markersCluster.length; i++) {
+        marker_property[key].markersCluster.setMap(map);
+        markersCluster[i].setMap(map);
+    }
+    marker_property[key].markers = [];
+    marker_property[key].markersCluster = [];
+  }
 }
 
 // Removes the markers from the map, but keeps them in the array.
@@ -49,6 +104,10 @@ function deleteMarkers() {
   hideMarkers();
   markers = [];
   markersCluster = [];
+  for (let key in marker_property) {
+      marker_property[key].markers = [];
+      marker_property[key].markersCluster = [];
+  }
 }
 
 var markerOpacity = markerOpacityIncrement = 0.05;
@@ -75,66 +134,116 @@ var fadeInMarkers = function(markers) {
     }
 }
 
-function drawMarker(data_marker) {
+//function drawMarker(data_marker) {
+function drawMarker(key) {
 
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
     var markerColor, pinGlyph;
     var is_online = false;
     var is_problem = false;
+    var glyphColor = "black";
+    var glyphBorder = "black";
+    var glyphScale = 0.8;
+    var data_marker = [];
 
     // Reset Markers
     markers = [];
+    marker_property[key].markers = [];
+    marker_property[key].markersCluster = [];
 
-    for (i = 0; i < data_marker.length; i++) {  
+    if (key == 'is_online' || key == 'is_offline')
+        marker_property[key].map = map;
 
+    //for (i = 0; i < data_marker.length; i++) {  
+    for (i = 0; i < marker_property[key].data.length; i++) {  
+
+      data_marker = marker_property[key].data[i];
       //data_marker[i]['is_online'] = 1;
       //data_marker[i]['is_problem'] = 1;
 
-      if (data_marker[i]['is_online']) {
+      //if (data_marker[i]['is_online']) {
+      //if (data_marker['is_online']) {
+      if (key == 'is_online') {
         is_online = true;
-        if (data_marker[i]['is_problem'])
+        //if (data_marker[i]['is_problem'])
+        //if (data_marker['is_problem'])
+        if (key == 'is_problem')
             is_problem = true;
       }
+      /*
 
       if (data_marker[i]['is_online'])
-        if (data_marker[i]['is_problem'])
+        if (data_marker[i]['is_problem']) {
             markerColor = '#ffc300'; // Yellow
-        else
-            markerColor = '#3fff33';  // Green
-      else
-          markerColor = '#ff5733'; // Red
+            glyphColor = "black";
+            glyphBorder = "black";
+            glyphScale = 1.1;
+        }
+        else {
+            //markerColor = '#3fff33';  // Green
+            markerColor = '#009900';  // Green
+            glyphColor = "white";
+            glyphBorder = "white";
+            glyphScale = 0.9;
+        }
+      else {
+          //markerColor = '#ff5733'; // Red
+          markerColor = '#ff0000'; // Red
+          glyphColor = "white";
+          glyphBorder = "white";
+          glyphScale = 0.8;
+      }
 
-      if (! data_marker[i]['is_problem'])
+      if (data_marker[i]['is_new']) {
+          markerColor = '#0000ff'; // Red
+          glyphColor = "white";
+          glyphBorder = "white";
+          glyphScale = 1;
+      }
+      */
+
+      //if (! data_marker[i]['is_problem'])
+
+      //if (data_marker[i]['is_problem']==1 || data_marker[i]['is_new']==1) {
+      pinGlyph = new google.maps.marker.PinElement({
+          background: marker_property[key].markerColor,
+          borderColor: marker_property[key].glyphBorder,
+          glyphColor: marker_property[key].glyphColor,
+          scale: marker_property[key].glyphScale
+      });
+          /*
+      }
+      else {
         pinGlyph = new google.maps.marker.PinElement({
             background: markerColor,
             borderColor: "black",
-            glyphColor: "black",
+            glyphColor: glyphColor,
             scale: 0.8
         });
-      else
-        pinGlyph = new google.maps.marker.PinElement({
-            background: markerColor,
-            borderColor: "black",
-            glyphColor: "black",
-            scale: 1.1
-        });
+      }
+        */
 
-      if (! data_marker[i]['is_problem'])
+      //if (! data_marker[i]['is_problem'])
+      //if (data_marker[i]['is_problem'] || data_marker[i]['is_new']) {
+      marker = new google.maps.marker.AdvancedMarkerElement({
+          //position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
+          position: new google.maps.LatLng(data_marker['lat'], data_marker['lng']),
+          content: pinGlyph.element,
+          map: marker_property[key].map,
+          //title: data_marker[i]['name']
+          title: data_marker['name']
+      });
+      //}
+          /*
+      else {
         marker = new google.maps.marker.AdvancedMarkerElement({
             position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
             content: pinGlyph.element,
-            title: data_marker[i]['name']
-        });
-      else
-      {
-        marker = new google.maps.marker.AdvancedMarkerElement({
-            position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
-            content: pinGlyph.element,
-            map: map,
             title: data_marker[i]['name']
         });
       }
+          */
 
       const content = marker.content;
         // Start - Animation Drop
@@ -150,7 +259,6 @@ function drawMarker(data_marker) {
       });
 
       const time = 1 + Math.random(); // 2s delay for easy to see the animation
-      //const time = Math.random(); // Randomize drop
 
       content.style.setProperty("--delay-time", time + "s");
       intersectionObserverDrop.observe(content);
@@ -160,10 +268,10 @@ function drawMarker(data_marker) {
       let contentString =
             '<div id="content">' +
             '<div id="siteNotice"></div>' +
-            '<h2 id="firstHeading" class="firstHeading">' + data_marker[i]['name'] + '</h2>' +
+            '<h2 id="firstHeading" class="firstHeading">' + data_marker['name'] + '</h2>' +
             '<div id="bodyContent">' +
-            '<p>' + data_marker[i]['problem_string'] + '</p>' +
-            '<a href="/members/members/?q=' + data_marker[i]['member_id'] + '">CHECK</a>' +
+            '<p>' + data_marker['problem_string'] + '</p>' +
+            '<a href="/members/members/?q=' + data_marker['member_id'] + '">CHECK</a>' +
             '</div>' +
             '</div>';
 
@@ -175,19 +283,25 @@ function drawMarker(data_marker) {
       })(marker, i));
       // End - Content InfoWindow
 
-      if (! data_marker[i]['is_problem'])
+      //if (! data_marker[i]['is_problem']==1 || ! data_marker[i]['is_new']==1) {
+      if (key == 'is_online' || key == 'is_offline') {
         markers.push(marker);
+        marker_property[key].markers.push(marker);
+      }
     }
 
+    /*
     if (is_online)
         markerColor = "#009009";
     else
         markerColor = "#ff0000";
+          */
 
     // Start - Renderer
     let customRenderer = new markerClusterer.DefaultRenderer();
     customRenderer.render = function({ count, position }, stats, map) {
-        const color = markerColor;
+        //const color = markerColor;
+        const color = marker_property[key].markerColor;
         // create svg literal with fill color
         const svg = `<svg fill="${color}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="50" height="50">
 <circle cx="120" cy="120" opacity=".6" r="70" />
@@ -214,6 +328,7 @@ function drawMarker(data_marker) {
                 content: svgEl,
             };
             markersCluster.push(clusterOptions);
+            marker_property[key].markersCluster.push(clusterOptions);
             return new google.maps.marker.AdvancedMarkerElement(clusterOptions);
         }
         const clusterOptions = {
@@ -226,15 +341,23 @@ function drawMarker(data_marker) {
             },
         };
         markersCluster.push(clusterOptions);
+        marker_property[key].markersCluster.push(clusterOptions);
         return new google.maps.Marker(clusterOptions);
     }
 
     // Add a marker clusterer to manage the markers.
     new markerClusterer.MarkerClusterer({ 
+        map: marker_property[key].map,
+        markers: marker_property[key].markers,
+        renderer: customRenderer
+    });
+    /*
+    new markerClusterer.MarkerClusterer({ 
         map: map,
         markers: markers,
         renderer: customRenderer
     });
+    */
 }
 
 //async function get_api(api_url) {
@@ -278,6 +401,19 @@ function arraysEqual(a, b) {
   return true;
 }
 
+function setCenterZoom() {
+
+    map.setCenter(bounds.getCenter()); //or use custom center
+    map.fitBounds(bounds);
+
+    //remove one zoom level to ensure no marker is on the edge.
+    //map.setZoom(map.getZoom() - 1);
+
+    if(map.getZoom() > 15){
+        map.setZoom(15);
+    }
+}
+
 async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
@@ -287,7 +423,7 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
     data_new = await get_api(base_api, is_all, is_no_org, query_id);
 
     let is_equal = arraysEqual(data_prev, data_new);
-    //console.log(is_equal);
+
     if (! is_equal) {
         data_prev = data_new;
         data = data_new;
@@ -296,12 +432,14 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
         for (i = 0; i < data.length; i++) {  
             latlngList.push(new google.maps.LatLng(data[i]['lat'], data[i]['lng']));
 
-            var bounds = new google.maps.LatLngBounds();
+            bounds = new google.maps.LatLngBounds();
             latlngList.forEach(function(n) {
                 bounds.extend(n);
             });
         }
 
+        setCenterZoom();
+        /*
         map.setCenter(bounds.getCenter()); //or use custom center
         map.fitBounds(bounds);
 
@@ -311,24 +449,38 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
         if(map.getZoom() > 15){
             map.setZoom(15);
         }
+        */
 
-        var data_online = [];
-        var data_offline = [];
-        var data_problem = [];
+        marker_property.is_new.data = [];
+        marker_property.is_online.data = [];
+        marker_property.is_offline.data = [];
+        marker_property.is_problem.data = [];
 
         for (i = 0; i < data.length; i++) {  
-            if (data[i]['is_online'])
-                if (data[i]['is_problem'])
-                    data_problem.push(data[i]);
-                else
-                    data_online.push(data[i])
+            if (data[i]['is_new'])
+                marker_property.is_new.data.push(data[i]);
             else
-                data_offline.push(data[i]);
+                if (data[i]['is_online'])
+                    if (data[i]['is_problem'])
+                        marker_property.is_problem.data.push(data[i]);
+                        //data_problem.push(data[i]);
+                    else
+                        marker_property.is_online.data.push(data[i]);
+                        //data_online.push(data[i])
+                else
+                    marker_property.is_offline.data.push(data[i]);
+                    //data_offline.push(data[i]);
         }
         deleteMarkers();
-        drawMarker(data_online);
-        drawMarker(data_offline);
-        drawMarker(data_problem);
+        for (let key in marker_property)
+            drawMarker(key);
+            //drawMarker(marker_property[key].data);
+        //drawMarker(marker_property.is_online.data);
+        //drawMarker(marker_property.is_offline.data);
+        //drawMarker(marker_property.is_problem.data);
+        //drawMarker(data_online);
+        //drawMarker(data_offline);
+        //drawMarker(data_problem);
     }
 }
 
