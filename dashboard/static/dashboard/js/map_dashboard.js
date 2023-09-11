@@ -1,7 +1,6 @@
 // Initialize and add the map
 let map;
 //var markers = [];
-//var markersCluster = [];
 var data_prev = [];
 var data_new = [];
 var bounds;
@@ -18,7 +17,7 @@ var marker_property = {
         'map': null,
         'data': [],
         'markers': [],
-        'markersCluster': [],
+        'markersCluster': null,
         'show': true,
         'is_cluster': false,
     },
@@ -31,7 +30,7 @@ var marker_property = {
         'map': null,
         'data': [],
         'markers': [],
-        'markersCluster': [],
+        'markersCluster': null,
         'show': true,
         'is_cluster': true,
     },
@@ -44,7 +43,7 @@ var marker_property = {
         'map': null,
         'data': [],
         'markers': [],
-        'markersCluster': [],
+        'markersCluster': null,
         'show': true,
         'is_cluster': true,
     },
@@ -57,7 +56,7 @@ var marker_property = {
         'map': null,
         'data': [],
         'markers': [],
-        'markersCluster': [],
+        'markersCluster': null,
         'show': false,
         'is_cluster': true,
     }
@@ -96,12 +95,14 @@ function setMapOnAll(map) {
     for (let i = 0; i < marker_property[key].markers.length; i++) {
         marker_property[key].markers[i].setMap(map);
     }
-    for (let i = 0; i < marker_property[key].markersCluster.length; i++) {
-        marker_property[key].markersCluster[i].setMap(map);
+    //for (let i = 0; i < marker_property[key].markersCluster.length; i++) {
+        //marker_property[key].markersCluster[i].setMap(map);
+    if (marker_property[key].markersCluster != null)
+        marker_property[key].markersCluster.clearMarkers();
         //markersCluster[i].setMap(map);
-    }
-    marker_property[key].markers = [];
-    marker_property[key].markersCluster = [];
+    //}
+    //marker_property[key].markers = [];
+    //marker_property[key].markersCluster = [];
   }
 }
 
@@ -120,7 +121,7 @@ function deleteMarkers() {
   hideMarkers();
   for (let key in marker_property) {
       marker_property[key].markers = [];
-      marker_property[key].markersCluster = [];
+      marker_property[key].markersCluster = null;
   }
 }
 
@@ -131,6 +132,7 @@ function drawMarker(key) {
     var marker, i;
     var pinGlyph;
     var data_marker = [];
+    var return_renderer;
 
     // Reset Markers
     marker_property[key].markers = [];
@@ -234,7 +236,7 @@ function drawMarker(key) {
                 title,
                 content: svgEl,
             };
-            marker_property[key].markersCluster.push(clusterOptions);
+            
             return new google.maps.marker.AdvancedMarkerElement(clusterOptions);
         }
         const clusterOptions = {
@@ -246,18 +248,24 @@ function drawMarker(key) {
                 anchor: new google.maps.Point(25, 25),
             },
         };
-        marker_property[key].markersCluster.push(clusterOptions);
+
         return new google.maps.Marker(clusterOptions);
     }
 
     // Add a marker clusterer to manage the markers.
     if (marker_property[key].is_cluster) {
-        new markerClusterer.MarkerClusterer({ 
+        let markersCluster = new markerClusterer.MarkerClusterer({ 
             map: map,
             markers: marker_property[key].markers,
             renderer: customRenderer
         });
+        marker_property[key].markersCluster = markersCluster;
+        //console.log(marker_property[key].markersCluster);
     }
+    else {
+        marker_property[key].markersCluster = null;
+    }
+    //console.log(marker_property[key].markers);
 }
 
 
@@ -333,9 +341,9 @@ async function redrawMarkers() {
     //let is_equal = arraysEqual(data_prev, data_new);
 
     //if (! is_equal || api_params.new_query == false) {
-    console.log(data_new);
+    //console.log(data_new);
     if (! is_equal) {
-        console.log(data_prev);
+        //console.log(data_prev);
         data_prev = data_new;
         data = data_new;
 
@@ -370,7 +378,7 @@ async function redrawMarkers() {
         }
         deleteMarkers();
         for (let key in marker_property)
-            if (marker_property[key].show)
+            if (marker_property[key].show && marker_property[key].data.length > 0)
                 drawMarker(key);
     }
 }
@@ -426,11 +434,20 @@ function createHideOnlineControl(map) {
   // Setup the click event listeners: simply set the map to Chicago.
   controlButton.addEventListener("click", () => {
     for (let key in marker_property) {
-        marker_property[key].is_cluster = false;
+        if (marker_property[key].is_cluster) {
+            marker_property[key].is_cluster = false;
+        }
+        else {
+            if (key == 'is_online')
+                marker_property[key].is_cluster = true;
+
+            if (key == 'is_offline')
+                marker_property[key].is_cluster = true;
+        }
     }
     api_params.new_query = false;
     redrawMarkers();
-    console.log(api_params);
+    //console.log(api_params);
   });
   return controlButton;
 }
