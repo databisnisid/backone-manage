@@ -6,13 +6,13 @@ var data_prev = [];
 var data_new = [];
 var bounds;
 const backoneTrans = document.createElement("img");
-backoneTrans.src = "/static/dashboard/images/backone-black.svg";
+backoneTrans.src = "/static/dashboard/images/backone.svg";
 
 var marker_property = {
     'is_problem': {
         'markerColor': '#ffcc00', // Yellow
         'glyph': backoneTrans,
-        'glyphColor': "ffcc00",
+        'glyphColor': "white",
         'glyphBorder': "white",
         'glyphScale': 1.1,
         'map': null,
@@ -23,7 +23,7 @@ var marker_property = {
     'is_online': {
         'markerColor': '#009900', // Yellow
         'glyph': backoneTrans,
-        'glyphColor': "#009900",
+        'glyphColor': "white",
         'glyphBorder': "white",
         'glyphScale': 0.8,
         'map': null,
@@ -34,7 +34,7 @@ var marker_property = {
     'is_offline': {
         'markerColor': '#ff0000', // Yellow
         'glyph': backoneTrans,
-        'glyphColor': "#ff0000",
+        'glyphColor': "white",
         'glyphBorder': "white",
         'glyphScale': 0.9,
         'map': null,
@@ -45,7 +45,7 @@ var marker_property = {
     'is_new': {
         'markerColor': '#0000ff', // Yellow
         'glyph': backoneTrans,
-        'glyphColor': "#0000ff",
+        'glyphColor': "white",
         'glyphBorder': "white",
         'glyphScale': 1.0,
         'map': null,
@@ -181,86 +181,23 @@ function drawMarker(key) {
         if (key == 'is_problem')
             is_problem = true;
       }
-      /*
-
-      if (data_marker[i]['is_online'])
-        if (data_marker[i]['is_problem']) {
-            markerColor = '#ffc300'; // Yellow
-            glyphColor = "black";
-            glyphBorder = "black";
-            glyphScale = 1.1;
-        }
-        else {
-            //markerColor = '#3fff33';  // Green
-            markerColor = '#009900';  // Green
-            glyphColor = "white";
-            glyphBorder = "white";
-            glyphScale = 0.9;
-        }
-      else {
-          //markerColor = '#ff5733'; // Red
-          markerColor = '#ff0000'; // Red
-          glyphColor = "white";
-          glyphBorder = "white";
-          glyphScale = 0.8;
-      }
-
-      if (data_marker[i]['is_new']) {
-          markerColor = '#0000ff'; // Red
-          glyphColor = "white";
-          glyphBorder = "white";
-          glyphScale = 1;
-      }
-      */
-
-      //if (! data_marker[i]['is_problem'])
-
-      //if (data_marker[i]['is_problem']==1 || data_marker[i]['is_new']==1) {
-      // A marker with a with a URL pointing to a PNG.
-      //const backoneWhite = document.createElement("img");
-      //backoneImg.src = "/static/dashboard/images/backone.svg";
       pinGlyph = new google.maps.marker.PinElement({
           background: marker_property[key].markerColor,
           borderColor: marker_property[key].glyphBorder,
           glyphColor: marker_property[key].glyphColor,
-          glyph: marker_property[key].glyph,
+          //glyph: marker_property[key].glyph,
           scale: marker_property[key].glyphScale
       });
-          /*
-      }
-      else {
-        pinGlyph = new google.maps.marker.PinElement({
-            background: markerColor,
-            borderColor: "black",
-            glyphColor: glyphColor,
-            scale: 0.8
-        });
-      }
-        */
 
-      //if (! data_marker[i]['is_problem'])
-      //if (data_marker[i]['is_problem'] || data_marker[i]['is_new']) {
       marker = new google.maps.marker.AdvancedMarkerElement({
-          //position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
           position: new google.maps.LatLng(data_marker['lat'], data_marker['lng']),
           content: pinGlyph.element,
           map: marker_property[key].map,
-          //title: data_marker[i]['name']
           title: data_marker['name']
       });
-      //}
-          /*
-      else {
-        marker = new google.maps.marker.AdvancedMarkerElement({
-            position: new google.maps.LatLng(data_marker[i]['lat'], data_marker[i]['lng']),
-            content: pinGlyph.element,
-            title: data_marker[i]['name']
-        });
-      }
-          */
 
       const content = marker.content;
-        // Start - Animation Drop
+      // Start - Animation Drop
       content.style.opacity = "0";
       content.addEventListener("animationend", (event) => {
           content.classList.remove("drop");
@@ -289,7 +226,7 @@ function drawMarker(key) {
             '</div>' +
             '</div>';
 
-      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+      google.maps.event.addListener(marker, 'gmp-click', (function(marker, i) {
         return function() {
           infowindow.setContent(contentString);
           infowindow.open(map, marker);
@@ -303,13 +240,6 @@ function drawMarker(key) {
         marker_property[key].markers.push(marker);
       }
     }
-
-    /*
-    if (is_online)
-        markerColor = "#009009";
-    else
-        markerColor = "#ff0000";
-          */
 
     // Start - Renderer
     let customRenderer = new markerClusterer.DefaultRenderer();
@@ -341,7 +271,6 @@ function drawMarker(key) {
                 title,
                 content: svgEl,
             };
-            //markersCluster.push(clusterOptions);
             marker_property[key].markersCluster.push(clusterOptions);
             return new google.maps.marker.AdvancedMarkerElement(clusterOptions);
         }
@@ -354,7 +283,6 @@ function drawMarker(key) {
                 anchor: new google.maps.Point(25, 25),
             },
         };
-        //markersCluster.push(clusterOptions);
         marker_property[key].markersCluster.push(clusterOptions);
         return new google.maps.Marker(clusterOptions);
     }
@@ -365,16 +293,9 @@ function drawMarker(key) {
         markers: marker_property[key].markers,
         renderer: customRenderer
     });
-    /*
-    new markerClusterer.MarkerClusterer({ 
-        map: map,
-        markers: markers,
-        renderer: customRenderer
-    });
-    */
 }
 
-//async function get_api(api_url) {
+
 async function get_api(base_api, is_all, is_no_org, query_id) {
 
     var api_url;
@@ -453,17 +374,6 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
         }
 
         setCenterZoom();
-        /*
-        map.setCenter(bounds.getCenter()); //or use custom center
-        map.fitBounds(bounds);
-
-        //remove one zoom level to ensure no marker is on the edge.
-        //map.setZoom(map.getZoom() - 1);
-
-        if(map.getZoom() > 15){
-            map.setZoom(15);
-        }
-        */
 
         marker_property.is_new.data = [];
         marker_property.is_online.data = [];
@@ -488,13 +398,6 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
         deleteMarkers();
         for (let key in marker_property)
             drawMarker(key);
-            //drawMarker(marker_property[key].data);
-        //drawMarker(marker_property.is_online.data);
-        //drawMarker(marker_property.is_offline.data);
-        //drawMarker(marker_property.is_problem.data);
-        //drawMarker(data_online);
-        //drawMarker(data_offline);
-        //drawMarker(data_problem);
     }
 }
 
@@ -522,13 +425,11 @@ function createCenterControl(map) {
   controlButton.type = "button";
   // Setup the click event listeners: simply set the map to Chicago.
   controlButton.addEventListener("click", () => {
-    //map.setCenter(chicago);
     setCenterZoom();
   });
   return controlButton;
 }
 
-//async function initMap(base_api, is_all, is_no_org, query_id) {
 async function initMap() {
     // Request needed libraries.
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
@@ -545,13 +446,13 @@ async function initMap() {
     },
     });
 
-      // Create the DIV to hold the control.
-  const centerControlDiv = document.createElement("div");
-  // Create the control.
-  const centerControl = createCenterControl(map);
+    // Create the DIV to hold the control.
+    const centerControlDiv = document.createElement("div");
+    // Create the control.
+    const centerControl = createCenterControl(map);
 
-  // Append the control to the DIV.
-  centerControlDiv.appendChild(centerControl);
-  map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+    // Append the control to the DIV.
+    centerControlDiv.appendChild(centerControl);
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
 
 }
