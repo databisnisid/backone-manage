@@ -4,50 +4,13 @@ let map;
 var data_prev = [];
 var data_new = [];
 var bounds;
+var legend;
 const backoneTrans = document.createElement("img");
 backoneTrans.src = "/static/dashboard/images/backone.svg";
 
 var marker_property = {
-    'is_problem': {
-        'markerColor': '#ffc300', // Yellow
-        'glyph': backoneTrans,
-        'glyphColor': "black",
-        'glyphBorder': "black",
-        'glyphScale': 1.1,
-        'map': null,
-        'data': [],
-        'markers': [],
-        'markersCluster': null,
-        'show': true,
-        'is_cluster': false,
-    },
-    'is_online': {
-        'markerColor': '#009900', // Yellow
-        'glyph': backoneTrans,
-        'glyphColor': "white",
-        'glyphBorder': "white",
-        'glyphScale': 0.8,
-        'map': null,
-        'data': [],
-        'markers': [],
-        'markersCluster': null,
-        'show': true,
-        'is_cluster': true,
-    },
-    'is_offline': {
-        'markerColor': '#ff0000', // Yellow
-        'glyph': backoneTrans,
-        'glyphColor': "white",
-        'glyphBorder': "white",
-        'glyphScale': 0.9,
-        'map': null,
-        'data': [],
-        'markers': [],
-        'markersCluster': null,
-        'show': true,
-        'is_cluster': true,
-    },
     'is_new': {
+        'title': 'NEW',
         'markerColor': '#0000ff', // Yellow
         'glyph': backoneTrans,
         'glyphColor': "white",
@@ -59,7 +22,53 @@ var marker_property = {
         'markersCluster': null,
         'show': true,
         'is_cluster': false,
-    }
+        'count': 0,
+    },
+    'is_online': {
+        'title': 'ONLINE',
+        'markerColor': '#009900', // Yellow
+        'glyph': backoneTrans,
+        'glyphColor': "white",
+        'glyphBorder': "white",
+        'glyphScale': 0.8,
+        'map': null,
+        'data': [],
+        'markers': [],
+        'markersCluster': null,
+        'show': true,
+        'is_cluster': true,
+        'count': 0,
+    },
+    'is_offline': {
+        'title': 'OFFLINE',
+        'markerColor': '#ff0000', // Yellow
+        'glyph': backoneTrans,
+        'glyphColor': "white",
+        'glyphBorder': "white",
+        'glyphScale': 0.9,
+        'map': null,
+        'data': [],
+        'markers': [],
+        'markersCluster': null,
+        'show': true,
+        'is_cluster': true,
+        'count': 0,
+    },
+    'is_problem': {
+        'title': 'PROBLEM',
+        'markerColor': '#ffc300', // Yellow
+        'glyph': backoneTrans,
+        'glyphColor': "black",
+        'glyphBorder': "black",
+        'glyphScale': 1.1,
+        'map': null,
+        'data': [],
+        'markers': [],
+        'markersCluster': null,
+        'show': true,
+        'is_cluster': false,
+        'count': 0,
+    },
 };
 
 const intersectionObserverDrop = new IntersectionObserver((entries) => {
@@ -377,9 +386,24 @@ async function redrawMarkers() {
                     marker_property.is_offline.data.push(data[i]);
         }
         deleteMarkers();
-        for (let key in marker_property)
+        for (let key in marker_property) {
+            marker_property[key].count = marker_property[key].data.length;
             if (marker_property[key].show && marker_property[key].data.length > 0)
                 drawMarker(key);
+
+            // Remove Element
+            var divRemove = document.getElementById(key);
+            if (divRemove)
+                divRemove.remove()
+
+            // Create Legend
+            var div = document.createElement('div');
+            div.id = key;
+            div.innerHTML =  '<strong>' +
+                marker_property[key].title + 
+                ': ' + marker_property[key].count + '</strong>';
+            legend.appendChild(div);
+        }
     }
 }
 
@@ -480,5 +504,8 @@ async function initMap() {
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
     hideOnlineDiv.appendChild(hideOnline);
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(hideOnlineDiv);
+
+    legend = document.getElementById("legend");
+    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(legend);
 
 }
