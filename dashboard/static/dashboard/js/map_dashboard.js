@@ -452,7 +452,7 @@ function createHideOnlineControl(map) {
   controlButton.style.margin = "8px 3px 22px";
   controlButton.style.padding = "0 5px";
   controlButton.style.textAlign = "center";
-  controlButton.textContent = "Toggle Clustering";
+  controlButton.textContent = "Toggle Cluster";
   controlButton.title = "Click to toggle clustering";
   controlButton.type = "button";
   // Setup the click event listeners: simply set the map to Chicago.
@@ -499,9 +499,11 @@ async function initMap() {
 
     const hideOnlineDiv = document.createElement("div");
     const hideOnline = createHideOnlineControl(map);
+
     // Append the control to the DIV.
     centerControlDiv.appendChild(centerControl);
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+
     hideOnlineDiv.appendChild(hideOnline);
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(hideOnlineDiv);
 
