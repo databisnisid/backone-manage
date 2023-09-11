@@ -19,6 +19,8 @@ var marker_property = {
         'data': [],
         'markers': [],
         'markersCluster': [],
+        'show': true,
+        'is_cluster': false,
     },
     'is_online': {
         'markerColor': '#009900', // Yellow
@@ -30,6 +32,8 @@ var marker_property = {
         'data': [],
         'markers': [],
         'markersCluster': [],
+        'show': true,
+        'is_cluster': true,
     },
     'is_offline': {
         'markerColor': '#ff0000', // Yellow
@@ -41,6 +45,8 @@ var marker_property = {
         'data': [],
         'markers': [],
         'markersCluster': [],
+        'show': true,
+        'is_cluster': true,
     },
     'is_new': {
         'markerColor': '#0000ff', // Yellow
@@ -52,6 +58,8 @@ var marker_property = {
         'data': [],
         'markers': [],
         'markersCluster': [],
+        'show': false,
+        'is_cluster': true,
     }
 };
 
@@ -86,11 +94,11 @@ function setMapOnAll(map) {
     */
   for (let key in marker_property) {
     for (let i = 0; i < marker_property[key].markers.length; i++) {
-        marker_property[key].markers.setMap(map);
+        marker_property[key].markers[i].setMap(map);
     }
     for (let i = 0; i < marker_property[key].markersCluster.length; i++) {
-        marker_property[key].markersCluster.setMap(map);
-        markersCluster[i].setMap(map);
+        marker_property[key].markersCluster[i].setMap(map);
+        //markersCluster[i].setMap(map);
     }
     marker_property[key].markers = [];
     marker_property[key].markersCluster = [];
@@ -122,34 +130,21 @@ function drawMarker(key) {
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
     var pinGlyph;
-    //var is_online;
-    //var is_problem;
     var data_marker = [];
 
     // Reset Markers
     marker_property[key].markers = [];
     marker_property[key].markersCluster = [];
 
-    if (key == 'is_new' || key == 'is_problem')
+    //if (key == 'is_new' || key == 'is_problem')
+    if (! marker_property[key].is_cluster)
         marker_property[key].map = map;
 
     for (i = 0; i < marker_property[key].data.length; i++) {  
 
       data_marker = marker_property[key].data[i];
-      data_marker['is_online'] = true;
-      data_marker['is_problem'] = true;
-
-      /*
-      is_online = false;
-      is_problem = false;
-
-      if (key == 'is_online') {
-      if (data_marker['is_online'] == 'is_online') {
-        is_online = true;
-        if (key == 'is_problem')
-            is_problem = true;
-      }
-      */
+      //data_marker['is_online'] = true;
+      //data_marker['is_problem'] = true;
 
       pinGlyph = new google.maps.marker.PinElement({
           background: marker_property[key].markerColor,
@@ -256,11 +251,13 @@ function drawMarker(key) {
     }
 
     // Add a marker clusterer to manage the markers.
-    new markerClusterer.MarkerClusterer({ 
-        map: map,
-        markers: marker_property[key].markers,
-        renderer: customRenderer
-    });
+    if (marker_property[key].is_cluster) {
+        new markerClusterer.MarkerClusterer({ 
+            map: map,
+            markers: marker_property[key].markers,
+            renderer: customRenderer
+        });
+    }
 }
 
 
@@ -282,7 +279,7 @@ async function get_api(base_api, is_all, is_no_org, query_id) {
     // Storing data in form of JSON
     var data = await response.json();
 
-    console.log(data);
+    //console.log(data);
     return data;
 }
 
@@ -317,17 +314,28 @@ function setCenterZoom() {
     }
 }
 
-async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
+//async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
+async function redrawMarkers() {
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
     var data;
+    var is_equal = false;
 
-    data_new = await get_api(base_api, is_all, is_no_org, query_id);
+    if (api_params.new_query) {
+        data_new = await get_api(
+            api_params.api_url, api_params.is_all, 
+            api_params.is_no_org, api_params.query_id);
 
-    let is_equal = arraysEqual(data_prev, data_new);
+        is_equal = arraysEqual(data_prev, data_new);
+    }
 
+    //let is_equal = arraysEqual(data_prev, data_new);
+
+    //if (! is_equal || api_params.new_query == false) {
+    console.log(data_new);
     if (! is_equal) {
+        console.log(data_prev);
         data_prev = data_new;
         data = data_new;
 
@@ -362,7 +370,8 @@ async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
         }
         deleteMarkers();
         for (let key in marker_property)
-            drawMarker(key);
+            if (marker_property[key].show)
+                drawMarker(key);
     }
 }
 
@@ -395,6 +404,37 @@ function createCenterControl(map) {
   return controlButton;
 }
 
+function createHideOnlineControl(map) {
+  const controlButton = document.createElement("button");
+
+  // Set CSS for the control.
+  controlButton.style.backgroundColor = "#fff";
+  controlButton.style.border = "2px solid #fff";
+  controlButton.style.borderRadius = "3px";
+  controlButton.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+  controlButton.style.color = "rgb(25,25,25)";
+  controlButton.style.cursor = "pointer";
+  controlButton.style.fontFamily = "Roboto,Arial,sans-serif";
+  controlButton.style.fontSize = "16px";
+  controlButton.style.lineHeight = "38px";
+  controlButton.style.margin = "8px 3px 22px";
+  controlButton.style.padding = "0 5px";
+  controlButton.style.textAlign = "center";
+  controlButton.textContent = "Toggle Clustering";
+  controlButton.title = "Click to toggle clustering";
+  controlButton.type = "button";
+  // Setup the click event listeners: simply set the map to Chicago.
+  controlButton.addEventListener("click", () => {
+    for (let key in marker_property) {
+        marker_property[key].is_cluster = false;
+    }
+    api_params.new_query = false;
+    redrawMarkers();
+    console.log(api_params);
+  });
+  return controlButton;
+}
+
 async function initMap() {
     // Request needed libraries.
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
@@ -416,8 +456,12 @@ async function initMap() {
     // Create the control.
     const centerControl = createCenterControl(map);
 
+    const hideOnlineDiv = document.createElement("div");
+    const hideOnline = createHideOnlineControl(map);
     // Append the control to the DIV.
     centerControlDiv.appendChild(centerControl);
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+    hideOnlineDiv.appendChild(hideOnline);
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(hideOnlineDiv);
 
 }
