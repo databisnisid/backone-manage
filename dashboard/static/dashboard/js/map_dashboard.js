@@ -58,7 +58,7 @@ var marker_property = {
         'markers': [],
         'markersCluster': null,
         'show': false,
-        'is_cluster': true,
+        'is_cluster': false,
     }
 };
 
