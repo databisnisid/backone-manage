@@ -404,9 +404,9 @@ async function redrawMarkers() {
             // Create Legend
             var div = document.createElement('div');
             div.id = key;
-            div.innerHTML =  '<strong><span style="color: black;">' +
+            div.innerHTML =  '<span style="color: black;">' +
                 marker_property[key].title + 
-                ': ' + marker_property[key].count + '</span></strong>';
+                ': ' + marker_property[key].count + '</span>';
             legend.appendChild(div);
         }
     }
