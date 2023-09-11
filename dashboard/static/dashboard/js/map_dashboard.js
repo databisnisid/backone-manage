@@ -158,11 +158,11 @@ function drawMarker(key) {
     var data_marker = [];
 
     // Reset Markers
-    markers = [];
+    //markers = [];
     marker_property[key].markers = [];
     marker_property[key].markersCluster = [];
 
-    if (key == 'is_online' || key == 'is_offline')
+    if (key == 'is_new' || key == 'is_problem')
         marker_property[key].map = map;
 
     //for (i = 0; i < data_marker.length; i++) {  
@@ -289,7 +289,7 @@ function drawMarker(key) {
 
     // Add a marker clusterer to manage the markers.
     new markerClusterer.MarkerClusterer({ 
-        map: marker_property[key].map,
+        map: map,
         markers: marker_property[key].markers,
         renderer: customRenderer
     });
