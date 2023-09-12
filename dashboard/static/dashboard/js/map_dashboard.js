@@ -157,6 +157,16 @@ function drawMarker(key) {
 
       data_marker = marker_property[key].data[i];
 
+      if (key == 'is_problem')
+        if (data_marker['is_online']) {
+            marker_property[key].markerColor = marker_property['is_online'].markerColor;
+            marker_property[key].glyphColor = marker_property['is_online'].glypColor;
+        }
+        else {
+            marker_property[key].markerColor = marker_property['is_offline'].markerColor;
+            marker_property[key].glyphColor = marker_property['is_offline'].glypColor;
+        }
+
       const glyphImg = document.createElement("img");
       glyphImg.src = marker_property[key].glyph;
 
@@ -396,13 +406,13 @@ async function redrawMarkers() {
             if (data[i]['is_new'])
                 marker_property.is_new.data.push(data[i]);
             else
-                if (data[i]['is_online'])
-                    if (data[i]['is_problem'])
-                        marker_property.is_problem.data.push(data[i]);
-                    else
+                if (data[i]['is_problem'])
+                    marker_property.is_problem.data.push(data[i]);
+                else:
+                    if (data[i]['is_online'])
                         marker_property.is_online.data.push(data[i]);
-                else
-                    marker_property.is_offline.data.push(data[i]);
+                    else
+                        marker_property.is_offline.data.push(data[i]);
         }
 
         //deleteMarkers();
@@ -454,22 +464,7 @@ function createCenterControl(map) {
   controlButton.type = "button";
   // Setup the click event listeners: simply set the map to Chicago.
   controlButton.addEventListener("click", () => {
-    /*
-    for (key in marker_property) {
-        marker_property[key].is_show = true;
-        let keyElement = document.getElementById(key);
-        let keyElementText = document.getElementById(key).textContent;
-        keyElement.innerHTML = keyElementText;
-        showMarkers(key);
-    }
-      */
     setCenterZoom();
-
-    /*
-    let keyElement = document.getElementById(key);
-    let keyElementText = document.getElementById(key).textContent;
-    keyElement.innerHTML = keyElementText;
-    */
   });
   return controlButton;
 }
