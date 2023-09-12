@@ -10,7 +10,7 @@ var marker_property = {
     'is_new': {
         'title': 'NEW',
         'markerColor': '#0000ff', // Yellow
-        //'glyph': backoneTrans,
+        'glyph': "/static/dashboard/images/backone-white-trans.svg",
         //'glyphColor': "white",
         'glyphColor': "#0000ff",
         'glyphBorder': "white",
@@ -26,7 +26,7 @@ var marker_property = {
     'is_online': {
         'title': 'ONLINE',
         'markerColor': '#009900', // Yellow
-        //'glyph': backoneTrans,
+        'glyph': "/static/dashboard/images/backone-white-trans.svg",
         //'glyphColor': "white",
         'glyphColor': "#009900",
         'glyphBorder': "white",
@@ -42,7 +42,7 @@ var marker_property = {
     'is_offline': {
         'title': 'OFFLINE',
         'markerColor': '#ff0000', // Yellow
-        //'glyph': backoneTrans,
+        'glyph': "/static/dashboard/images/backone-white-trans.svg",
         //'glyphColor': "black",
         'glyphColor': "#ff0000",
         'glyphBorder': "white",
@@ -58,6 +58,7 @@ var marker_property = {
     'is_problem': {
         'title': 'PROBLEM',
         'markerColor': '#ffc300', // Yellow
+        'glyph': "/static/dashboard/images/backone-black-trans.svg",
         //'glyph': backoneTrans,
         //'glyphColor': "black",
         'glyphColor': "#ffc300",
@@ -158,15 +159,16 @@ function drawMarker(key) {
       data_marker = marker_property[key].data[i];
       //data_marker['is_online'] = true;
       //data_marker['is_problem'] = true;
-      const backoneTrans = document.createElement("img");
-      backoneTrans.src = "/static/dashboard/images/backone.svg";
+      const glyphImg = document.createElement("img");
+      //backoneTrans.src = "/static/dashboard/images/backone.svg";
+      glyphImg.src = marker_property[key].glyph;
 
       pinGlyph = new google.maps.marker.PinElement({
           background: marker_property[key].markerColor,
           borderColor: marker_property[key].glyphBorder,
           glyphColor: marker_property[key].glyphColor,
           //glyph: marker_property[key].glyph,
-          glyph: backoneTrans,
+          glyph: glyphImg,
           scale: marker_property[key].glyphScale
       });
 
