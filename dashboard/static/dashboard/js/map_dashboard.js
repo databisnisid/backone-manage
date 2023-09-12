@@ -95,37 +95,29 @@ const intersectionObserverBounce = new IntersectionObserver((entries) => {
 
 // Sets the map on all markers in the array.
 function setMapOnAll(key, map) {
-    /*
-  for (let i = 0; i < markers.length; i++) {
-    markers[i].setMap(map);
-  }
-  for (let i = 0; i < markersCluster.length; i++) {
-    markersCluster[i].setMap(map);
-  }
-    */
-  //for (let key in marker_property) {
     for (let i = 0; i < marker_property[key].markers.length; i++) {
         marker_property[key].markers[i].setMap(map);
     }
-    //for (let i = 0; i < marker_property[key].markersCluster.length; i++) {
-        //marker_property[key].markersCluster[i].setMap(map);
-    if (marker_property[key].markersCluster!=null && !marker_property[key].is_show)
-        marker_property[key].markersCluster.clearMarkers();
-        //markersCluster[i].setMap(map);
-    //}
-    //marker_property[key].markers = [];
-    //marker_property[key].markersCluster = [];
-  //}
+}
+
+function setClusterOnAll(key, is_show) {
+    if (marker_property[key].markersCluster != null)
+        if (is_show)
+            marker_property[key].markersCluster.render();
+        else
+            marker_property[key].markersCluster.clearMarkers();
 }
 
 // Removes the markers from the map, but keeps them in the array.
 function hideMarkers(key) {
   setMapOnAll(key, null);
+  setClusterOnAll(key, false);
 }
 
 // Shows any markers currently in the array.
 function showMarkers(key) {
   setMapOnAll(key, map);
+  setClusterOnAll(key, true);
 }
 
 // Deletes all markers in the array by removing references to them.
