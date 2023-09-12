@@ -34,10 +34,12 @@ def is_problem(member, rule, is_online):
 
     else:
         if rule.item.item_id == 'online_status':
-            if member.online_at and timezone.now() > member.online_at:
-                result = True
-            if member.offline_at and timezone.now() > member.offline_at:
-                result = False
+            if member.online_at:
+                if timezone.now().date() > member.online_at:
+                    result = True
+            if member.offline_at:
+                if timezone.now() > member.offline_at:
+                    result = False
 
 
     return result
