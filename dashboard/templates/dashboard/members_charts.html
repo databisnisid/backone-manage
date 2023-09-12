@@ -35,9 +35,6 @@ const member_myChart1 = new Chart(member_ctx1, {
         datasets: [{
             label: '# ',
             data: {{ data_status }},
-            backgroundColor: [
-                {% for color in backgroundColor_status %}'{{ color | escape }}',{% endfor %}
-            ],
             borderWidth: 1
         }]
     },
