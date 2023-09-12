@@ -101,11 +101,13 @@ function setMapOnAll(key, map) {
 }
 
 function setClusterOnAll(key, is_show) {
-    if (marker_property[key].markersCluster != null)
+    if (marker_property[key].markersCluster != null) {
+        console.log(marker_property[key].markersCluster);
         if (is_show)
             marker_property[key].markersCluster.render();
         else
             marker_property[key].markersCluster.clearMarkers();
+    }
 }
 
 // Removes the markers from the map, but keeps them in the array.
@@ -116,8 +118,10 @@ function hideMarkers(key) {
 
 // Shows any markers currently in the array.
 function showMarkers(key) {
-  setMapOnAll(key, map);
-  setClusterOnAll(key, true);
+  if (marker_property[key].is_cluster)
+    setClusterOnAll(key, true);
+  else
+    setMapOnAll(key, map);
 }
 
 // Deletes all markers in the array by removing references to them.
