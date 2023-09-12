@@ -153,6 +153,9 @@ function drawMarker(key) {
     if (! marker_property[key].is_cluster)
         marker_property[key].map = map;
 
+    if (! marker_property[key].is_show)
+        marker_property[key].map = null;
+
     for (i = 0; i < marker_property[key].data.length; i++) {  
 
       data_marker = marker_property[key].data[i];
@@ -160,13 +163,13 @@ function drawMarker(key) {
       if (key == 'is_problem')
         if (data_marker['is_online']) {
             marker_property[key].markerColor = marker_property['is_online'].markerColor;
-            marker_property[key].glyphColor = marker_property['is_online'].glypColor;
-            marker_property[key].glyphBorder = marker_property['is_online'].glypBorder;
+            //marker_property[key].glyphColor = marker_property['is_online'].glyphColor;
+            //marker_property[key].glyphBorder = marker_property['is_online'].glyphBorder;
         }
         else {
             marker_property[key].markerColor = marker_property['is_offline'].markerColor;
-            marker_property[key].glyphColor = marker_property['is_offline'].glypColor;
-            marker_property[key].glyphBorder = marker_property['is_offline'].glypBorder;
+            //marker_property[key].glyphColor = marker_property['is_offline'].glyphColor;
+            //marker_property[key].glyphBorder = marker_property['is_offline'].glyphBorder;
         }
 
       const glyphImg = document.createElement("img");
@@ -284,6 +287,9 @@ function drawMarker(key) {
             renderer: customRenderer
         });
         marker_property[key].markersCluster = markersCluster;
+        if (! marker_property[key].is_show) {
+            markersCluster.clearMarkers();
+        }
     }
     else {
         marker_property[key].markersCluster = null;
@@ -374,7 +380,7 @@ async function redrawMarkers() {
         is_equal = arraysEqual(data_prev, data_new);
     }
 
-    console.log('is_equal', is_equal);
+    //console.log('is_equal', is_equal);
 
     if (! is_equal) {
 
@@ -419,10 +425,11 @@ async function redrawMarkers() {
         for (let key in marker_property) {
             deleteMarkers(key);
             marker_property[key].count = marker_property[key].data.length;
-            if (marker_property[key].is_show && marker_property[key].data.length > 0)
-                drawMarker(key);
+            //if (marker_property[key].is_show && marker_property[key].data.length > 0)
+            //if (marker_property[key].data.length > 0)
+            drawMarker(key);
 
-            // Remove Element
+            // Remove Elements
             var divRemove = document.getElementById(key);
             if (divRemove)
                 divRemove.remove()
