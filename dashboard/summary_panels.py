@@ -131,8 +131,8 @@ class MemberChartsPanel(Component):
         user = get_current_user()
         self.member_status = {
             'DIRECT': 0,
+            'OFFLINE': 0,
             'RELAY': 0,
-            'OFFLINE': 0
         }
         self.member_version = {}
         if user.is_superuser:
@@ -168,7 +168,7 @@ class MemberChartsPanel(Component):
         context = super().get_context_data(parent_context)
         data_status = []
         data_version = []
-        labels = ['DIRECT', 'RELAY', 'OFFLINE']
+        labels = ['DIRECT', 'OFFLINE', 'RELAY']
         backgroundColor_status = [
             'rgba(0, 76, 76, 1.0)',
             'rgba(79, 78, 81, 1.0)',
