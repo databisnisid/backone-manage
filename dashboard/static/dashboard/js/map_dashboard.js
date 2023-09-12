@@ -103,8 +103,10 @@ function setMapOnAll(key, map) {
 function setClusterOnAll(key, is_show) {
     if (marker_property[key].markersCluster != null) {
         console.log(marker_property[key].markersCluster);
-        if (is_show)
+        if (is_show) {
+            marker_property[key].markersCluster.addMarkers(marker_property[key].markers);
             marker_property[key].markersCluster.render();
+        }
         else
             marker_property[key].markersCluster.clearMarkers();
     }
