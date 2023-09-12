@@ -161,10 +161,12 @@ function drawMarker(key) {
         if (data_marker['is_online']) {
             marker_property[key].markerColor = marker_property['is_online'].markerColor;
             marker_property[key].glyphColor = marker_property['is_online'].glypColor;
+            marker_property[key].glyphBorder = marker_property['is_online'].glypBorder;
         }
         else {
             marker_property[key].markerColor = marker_property['is_offline'].markerColor;
             marker_property[key].glyphColor = marker_property['is_offline'].glypColor;
+            marker_property[key].glyphBorder = marker_property['is_offline'].glypBorder;
         }
 
       const glyphImg = document.createElement("img");
@@ -282,12 +284,10 @@ function drawMarker(key) {
             renderer: customRenderer
         });
         marker_property[key].markersCluster = markersCluster;
-        //console.log(marker_property[key].markersCluster);
     }
     else {
         marker_property[key].markersCluster = null;
     }
-    //console.log(marker_property[key].markers);
 }
 
 
@@ -336,9 +336,6 @@ function setCenterZoom() {
     map.setCenter(bounds.getCenter()); //or use custom center
     map.fitBounds(bounds);
 
-    //remove one zoom level to ensure no marker is on the edge.
-    //map.setZoom(map.getZoom() - 1);
-
     if(map.getZoom() > 15){
         map.setZoom(15);
     }
@@ -360,7 +357,6 @@ function toggleMarkers(key) {
     }
 }
 
-//async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
 async function redrawMarkers() {
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
@@ -382,7 +378,7 @@ async function redrawMarkers() {
 
     if (! is_equal) {
 
-        data_prev = data_new;
+        //data_prev = data_new;
         data = data_new;
 
         var latlngList = [];
@@ -395,7 +391,10 @@ async function redrawMarkers() {
             });
         }
 
-        setCenterZoom();
+        if (! data_prev.length)
+            setCenterZoom();
+
+        data_prev = data_new;
 
         marker_property.is_new.data = [];
         marker_property.is_online.data = [];

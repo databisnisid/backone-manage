@@ -21,11 +21,15 @@ def randomize_coordinate(members):
 def is_problem(member, members_problems):
     is_found = 0
     problem_string = ''
+    problem_array = []
     for problem in members_problems:
         if member.id == problem.member.id:
             is_found = 1
-            problem_string = problem.problem.name
-            break
+            problem_array.append(problem.problem.name)
+            #problem_string = problem.problem.name
+            #break
+
+    problem_string = ', '.join(problem_array)
 
     return is_found, problem_string
 
