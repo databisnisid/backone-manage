@@ -449,11 +449,12 @@ function createCenterControl(map) {
   controlButton.style.margin = "8px 0 22px";
   controlButton.style.padding = "0 5px";
   controlButton.style.textAlign = "center";
-  controlButton.textContent = "Show All Sites";
-  controlButton.title = "Click to recenter the map and show all sites";
+  controlButton.textContent = "Center Map";
+  controlButton.title = "Click to recenter the map";
   controlButton.type = "button";
   // Setup the click event listeners: simply set the map to Chicago.
   controlButton.addEventListener("click", () => {
+    /*
     for (key in marker_property) {
         marker_property[key].is_show = true;
         let keyElement = document.getElementById(key);
@@ -461,13 +462,30 @@ function createCenterControl(map) {
         keyElement.innerHTML = keyElementText;
         showMarkers(key);
     }
+      */
     setCenterZoom();
+
+    /*
+    let keyElement = document.getElementById(key);
+    let keyElementText = document.getElementById(key).textContent;
+    keyElement.innerHTML = keyElementText;
+    */
+  });
+  return controlButton;
+}
+
+function showAllSites() {
+    for (key in marker_property) {
+        marker_property[key].is_show = true;
+        let keyElement = document.getElementById(key);
+        let keyElementText = document.getElementById(key).textContent;
+        keyElement.innerHTML = keyElementText;
+        showMarkers(key);
+    }
 
     let keyElement = document.getElementById(key);
     let keyElementText = document.getElementById(key).textContent;
     keyElement.innerHTML = keyElementText;
-  });
-  return controlButton;
 }
 
 /*************************
@@ -544,8 +562,10 @@ async function initMap() {
     centerControlDiv.appendChild(centerControl);
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
 
+    /*
     toggleClusterDiv.appendChild(toggleCluster);
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(toggleClusterDiv);
+    */
 
     legend = document.getElementById("legend");
     map.controls[google.maps.ControlPosition.RIGHT_TOP].push(legend);
