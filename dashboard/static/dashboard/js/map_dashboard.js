@@ -408,7 +408,7 @@ async function redrawMarkers() {
             else
                 if (data[i]['is_problem'])
                     marker_property.is_problem.data.push(data[i]);
-                else:
+                else
                     if (data[i]['is_online'])
                         marker_property.is_online.data.push(data[i]);
                     else
