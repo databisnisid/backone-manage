@@ -73,6 +73,7 @@ def monitor_members() :
             #mqtt = Mqtt.objects.get(member_id=member.member_id)
             mqtt = member.mqtt
             problems = []
+            problems_offline = []
             is_solved = True
             if member.ipaddress:
                 #if member.is_online() and ping.ping(member.ipaddress):
@@ -82,7 +83,10 @@ def monitor_members() :
                     problems = check_members_vs_rules(member, True)
                 else:
                     print(".", end='')
-                    problems = check_members_vs_rules(member, False)
+                    problems_offline = check_members_vs_rules(member, False)
+
+                for prob in problems_offline:
+                    problems.append(prob)
 
                 if problems:
                     is_solved = False
