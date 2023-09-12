@@ -157,17 +157,14 @@ function drawMarker(key) {
     for (i = 0; i < marker_property[key].data.length; i++) {  
 
       data_marker = marker_property[key].data[i];
-      //data_marker['is_online'] = true;
-      //data_marker['is_problem'] = true;
+
       const glyphImg = document.createElement("img");
-      //backoneTrans.src = "/static/dashboard/images/backone.svg";
       glyphImg.src = marker_property[key].glyph;
 
       pinGlyph = new google.maps.marker.PinElement({
           background: marker_property[key].markerColor,
           borderColor: marker_property[key].glyphBorder,
           glyphColor: marker_property[key].glyphColor,
-          //glyph: marker_property[key].glyph,
           glyph: glyphImg,
           scale: marker_property[key].glyphScale
       });
@@ -204,7 +201,7 @@ function drawMarker(key) {
             '<div id="siteNotice"></div>' +
             '<h2 id="firstHeading" class="firstHeading">' + data_marker['name'] + '</h2>' +
             '<div id="bodyContent">' +
-            '<p>' + data_marker['problem_string'] + '</p>' +
+            '<p style="color: black;">' + data_marker['problem_string'] + '</p>' +
             '<a href="/members/members/?q=' + data_marker['member_id'] + '">CHECK</a>' +
             '</div>' +
             '</div>';
