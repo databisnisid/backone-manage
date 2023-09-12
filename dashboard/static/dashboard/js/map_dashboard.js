@@ -109,7 +109,7 @@ function setMapOnAll(key, map) {
     }
     //for (let i = 0; i < marker_property[key].markersCluster.length; i++) {
         //marker_property[key].markersCluster[i].setMap(map);
-    if (marker_property[key].markersCluster != null && !marker_property[key].is_show)
+    if (marker_property[key].markersCluster!=null && !marker_property[key].is_show)
         marker_property[key].markersCluster.clearMarkers();
         //markersCluster[i].setMap(map);
     //}
@@ -340,13 +340,13 @@ function toggleMarkers(key) {
     let keyElementText = document.getElementById(key).textContent;
 
     if (marker_property[key].is_show) {
-        hideMarkers(key);
         marker_property[key].is_show = false;
+        hideMarkers(key);
         keyElement.innerHTML = keyElementText.strike();
     }
     else {
-        showMarkers(key);
         marker_property[key].is_show = true;
+        showMarkers(key);
         keyElement.innerHTML = keyElementText;
     }
 }
