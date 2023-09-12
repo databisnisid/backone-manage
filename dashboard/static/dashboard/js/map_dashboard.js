@@ -120,10 +120,11 @@ function hideMarkers(key) {
 
 // Shows any markers currently in the array.
 function showMarkers(key) {
-  if (marker_property[key].is_cluster)
-    setClusterOnAll(key, true);
-  else
-    setMapOnAll(key, map);
+  if (marker_property[key].is_show)
+    if (marker_property[key].is_cluster)
+        setClusterOnAll(key, true);
+    else
+        setMapOnAll(key, map);
 }
 
 // Deletes all markers in the array by removing references to them.
