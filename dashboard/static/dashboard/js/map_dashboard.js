@@ -349,7 +349,8 @@ function setCenterZoom() {
 
 function toggleMarkers(key) {
     let keyElement = document.getElementById(key);
-    let keyElementText = document.getElementById(key).textContent;
+    let keyElementText = keyElement.textContent;
+    //let keyElementText = document.getElementById(key).textContent;
 
     if (marker_property[key].is_show) {
         marker_property[key].is_show = false;
@@ -442,6 +443,12 @@ async function redrawMarkers() {
                 marker_property[key].title + 
                 ': ' + marker_property[key].count + '</button>';
             legend.appendChild(div);
+
+            if (! marker_property[key].is_show) {
+                let keyElement = document.getElementById(key);
+                let keyElementText = keyElement.textContent;
+                keyElement.innerHTML = keyElementText.strike();
+            }
         }
     }
 }
