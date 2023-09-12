@@ -19,7 +19,7 @@ var marker_property = {
         'data': [],
         'markers': [],
         'markersCluster': null,
-        'show': true,
+        'is_show': true,
         'is_cluster': false,
         'count': 0,
     },
@@ -35,7 +35,7 @@ var marker_property = {
         'data': [],
         'markers': [],
         'markersCluster': null,
-        'show': true,
+        'is_show': true,
         'is_cluster': true,
         'count': 0,
     },
@@ -51,7 +51,7 @@ var marker_property = {
         'data': [],
         'markers': [],
         'markersCluster': null,
-        'show': true,
+        'is_show': true,
         'is_cluster': true,
         'count': 0,
     },
@@ -68,7 +68,7 @@ var marker_property = {
         'data': [],
         'markers': [],
         'markersCluster': null,
-        'show': true,
+        'is_show': true,
         'is_cluster': false,
         'count': 0,
     },
@@ -94,7 +94,7 @@ const intersectionObserverBounce = new IntersectionObserver((entries) => {
 });
 
 // Sets the map on all markers in the array.
-function setMapOnAll(map) {
+function setMapOnAll(key, map) {
     /*
   for (let i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
@@ -103,38 +103,38 @@ function setMapOnAll(map) {
     markersCluster[i].setMap(map);
   }
     */
-  for (let key in marker_property) {
+  //for (let key in marker_property) {
     for (let i = 0; i < marker_property[key].markers.length; i++) {
         marker_property[key].markers[i].setMap(map);
     }
     //for (let i = 0; i < marker_property[key].markersCluster.length; i++) {
         //marker_property[key].markersCluster[i].setMap(map);
-    if (marker_property[key].markersCluster != null)
+    if (marker_property[key].markersCluster != null && !marker_property[key].is_cluster)
         marker_property[key].markersCluster.clearMarkers();
         //markersCluster[i].setMap(map);
     //}
     //marker_property[key].markers = [];
     //marker_property[key].markersCluster = [];
-  }
+  //}
 }
 
 // Removes the markers from the map, but keeps them in the array.
-function hideMarkers() {
-  setMapOnAll(null);
+function hideMarkers(key) {
+  setMapOnAll(key, null);
 }
 
 // Shows any markers currently in the array.
-function showMarkers() {
-  setMapOnAll(map);
+function showMarkers(key) {
+  setMapOnAll(key, map);
 }
 
 // Deletes all markers in the array by removing references to them.
-function deleteMarkers() {
-  hideMarkers();
-  for (let key in marker_property) {
+function deleteMarkers(key) {
+  hideMarkers(key);
+  //for (let key in marker_property) {
       marker_property[key].markers = [];
       marker_property[key].markersCluster = null;
-  }
+  //}
 }
 
 
@@ -335,6 +335,22 @@ function setCenterZoom() {
     }
 }
 
+function toggleMarkers(key) {
+    let keyElement = document.getElementById(key);
+    let keyElementText = document.getElementById(key).textContent;
+
+    if (marker_property[key].is_show) {
+        hideMarkers(key);
+        marker_property[key].is_show = false;
+        keyElement.innerHTML = keyElementText.strike();
+    }
+    else {
+        showMarkers(key);
+        marker_property[key].is_show = true;
+        keyElement.innerHTML = keyElementText;
+    }
+}
+
 //async function redrawMarkers(base_api, is_all, is_no_org, query_id) {
 async function redrawMarkers() {
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
@@ -390,11 +406,12 @@ async function redrawMarkers() {
                     marker_property.is_offline.data.push(data[i]);
         }
 
-        deleteMarkers();
+        //deleteMarkers();
 
         for (let key in marker_property) {
+            deleteMarkers(key);
             marker_property[key].count = marker_property[key].data.length;
-            if (marker_property[key].show && marker_property[key].data.length > 0)
+            if (marker_property[key].is_show && marker_property[key].data.length > 0)
                 drawMarker(key);
 
             // Remove Element
@@ -404,10 +421,11 @@ async function redrawMarkers() {
 
             // Create Legend
             var div = document.createElement('div');
-            div.id = key;
-            div.innerHTML =  '<span style="color: black;">' +
+            div.innerHTML =  '<button id="' + key + '"' +
+                ' style="background-color: white;"' + 
+                ' onclick="toggleMarkers(\'' + key + '\');">' +
                 marker_property[key].title + 
-                ': ' + marker_property[key].count + '</span>';
+                ': ' + marker_property[key].count + '</button>';
             legend.appendChild(div);
         }
     }
@@ -437,6 +455,10 @@ function createCenterControl(map) {
   controlButton.type = "button";
   // Setup the click event listeners: simply set the map to Chicago.
   controlButton.addEventListener("click", () => {
+    for (key in marker_property) {
+      marker_property[key].is_show = true;
+      showMarkers(key);
+    }
     setCenterZoom();
   });
   return controlButton;
@@ -469,6 +491,8 @@ function createToggleClusterControl(map) {
     for (let key in marker_property) {
         if (marker_property[key].is_cluster) {
             marker_property[key].is_cluster = false;
+            hideMarkers(key);
+            showMarkers(key);
         }
         else {
             if (key == 'is_online')
@@ -476,10 +500,12 @@ function createToggleClusterControl(map) {
 
             if (key == 'is_offline')
                 marker_property[key].is_cluster = true;
+            hideMarkers(key);
+            showMarkers(key);
         }
     }
-    api_params.new_query = false;
-    redrawMarkers();
+    //api_params.new_query = false;
+    //redrawMarkers();
   });
   return controlButton;
 }
