@@ -27,7 +27,7 @@
 
 <script>
 
-const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}";
+    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}";
 {% if user.is_superuser %}
     const is_all = true;
     const is_no_org = false;
@@ -42,7 +42,6 @@ const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}";
     const query_id = {{ user.organization.id }};
 {% endif %}
 
-    //initMap(api_url, is_all, is_no_org, query_id);
     var api_params = {
         'api_url': api_url,
         'is_all': is_all,
@@ -51,11 +50,9 @@ const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}";
         'new_query': true,
     };
     initMap();
-    //redrawMarkers(api_url, is_all, is_no_org, query_id);
     redrawMarkers();
     setInterval(function() {
-        //redrawMarkers(api_url, is_all, is_no_org, query_id);
         api_params.new_query = true;
         redrawMarkers();
-    }, {{ settings.MAP_REFRESH_INTERVAL }} * 60 * 1000); // every 5 minutes
+    }, {{ settings.MAP_REFRESH_INTERVAL }} * 1000);
 </script>

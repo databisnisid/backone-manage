@@ -12,10 +12,8 @@ def randomize_coordinate(members):
     for i in range(0, len(members)):
         for j in range(i+1, len(members)):
             if members[i]['lat'] == members[j]['lat'] and members[i]['lng'] == members[j]['lng']:
-                #print('Before', members[i]['lat'], members[i]['lng'])
                 members[i]['lat'] = float(members[i]['lat']) + random.uniform(-0.0001, 0.0001)
                 members[i]['lng'] = float(members[i]['lng']) + random.uniform(-0.0001, 0.0001)
-                #print('After', members[i]['lat'], members[i]['lng'])
 
     return members
 
@@ -32,14 +30,17 @@ def is_problem(member, members_problems):
     return is_found, problem_string
 
 
-def is_new(timestamp):
-    timedelta = timezone.now() - timestamp
+def is_new(member):
+    am_i_new = True
 
-    #print(timedelta.days)
+    timedelta = timezone.now() - member.created_at
     if timedelta.days > settings.MEMBER_NEW_DAY:
-        return False
-    else:
-        return True
+        am_i_new = False
+
+    if member.online_at is not None: # If online_at is setup
+        am_i_new = False
+
+    return am_i_new
 
 
 def prepare_data(members, members_problems):
@@ -65,14 +66,11 @@ def prepare_data(members, members_problems):
         member_geo['lng'] = lng
         member_geo['is_online'] = 1 if member.is_online() else 0
         is_found, problem_string = is_problem(member, members_problems)
-        #member_geo['is_problem'] = is_problem(member, members_problems)
         member_geo['is_problem'] = is_found
         member_geo['problem_string'] = problem_string
-        #member_geo['created_at'] = member.created_at.strftime('%s')
-        member_geo['is_new'] = 1 if is_new(member.created_at) else 0 
+        member_geo['is_new'] = 1 if is_new(member) else 0 
         new_members.append(member_geo)
 
-    #return new_members
     return randomize_coordinate(new_members)
 
 

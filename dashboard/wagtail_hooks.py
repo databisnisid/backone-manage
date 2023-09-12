@@ -23,7 +23,6 @@ def hide_reports_menu_item(request, menu_items):
     menu_items[:] = [item for item in menu_items if item.name != 'workflow-tasks']
     menu_items[:] = [item for item in menu_items if item.name != 'aging-pages']
     menu_items[:] = [item for item in menu_items if item.name != 'locked-pages']
-    #pass
 
 
 @hooks.register('construct_main_menu', order=2)
@@ -39,9 +38,6 @@ def hide_snippets_menu_item(request, menu_items):
         menu_items[:] = [item for item in menu_items if item.name != 'memberpeers']
         menu_items[:] = [item for item in menu_items if item.name != 'controllers']
 
-    #for panel in menu_items:
-    #    print(panel.name)
-
 
 @hooks.register("construct_settings_menu", order=3)
 def hide_user_menu_item(request, menu_items):
@@ -50,7 +46,6 @@ def hide_user_menu_item(request, menu_items):
     menu_items[:] = [item for item in menu_items if item.name != "redirects"]
     menu_items[:] = [item for item in menu_items if item.name != "sites"]
     menu_items[:] = [item for item in menu_items if item.name != "collections"]
-    #pass
 
 
 @hooks.register('construct_homepage_panels', order=4)
@@ -65,6 +60,7 @@ def add_another_welcome_panel(request, panels):
         panels.append(MapSummaryPanel())
     if request.user.organization.features.map_dashboard:
         panels.append(MapSummaryPanel())
+
     panels.append(NetworksSummaryPanel())
     #panels.append(MembersProblemPanel())
     panels.append(NetworksChartsPanel())
@@ -78,3 +74,4 @@ def global_admin_js():
     return format_html(
         '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>'
     )
+

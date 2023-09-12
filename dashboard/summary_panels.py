@@ -313,9 +313,8 @@ class ModelChartsPanel(Component):
         context['backgroundColor_version'] = backgroundColor_version
         context['chart_title_model'] = 'Model Distribution'
         context['chart_title_version'] = 'Platform Distribution'
-        context['is_data_model'] = True
-        context['is_data_version'] = True
-
+        context['is_data_model'] = True if len(data_model) and data_model[0] else False
+        context['is_data_model_version'] = True if len(data_version) and data_version[0] else False
 
         return context
 

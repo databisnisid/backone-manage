@@ -341,7 +341,9 @@ async function redrawMarkers() {
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
     var data;
-    var is_equal = false;
+    var is_equal;
+
+    is_equal = false;
 
     if (api_params.new_query) {
         data_new = await get_api(
@@ -351,12 +353,10 @@ async function redrawMarkers() {
         is_equal = arraysEqual(data_prev, data_new);
     }
 
-    //let is_equal = arraysEqual(data_prev, data_new);
+    console.log('is_equal', is_equal);
 
-    //if (! is_equal || api_params.new_query == false) {
-    //console.log(data_new);
     if (! is_equal) {
-        //console.log(data_prev);
+
         data_prev = data_new;
         data = data_new;
 
@@ -389,7 +389,9 @@ async function redrawMarkers() {
                 else
                     marker_property.is_offline.data.push(data[i]);
         }
+
         deleteMarkers();
+
         for (let key in marker_property) {
             marker_property[key].count = marker_property[key].data.length;
             if (marker_property[key].show && marker_property[key].data.length > 0)
@@ -411,9 +413,9 @@ async function redrawMarkers() {
     }
 }
 
-/**
- * Creates a control that recenters the map on Chicago.
- */
+/******************
+ * ShowAll Button
+ ******************/
 function createCenterControl(map) {
   const controlButton = document.createElement("button");
 
@@ -440,7 +442,10 @@ function createCenterControl(map) {
   return controlButton;
 }
 
-function createHideOnlineControl(map) {
+/*************************
+ * Toggle Cluster Button
+ *************************/
+function createToggleClusterControl(map) {
   const controlButton = document.createElement("button");
 
   // Set CSS for the control.
@@ -475,7 +480,6 @@ function createHideOnlineControl(map) {
     }
     api_params.new_query = false;
     redrawMarkers();
-    //console.log(api_params);
   });
   return controlButton;
 }
@@ -501,15 +505,15 @@ async function initMap() {
     // Create the control.
     const centerControl = createCenterControl(map);
 
-    const hideOnlineDiv = document.createElement("div");
-    const hideOnline = createHideOnlineControl(map);
+    const toggleClusterDiv = document.createElement("div");
+    const toggleCluster = createToggleClusterControl(map);
 
     // Append the control to the DIV.
     centerControlDiv.appendChild(centerControl);
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
 
-    hideOnlineDiv.appendChild(hideOnline);
-    map.controls[google.maps.ControlPosition.TOP_CENTER].push(hideOnlineDiv);
+    toggleClusterDiv.appendChild(toggleCluster);
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(toggleClusterDiv);
 
     legend = document.getElementById("legend");
     map.controls[google.maps.ControlPosition.RIGHT_TOP].push(legend);
