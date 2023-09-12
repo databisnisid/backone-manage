@@ -455,10 +455,17 @@ function createCenterControl(map) {
   // Setup the click event listeners: simply set the map to Chicago.
   controlButton.addEventListener("click", () => {
     for (key in marker_property) {
-      marker_property[key].is_show = true;
-      showMarkers(key);
+        marker_property[key].is_show = true;
+        let keyElement = document.getElementById(key);
+        let keyElementText = document.getElementById(key).textContent;
+        keyElement.innerHTML = keyElementText;
+        showMarkers(key);
     }
     setCenterZoom();
+
+    let keyElement = document.getElementById(key);
+    let keyElementText = document.getElementById(key).textContent;
+    keyElement.innerHTML = keyElementText;
   });
   return controlButton;
 }
