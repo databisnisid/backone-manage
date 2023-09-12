@@ -109,7 +109,7 @@ function setMapOnAll(key, map) {
     }
     //for (let i = 0; i < marker_property[key].markersCluster.length; i++) {
         //marker_property[key].markersCluster[i].setMap(map);
-    if (marker_property[key].markersCluster != null && !marker_property[key].is_cluster)
+    if (marker_property[key].markersCluster != null && !marker_property[key].is_show)
         marker_property[key].markersCluster.clearMarkers();
         //markersCluster[i].setMap(map);
     //}
@@ -491,8 +491,6 @@ function createToggleClusterControl(map) {
     for (let key in marker_property) {
         if (marker_property[key].is_cluster) {
             marker_property[key].is_cluster = false;
-            //hideMarkers(key);
-            //showMarkers(key);
         }
         else {
             if (key == 'is_online')
@@ -500,8 +498,6 @@ function createToggleClusterControl(map) {
 
             if (key == 'is_offline')
                 marker_property[key].is_cluster = true;
-            //hideMarkers(key);
-            //showMarkers(key);
         }
     }
     api_params.new_query = false;
