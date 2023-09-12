@@ -4,19 +4,19 @@
         <table style="width: 90%;">
             <tr>
                 <td style="width: 45%; text-align: center;">
-                    {% if is_data_status %}
-                    <h1>{{ chart_title_status }}</h1>
+                    {% if is_data_model %}
+                    <h1>{{ chart_title_model }}</h1>
                         <div>
-                            <canvas id="chart_members_1"></canvas>
+                            <canvas id="chart_models_1"></canvas>
                         </div>
                     {% endif %}
                 </td>
                 <td style="width: 10%; text-align: center;"></td>
                 <td style="width: 45%; text-align: center;">
-                    {% if is_data_version %}
+                    {% if is_data_model_version %}
                     <h1>{{ chart_title_version }}</h1>
                         <div>
-                            <canvas id="chart_members_2"></canvas>
+                            <canvas id="chart_models_2"></canvas>
                         </div>
                     {% endif %}
                 </td>
@@ -27,16 +27,16 @@
 {% block extra_js %}
 <script>
 
-const member_ctx1 = document.getElementById('chart_members_1').getContext('2d');
-const member_myChart1 = new Chart(member_ctx1, {
+const model_ctx1 = document.getElementById('chart_models_1').getContext('2d');
+const model_myChart1 = new Chart(model_ctx1, {
     type: 'doughnut',
     data: {
-        labels: [{% for label in labels %}'{{ label | escape }}',{% endfor %}],
+        labels: [{% for label in labels_model %}'{{ label | escape }}',{% endfor %}],
         datasets: [{
             label: '# ',
-            data: {{ data_status }},
+            data: {{ data_model }},
             backgroundColor: [
-                {% for color in backgroundColor_status %}'{{ color | escape }}',{% endfor %}
+                {% for color in backgroundColor_model %}'{{ color | escape }}',{% endfor %}
             ],
             borderWidth: 1
         }]
@@ -49,20 +49,23 @@ const member_myChart1 = new Chart(member_ctx1, {
       },
       title: {
         display: false,
-        text: '{{ chart_title_status }}'
+        text: '{{ chart_title_model }}'
       }
     }
   },
 });
 
-const member_ctx2 = document.getElementById('chart_members_2').getContext('2d');
-const member_myChart2 = new Chart(member_ctx2, {
+const model_ctx2 = document.getElementById('chart_models_2').getContext('2d');
+const model_myChart2 = new Chart(model_ctx2, {
     type: 'doughnut',
     data: {
         labels: [{% for label in labels_version %}'{{ label | escape }}',{% endfor %}],
         datasets: [{
             label: '# ',
             data: {{ data_version }},
+            backgroundColor: [
+                {% for color in backgroundColor_version %}'{{ color | escape }}',{% endfor %}
+            ],
             borderWidth: 1
         }]
     },

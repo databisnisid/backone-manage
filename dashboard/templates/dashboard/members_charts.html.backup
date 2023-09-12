@@ -63,6 +63,9 @@ const member_myChart2 = new Chart(member_ctx2, {
         datasets: [{
             label: '# ',
             data: {{ data_version }},
+            backgroundColor: [
+                {% for color in backgroundColor_version %}'{{ color | escape }}',{% endfor %}
+            ],
             borderWidth: 1
         }]
     },

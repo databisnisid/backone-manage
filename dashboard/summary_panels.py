@@ -170,9 +170,9 @@ class MemberChartsPanel(Component):
         data_version = []
         labels = ['DIRECT', 'RELAY', 'OFFLINE']
         backgroundColor_status = [
-            'rgba(46, 125, 50, 0.7)',
-            'rgba(21, 101, 192, 0.7)',
-            'rgba(198, 40, 40, 0.7)'
+            'rgba(0, 76, 76, 1.0)',
+            'rgba(79, 78, 81, 1.0)',
+            'rgba(100, 33, 51, 1.0)'
         ]
         backgroundColor_version = []
 
@@ -313,8 +313,8 @@ class ModelChartsPanel(Component):
         context['backgroundColor_version'] = backgroundColor_version
         context['chart_title_model'] = 'Model Distribution'
         context['chart_title_version'] = 'Platform Distribution'
-        context['is_data_model'] = True if len(data_model) and data_model[0] else False
-        context['is_data_model_version'] = True if len(data_version) and data_version[0] else False
+        context['is_data_model'] = True if len(data_model)>1 else False
+        context['is_data_model_version'] = True if len(data_version)>1 else False
 
         return context
 
