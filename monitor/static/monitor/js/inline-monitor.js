@@ -28,6 +28,11 @@ waitForElementToExist('#id_member_problems-ADD').then(element => {
         e.style.display = "none";
         console.log(e);
     });
+    const elements_textarea = document.querySelectorAll('[id$="-update_progress"]');
+    elements_textarea.forEach(e => {
+        e.readOnly = "false";
+    });
+    console.log(elements_textarea);
 });
 
 
