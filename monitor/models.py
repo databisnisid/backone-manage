@@ -168,12 +168,12 @@ class MemberProblems(ClusterableModel):
         updates_html = ''
         for update in updates:
             localzone = timezone.localtime(update.created_at)
-            updates_html += "<li><small>{}</small> <small>{}</small></li>".format(
+            updates_html += "<small>{}</small> <small>{}</small><br />".format(
                     localzone.strftime("%d-%m-%Y %H:%M"),
                     update.update_progress)
 
 
-        return format_html("<ul>{}</ul>", format_html(updates_html))
+        return format_html(updates_html)
     get_update_progress.short_description = _('Update Progress')
 
     def problem_duration_start(self):

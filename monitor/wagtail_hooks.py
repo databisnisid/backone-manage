@@ -64,6 +64,18 @@ class MemberProblemsHelper(PermissionHelper):
         return True
 
 
+class MemberProblemsDoneHelper(PermissionHelper):
+    def user_can_list(self, user):
+        return True
+
+    def user_can_create(self, user):
+        return False
+
+    def user_can_delete_obj(self, user, obj):
+        return False
+
+    def user_can_edit_obj(self, user, obj):
+        return False
 
 class MonitorItemsAdmin(ModelAdmin):
     model = MonitorItems
@@ -174,7 +186,7 @@ class MemberProblemsAdmin(ModelAdmin):
 
 class MemberProblemsHistoryAdmin(ModelAdmin):
     model = MemberProblemsDone
-    permission_helper_class = MemberProblemsHelper
+    permission_helper_class = MemberProblemsDoneHelper
     menu_label = 'History'
     menu_icon = 'tick-inverse'
     add_to_settings_menu = False
