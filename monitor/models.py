@@ -239,4 +239,4 @@ class MemberProblemsDone(MemberProblems):
 
         return format_html("{}<br><small>D: {}<br />S: {}<br />E: {}</small>", self.problem, duration, start_local_text, end_local_text)
 
-    problem_duration_start.short_description = _('Problem')
+    problem_duration_start_end.short_description = _('Problem')
