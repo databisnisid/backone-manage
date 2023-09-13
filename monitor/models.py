@@ -7,6 +7,8 @@ from members.models import Members
 from django.utils.translation import gettext as _
 from django.utils import timezone
 from config.utils import readable_timedelta_seconds
+from modelcluster.models import ClusterableModel
+from modelcluster.fields import ParentalKey
 
 DURATION_RED_ALERT = 3600
 
@@ -104,7 +106,8 @@ class MemberProblemManagerDone(models.Manager):
         ).exclude(member=None)
 
 
-class MemberProblems(models.Model):
+#class MemberProblems(models.Model):
+class MemberProblems(ClusterableModel):
     member = models.ForeignKey(
         Members,
         on_delete=models.SET_NULL,

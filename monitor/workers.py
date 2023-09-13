@@ -19,18 +19,22 @@ def is_problem_memory(mqtt, threshold):
 
 #def is_problem(mqtt, rule):
 def is_problem(member, rule, is_online):
-    mqtt = member.mqtt
     result = False
 
+    mqtt = None
+    if member.mqtt:
+        mqtt = member.mqtt
+
     if is_online:
-        if rule.item.item_id == 'cpu_usage':
-            result = is_problem_cpu(mqtt, rule.item_threshold)
-        if rule.item.item_id == 'memory_usage':
-            result = is_problem_memory(mqtt, rule.item_threshold)
-        if rule.item.item_id == 'packet_loss':
-            result = compare_values(mqtt.packet_loss, rule.item_threshold)
-        if rule.item.item_id == 'round_trip':
-            result = compare_values(mqtt.round_trip, rule.item_threshold)
+        if mqtt is not None:
+            if rule.item.item_id == 'cpu_usage':
+                result = is_problem_cpu(mqtt, rule.item_threshold)
+            if rule.item.item_id == 'memory_usage':
+                result = is_problem_memory(mqtt, rule.item_threshold)
+            if rule.item.item_id == 'packet_loss':
+                result = compare_values(mqtt.packet_loss, rule.item_threshold)
+            if rule.item.item_id == 'round_trip':
+                result = compare_values(mqtt.round_trip, rule.item_threshold)
 
     else:
         if rule.item.item_id == 'online_status':
@@ -69,61 +73,61 @@ def monitor_members() :
 
     print("Start", end='')
     for member in members:
-        if member.mqtt:
-            #mqtt = Mqtt.objects.get(member_id=member.member_id)
-            mqtt = member.mqtt
-            problems = []
-            problems_offline = []
-            is_solved = True
-            if member.ipaddress:
-                #if member.is_online() and ping.ping(member.ipaddress):
-                if member.is_online() or ping.ping(member.ipaddress):
-                    #print('Checking {} ({})'. format(member.name, member.member_id))
-                    print(".", end='')
-                    problems = check_members_vs_rules(member, True)
-                else:
-                    print(".", end='')
-                    problems_offline = check_members_vs_rules(member, False)
+        #if member.mqtt:
+        #mqtt = Mqtt.objects.get(member_id=member.member_id)
+        #mqtt = member.mqtt
+        problems = []
+        problems_offline = []
+        is_solved = True
+        if member.ipaddress:
+            #if member.is_online() and ping.ping(member.ipaddress):
+            if member.is_online() or ping.ping(member.ipaddress):
+                print('Checking {} ({})'. format(member.name, member.member_id))
+                print("online.", end='')
+                problems = check_members_vs_rules(member, True)
+            else:
+                print(",", end='')
+                problems_offline = check_members_vs_rules(member, False)
 
-                for prob in problems_offline:
-                    problems.append(prob)
+            for prob in problems_offline:
+                problems.append(prob)
 
-                if problems:
-                    is_solved = False
-                    for problem in problems:
-                        try:
-                            member_problem = MemberProblems.unsolved.get(
-                                member=member,
-                                problem=problem
-                            )
-                        except ObjectDoesNotExist:
-                            member_problem = MemberProblems()
-                            member_problem.member = member
-                            member_problem.problem = problem
-                            #member_problem.mqtt = mqtt
+            if problems:
+                is_solved = False
+                for problem in problems:
+                    try:
+                        member_problem = MemberProblems.unsolved.get(
+                            member=member,
+                            problem=problem
+                        )
+                    except ObjectDoesNotExist:
+                        member_problem = MemberProblems()
+                        member_problem.member = member
+                        member_problem.problem = problem
+                        #member_problem.mqtt = mqtt
 
-                        member_problem.save()
-                        print(".")
-                        print('Problem {} ({}) - {}'. format(
-                            member.name,
-                            member.member_id,
-                            problem
-                        ))
-
-
-            if is_solved:
-                member_problems = MemberProblems.unsolved.filter(
-                    member=member
-                )
-                for member_problem in member_problems:
-                    member_problem.is_done = True
                     member_problem.save()
                     print(".")
-                    print('Solved {} ({}) - {}'. format(
+                    print('Problem {} ({}) - {}'. format(
                         member.name,
                         member.member_id,
-                        member_problem.problem
+                        problem
                     ))
+
+
+        if is_solved:
+            member_problems = MemberProblems.unsolved.filter(
+                member=member
+            )
+            for member_problem in member_problems:
+                member_problem.is_done = True
+                member_problem.save()
+                print(".")
+                print('Solved {} ({}) - {}'. format(
+                    member.name,
+                    member.member_id,
+                    member_problem.problem
+                ))
 
     print(".")
     print("Fin.")
