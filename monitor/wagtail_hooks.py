@@ -157,6 +157,7 @@ class MemberProblemsAdmin(ModelAdmin):
     #list_display = ('member', 'get_network' ,'problem', 'duration_text_undone')
     list_display = ('member', 'problem_duration_start', 'get_update_progress')
     search_fields = ('member__name', 'problem__name', 'member__member_id')
+    list_filter = ('problem',)
 
     panels = [
         MultiFieldPanel([
@@ -195,6 +196,7 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
     #list_display = ('member', 'problem', 'duration_text', 'start_at', 'end_at')
     list_display = ('member', 'problem_duration_start_end', 'get_update_progress')
     search_fields = ('member__name', 'problem__name', 'member__member_id')
+    list_filter = ('problem',)
 
     def get_queryset(self, request):
         current_user = get_current_user()
