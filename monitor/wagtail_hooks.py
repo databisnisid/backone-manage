@@ -5,7 +5,7 @@ from wagtail.snippets.views.snippets import SnippetViewSet
 from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
 from .models import MemberProblems, MonitorItems, MonitorRules, MemberProblemsDone
 from crum import get_current_user
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
+from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
 from django.conf import settings
 from django.utils import timezone
@@ -61,7 +61,7 @@ class MemberProblemsHelper(PermissionHelper):
         return False
 
     def user_can_edit_obj(self, user, obj):
-        return False
+        return True
 
 
 
@@ -140,8 +140,23 @@ class MemberProblemsAdmin(ModelAdmin):
     menu_icon = 'cog'
     add_to_settings_menu = False
     exclude_from_explorer = False
+    #inspect_view_enabled = True
 
-    list_display = ('member', 'get_network' ,'problem', 'duration_text_undone')
+    #list_display = ('member', 'get_network' ,'problem', 'duration_text_undone')
+    list_display = ('member', 'problem_duration_start', 'get_update_progress')
+    search_fields = ('member__name', 'problem__name', 'member__member_id')
+
+    panels = [
+        MultiFieldPanel([
+            FieldRowPanel([
+                FieldPanel('start_at', read_only=True),
+            ]),
+            FieldRowPanel([
+                FieldPanel('member', read_only=True),
+                FieldPanel('problem', read_only=True, heading=_('Reason')),
+            ])], heading=_('Problem')),
+        InlinePanel('member_problems', heading=_('Updates Progress')),
+    ]
 
     def get_queryset(self, request):
         current_user = get_current_user()
@@ -156,6 +171,7 @@ class MemberProblemsAdmin(ModelAdmin):
         else:
             return MemberProblems.unsolved.filter(start_at__lt=problem_time).order_by('start_at')
 
+
 class MemberProblemsHistoryAdmin(ModelAdmin):
     model = MemberProblemsDone
     permission_helper_class = MemberProblemsHelper
@@ -164,7 +180,9 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
     add_to_settings_menu = False
     exclude_from_explorer = False
 
-    list_display = ('member', 'problem', 'duration_text', 'start_at', 'end_at')
+    #list_display = ('member', 'problem', 'duration_text', 'start_at', 'end_at')
+    list_display = ('member', 'problem_duration_start_end', 'get_update_progress')
+    search_fields = ('member__name', 'problem__name', 'member__member_id')
 
     def get_queryset(self, request):
         current_user = get_current_user()
