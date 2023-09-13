@@ -159,6 +159,8 @@ class MemberProblemsAdmin(ModelAdmin):
     search_fields = ('member__name', 'problem__name', 'member__member_id')
     #list_filter = ('problem',)
 
+    form_view_extra_js = ['monitor/js/inline.js', 'monitor/js/inline-monitor.js']
+
     panels = [
         MultiFieldPanel([
             FieldRowPanel([
@@ -168,7 +170,15 @@ class MemberProblemsAdmin(ModelAdmin):
                 FieldPanel('member', read_only=True),
                 FieldPanel('problem', read_only=True, heading=_('Reason')),
             ])], heading=_('Problem')),
-        InlinePanel('member_problems', heading=_('Updates Progress')),
+        #InlinePanel('member_problems', heading=_('Updates Progress')),
+        InlinePanel('member_problems', 
+                    panels=[
+                        FieldRowPanel([
+                            FieldPanel('created_at', read_only=True),
+                            FieldPanel('update_progress'),
+                            ])
+                        ],
+                    heading=_('Updates Progress'), attrs={"disabled": True}),
     ]
 
     def get_queryset(self, request):
@@ -187,7 +197,8 @@ class MemberProblemsAdmin(ModelAdmin):
 
 class MemberProblemsHistoryAdmin(ModelAdmin):
     model = MemberProblemsDone
-    permission_helper_class = MemberProblemsDoneHelper
+    #permission_helper_class = MemberProblemsDoneHelper
+    permission_helper_class = MemberProblemsHelper
     menu_label = 'History'
     menu_icon = 'tick-inverse'
     add_to_settings_menu = False
@@ -197,6 +208,28 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
     list_display = ('member', 'problem_duration_start_end', 'get_update_progress')
     search_fields = ('member__name', 'problem__name', 'member__member_id')
     #list_filter = ('problem',)
+
+    form_view_extra_js = ['monitor/js/inline.js', 'monitor/js/inline-history.js']
+
+    panels = [
+        MultiFieldPanel([
+            FieldRowPanel([
+                FieldPanel('start_at', read_only=True),
+            ]),
+            FieldRowPanel([
+                FieldPanel('member', read_only=True),
+                FieldPanel('problem', read_only=True, heading=_('Reason')),
+            ])], heading=_('Problem')),
+        InlinePanel('member_problems', 
+                    panels=[
+                        FieldRowPanel([
+                            FieldPanel('created_at', read_only=True),
+                            FieldPanel('update_progress', read_only=True),
+                            ])
+                        ],
+                    heading=_('Updates Progress'), attrs={"disabled": True}),
+    ]
+
 
     def get_queryset(self, request):
         current_user = get_current_user()

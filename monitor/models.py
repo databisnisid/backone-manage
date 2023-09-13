@@ -200,12 +200,14 @@ class ProblemUpdate(models.Model):
     update_progress = models.TextField(_('Update Progress'), default=None, null=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
 
+    '''
     panels = [
             FieldRowPanel([
                 FieldPanel('created_at', read_only=True),
                 FieldPanel('update_progress'),
                 ])
             ]
+    '''
 
     class Meta:
         db_table = 'problem_update'
