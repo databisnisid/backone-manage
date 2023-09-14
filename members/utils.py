@@ -3,6 +3,19 @@ from time import mktime
 from django.utils import timezone
 
 
+def get_unique_members(members):
+    members_unique = []
+    member_id_list = []
+
+
+    for member in members:
+        if member.member_id not in member_id_list:
+            members_unique.append(member)
+            member_id_list.append(member.member_id)
+    
+    return members_unique
+
+
 def deauthorize_member_offline_at():
     '''
     Deauthorize member which offline_at fields is set 
