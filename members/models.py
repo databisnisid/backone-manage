@@ -580,3 +580,16 @@ class Members(models.Model):
 
         return text
     switchport_up.short_description = _('Switch Port UP')
+
+    def quota_vnstat(self):
+        text = ''
+        if self.mqtt:
+            if self.mqtt.quota_first:
+                split_text = self.mqtt.quota_first.split(',')
+                total_usage = int(split_text[4])
+                total_usage_mb = total_usage / 1024 / 1024
+                text = round(total_usage_mb, 2) + 'MB'
+
+        return text
+    quota_vnstat.short_description = _('Quota Usage')
+

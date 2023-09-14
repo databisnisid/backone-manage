@@ -214,7 +214,7 @@ class MembersAdmin(ModelAdmin):
         list_display_default = ['member_name_with_address',
                         'member_status', 'model_release',
                         'get_routes', 'list_peers']
-        list_display_telkomsel = ['name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'online_status']
+        list_display_telkomsel = ['name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'online_status', 'quota_vnstat']
         if current_user.organization.features.is_telkomsel:
             list_display = list_display_telkomsel
         else:
@@ -233,7 +233,7 @@ class MembersAdmin(ModelAdmin):
         list_export_default = ['member_name_with_address',
                         'member_status', 'model_release',
                         'get_routes', 'list_peers']
-        list_export_telkomsel = ['name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'online_status']
+        list_export_telkomsel = ['name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'online_status', 'quota_vnstat']
         
         if current_user.organization.features.is_export:
             if current_user.organization.features.is_telkomsel:
