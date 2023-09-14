@@ -9,6 +9,8 @@ from controllers.backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
 from ipaddress import ip_network
 from django.core.exceptions import ValidationError
+from modelcluster.models import ClusterableModel
+from modelcluster.fields import ParentalKey
 import os
 import subprocess
 from config import settings
@@ -25,7 +27,8 @@ even_field = models.IntegerField(validators=[validate_even])
 '''
 
 
-class Networks(models.Model):
+#class Networks(models.Model):
+class Networks(ClusterableModel):
     """
     "ipAssignmentPools": [
     {
