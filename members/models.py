@@ -529,7 +529,6 @@ class Members(models.Model):
                 quota_split = self.mqtt.quota_first.split('/')
                 try:
                     quota_split[0]
-                    print(quota_split[0])
                     quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
                 except (ValueError, IndexError) as error:
                     quota_current = 0
