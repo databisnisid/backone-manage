@@ -528,16 +528,19 @@ class Members(models.Model):
                 #quota_text = ""
                 quota_split = self.mqtt.quota_first.split('/')
                 try:
+                    quota_split[0]
                     quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
                 except ValueError or IndexError:
                     quota_current = 0
 
                 try:
+                    quota_split[1]
                     quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
                 except ValueError or IndexError:
                     quota_total = 0 
 
                 try:
+                    quota_split[2]
                     quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
                 except ValueError or IndexError:
                     quota_day = 0
