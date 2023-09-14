@@ -115,7 +115,7 @@ def on_message(client, userdata, message):
     mqtt_member.round_trip_string = round_trip_string
     mqtt_member.switchport_up = switchport_up
     mqtt_member.port_status = port_status
-    mqtt_member.quota_first = quota_vnstat
+    mqtt_member.quota_vnstat = quota_vnstat
     mqtt_member.save()
 
     '''

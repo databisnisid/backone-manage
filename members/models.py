@@ -601,8 +601,8 @@ class Members(models.Model):
     def quota_vnstat(self):
         text = ''
         if self.mqtt:
-            if self.mqtt.quota_first:
-                split_text = self.mqtt.quota_first.split(',')
+            if self.mqtt.quota_vnstat:
+                split_text = self.mqtt.quota_vnstat.split(',')
                 try:
                     total_usage = int(split_text[4])
                     total_usage_mb = total_usage / 1024 / 1024
