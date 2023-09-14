@@ -530,7 +530,7 @@ class Members(models.Model):
                 try:
                     quota_split[0]
                     quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
-                except (ValueError, IndexError) as error:
+                except IndexError:
                     quota_current = 0
 
                 try:
