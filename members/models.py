@@ -525,6 +525,7 @@ class Members(models.Model):
 
             if self.mqtt.quota_first:
                 #fifth_line = format_html("<br /><small>{}</small>", self.mqtt.quota_first)
+                #quota_text = ""
                 quota_split = self.mqtt.quota_first.split('/')
                 try:
                     quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
@@ -539,11 +540,14 @@ class Members(models.Model):
 
                     color = '' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
                     quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
+                    #fifth_line = format_html("<br /><small>{}</small>", quota_text)
+                    fifth_line = "<br /><small>QUOTA: {}</small>".format(quota_text)
                 except ValueError or IndexError:
+                    #quota_text = ""
                     pass
 
                 #fifth_line = format_html("<br /><small>{}</small>", quota_text)
-                fifth_line = "<br /><small>QUOTA: {}</small>".format(quota_text)
+                #fifth_line = "<br /><small>QUOTA: {}</small>".format(quota_text)
 
             #uptime_load = get_uptime_string(uptime)
 
