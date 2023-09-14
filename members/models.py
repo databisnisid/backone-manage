@@ -604,9 +604,22 @@ class Members(models.Model):
             if self.mqtt.quota_vnstat:
                 split_text = self.mqtt.quota_vnstat.split(',')
                 try:
-                    total_usage = int(split_text[4])
-                    total_usage_mb = total_usage / 1024 / 1024
-                    text = str(round(total_usage_mb, 2)) + 'MB'
+                    total_usage_value = int(split_text[4])
+                    total_usage_unit = 'B'
+                    if total_usage_value > 1024:
+                        total_usage_value = total_usage_value / 1024
+                        total_usage_unit = 'KB'
+
+                    if total_usage_value > 1024:
+                        total_usage_value = total_usage_value / 1024
+                        total_usage_unit = 'MB'
+
+                    if total_usage_value > 1024:
+                        total_usage_value = total_usage_value / 1024
+                        total_usage_unit = 'GB'
+
+                    text = str(round(total_usage_value, 2)) + total_usage_unit
+
                 except (IndexError, ValueError) as error:
                     pass
 
