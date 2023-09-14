@@ -80,6 +80,13 @@ def on_message(client, userdata, message):
     except IndexError:
         port_status = None
 
+    # Quota VNSTAT
+    try:
+        mqtt_msg[15]
+        quota_vnstat = mqtt_msg[15]
+    except IndexError:
+        quota_vnstat = None
+
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
 
     try:
@@ -108,6 +115,7 @@ def on_message(client, userdata, message):
     mqtt_member.round_trip_string = round_trip_string
     mqtt_member.switchport_up = switchport_up
     mqtt_member.port_status = port_status
+    mqtt_member.quota_first = quota_vnstat
     mqtt_member.save()
 
     '''
