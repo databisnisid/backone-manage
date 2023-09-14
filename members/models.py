@@ -536,7 +536,7 @@ class Members(models.Model):
                 try:
                     quota_split[1]
                     quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
-                except ValueError or IndexError:
+                except IndexError:
                     quota_total = 0 
 
                 try:
