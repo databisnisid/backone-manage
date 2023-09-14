@@ -3,7 +3,7 @@ from wagtail.contrib.modeladmin.options import (
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
 from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
-from .models import MemberProblems, MonitorItems, MonitorRules, MemberProblemsDone
+from .models import MemberProblems, MonitorItems, MonitorRules, MemberProblemsDone, OperationalTime
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
@@ -243,9 +243,67 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
             return MemberProblemsDone.objects.filter(duration__gt=settings.MONITOR_DELAY).order_by('-duration')
 
 
+class OperationalTimeHelper(PermissionHelper):
+    def user_can_list(self, user):
+        return True
+
+    def user_can_create(self, user):
+        if user.is_superuser:
+            return False
+        else:
+            return True
+
+    def user_can_delete_obj(self, user, obj):
+        if user.is_superuser:
+            return False
+        else:
+            return True
+
+    def user_can_edit_obj(self, user, obj):
+        if user.is_superuser:
+            return False
+        else:
+            return True
+
+class OperationalTimeAdmin(ModelAdmin):
+    model = OperationalTime
+    permission_helper_class = OperationalTimeHelper
+    menu_label = 'Operational'
+    menu_icon = 'history'
+    list_display = ('network', 'get_operational_time')
+
+    panels = [
+            MultiFieldPanel([
+                FieldPanel('network'),
+                MultiFieldPanel([
+                    FieldRowPanel([
+                        FieldPanel('is_mon'), FieldPanel('mon_start'), FieldPanel('mon_end'),
+                        ]),
+                    FieldRowPanel([
+                        FieldPanel('is_tue'), FieldPanel('tue_start'), FieldPanel('tue_end'),
+                        ]),
+                    FieldRowPanel([
+                        FieldPanel('is_wed'), FieldPanel('wed_start'), FieldPanel('wed_end'),
+                        ]),
+                    FieldRowPanel([
+                        FieldPanel('is_thu'), FieldPanel('thu_start'), FieldPanel('thu_end'),
+                        ]),
+                    FieldRowPanel([
+                        FieldPanel('is_fri'), FieldPanel('fri_start'), FieldPanel('fri_end'),
+                        ]),
+                    FieldRowPanel([
+                        FieldPanel('is_sat'), FieldPanel('sat_start'), FieldPanel('sat_end'),
+                        ]),
+                    FieldRowPanel([
+                        FieldPanel('is_sun'), FieldPanel('sun_start'), FieldPanel('sun_end'),
+                        ]),
+                    ])
+                ])
+            ]
+
 class MonitorAdminGroup(ModelAdminGroup):
     menu_label = _("Monitor")
-    items = (MonitorItemsAdmin, MonitorRulesAdmin,
+    items = (MonitorItemsAdmin, MonitorRulesAdmin, OperationalTimeAdmin,
              MemberProblemsAdmin, MemberProblemsHistoryAdmin)
 
 

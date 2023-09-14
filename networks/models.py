@@ -1,4 +1,5 @@
 from django.db import models
+from wagtail.admin.panels import FieldRowPanel
 from accounts.models import User, Organizations
 from controllers.models import Controllers
 from crum import get_current_user
@@ -9,11 +10,10 @@ from controllers.backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
 from ipaddress import ip_network
 from django.core.exceptions import ValidationError
-from modelcluster.models import ClusterableModel
-from modelcluster.fields import ParentalKey
+from django.conf import settings
 import os
 import subprocess
-from config import settings
+#from config import settings
 
 ''' Sample of Validator'''
 '''
@@ -27,8 +27,7 @@ even_field = models.IntegerField(validators=[validate_even])
 '''
 
 
-#class Networks(models.Model):
-class Networks(ClusterableModel):
+class Networks(models.Model):
     """
     "ipAssignmentPools": [
     {
@@ -527,3 +526,5 @@ class NetworkRules(models.Model):
 
         os.remove(filename_rule)
         return super(NetworkRules, self).save()
+
+

@@ -6,7 +6,7 @@ from members.models import Members
 from .models import Networks, NetworkRoutes, NetworkRules
 from controllers.models import Controllers
 #from config.utils import get_user
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList
+from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, ObjectList
 from django.utils.translation import gettext as _
 from crum import get_current_user
 #from wagtail.admin.forms import WagtailAdminPageForm
@@ -154,6 +154,17 @@ class NetworksAdmin(ModelAdmin):
 
     #def get_edit_handler(self, instance, request):
     def get_edit_handler(self):
+        op_day_panels = [
+            MultiFieldPanel([
+                    FieldPanel('is_monday'), 
+                    FieldPanel('is_tuesday'), 
+                    FieldPanel('is_wednesday'), 
+                    FieldPanel('is_thursday'), 
+                    FieldPanel('is_friday'), 
+                    FieldPanel('is_saturday'), 
+                    FieldPanel('is_sunday'), 
+                ])
+            ]
         basic_panels = [
             MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
                             heading=_('Network Name and Description')),
