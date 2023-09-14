@@ -21,7 +21,7 @@ var marker_property = {
         'markersCluster': null,
         'is_show': true,
         'is_cluster': false,
-        'count': 0,
+        //'count': 0,
     },
     'is_online': {
         'title': 'ONLINE',
@@ -37,7 +37,7 @@ var marker_property = {
         'markersCluster': null,
         'is_show': true,
         'is_cluster': true,
-        'count': 0,
+        //'count': 0,
     },
     'is_offline': {
         'title': 'OFFLINE',
@@ -53,7 +53,7 @@ var marker_property = {
         'markersCluster': null,
         'is_show': true,
         'is_cluster': true,
-        'count': 0,
+        //'count': 0,
     },
     'is_problem': {
         'title': 'PROBLEM',
@@ -70,7 +70,7 @@ var marker_property = {
         'markersCluster': null,
         'is_show': true,
         'is_cluster': false,
-        'count': 0,
+        //'count': 0,
     },
 };
 
@@ -423,26 +423,25 @@ async function redrawMarkers() {
         }
 
         //deleteMarkers();
+        let total_sites = 0;
 
         for (let key in marker_property) {
+            total_sites += marker_property[key].data.length;
             deleteMarkers(key);
-            marker_property[key].count = marker_property[key].data.length;
-            //if (marker_property[key].is_show && marker_property[key].data.length > 0)
-            //if (marker_property[key].data.length > 0)
             drawMarker(key);
 
             // Remove Elements
-            var divRemove = document.getElementById(key);
+            let divRemove = document.getElementById(key);
             if (divRemove)
                 divRemove.remove()
 
             // Create Legend
-            var div = document.createElement('div');
+            let div = document.createElement('div');
             div.innerHTML =  '<button id="' + key + '"' +
                 ' style="background-color: white;"' + 
                 ' onclick="toggleMarkers(\'' + key + '\');">' +
                 marker_property[key].title + 
-                ': ' + marker_property[key].count + '</button>';
+                ': ' + marker_property[key].data.length + '</button>';
             legend.appendChild(div);
 
             if (! marker_property[key].is_show) {
@@ -451,6 +450,16 @@ async function redrawMarkers() {
                 keyElement.innerHTML = keyElementText.strike();
             }
         }
+
+        let divTotalRemove = document.getElementById('total_sites');
+        if (divTotalRemove)
+            divTotalRemove.remove()
+
+        let div = document.createElement('div');
+        div.innerHTML =  '<br /><button id="total_sites"' +
+            ' style="background-color: white;">TOTAL: ' + 
+            total_sites + '</button>';
+        legend.appendChild(div);
     }
 }
 
