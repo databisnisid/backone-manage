@@ -537,12 +537,15 @@ class Members(models.Model):
                     quota_split[1]
                     quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
                 except (ValueError, IndexError) as error:
+                    quota_current = 0
                     quota_total = 0 
 
                 try:
                     quota_split[2]
                     quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
                 except (ValueError, IndexError) as error:
+                    quota_current = 0
+                    quota_total = 0 
                     quota_day = 0
 
                 quota_text = ""
