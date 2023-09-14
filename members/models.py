@@ -526,18 +526,21 @@ class Members(models.Model):
             if self.mqtt.quota_first:
                 #fifth_line = format_html("<br /><small>{}</small>", self.mqtt.quota_first)
                 quota_split = self.mqtt.quota_first.split('/')
-                quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
-                quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
-                quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
+                try:
+                    quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
+                    quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
+                    quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
 
-                quota_text = ""
-                color = '' if quota_current > settings.QUOTA_GB_WARNING else 'red'
-                quota_text += "<span style='color: {};'>{}GB</span>".format(color, quota_current)
+                    quota_text = ""
+                    color = '' if quota_current > settings.QUOTA_GB_WARNING else 'red'
+                    quota_text += "<span style='color: {};'>{}GB</span>".format(color, quota_current)
 
-                quota_text += "<span>/{}GB/</span>".format(quota_total)
+                    quota_text += "<span>/{}GB/</span>".format(quota_total)
 
-                color = '' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
-                quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
+                    color = '' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
+                    quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
+                except ValueError or IndexError:
+                    pass
 
                 #fifth_line = format_html("<br /><small>{}</small>", quota_text)
                 fifth_line = "<br /><small>QUOTA: {}</small>".format(quota_text)
@@ -586,9 +589,12 @@ class Members(models.Model):
         if self.mqtt:
             if self.mqtt.quota_first:
                 split_text = self.mqtt.quota_first.split(',')
-                total_usage = int(split_text[4])
-                total_usage_mb = total_usage / 1024 / 1024
-                text = str(round(total_usage_mb, 2)) + 'MB'
+                try:
+                    total_usage = int(split_text[4])
+                    total_usage_mb = total_usage / 1024 / 1024
+                    text = str(round(total_usage_mb, 2)) + 'MB'
+                except IndexError or ValueError:
+                    pass
 
         return text
     quota_vnstat.short_description = _('Quota Usage')
