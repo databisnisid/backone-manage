@@ -530,19 +530,19 @@ class Members(models.Model):
                 try:
                     quota_split[0]
                     quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
-                except ValueError or IndexError:
+                except (ValueError, IndexError) as error:
                     quota_current = 0
 
                 try:
                     quota_split[1]
                     quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
-                except IndexError:
+                except (ValueError, IndexError) as error:
                     quota_total = 0 
 
                 try:
                     quota_split[2]
                     quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
-                except ValueError or IndexError:
+                except (ValueError, IndexError) as error:
                     quota_day = 0
 
                 quota_text = ""
@@ -604,7 +604,7 @@ class Members(models.Model):
                     total_usage = int(split_text[4])
                     total_usage_mb = total_usage / 1024 / 1024
                     text = str(round(total_usage_mb, 2)) + 'MB'
-                except IndexError or ValueError:
+                except (IndexError, ValueError) as error:
                     pass
 
         return text
