@@ -456,8 +456,8 @@ async function redrawMarkers() {
             divTotalRemove.remove()
 
         let div = document.createElement('div');
-        div.innerHTML =  '<br /><button id="total_sites"' +
-            ' style="background-color: white;">TOTAL: ' + 
+        div.innerHTML =  '<button id="total_sites"' +
+            ' style="background-color: white; margin-top: 5px;">TOTAL: ' + 
             total_sites + '</button>';
         legend.appendChild(div);
     }
