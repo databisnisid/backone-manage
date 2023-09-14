@@ -216,7 +216,8 @@ function drawMarker(key) {
             '<h2 id="firstHeading" class="firstHeading">' + data_marker['name'] + '</h2>' +
             '<div id="bodyContent">' +
             '<p style="color: black;">' + data_marker['problem_string'] + '</p>' +
-            '<a href="/members/members/?q=' + data_marker['member_id'] + '">CHECK</a>' +
+            '<a href="/members/memberproblems/?q=' + data_marker['member_id'] + '">UPDATE</a>' +
+            //'<a href="/members/members/?q=' + data_marker['member_id'] + '">CHECK</a>' +
             '</div>' +
             '</div>';
 
