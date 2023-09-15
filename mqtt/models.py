@@ -75,8 +75,8 @@ class Mqtt(models.Model):
         quota_total = 0
         quota_day = 0
 
-        if self.mqtt.quota_first:
-            quota_split = self.mqtt.quota_first.split('/')
+        if self.quota_first:
+            quota_split = self.quota_first.split('/')
             try:
                 quota_split[0]
                 quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
@@ -105,7 +105,7 @@ class Mqtt(models.Model):
         tx_usage = 0
         total_usage = 0
 
-        split_text = self.mqtt.quota_vnstat.split(',')
+        split_text = self.quota_vnstat.split(',')
 
         ''' RX Usage '''
         try:
