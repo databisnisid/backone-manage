@@ -473,7 +473,7 @@ class Members(models.Model):
             ''' Fourth Line: Uptime, CPU and Memory '''
             #if 'min' in uptime_string_first[0]:
             #    color = 'red'
-            uptime_string = self.mqtt.get_uptime()
+            uptime_string = self.mqtt.get_uptime_string()
             fourth_line += "<span>UP: {}</span>".format(uptime_string)
 
             '''
@@ -518,7 +518,7 @@ class Members(models.Model):
 
             fourth_line += "</small>"
 
-            fifth_line = ""
+            fifth_line = "cpu_usage"
 
             quota_current, quota_total, quota_day = self.mqtt.get_quota_first()
 
