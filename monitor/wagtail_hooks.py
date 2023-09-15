@@ -3,7 +3,7 @@ from wagtail.contrib.modeladmin.options import (
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
 from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
-#from .models import MemberProblems, MonitorItems, MonitorRules, MemberProblemsDone, OperationalTime
+from problems.models import MemberProblems, MemberProblemsDone
 from .models import MonitorItems, MonitorRules, OperationalTime
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, FieldRowPanel, ObjectList
@@ -145,7 +145,6 @@ class MonitorRulesAdmin(ModelAdmin):
             return MonitorRules.objects.all()
 
 
-'''
 class MemberProblemsAdmin(ModelAdmin):
     model = MemberProblems
     button_helper_class = MemberProblemsButtonHelper
@@ -245,7 +244,6 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
             return MemberProblemsDone.objects.filter(duration__gt=settings.MONITOR_DELAY).order_by('-duration')
 
 
-'''
 class OperationalTimeHelper(PermissionHelper):
     def user_can_list(self, user):
         return True
@@ -315,9 +313,9 @@ class OperationalTimeAdmin(ModelAdmin):
 
 class MonitorAdminGroup(ModelAdminGroup):
     menu_label = _("Monitor")
-    #items = (MonitorItemsAdmin, MonitorRulesAdmin, OperationalTimeAdmin,
-    #         MemberProblemsAdmin, MemberProblemsHistoryAdmin)
-    items = (MonitorItemsAdmin, MonitorRulesAdmin, OperationalTimeAdmin)
+    items = (MonitorItemsAdmin, MonitorRulesAdmin, OperationalTimeAdmin,
+             MemberProblemsAdmin, MemberProblemsHistoryAdmin)
+    #items = (MonitorItemsAdmin, MonitorRulesAdmin, OperationalTimeAdmin)
 
 
 modeladmin_register(MonitorAdminGroup)

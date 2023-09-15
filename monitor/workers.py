@@ -3,7 +3,8 @@ from django.core.exceptions import ObjectDoesNotExist
 #from config.utils import get_cpu_usage
 #from mqtt.models import Mqtt
 from members.models import Members
-from monitor.models import MemberProblems, MonitorRules, OperationalTime
+from monitor.models import MonitorRules, OperationalTime
+from problems.models import MemberProblems
 from connectors.drivers import ping
 from .utils import *
 

@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'mqtt',
     'connectors',
     'monitor',
+    'problems',
     'qr_code',
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
