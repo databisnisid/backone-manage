@@ -413,8 +413,8 @@ class Members(models.Model):
     def cpu_usage(self):
         result = 0.0
         if self.mqtt:
-            #load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
-            result = round(self.mqtt.cpu_usage, 1)
+            load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
+            result = round(load_5, 1)
 
         return result
 
@@ -428,7 +428,7 @@ class Members(models.Model):
             updated_at = timezone.localtime(mqtt.updated_at).strftime("%d-%m-%Y, %H:%M:%S")
             #is_rcall = 'R' if mqtt.is_rcall else 'S'
             is_rcall = "icon-yes.svg" if mqtt.is_rcall else "icon-no.svg"
-            uptime = mqtt.uptime
+            #uptime = mqtt.uptime
             #serialnumber = mqtt.serialnumber
             #num_core = mqtt.num_core
             #memory_usage = mqtt.memory_usage
@@ -482,21 +482,23 @@ class Members(models.Model):
                     color = 'red'
                 fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(mqtt.memory_usage, 1))
 
-            # PACKET LOSS
-            #if 'packet loss' in self.mqtt.packet_loss_string:
-            if mqtt.packet_loss_string:
+            ''' PACKET LOSS '''
+            packet_loss, is_packet_loss = mqtt.get_packet_loss()
+            #if mqtt.packet_loss_string:
+            if is_packet_loss:
                 color = ''
-                if mqtt.packet_loss > 5:
+                if packet_loss > 5:
                     color = 'red'
-                fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, mqtt.packet_loss)
+                fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
 
             # ROUND_TRIP
             #if 'round-trip' in self.mqtt.round_trip_string:
-            if mqtt.round_trip_string:
+            round_trip, is_round_trip = mqtt.get_round_trip()
+            if is_round_trip:
                 color = ''
-                if mqtt.round_trip > 200:
+                if round_trip > 200:
                     color = 'red'
-                fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(mqtt.round_trip, 1))
+                fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
 
             fourth_line += "</small>"
 
