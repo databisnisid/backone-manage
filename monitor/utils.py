@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils import timezone
 from config.utils import get_cpu_usage
-from .models import MonitorRules
+from .models import MonitorRules, OperationalTime
 #from mqtt.models import Mqtt
 #from monitor.models import MonitorRules, OperationalTime
 #from connectors.drivers import ping, ssh, mqtt
@@ -93,4 +93,52 @@ def check_item_problem(member, item_id):
                         member.mqtt, monitor_rule.item_threshold)
 
     return is_problem
+
+
+def is_operationaltime(member):
+    result = False
+    try:
+        optime = OperationalTime.objects.get(network=member.network)
+        currtime = timezone.localtime()
+        dayname = currtime.strftime('%a')
+
+        print(dayname)
+
+        if dayname.lower() == 'mon' and optime.is_mon:
+            if currtime.hour > optime.mon_start and currtime.hour < optime.mon_end:
+                result = True
+        if dayname.lower() == 'tue' and optime.is_tue:
+            if currtime.hour > optime.tue_start and currtime.hour < optime.tue_end:
+                result = True
+        if dayname.lower() == 'wed' and optime.is_wed:
+            if currtime.hour > optime.wed_start and currtime.hour < optime.wed_end:
+                result = True
+        if dayname.lower() == 'thu' and optime.is_thu:
+            if currtime.hour > optime.thu_start and currtime.hour < optime.thu_end:
+                result = True
+        if dayname.lower() == 'fri' and optime.is_fri:
+            if currtime.hour > optime.fri_start and currtime.hour < optime.fri_end:
+                result = True
+        if dayname.lower() == 'sat' and optime.is_sat:
+            if currtime.hour > optime.sat_start and currtime.hour < optime.sat_end:
+                result = True
+        if dayname.lower() == 'sun' and optime.is_sun:
+            if currtime.hour > optime.sun_start and currtime.hour < optime.sun_end:
+                result = True
+
+    except ObjectDoesNotExist:
+        result = True
+    
+    return result
+
+
+def check_members_vs_rules(member, is_online):
+    result = []
+    #rules = MonitorRules.objects.all()
+    rules = MonitorRules.objects.filter(organization=member.user.organization)
+    for rule in rules:
+        if is_problem(member, rule, is_online):
+            result.append(rule)
+
+    return result
 
