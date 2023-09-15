@@ -501,13 +501,13 @@ class Members(models.Model):
             #packet_loss, is_packet_loss = mqtt.get_packet_loss()
             value, is_problem = self.packet_loss()
             color = 'red' if is_problem else ''
-            fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
+            fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, value)
 
             ''' ROUND_TRIP '''
             #round_trip, is_round_trip = mqtt.get_round_trip()
             value, is_problem = self.round_trip()
             color = 'red' if is_problem else ''
-            fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
+            fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(value, 1))
 
             fourth_line += "</small>"
 
