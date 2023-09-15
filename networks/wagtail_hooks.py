@@ -39,7 +39,11 @@ class NetworksPermissionHelper(PermissionHelper):
             else:
                 return True
         else:
-            return True
+            total_networks = Networks.objects.filter(organization=user.organization).count()
+            if user.organization.features.number_of_network > total_networks: 
+                return True
+            else:
+                return False
 
     def user_can_delete_obj(self, user, obj):
         return True
@@ -150,7 +154,7 @@ class NetworksAdmin(ModelAdmin):
     search_fields = ('name',)
     #list_filter = ('controller',)
     #base_form_class = NetworksForm
-    #permission_helper_class = NetworksPermissionHelper
+    permission_helper_class = NetworksPermissionHelper
 
     #def get_edit_handler(self, instance, request):
     def get_edit_handler(self):

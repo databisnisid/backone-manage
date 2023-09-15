@@ -71,9 +71,12 @@ class FeaturesAdmin(ModelAdmin):
     panels = [
         MultiFieldPanel([FieldPanel('name'), FieldPanel('description')],
                         heading=_('Name and Description')),
-        MultiFieldPanel([FieldRowPanel([FieldPanel('network_multi_ip'),
-                                        FieldPanel('network_rules')], classname="collapsible collapsed")],
-                        heading=_('Network Features')),
+        MultiFieldPanel([
+            FieldRowPanel([
+                FieldPanel('network_multi_ip'),
+                FieldPanel('network_rules')], classname="collapsible collapsed"),
+            FieldPanel('number_of_network')],
+            heading=_('Network Features')),
         MultiFieldPanel([
             FieldRowPanel([FieldPanel('authorize'), FieldPanel('member_multi_ip')]),
             FieldRowPanel([FieldPanel('bridge'), FieldPanel('tags')])],
