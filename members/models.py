@@ -518,7 +518,7 @@ class Members(models.Model):
 
             fourth_line += "</small>"
 
-            fifth_line = "cpu_usage"
+            fifth_line = ""
 
             quota_current, quota_total, quota_day = self.mqtt.get_quota_first()
 
@@ -532,11 +532,7 @@ class Members(models.Model):
                 color = '' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
                 quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
 
-                #if not quota_current==0 and not quota_total==0 and not quota_day==0:
-                 #fifth_line = format_html("<br /><small>{}</small>", quota_text)
                 fifth_line = "<br /><small>QUOTA: {}</small>".format(quota_text)
-
-            #uptime_load = get_uptime_string(uptime)
 
             if self.is_mqtt_online():
                 text = format_html(
