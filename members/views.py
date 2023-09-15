@@ -23,7 +23,7 @@ def is_problem(member, members_problems):
     is_found = 0
     problem_string = ''
 
-    if member.organizaton.features.is_nms:
+    if member.organization.features.is_nms:
         problem_array = []
         for problem in members_problems:
             if member.id == problem.member.id:
