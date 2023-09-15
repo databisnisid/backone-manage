@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.conf import settings
 from accounts.models import User, Organizations
 from networks.models import Networks, NetworkRoutes
-from monitor.utils import *
+from monitor.utils import check_item_problem
 from monitor.models import MonitorRules
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
@@ -410,20 +410,7 @@ class Members(models.Model):
         result = 0.0
         if self.mqtt:
             item_id = 'memory_usage'
-            is_problem = False
-            monitor_rule = None
-            try:
-                monitor_rule = MonitorRules.objects.get(
-                        item__item_id=item_id,
-                        organization=self.organization)
-            except ObjectDoesNotExist:
-                pass
-            except MultipleObjectsReturned:
-                pass
-
-            if monitor_rule:
-                is_problem = check_functions[item_id](
-                        self.mqtt, monitor_rule.item_threshold)
+            is_problem = check_item_problem(self, item_id)
 
             result = self.mqtt.memory_usage
 
@@ -433,24 +420,30 @@ class Members(models.Model):
         result = 0.0
         if self.mqtt:
             item_id = 'cpu_usage'
-            is_problem = False
-            monitor_rule = None
-
-            try:
-                monitor_rule = MonitorRules.objects.get(
-                        item__item_id=item_id,
-                        organization=self.organization)
-            except ObjectDoesNotExist:
-                pass
-            except MultipleObjectsReturned:
-                pass
-
-            if monitor_rule:
-                is_problem = check_functions[item_id](
-                        self.mqtt, monitor_rule.item_threshold)
+            is_problem = check_item_problem(self, item_id)
 
             load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
             result = round(load_5, 1)
+
+        return result, is_problem
+
+    def packet_loss(self):
+        result = 0.0
+        if self.mqtt:
+            item_id = 'packet_loss'
+            is_problem = check_item_problem(self, item_id)
+
+            result, is_result = self.mqtt.get_packet_loss()
+
+        return result, is_problem
+
+    def round_trip(self):
+        result = 0.0
+        if self.mqtt:
+            item_id = 'round_trip'
+            is_problem = check_item_problem(self, item_id)
+
+            result, is_result = self.mqtt.get_round_trip()
 
         return result, is_problem
 
@@ -505,20 +498,16 @@ class Members(models.Model):
             fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(mqtt.memory_usage, 1))
 
             ''' PACKET LOSS '''
-            packet_loss, is_packet_loss = mqtt.get_packet_loss()
-            if is_packet_loss:
-                color = ''
-                if packet_loss > 5:
-                    color = 'red'
-                fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
+            #packet_loss, is_packet_loss = mqtt.get_packet_loss()
+            value, is_problem = self.packet_loss()
+            color = 'red' if is_problem else ''
+            fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
 
             ''' ROUND_TRIP '''
-            round_trip, is_round_trip = mqtt.get_round_trip()
-            if is_round_trip:
-                color = ''
-                if round_trip > 200:
-                    color = 'red'
-                fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
+            #round_trip, is_round_trip = mqtt.get_round_trip()
+            value, is_problem = self.round_trip()
+            color = 'red' if is_problem else ''
+            fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
 
             fourth_line += "</small>"
 

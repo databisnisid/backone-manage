@@ -1,4 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils import timezone
 from config.utils import get_cpu_usage
 #from mqtt.models import Mqtt
@@ -75,49 +75,21 @@ def is_problem(member, rule, is_online):
 
     return result
 
-'''
 
-def is_operationaltime(member):
-    result = False
+def check_item_problem(member, item_id):
+    is_problem = False
     try:
-        optime = OperationalTime.objects.get(network=member.network)
-        currtime = timezone.localtime()
-        dayname = currtime.strftime('%a')
-
-        if dayname.lower() == 'mon' and optime.is_mon:
-            if currtime.hour > optime.mon_start and currtime.hour < optime.mon_end:
-                result = True
-        if dayname.lower() == 'tue' and optime.is_tue:
-            if currtime.hour > optime.tue_start and currtime.hour < optime.tue_end:
-                result = True
-        if dayname.lower() == 'wed' and optime.is_wed:
-            if currtime.hour > optime.wed_start and currtime.hour < optime.wed_end:
-                result = True
-        if dayname.lower() == 'thu' and optime.is_thu:
-            if currtime.hour > optime.thu_start and currtime.hour < optime.thu_end:
-                result = True
-        if dayname.lower() == 'fri' and optime.is_fri:
-            if currtime.hour > optime.fri_start and currtime.hour < optime.fri_end:
-                result = True
-        if dayname.lower() == 'sat' and optime.is_sat:
-            if currtime.hour > optime.sat_start and currtime.hour < optime.sat_end:
-                result = True
-        if dayname.lower() == 'sun' and optime.is_sun:
-            if currtime.hour > optime.sun_start and currtime.hour < optime.sun_end:
-                result = True
-
+        monitor_rule = MonitorRules.objects.get(
+            item__item_id=item_id,
+            organization=member.organization)
     except ObjectDoesNotExist:
-        result = True
-    
-    return result
+        pass
+    except MultipleObjectsReturned:
+        pass
 
+    if monitor_rule:
+        is_problem = check_functions[item_id](
+                        member.mqtt, monitor_rule.item_threshold)
 
-def check_members_vs_rules(member, is_online):
-    result = []
-    rules = MonitorRules.objects.filter(organization=member.user.organization)
-    for rule in rules:
-        if is_problem(member, rule, is_online):
-            result.append(rule)
+    return is_problem
 
-    return result
-'''
