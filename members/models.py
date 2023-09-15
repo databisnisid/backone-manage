@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.conf import settings
 from accounts.models import User, Organizations
 from networks.models import Networks, NetworkRoutes
-from monitor.utils import check_item_problem, check_members_vs_rules
+from monitor.utils import check_members_vs_rules
 from monitor.models import MonitorRules
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
@@ -394,15 +394,6 @@ class Members(models.Model):
         online_status = False
         if self.mqtt:
             online_status = self.mqtt.is_online()
-            #mqtt = Mqtt.objects.get(member_id=self.member_id)
-            '''
-            mqtt = self.mqtt
-            now = timezone.now()
-            delta = now - timezone.localtime(mqtt.updated_at)
-            if delta.seconds < settings.ONLINE_STATUS_DELAY:
-               online_status = True
-            '''
-
         return online_status
     is_mqtt_online.short_description = _('Internet Online')
 
@@ -417,7 +408,7 @@ class Members(models.Model):
     def memory_usage(self):
         result = 0.0
         if self.mqtt:
-            result = self.mqtt.memory_usage
+            result = round(self.mqtt.memory_usage, 1)
 
         return result
 
@@ -432,14 +423,14 @@ class Members(models.Model):
     def packet_loss(self):
         result = 0.0
         if self.mqtt:
-            result, is_result = self.mqtt.get_packet_loss()
+            result = round(self.mqtt.get_packet_loss(), 1)
 
         return result
 
     def round_trip(self):
         result = 0.0
         if self.mqtt:
-            result, is_result = self.mqtt.get_round_trip()
+            result = round(self.mqtt.get_round_trip(), 1)
 
         return result
 
@@ -493,7 +484,7 @@ class Members(models.Model):
             item_id = 'cpu_usage'
             value = self.memory_usage()
             color = 'red' if item_id in alarms else ''
-            fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(value, 1))
+            fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, value)
 
             ''' PACKET LOSS '''
             item_id = 'packet_loss'
@@ -505,7 +496,7 @@ class Members(models.Model):
             item_id = 'round_trip'
             value = self.round_trip()
             color = 'red' if item_id in alarms else ''
-            fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(value, 1))
+            fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, value)
 
             fourth_line += "</small>"
 

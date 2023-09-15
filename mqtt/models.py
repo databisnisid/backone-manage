@@ -156,12 +156,9 @@ class Mqtt(models.Model):
         return uptime_string.strip()
 
     def get_packet_loss(self):
-        is_packet_loss = False
         packet_loss = 0
 
         if self.packet_loss_string:
-            is_packet_loss = True
-
             packet_loss_split = self.packet_loss_string.split(',')
             packet_loss_digit_string = packet_loss_split[2].split('%')
 
@@ -170,10 +167,9 @@ class Mqtt(models.Model):
             except ValueError:
                 packet_loss = 0
 
-        return packet_loss, is_packet_loss
+        return packet_loss
 
     def get_round_trip(self):
-        is_round_trip = False
         round_trip = 0
 
         if self.round_trip_string:
@@ -185,7 +181,7 @@ class Mqtt(models.Model):
             except ValueError:
                 round_trip = 0
 
-        return round_trip, is_round_trip
+        return round_trip
 
     def is_online(self):
         online_status = False

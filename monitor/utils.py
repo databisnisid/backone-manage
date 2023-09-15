@@ -11,19 +11,19 @@ def compare_values(val1, val2):
     return True if val1 > val2 else False
 
 def is_problem_cpu(mqtt, threshold):
-    #load_1, load_5, load_15 = get_cpu_usage(mqtt.uptime, mqtt.num_core)
     load_1, load_5, load_15 = mqtt.get_cpu_usage()
     return compare_values(load_5, threshold)
 
 def is_problem_memory(mqtt, threshold):
-    return compare_values(mqtt.memory_usage, threshold)
+    value = mqtt.memory_usage
+    return compare_values(value, threshold)
 
 def is_problem_packet_loss(mqtt, threshold):
-    value, is_value = mqtt.get_packet_loss()
+    value = mqtt.get_packet_loss()
     return compare_values(value, threshold)
 
 def is_problem_round_trip(mqtt, threshold):
-    value, is_value = mqtt.get_round_trip()
+    value = mqtt.get_round_trip()
     return compare_values(value, threshold)
 
 check_functions = {
@@ -75,24 +75,6 @@ def is_problem(member, rule, is_online):
 
 
     return result
-
-
-def check_item_problem(member, item_id):
-    is_problem = False
-    try:
-        monitor_rule = MonitorRules.objects.get(
-            item__item_id=item_id,
-            organization=member.organization)
-    except ObjectDoesNotExist:
-        pass
-    except MultipleObjectsReturned:
-        pass
-
-    if monitor_rule:
-        is_problem = check_functions[item_id](
-                        member.mqtt, monitor_rule.item_threshold)
-
-    return is_problem
 
 
 def is_operationaltime(member):
