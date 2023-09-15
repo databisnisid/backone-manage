@@ -436,18 +436,20 @@ async function redrawMarkers() {
                 divRemove.remove()
 
             // Create Legend
-            let div = document.createElement('div');
-            div.innerHTML =  '<button id="' + key + '"' +
-                ' style="background-color: white;"' + 
-                ' onclick="toggleMarkers(\'' + key + '\');">' +
-                marker_property[key].title + 
-                ': ' + marker_property[key].data.length + '</button>';
-            legend.appendChild(div);
+            if (marker_property[key].data.length > 0) {
+                let div = document.createElement('div');
+                div.innerHTML =  '<button id="' + key + '"' +
+                    ' style="background-color: white;"' + 
+                    ' onclick="toggleMarkers(\'' + key + '\');">' +
+                    marker_property[key].title + 
+                    ': ' + marker_property[key].data.length + '</button>';
+                legend.appendChild(div);
 
-            if (! marker_property[key].is_show) {
-                let keyElement = document.getElementById(key);
-                let keyElementText = keyElement.textContent;
-                keyElement.innerHTML = keyElementText.strike();
+                if (! marker_property[key].is_show) {
+                    let keyElement = document.getElementById(key);
+                    let keyElementText = keyElement.textContent;
+                    keyElement.innerHTML = keyElementText.strike();
+                }
             }
         }
 
