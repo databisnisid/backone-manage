@@ -6,7 +6,7 @@ from members.models import Members
 from monitor.models import MonitorRules, OperationalTime
 from problems.models import MemberProblems
 from connectors.drivers import ping
-from .utils import *
+from .utils import is_operationaltime, check_members_vs_rules
 
 
 '''
@@ -51,7 +51,6 @@ def is_problem(member, rule, is_online):
 
     return result
 
-'''
 
 def is_operationaltime(member):
     result = False
@@ -100,6 +99,7 @@ def check_members_vs_rules(member, is_online):
 
     return result
 
+'''
 
 def monitor_members() :
     """
