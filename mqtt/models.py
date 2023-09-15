@@ -148,5 +148,5 @@ class Mqtt(models.Model):
             uptime_split = uptime_load.split('load average')
             uptime_string = uptime_split[0][:-3:]
 
-        return uptime_string
+        return uptime_string.strip()
             
