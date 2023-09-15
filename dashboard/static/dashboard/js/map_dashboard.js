@@ -212,7 +212,7 @@ function drawMarker(key) {
 
       // Start - Content InfoWindow
 
-      problem_link = '&nbsp;&nbsp;&nbsp;'; 
+      problem_link = ''; 
       if (data_marker['is_problem']) {
         problem_link = '<a href="/problems/memberproblems/?q=' + data_marker['member_id'] + '">PROBLEM</a>&nbsp;&nbsp;&nbsp;';
       }
