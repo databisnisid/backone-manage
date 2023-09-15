@@ -410,7 +410,7 @@ class Members(models.Model):
         result = 0.0
         if self.mqtt:
             item_id = 'memory_usage'
-            is_alarm = False
+            is_problem = False
             monitor_rule = None
             try:
                 monitor_rule = MonitorRules.objects.get(
@@ -422,19 +422,37 @@ class Members(models.Model):
                 pass
 
             if monitor_rule:
-                check_functions[item_id](self.mqtt, monitor_rule.item_threshold)
+                is_problem = check_functions[item_id](
+                        self.mqtt, monitor_rule.item_threshold)
 
             result = self.mqtt.memory_usage
 
-        return result, is_alarm
+        return result, is_problem
 
     def cpu_usage(self):
         result = 0.0
         if self.mqtt:
+            item_id = 'cpu_usage'
+            is_problem = False
+            monitor_rule = None
+
+            try:
+                monitor_rule = MonitorRules.objects.get(
+                        item__item_id=item_id,
+                        organization=self.organization)
+            except ObjectDoesNotExist:
+                pass
+            except MultipleObjectsReturned:
+                pass
+
+            if monitor_rule:
+                is_problem = check_functions[item_id](
+                        self.mqtt, monitor_rule.item_threshold)
+
             load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
             result = round(load_5, 1)
 
-        return result
+        return result, is_problem
 
     def model_release(self):
         text = None
@@ -476,10 +494,8 @@ class Members(models.Model):
             fourth_line += "<span>UP: {}</span>".format(uptime_string)
 
             ''' CPU '''
-            cpu_usage = self.cpu_usage()
-            color = ''
-            if cpu_usage > 50:
-                color = 'red'
+            cpu_usage, is_problem = self.cpu_usage()
+            color = 'red' if is_problem else ''
             fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, cpu_usage)
 
             ''' MEMORY '''
