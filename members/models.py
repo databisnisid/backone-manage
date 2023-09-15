@@ -7,7 +7,8 @@ from django.utils import timezone
 from django.conf import settings
 from accounts.models import User, Organizations
 from networks.models import Networks, NetworkRoutes
-#from monitor.utils import compare_values
+from monitor.utils import *
+from monitor.models import MonitorRules
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
@@ -408,11 +409,24 @@ class Members(models.Model):
     def memory_usage(self):
         result = 0.0
         if self.mqtt:
-            #mqtt = Mqtt.objects.get(member_id=self.member_id)
-            #mqtt = self.mqtt
+            item_id = 'memory_usage'
+            is_alarm = False
+            monitor_rule = None
+            try:
+                monitor_rule = MonitorRules.objects.get(
+                        item__item_id=item_id,
+                        organization=self.organization)
+            except ObjectDoesNotExist:
+                pass
+            except MultipleObjectsReturned:
+                pass
+
+            if monitor_rule:
+                check_functions[item_id](self.mqtt, monitor_rule.item_thershold)
+
             result = self.mqtt.memory_usage
 
-        return result
+        return result, is_alarm
 
     def cpu_usage(self):
         result = 0.0
@@ -469,11 +483,10 @@ class Members(models.Model):
             fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, cpu_usage)
 
             ''' MEMORY '''
-            if mqtt.memory_usage:
-                color = ''
-                if mqtt.memory_usage > 50:
-                    color = 'red'
-                fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(mqtt.memory_usage, 1))
+            value, is_problem = self.memory_usage()
+            #if mqtt.memory_usage:
+            color = 'red' if is_problem else ''
+            fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(mqtt.memory_usage, 1))
 
             ''' PACKET LOSS '''
             packet_loss, is_packet_loss = mqtt.get_packet_loss()

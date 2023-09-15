@@ -5,7 +5,7 @@ from django.utils.html import format_html, format_html_join
 from crum import get_current_user
 from accounts.models import User, Organizations
 from mqtt.models import Mqtt
-from members.models import Members
+#from members.models import Members
 from networks.models import Networks
 from django.utils.translation import gettext as _
 from django.utils import timezone
