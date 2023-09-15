@@ -94,7 +94,7 @@ class MemberProblems(ClusterableModel):
     get_update_progress.short_description = _('Update Progress')
 
     def member_name_with_update_progress(self):
-        text = format_html('Update -> {}<br />{}', self.member, self.get_update_progress())
+        text = format_html('{}<br />{}', self.member, self.get_update_progress())
         return text
     member_name_with_update_progress.short_description = _('Member Name')
         
