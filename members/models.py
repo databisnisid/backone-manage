@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.conf import settings
 from accounts.models import User, Organizations
 from networks.models import Networks, NetworkRoutes
-from monitor.utils import check_item_problem
+from monitor.utils import check_item_problem, check_members_vs_rules
 from monitor.models import MonitorRules
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
@@ -406,51 +406,48 @@ class Members(models.Model):
         return online_status
     is_mqtt_online.short_description = _('Internet Online')
 
+    def get_alarms(self):
+        result = []
+        rules = check_members_vs_rules(self, self.is_online())
+        for rule in rules:
+            result.append(rule.item.item_id)
+
+        return result
+
     def memory_usage(self):
         result = 0.0
         if self.mqtt:
-            item_id = 'memory_usage'
-            is_problem = check_item_problem(self, item_id)
-
             result = self.mqtt.memory_usage
 
-        return result, is_problem
+        return result
 
     def cpu_usage(self):
         result = 0.0
         if self.mqtt:
-            item_id = 'cpu_usage'
-            is_problem = check_item_problem(self, item_id)
-
             load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
             result = round(load_5, 1)
 
-        return result, is_problem
+        return result
 
     def packet_loss(self):
         result = 0.0
         if self.mqtt:
-            item_id = 'packet_loss'
-            is_problem = check_item_problem(self, item_id)
-
             result, is_result = self.mqtt.get_packet_loss()
 
-        return result, is_problem
+        return result
 
     def round_trip(self):
         result = 0.0
         if self.mqtt:
-            item_id = 'round_trip'
-            is_problem = check_item_problem(self, item_id)
-
             result, is_result = self.mqtt.get_round_trip()
 
-        return result, is_problem
+        return result
 
     def model_release(self):
         text = None
         if self.mqtt:
             mqtt = self.mqtt
+            alarms = self.get_alarms()
             updated_at = timezone.localtime(mqtt.updated_at).strftime("%d-%m-%Y, %H:%M:%S")
             is_rcall = "icon-yes.svg" if mqtt.is_rcall else "icon-no.svg"
 
@@ -487,26 +484,27 @@ class Members(models.Model):
             fourth_line += "<span>UP: {}</span>".format(uptime_string)
 
             ''' CPU '''
-            cpu_usage, is_problem = self.cpu_usage()
-            color = 'red' if is_problem else ''
-            fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, cpu_usage)
+            item_id = 'cpu_usage'
+            value = self.cpu_usage()
+            color = 'red' if item_id in alarms else ''
+            fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, value)
 
             ''' MEMORY '''
-            value, is_problem = self.memory_usage()
-            #if mqtt.memory_usage:
-            color = 'red' if is_problem else ''
-            fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(mqtt.memory_usage, 1))
+            item_id = 'cpu_usage'
+            value = self.memory_usage()
+            color = 'red' if item_id in alarms else ''
+            fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(value, 1))
 
             ''' PACKET LOSS '''
-            #packet_loss, is_packet_loss = mqtt.get_packet_loss()
-            value, is_problem = self.packet_loss()
-            color = 'red' if is_problem else ''
+            item_id = 'packet_loss'
+            value = self.packet_loss()
+            color = 'red' if item_id in alarms else ''
             fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, value)
 
             ''' ROUND_TRIP '''
-            #round_trip, is_round_trip = mqtt.get_round_trip()
-            value, is_problem = self.round_trip()
-            color = 'red' if is_problem else ''
+            item_id = 'round_trip'
+            value = self.round_trip()
+            color = 'red' if item_id in alarms else ''
             fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(value, 1))
 
             fourth_line += "</small>"
