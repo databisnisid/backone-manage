@@ -99,6 +99,7 @@ class MonitorRules(models.Model):
         return super(MonitorRules, self).save()
 
 
+'''
 class MemberProblemManagerUndone(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(
@@ -204,15 +205,6 @@ class ProblemUpdate(models.Model):
     update_progress = models.TextField(_('Update Progress'), default=None, null=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
 
-    '''
-    panels = [
-            FieldRowPanel([
-                FieldPanel('created_at', read_only=True),
-                FieldPanel('update_progress'),
-                ])
-            ]
-    '''
-
     class Meta:
         db_table = 'problem_update'
 
@@ -247,7 +239,7 @@ class MemberProblemsDone(MemberProblems):
 
     problem_duration_start_end.short_description = _('Problem')
 
-
+'''
 def validate_time(value):
     if value < 1 or value > 24:
         raise ValidationError(

@@ -9,7 +9,7 @@ from random import randint
 from django.utils.translation import gettext as _
 from config.utils import to_dictionary
 from django.core.exceptions import ObjectDoesNotExist
-from monitor.models import MemberProblems
+#from monitor.models import MemberProblems
 
 
 class MapSummaryPanel(Component):
@@ -222,6 +222,7 @@ class MemberProblemsAnalyticPanel(Component):
     """
     pass
 
+'''
 class MembersProblemPanel(Component):
     order = 55
     template_name = "dashboard/members_problem.html"
@@ -235,7 +236,8 @@ class MembersProblemPanel(Component):
             problem_text = []
 
             if member.is_online():
-                '''
+'''
+'''
                 if not member.is_mqtt_online():
                     try:
                         Mqtt.objects.get(member_id=member.member_id)
@@ -243,7 +245,8 @@ class MembersProblemPanel(Component):
                         is_problem = True
                     except ObjectDoesNotExist:
                         pass
-                '''
+'''
+'''
 
                 if member.memory_usage() > 50:
                     problem_text.append('High Memory Usage')
@@ -262,7 +265,7 @@ class MembersProblemPanel(Component):
 
         context['members_problem'] = self.members_problem
         return context
-
+'''
 
 class ModelChartsPanel(Component):
     order = 80
