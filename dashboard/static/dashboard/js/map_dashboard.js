@@ -466,7 +466,8 @@ async function redrawMarkers() {
 
         let div = document.createElement('div');
         div.innerHTML =  '<button id="total_sites"' +
-            ' style="background-color: white; margin-top: 5px;">TOTAL: ' + 
+            ' style="background-color: white; margin-top: 5px;"' +
+            ' onclick="showAllSites()">TOTAL: ' + 
             total_sites + '</button>';
         legend.appendChild(div);
     }
