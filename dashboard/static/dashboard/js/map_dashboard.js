@@ -212,9 +212,9 @@ function drawMarker(key) {
 
       // Start - Content InfoWindow
 
-      problem_link = ''; 
+      problem_link = '&nbsp;&nbsp;&nbsp;'; 
       if (data_marker['is_problem']) {
-        problem_link = '<a href="/problems/memberproblems/?q=' + data_marker['member_id'] + '">UPDATE</a>';
+        problem_link = '<a href="/problems/memberproblems/?q=' + data_marker['member_id'] + '">PROBLEM</a>&nbsp;&nbsp;&nbsp;';
       }
 
       let contentString =
