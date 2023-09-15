@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from config.utils import get_cpu_usage
 #from mqtt.models import Mqtt
-from monitor.models import MonitorRules, OperationalTime
+#from monitor.models import MonitorRules, OperationalTime
 #from connectors.drivers import ping, ssh, mqtt
 
 
@@ -75,6 +75,7 @@ def is_problem(member, rule, is_online):
 
     return result
 
+'''
 
 def is_operationaltime(member):
     result = False
@@ -82,8 +83,6 @@ def is_operationaltime(member):
         optime = OperationalTime.objects.get(network=member.network)
         currtime = timezone.localtime()
         dayname = currtime.strftime('%a')
-
-        print(dayname)
 
         if dayname.lower() == 'mon' and optime.is_mon:
             if currtime.hour > optime.mon_start and currtime.hour < optime.mon_end:
@@ -121,3 +120,4 @@ def check_members_vs_rules(member, is_online):
             result.append(rule)
 
     return result
+'''

@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 #from config.utils import get_cpu_usage
 #from mqtt.models import Mqtt
 from members.models import Members
-from monitor.models import MemberProblems
+from monitor.models import MemberProblems, MonitorRules, OperationalTime
 from connectors.drivers import ping
 from .utils import *
 
@@ -49,6 +49,8 @@ def is_problem(member, rule, is_online):
 
 
     return result
+
+'''
 
 def is_operationaltime(member):
     result = False
@@ -96,7 +98,7 @@ def check_members_vs_rules(member, is_online):
             result.append(rule)
 
     return result
-'''
+
 
 def monitor_members() :
     """
