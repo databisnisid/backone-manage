@@ -108,6 +108,10 @@ class MemberProblems(ClusterableModel):
         return self.member.network
     get_network.short_description = _('Network')
 
+    def get_parameters(self):
+        return self.member.model_release()
+    get_parameters.short_description = _('Parameters')
+
 
 class ProblemUpdate(models.Model):
     member_problems = ParentalKey('MemberProblems', related_name='member_problems', on_delete=models.CASCADE)
