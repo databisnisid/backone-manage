@@ -141,3 +141,12 @@ class Mqtt(models.Model):
         return round(load_1, 1), round(load_5, 1), round(load_15, 1)
 
 
+    def get_uptime(self):
+        uptime_string = ''
+        if self.uptime:
+            uptime_load = get_uptime_string(self.uptime)
+            uptime_split = uptime_load.split('load average')
+            uptime_string = uptime_split[0][:-3:]
+
+        return uptime_string
+            
