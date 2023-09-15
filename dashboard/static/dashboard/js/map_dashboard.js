@@ -144,6 +144,7 @@ function drawMarker(key) {
     var pinGlyph;
     var data_marker = [];
     var return_renderer;
+    var problem_link;
 
     // Reset Markers
     marker_property[key].markers = [];
@@ -211,11 +212,11 @@ function drawMarker(key) {
 
       // Start - Content InfoWindow
 
+      problem_link = ''; 
       if (data_marker['is_problem']) {
-        const problem_link = '<a href="/problems/memberproblems/?q=' + data_marker['member_id'] + '">UPDATE</a>';
-      } else {
-         const problem_link = ''; 
+        problem_link = '<a href="/problems/memberproblems/?q=' + data_marker['member_id'] + '">UPDATE</a>';
       }
+
       let contentString =
             '<div id="content">' +
             '<div id="siteNotice"></div>' +
