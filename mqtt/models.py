@@ -134,7 +134,7 @@ class Mqtt(models.Model):
         return rx_usage, tx_usage, total_usage
 
 
-    '''
+    ''' This is to get all 1min, 5 min, 15min load '''
     def get_cpu_usage(self):
         if self.uptime:
             load_1, load_5, load_15 = get_cpu_usage(self.uptime, self.num_core)
@@ -142,7 +142,6 @@ class Mqtt(models.Model):
             load_1 = load_5 = load_15 = 0.0
 
         return round(load_1, 1), round(load_5, 1), round(load_15, 1)
-    '''
 
 
     def get_uptime_string(self):

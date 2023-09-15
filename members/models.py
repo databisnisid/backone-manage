@@ -12,7 +12,7 @@ from django.utils.html import format_html
 from controllers.backend import Zerotier
 from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from config.utils import to_dictionary, get_uptime_string, get_string_between, readable_timedelta, calculate_bandwidth_unit
+from config.utils import to_dictionary, readable_timedelta, calculate_bandwidth_unit
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
@@ -421,24 +421,26 @@ class Members(models.Model):
     def model_release(self):
         text = None
         if self.mqtt:
-            mqtt = Mqtt.objects.get(member_id=self.member_id)
-            model = mqtt.model
-            release_version = mqtt.release_version
+            #mqtt = Mqtt.objects.get(member_id=self.member_id)
+            mqtt = self.mqtt
+            #model = mqtt.model
+            #release_version = mqtt.release_version
             updated_at = timezone.localtime(mqtt.updated_at).strftime("%d-%m-%Y, %H:%M:%S")
             #is_rcall = 'R' if mqtt.is_rcall else 'S'
             is_rcall = "icon-yes.svg" if mqtt.is_rcall else "icon-no.svg"
             uptime = mqtt.uptime
-            serialnumber = mqtt.serialnumber
-            num_core = mqtt.num_core
-            memory_usage = mqtt.memory_usage
-            packet_loss = mqtt.packet_loss
-            round_trip = mqtt.round_trip
+            #serialnumber = mqtt.serialnumber
+            #num_core = mqtt.num_core
+            #memory_usage = mqtt.memory_usage
+            #packet_loss = mqtt.packet_loss
+            #round_trip = mqtt.round_trip
 
             ''' First Line: Model and CPU Core'''
-            first_line = "<small>{} ({})</small>".format(model, num_core)
+            first_line = "<small>{} ({})</small>".format(mqtt.model, mqtt.num_core)
 
             ''' Second Line: SerialNumber and Release Version'''
-            second_line_var = serialnumber + ' - ' + release_version if serialnumber else release_version
+            second_line_var = mqtt.serialnumber + ' - ' + mqtt.release_version if mqtt.serialnumber else mqtt.release_version
+
             second_line = ""
             if second_line_var:
                 second_line = "<br /><small>"
@@ -460,61 +462,43 @@ class Members(models.Model):
 
             fourth_line = "<br /><small>"
 
-            '''
-            uptime_load = get_uptime_string(uptime)
-            uptime_split = uptime_load.split('load average:')
-            #print(uptime_split)
-            uptime_string = uptime_split[0][:-3:]
-
-            uptime_string_first = uptime_string.split(',')
-
-
-            '''
             ''' Fourth Line: Uptime, CPU and Memory '''
-            #if 'min' in uptime_string_first[0]:
-            #    color = 'red'
+
+            ''' UPTIME '''
             uptime_string = self.mqtt.get_uptime_string()
             fourth_line += "<span>UP: {}</span>".format(uptime_string)
 
-            '''
-            if uptime:
-                load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
-            else:
-                load_1 = load_5 = load_15 = 0.0
-
-            #third_line = "UP: {}".format(uptime_string)
-            '''
-            #load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
+            ''' CPU '''
             cpu_usage = self.cpu_usage()
-
-            # CPU
             color = ''
             if cpu_usage > 50:
                 color = 'red'
             fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, cpu_usage)
 
-            # MEMORY
-            if self.mqtt.memory_usage:
+            ''' MEMORY '''
+            if mqtt.memory_usage:
                 color = ''
-                if memory_usage > 50:
+                if mqtt.memory_usage > 50:
                     color = 'red'
-                fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(memory_usage, 1))
+                fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, round(mqtt.memory_usage, 1))
 
             # PACKET LOSS
             #if 'packet loss' in self.mqtt.packet_loss_string:
-            if self.mqtt.packet_loss_string:
+            #if self.mqtt.packet_loss_string:
+            if True:
                 color = ''
-                if packet_loss > 5:
+                if mqtt.packet_loss > 5:
                     color = 'red'
-                fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
+                fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, mqtt.packet_loss)
 
             # ROUND_TRIP
             #if 'round-trip' in self.mqtt.round_trip_string:
-            if self.mqtt.round_trip_string:
+            #if self.mqtt.round_trip_string:
+            if True:
                 color = ''
-                if round_trip > 200:
+                if mqtt.round_trip > 200:
                     color = 'red'
-                fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(round_trip, 1))
+                fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, round(mqtt.round_trip, 1))
 
             fourth_line += "</small>"
 
