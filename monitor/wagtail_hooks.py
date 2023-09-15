@@ -41,6 +41,7 @@ class MemberProblemsButtonHelper(ButtonHelper):
         buttons = super().get_buttons_for_obj(
             obj, exclude, classnames_add, classnames_exclude
         )
+
         if 'check_button' not in (exclude or []):
             if current_user.is_superuser:
                 buttons.append(self.check_button(obj))
