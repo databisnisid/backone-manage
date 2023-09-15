@@ -69,3 +69,65 @@ class Mqtt(models.Model):
 
         return super(Mqtt, self).save()
 
+
+    def get_quota_first(self):
+        quota_current = 0
+        quota_total = 0
+        quota_day = 0
+
+        if self.mqtt.quota_first:
+            quota_split = self.mqtt.quota_first.split('/')
+            try:
+                quota_split[0]
+                quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
+            except (ValueError, IndexError) as error:
+                quota_current = 0
+
+            try:
+                quota_split[1]
+                quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
+            except (ValueError, IndexError) as error:
+                quota_current = 0
+                quota_total = 0 
+
+            try:
+                quota_split[2]
+                quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
+            except (ValueError, IndexError) as error:
+                quota_current = 0
+                quota_total = 0 
+                quota_day = 0
+
+        return quota_current, quota_total, quota_day
+
+    def get_quota_vnstat(self):
+        rx_usage = 0
+        tx_usage = 0
+        total_usage = 0
+
+        split_text = self.mqtt.quota_vnstat.split(',')
+
+        ''' RX Usage '''
+        try:
+            rx_usage = int(split_text[2])
+        except (IndexError, ValueError) as error:
+            pass
+
+        ''' TX Usage '''
+        try:
+            tx_usage = int(split_text[3])
+        except (IndexError, ValueError) as error:
+            pass
+
+        ''' Total Usage '''
+        try:
+            total_usage = int(split_text[4])
+        except (IndexError, ValueError) as error:
+            pass
+
+        return rx_usage, tx_usage, total_usage
+
+        
+        
+        
+

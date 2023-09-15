@@ -12,7 +12,7 @@ from django.utils.html import format_html
 from controllers.backend import Zerotier
 from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from config.utils import to_dictionary, get_cpu_usage, get_uptime_string, get_string_between, readable_timedelta
+from config.utils import to_dictionary, get_cpu_usage, get_uptime_string, get_string_between, readable_timedelta, calculate_bandwidth_unit
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
@@ -423,6 +423,8 @@ class Members(models.Model):
 
         return result
 
+
+    '''
     def get_quota_first(self):
         quota_current = 0
         quota_total = 0
@@ -453,6 +455,7 @@ class Members(models.Model):
                     quota_day = 0
 
         return quota_current, quota_total, quota_day
+    '''
 
     def model_release(self):
         text = None
@@ -581,7 +584,7 @@ class Members(models.Model):
                     quota_day = 0
             '''
 
-            quota_current, quota_total, quota_day = self.get_quota_first()
+            quota_current, quota_total, quota_day = self.mqtt.get_quota_first()
 
             if not quota_current==0 and not quota_total==0 and not quota_day==0:
                 quota_text = ""
@@ -594,7 +597,7 @@ class Members(models.Model):
                 quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
 
                 #if not quota_current==0 and not quota_total==0 and not quota_day==0:
-                #fifth_line = format_html("<br /><small>{}</small>", quota_text)
+                 #fifth_line = format_html("<br /><small>{}</small>", quota_text)
                 fifth_line = "<br /><small>QUOTA: {}</small>".format(quota_text)
 
             #uptime_load = get_uptime_string(uptime)
@@ -639,27 +642,9 @@ class Members(models.Model):
     def quota_vnstat(self):
         text = ''
         if self.mqtt:
-            if self.mqtt.quota_vnstat:
-                split_text = self.mqtt.quota_vnstat.split(',')
-                try:
-                    total_usage_value = int(split_text[4])
-                    total_usage_unit = 'B'
-                    if total_usage_value > 1024:
-                        total_usage_value = total_usage_value / 1024
-                        total_usage_unit = 'KB'
-
-                    if total_usage_value > 1024:
-                        total_usage_value = total_usage_value / 1024
-                        total_usage_unit = 'MB'
-
-                    if total_usage_value > 1024:
-                        total_usage_value = total_usage_value / 1024
-                        total_usage_unit = 'GB'
-
-                    text = str(round(total_usage_value, 2)) + total_usage_unit
-
-                except (IndexError, ValueError) as error:
-                    pass
+            rx_usage_value, tx_usage_value, total_usage_value = self.mqtt.get_quota_vnstat()
+            total_value, total_unit = calculate_bandwidth_unit(total_usage_value)
+            text = str(round(total_value, 2)) + total_unit
 
         return text
     quota_vnstat.short_description = _('Quota Usage')

@@ -25,6 +25,28 @@ def to_list(data):
     return result
 
 
+def calculate_bandwidth_unit(value):
+    bandwidth_unit = 'B'
+    if value > 1024:
+        value = value / 1024
+        bandwidth_unit = 'KB'
+
+    if value > 1024:
+        value = value / 1024
+        bandwidth_unit = 'MB'
+
+    if value > 1024:
+        value = value / 1024
+        bandwidth_unit = 'GB'
+
+    if value > 1024:
+        value = value / 1024
+        bandwidth_unit = 'TB'
+
+    return bandwidth_unit, value
+
+
+
 def get_user():
     user = get_current_user()
 
