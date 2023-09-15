@@ -1,12 +1,14 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils import timezone
-from config.utils import get_cpu_usage
-from mqtt.models import Mqtt
+#from django.utils import timezone
+#from config.utils import get_cpu_usage
+#from mqtt.models import Mqtt
 from members.models import Members
-from monitor.models import MemberProblems, MonitorRules, OperationalTime
-from connectors.drivers import ping, ssh, mqtt
+from monitor.models import MemberProblems
+from connectors.drivers import ping
+from .utils import *
 
 
+'''
 def compare_values(val1, val2):
     return True if val1 > val2 else False
 
@@ -94,7 +96,7 @@ def check_members_vs_rules(member, is_online):
             result.append(rule)
 
     return result
-
+'''
 
 def monitor_members() :
     """
