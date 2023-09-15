@@ -12,7 +12,7 @@ from django.utils.html import format_html
 from controllers.backend import Zerotier
 from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from config.utils import to_dictionary, get_cpu_usage, get_uptime_string, get_string_between, readable_timedelta, calculate_bandwidth_unit
+from config.utils import to_dictionary, get_uptime_string, get_string_between, readable_timedelta, calculate_bandwidth_unit
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
@@ -413,8 +413,8 @@ class Members(models.Model):
     def cpu_usage(self):
         result = 0.0
         if self.mqtt:
-            load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
-            result = round(load_5, 1)
+            #load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
+            result = round(self.mqtt.cpu_usage, 1)
 
         return result
 

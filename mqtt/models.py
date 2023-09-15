@@ -61,11 +61,13 @@ class Mqtt(models.Model):
                 self.round_trip = 0
 
         if self.uptime:
-            load_string = self.uptime.split('load average:')
-            load_digit = load_string[1].split(',')
+            load_1, load_5, load_15 = get_cpu_usage(self.uptime, self.num_core)
+            #load_string = self.uptime.split('load average:')
+            #load_digit = load_string[1].split(',')
 
             try:
-                self.cpu_usage = float(load_digit[1]) / self.num_core * 100
+                #self.cpu_usage = float(load_digit[1]) / self.num_core * 100
+                self.cpu_usage = load_5
             except ValueError:
                 self.cpu_usage = 0
 
@@ -132,6 +134,7 @@ class Mqtt(models.Model):
         return rx_usage, tx_usage, total_usage
 
 
+    '''
     def get_cpu_usage(self):
         if self.uptime:
             load_1, load_5, load_15 = get_cpu_usage(self.uptime, self.num_core)
@@ -139,6 +142,7 @@ class Mqtt(models.Model):
             load_1 = load_5 = load_15 = 0.0
 
         return round(load_1, 1), round(load_5, 1), round(load_15, 1)
+    '''
 
 
     def get_uptime_string(self):
