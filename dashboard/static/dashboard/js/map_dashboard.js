@@ -210,14 +210,20 @@ function drawMarker(key) {
       // End - Animation Drop
 
       // Start - Content InfoWindow
+
+      if (data_marker['is_problem']) {
+        let problem_link = '<a href="/problems/memberproblems/?q=' + data_marker['member_id'] + '">UPDATE</a>';
+      } else {
+         let problem_link = ''; 
+      }
       let contentString =
             '<div id="content">' +
             '<div id="siteNotice"></div>' +
             '<h2 id="firstHeading" class="firstHeading">' + data_marker['name'] + '</h2>' +
             '<div id="bodyContent">' +
             '<p style="color: black;">' + data_marker['problem_string'] + '</p>' +
-            '<a href="/problems/memberproblems/?q=' + data_marker['member_id'] + '">UPDATE</a>' +
-            //'<a href="/members/members/?q=' + data_marker['member_id'] + '">CHECK</a>' +
+            problem_link +
+            '<a href="/members/members/?q=' + data_marker['member_id'] + '">CHECK</a>' +
             '</div>' +
             '</div>';
 
