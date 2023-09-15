@@ -156,7 +156,7 @@ class MemberProblemsAdmin(ModelAdmin):
     #inspect_view_enabled = True
 
     #list_display = ('member', 'get_network' ,'problem', 'duration_text_undone')
-    list_display = ('member', 'problem_duration_start', 'get_update_progress')
+    list_display = ('member', 'get_parameters', 'problem_duration_start', 'get_update_progress')
     search_fields = ('member__name', 'problem__name', 'member__member_id')
     #list_filter = ('problem',)
 
