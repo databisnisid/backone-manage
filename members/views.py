@@ -38,7 +38,7 @@ def is_problem(member, members_problems):
 def is_new(member):
     am_i_new = True
 
-    timedelta = timezone.localtime() - member.created_at
+    timedelta = timezone.now() - member.created_at
     if timedelta.seconds > settings.MEMBER_NEW_PERIOD:
         am_i_new = False
 
