@@ -644,7 +644,8 @@ class Members(models.Model):
         if self.mqtt:
             rx_usage_value, tx_usage_value, total_usage_value = self.mqtt.get_quota_vnstat()
             total_unit, total_value = calculate_bandwidth_unit(total_usage_value)
-            text = str(round(total_value, 2)) + total_unit
+            if total_value:  # Only show if not 0
+                text = str(round(total_value, 2)) + total_unit
 
         return text
     quota_vnstat.short_description = _('Quota Usage')
