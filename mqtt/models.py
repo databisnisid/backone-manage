@@ -105,26 +105,28 @@ class Mqtt(models.Model):
         rx_usage = 0
         tx_usage = 0
         total_usage = 0
+        split_text = []
+    
+        if self.quota_vnstat:
+            split_text = self.quota_vnstat.split(',')
 
-        split_text = self.quota_vnstat.split(',')
+            ''' RX Usage '''
+            try:
+                rx_usage = int(split_text[2])
+            except (IndexError, ValueError) as error:
+                pass
 
-        ''' RX Usage '''
-        try:
-            rx_usage = int(split_text[2])
-        except (IndexError, ValueError) as error:
-            pass
+            ''' TX Usage '''
+            try:
+                tx_usage = int(split_text[3])
+            except (IndexError, ValueError) as error:
+                pass
 
-        ''' TX Usage '''
-        try:
-            tx_usage = int(split_text[3])
-        except (IndexError, ValueError) as error:
-            pass
-
-        ''' Total Usage '''
-        try:
-            total_usage = int(split_text[4])
-        except (IndexError, ValueError) as error:
-            pass
+            ''' Total Usage '''
+            try:
+                total_usage = int(split_text[4])
+            except (IndexError, ValueError) as error:
+                pass
 
         return rx_usage, tx_usage, total_usage
 
