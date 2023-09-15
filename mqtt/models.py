@@ -1,6 +1,7 @@
 import re
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from config.utils import get_uptime_string, get_cpu_usage
 from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
