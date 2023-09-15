@@ -413,49 +413,10 @@ class Members(models.Model):
     def cpu_usage(self):
         result = 0.0
         if self.mqtt:
-            #mqtt = Mqtt.objects.get(member_id=self.member_id)
-            mqtt = self.mqtt
-            if mqtt.uptime:
-                load_1, load_5, load_15 = get_cpu_usage(mqtt.uptime, mqtt.num_core)
-            else:
-                load_1 = load_5 = load_15 = 0.0
+            load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
             result = round(load_5, 1)
 
         return result
-
-
-    '''
-    def get_quota_first(self):
-        quota_current = 0
-        quota_total = 0
-        quota_day = 0
-
-        if self.mqtt:
-            if self.mqtt.quota_first:
-                quota_split = self.mqtt.quota_first.split('/')
-                try:
-                    quota_split[0]
-                    quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
-                except (ValueError, IndexError) as error:
-                    quota_current = 0
-
-                try:
-                    quota_split[1]
-                    quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
-                except (ValueError, IndexError) as error:
-                    quota_current = 0
-                    quota_total = 0 
-
-                try:
-                    quota_split[2]
-                    quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
-                except (ValueError, IndexError) as error:
-                    quota_current = 0
-                    quota_total = 0 
-                    quota_day = 0
-
-        return quota_current, quota_total, quota_day
-    '''
 
     def model_release(self):
         text = None
@@ -472,11 +433,6 @@ class Members(models.Model):
             memory_usage = mqtt.memory_usage
             packet_loss = mqtt.packet_loss
             round_trip = mqtt.round_trip
-
-            #first_line = '{} ({})'.format(model, num_core)
-            #second_line = serialnumber + ' - ' + release_version if serialnumber else release_version
-            #color = 'red'
-            #if self.is_mqtt_online():
 
             ''' First Line: Model and CPU Core'''
             first_line = "<small>{} ({})</small>".format(model, num_core)
@@ -556,33 +512,6 @@ class Members(models.Model):
             fourth_line += "</small>"
 
             fifth_line = ""
-
-            '''
-            if self.mqtt.quota_first:
-                #fifth_line = format_html("<br /><small>{}</small>", self.mqtt.quota_first)
-                #quota_text = ""
-                quota_split = self.mqtt.quota_first.split('/')
-                try:
-                    quota_split[0]
-                    quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
-                except (ValueError, IndexError) as error:
-                    quota_current = 0
-
-                try:
-                    quota_split[1]
-                    quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
-                except (ValueError, IndexError) as error:
-                    quota_current = 0
-                    quota_total = 0 
-
-                try:
-                    quota_split[2]
-                    quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
-                except (ValueError, IndexError) as error:
-                    quota_current = 0
-                    quota_total = 0 
-                    quota_day = 0
-            '''
 
             quota_current, quota_total, quota_day = self.mqtt.get_quota_first()
 

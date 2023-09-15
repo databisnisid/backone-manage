@@ -1,5 +1,6 @@
 import re
 from django.db import models
+from config.utils import get_uptime_string, get_cpu_usage
 from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
 from wagtail import permissions
@@ -130,7 +131,13 @@ class Mqtt(models.Model):
 
         return rx_usage, tx_usage, total_usage
 
-        
-        
-        
+
+    def get_cpu_usage(self):
+        if self.uptime:
+            load_1, load_5, load_15 = get_cpu_usage(self.uptime, self.num_core)
+        else:
+            load_1 = load_5 = load_15 = 0.0
+
+        return round(load_1, 1), round(load_5, 1), round(load_15, 1)
+
 
