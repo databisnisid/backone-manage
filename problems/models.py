@@ -93,6 +93,12 @@ class MemberProblems(ClusterableModel):
         return format_html(updates_html)
     get_update_progress.short_description = _('Update Progress')
 
+    def member_name_with_update_progress(self):
+        text = format_html('Update -> {}<br />{}', self.member, self.get_update_progress())
+        return text
+    member_name_with_update_progress.short_description = _('Member Name')
+        
+
     def problem_duration_start(self):
         duration = self.duration_text_undone()
         start_local = timezone.localtime(self.start_at)
