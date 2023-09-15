@@ -484,8 +484,7 @@ class Members(models.Model):
 
             # PACKET LOSS
             #if 'packet loss' in self.mqtt.packet_loss_string:
-            #if self.mqtt.packet_loss_string:
-            if True:
+            if mqtt.packet_loss_string:
                 color = ''
                 if mqtt.packet_loss > 5:
                     color = 'red'
@@ -493,8 +492,7 @@ class Members(models.Model):
 
             # ROUND_TRIP
             #if 'round-trip' in self.mqtt.round_trip_string:
-            #if self.mqtt.round_trip_string:
-            if True:
+            if mqtt.round_trip_string:
                 color = ''
                 if mqtt.round_trip > 200:
                     color = 'red'
