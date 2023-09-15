@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils import timezone
 from config.utils import get_cpu_usage
+from .models import MonitorRules
 #from mqtt.models import Mqtt
 #from monitor.models import MonitorRules, OperationalTime
 #from connectors.drivers import ping, ssh, mqtt
