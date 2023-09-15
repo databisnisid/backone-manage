@@ -481,7 +481,7 @@ class Members(models.Model):
             fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, value)
 
             ''' MEMORY '''
-            item_id = 'cpu_usage'
+            item_id = 'memory_usage'
             value = self.memory_usage()
             color = 'red' if item_id in alarms else ''
             fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, value)
