@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.conf import settings
 from accounts.models import User, Organizations
 from networks.models import Networks, NetworkRoutes
-from monitor.utils import compare_values
+#from monitor.utils import compare_values
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 from controllers.backend import Zerotier
