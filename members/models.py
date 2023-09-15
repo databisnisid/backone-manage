@@ -422,7 +422,7 @@ class Members(models.Model):
                 pass
 
             if monitor_rule:
-                check_functions[item_id](self.mqtt, monitor_rule.item_thershold)
+                check_functions[item_id](self.mqtt, monitor_rule.item_threshold)
 
             result = self.mqtt.memory_usage
 
