@@ -141,7 +141,7 @@ class Mqtt(models.Model):
         return round(load_1, 1), round(load_5, 1), round(load_15, 1)
 
 
-    def get_uptime(self):
+    def get_uptime_string(self):
         uptime_string = ''
         if self.uptime:
             uptime_load = get_uptime_string(self.uptime)

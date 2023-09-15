@@ -460,6 +460,7 @@ class Members(models.Model):
 
             fourth_line = "<br /><small>"
 
+            '''
             uptime_load = get_uptime_string(uptime)
             uptime_split = uptime_load.split('load average:')
             #print(uptime_split)
@@ -468,23 +469,29 @@ class Members(models.Model):
             uptime_string_first = uptime_string.split(',')
 
 
+            '''
             ''' Fourth Line: Uptime, CPU and Memory '''
             #if 'min' in uptime_string_first[0]:
             #    color = 'red'
+            uptime_string = self.mqtt.get_uptime()
             fourth_line += "<span>UP: {}</span>".format(uptime_string)
 
+            '''
             if uptime:
                 load_1, load_5, load_15 = get_cpu_usage(uptime, num_core)
             else:
                 load_1 = load_5 = load_15 = 0.0
 
             #third_line = "UP: {}".format(uptime_string)
+            '''
+            #load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
+            cpu_usage = self.cpu_usage()
 
             # CPU
             color = ''
-            if load_5 > 50:
+            if cpu_usage > 50:
                 color = 'red'
-            fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, round(load_5, 1))
+            fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, cpu_usage)
 
             # MEMORY
             if self.mqtt.memory_usage:
