@@ -18,11 +18,11 @@ def is_problem_memory(mqtt, threshold):
     return compare_values(mqtt.memory_usage, threshold)
 
 def is_problem_packet_loss(mqtt, threshold):
-    value = mqtt.get_packet_loss()
+    value, is_value = mqtt.get_packet_loss()
     return compare_values(value, threshold)
 
 def is_problem_round_trip(mqtt, threshold):
-    value = mqtt.get_round_trip()
+    value, is_value = mqtt.get_round_trip()
     return compare_values(value, threshold)
 
 check_functions = {
