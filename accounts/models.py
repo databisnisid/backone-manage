@@ -28,6 +28,7 @@ class Features(models.Model):
     is_export = models.BooleanField(_('Export Data'), default=False)
     mobile_connect = models.BooleanField(_('Mobile Connect'), default=False)
     map_dashboard = models.BooleanField(_('Map Dashboard'), default=False)
+    is_nms = models.BooleanField(_('Monitoring'), default=False)
 
     # Project Related
     is_telkomsel = models.BooleanField(_('Telkomsel Project'), default=False)
