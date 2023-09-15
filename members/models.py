@@ -391,12 +391,15 @@ class Members(models.Model):
     def is_mqtt_online(self):
         online_status = False
         if self.mqtt:
+            online_status = self.mqtt.is_online()
             #mqtt = Mqtt.objects.get(member_id=self.member_id)
+            '''
             mqtt = self.mqtt
             now = timezone.now()
             delta = now - timezone.localtime(mqtt.updated_at)
             if delta.seconds < settings.ONLINE_STATUS_DELAY:
                online_status = True
+            '''
 
         return online_status
     is_mqtt_online.short_description = _('Internet Online')
@@ -405,8 +408,8 @@ class Members(models.Model):
         result = 0.0
         if self.mqtt:
             #mqtt = Mqtt.objects.get(member_id=self.member_id)
-            mqtt = self.mqtt
-            result = mqtt.memory_usage
+            #mqtt = self.mqtt
+            result = self.mqtt.memory_usage
 
         return result
 
@@ -421,19 +424,9 @@ class Members(models.Model):
     def model_release(self):
         text = None
         if self.mqtt:
-            #mqtt = Mqtt.objects.get(member_id=self.member_id)
             mqtt = self.mqtt
-            #model = mqtt.model
-            #release_version = mqtt.release_version
             updated_at = timezone.localtime(mqtt.updated_at).strftime("%d-%m-%Y, %H:%M:%S")
-            #is_rcall = 'R' if mqtt.is_rcall else 'S'
             is_rcall = "icon-yes.svg" if mqtt.is_rcall else "icon-no.svg"
-            #uptime = mqtt.uptime
-            #serialnumber = mqtt.serialnumber
-            #num_core = mqtt.num_core
-            #memory_usage = mqtt.memory_usage
-            #packet_loss = mqtt.packet_loss
-            #round_trip = mqtt.round_trip
 
             ''' First Line: Model and CPU Core'''
             first_line = "<small>{} ({})</small>".format(mqtt.model, mqtt.num_core)
@@ -448,8 +441,8 @@ class Members(models.Model):
                         second_line_var, is_rcall) if mqtt.is_rcall else second_line_var
                 second_line += "</small>"
 
-            third_line = ""
             ''' Third Line: SwitchPortUp and PortStatus'''
+            third_line = ""
             if self.mqtt.switchport_up:
                 third_line += "<br /><small>"
                 third_line += "<span>SwPortUP: {}</span>".format(self.mqtt.switchport_up)
@@ -460,9 +453,8 @@ class Members(models.Model):
                 third_line += "<span>PortStat: {}</span>".format(self.mqtt.port_status)
                 third_line += "</small>"
 
-            fourth_line = "<br /><small>"
-
             ''' Fourth Line: Uptime, CPU and Memory '''
+            fourth_line = "<br /><small>"
 
             ''' UPTIME '''
             uptime_string = self.mqtt.get_uptime_string()
@@ -484,15 +476,13 @@ class Members(models.Model):
 
             ''' PACKET LOSS '''
             packet_loss, is_packet_loss = mqtt.get_packet_loss()
-            #if mqtt.packet_loss_string:
             if is_packet_loss:
                 color = ''
                 if packet_loss > 5:
                     color = 'red'
                 fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, packet_loss)
 
-            # ROUND_TRIP
-            #if 'round-trip' in self.mqtt.round_trip_string:
+            ''' ROUND_TRIP '''
             round_trip, is_round_trip = mqtt.get_round_trip()
             if is_round_trip:
                 color = ''
@@ -502,6 +492,7 @@ class Members(models.Model):
 
             fourth_line += "</small>"
 
+            ''' Fifth line QUOTA '''
             fifth_line = ""
 
             quota_current, quota_total, quota_day = self.mqtt.get_quota_first()
@@ -518,6 +509,7 @@ class Members(models.Model):
 
                 fifth_line = "<br /><small>QUOTA: {}</small>".format(quota_text)
 
+            ''' Combine All Lines '''
             if self.is_mqtt_online():
                 text = format_html(
                         first_line + 

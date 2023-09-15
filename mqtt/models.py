@@ -1,5 +1,6 @@
 import re
 from django.db import models
+from django.conf import settings
 from config.utils import get_uptime_string, get_cpu_usage
 from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
@@ -183,5 +184,14 @@ class Mqtt(models.Model):
             except ValueError:
                 round_trip = 0
 
-            
         return round_trip, is_round_trip
+
+    def is_online(self):
+        online_status = False
+        now = timezone.now()
+        delta = now - timezone.localtime(self.updated_at)
+        if delta.seconds < settings.ONLINE_STATUS_DELAY:
+            online_status = True
+
+        return online_status
+
