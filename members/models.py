@@ -423,6 +423,37 @@ class Members(models.Model):
 
         return result
 
+    def get_quota_first(self):
+        quota_current = 0
+        quota_total = 0
+        quota_day = 0
+
+        if self.mqtt:
+            if self.mqtt.quota_first:
+                quota_split = self.mqtt.quota_first.split('/')
+                try:
+                    quota_split[0]
+                    quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
+                except (ValueError, IndexError) as error:
+                    quota_current = 0
+
+                try:
+                    quota_split[1]
+                    quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
+                except (ValueError, IndexError) as error:
+                    quota_current = 0
+                    quota_total = 0 
+
+                try:
+                    quota_split[2]
+                    quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
+                except (ValueError, IndexError) as error:
+                    quota_current = 0
+                    quota_total = 0 
+                    quota_day = 0
+
+        return quota_current, quota_total, quota_day
+
     def model_release(self):
         text = None
         if self.mqtt:
@@ -523,6 +554,7 @@ class Members(models.Model):
 
             fifth_line = ""
 
+            '''
             if self.mqtt.quota_first:
                 #fifth_line = format_html("<br /><small>{}</small>", self.mqtt.quota_first)
                 #quota_text = ""
@@ -547,7 +579,11 @@ class Members(models.Model):
                     quota_current = 0
                     quota_total = 0 
                     quota_day = 0
+            '''
 
+            quota_current, quota_total, quota_day = self.get_quota_first()
+
+            if not quota_current==0 and not quota_total==0 and not quota_day==0:
                 quota_text = ""
                 color = '' if quota_current > settings.QUOTA_GB_WARNING else 'red'
                 quota_text += "<span style='color: {};'>{}GB</span>".format(color, quota_current)
@@ -556,6 +592,8 @@ class Members(models.Model):
 
                 color = '' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
                 quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
+
+                #if not quota_current==0 and not quota_total==0 and not quota_day==0:
                 #fifth_line = format_html("<br /><small>{}</small>", quota_text)
                 fifth_line = "<br /><small>QUOTA: {}</small>".format(quota_text)
 
