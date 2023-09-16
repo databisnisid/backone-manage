@@ -6,9 +6,6 @@
         {% block branding_logo %}
     {% if 'backone.cloud' in request.build_absolute_uri %}
         <img src="{% versioned_static 'dashboard/images/backone-logo.svg' %}" alt="BackOne"  width="512" />
-    <!--
-        <img src="{% versioned_static 'dashboard/images/backone-manage-new.png' %}" alt="BackOne"  width="512" />
-    -->
     {% else %}
         <img src="{% versioned_static 'dashboard/images/dashboard-logo.png' %}" alt="Home"  width="512" />
     {% endif %}
