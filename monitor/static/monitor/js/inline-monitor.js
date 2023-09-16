@@ -1,26 +1,3 @@
-/*
-function waitForElementToExist(selector) {
-  return new Promise(resolve => {
-    if (document.querySelector(selector)) {
-      return resolve(document.querySelector(selector));
-    }
-
-    const observer = new MutationObserver(() => {
-      if (document.querySelector(selector)) {
-        resolve(document.querySelector(selector));
-        observer.disconnect();
-      }
-    });
-
-    observer.observe(document.body, {
-      subtree: true,
-      childList: true,
-    });
-  });
-}
-*/
-
-
 waitForElementToExist('#id_member_problems-ADD').then(element => {
     console.log('The element exists', element);
     const elements = document.querySelectorAll('[id$="-DELETE-button"]');
@@ -28,11 +5,13 @@ waitForElementToExist('#id_member_problems-ADD').then(element => {
         e.style.display = "none";
         console.log(e);
     });
+    /* Disable edit textarea
     const elements_textarea = document.querySelectorAll('[id$="-update_progress"]');
     elements_textarea.forEach(e => {
         e.readOnly = "false";
     });
     console.log(elements_textarea);
+    */
 });
 
 
