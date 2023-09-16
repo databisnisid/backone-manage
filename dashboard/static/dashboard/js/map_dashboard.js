@@ -505,7 +505,7 @@ function createCenterControl(map) {
 function showAllSites() {
     for (key in marker_property) {
         marker_property[key].is_show = true;
-        if (market_property[key].data.length>0) {
+        if (marker_property[key].data.length>0) {
             let keyElement = document.getElementById(key);
             if (keyElement) {
                 let keyElementText = keyElement.textContent;
