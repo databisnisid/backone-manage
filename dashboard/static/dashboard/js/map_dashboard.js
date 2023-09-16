@@ -505,15 +505,21 @@ function createCenterControl(map) {
 function showAllSites() {
     for (key in marker_property) {
         marker_property[key].is_show = true;
-        let keyElement = document.getElementById(key);
-        let keyElementText = document.getElementById(key).textContent;
-        keyElement.innerHTML = keyElementText;
-        showMarkers(key);
+        if (market_property[key].data.length>0) {
+            let keyElement = document.getElementById(key);
+            if (keyElement) {
+                let keyElementText = keyElement.textContent;
+                keyElement.innerHTML = keyElementText;
+                showMarkers(key);
+            }
+        }
     }
 
+    /*
     let keyElement = document.getElementById(key);
     let keyElementText = document.getElementById(key).textContent;
     keyElement.innerHTML = keyElementText;
+    */
 }
 
 /*************************
