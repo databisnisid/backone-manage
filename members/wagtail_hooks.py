@@ -170,28 +170,40 @@ class MemberPeersPermissionHelper(PermissionHelper):
 
 class MembersPermissionHelper(PermissionHelper):
     def user_can_list(self, user):
-        return True
+        if user.has_perm('members.view_members'):
+            return True
+        else:
+            return False
 
     def user_can_create(self, user):
-        return True
+        if user.has_perm('members.add_members'):
+            return True
+        else:
+            return False
 
     def user_can_delete_obj(self, user, obj):
-        return True
+        if user.has_perm('members.delete_members'):
+            return True
+        else:
+            return False
 
     def user_can_edit_obj(self, user, obj):
-        return True
+        if user.has_perm('members.change_members'):
+            return True
+        else:
+            return False
 
 
 class MembersAdmin(ModelAdmin):
     model = Members
     button_helper_class = MembersButtonHelper
-    #permission_helper_class = MembersPermissionHelper
+    permission_helper_class = MembersPermissionHelper
     inspect_view_enabled = True
     menu_label = 'Members'  # ditch this to use verbose_name_plural from model
     menu_icon = 'list-ul'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    #list_display = ('member_name_with_address', 'list_ipaddress',
+
     list_export = ('name', 'member_id', 'ipaddress', 'network', 'address', 'location', 'get_routes_plain', 'online_at', 'offline_at')
     list_display = ('member_name_with_address',
                     'member_status', 'model_release',
@@ -201,11 +213,9 @@ class MembersAdmin(ModelAdmin):
                      'mobile_number_first',
                      'mqtt__serialnumber', 'mqtt__model', 'mqtt__uptime',
                      'mqtt__release_version')
-    #edit_view_class = MembersView
+
     create_template_name = 'modeladmin/create.html'
     edit_template_name = 'modeladmin/edit.html'
-    #base_form_class = MembersForm
-    #ordering = ['name']
 
 
     def get_list_display(self, request):
@@ -248,7 +258,6 @@ class MembersAdmin(ModelAdmin):
         return list_export
         #return super().get_list_export(request)
 
-    #def get_edit_handler(self, instance, request):
     def get_edit_handler(self):
         basic_panels = [
             #MultiFieldPanel([FieldPanel('name'), FieldPanel('description'), FieldPanel('online_at')],

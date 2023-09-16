@@ -29,32 +29,50 @@ def add_user_org_panel(request, panels):
 
 class NetworksPermissionHelper(PermissionHelper):
     def user_can_list(self, user):
-        return True
+        result = False
+        if user.has_perm('networks.view_networks'):
+            result = True
+        return result
 
     def user_can_create(self, user):
+        result = False
         if user.is_superuser:
             controllers = Controllers.objects.all().count()
             if controllers > 1:
-                return False
+                result = False
             else:
-                return True
+                result = True
         else:
             total_networks = Networks.objects.filter(organization=user.organization).count()
             if user.organization.features.number_of_network > total_networks: 
-                return True
+                result = True
             else:
-                return False
+                result = False
+
+        if not user.has_perm('networks.add_networks'):
+            result = False
+
+        return result
 
     def user_can_delete_obj(self, user, obj):
-        return True
+        result = False
+        if user.has_perm('networks.delete_networks'):
+            result = True
+        return result
 
     def user_can_edit_obj(self, user, obj):
-        return True
+        result = False
+        if user.has_perm('networks.change_networks'):
+            result = True
+        return result
 
 
 class NetworkRulesPermissionHelper(PermissionHelper):
     def user_can_list(self, user):
-        return True
+        result = False
+        if user.has_perm('networks.view_networks'):
+            result = True
+        return result
 
     def user_can_create(self, user):
         return False
@@ -63,14 +81,20 @@ class NetworkRulesPermissionHelper(PermissionHelper):
         return False
 
     def user_can_edit_obj(self, user, obj):
+        result = False
         if user.is_superuser:
             controllers = Controllers.objects.all().count()
             if controllers > 1:
-                return False
+                result = False
             else:
-                return True
+                result = True
         else:
-            return True
+            result = True
+
+        if not user.has_perm('networks.change_networks'):
+            result = False
+
+        return result
 
 
 class NetworkRoutesPermissionHelper(PermissionHelper):
@@ -256,7 +280,7 @@ class NetworkRulesAdmin(ModelAdmin):
     list_filter = ('network',)
     #search_fields = ('__str__',)
     #ordering = ['network', 'gateway']
-    #permission_helper_class = NetworkRulesPermissionHelper
+    permission_helper_class = NetworkRulesPermissionHelper
 
     #def get_edit_handler(self, instance=None, request=None):
     def get_edit_handler(self):
