@@ -162,6 +162,7 @@ class MemberProblemsAdmin(ModelAdmin):
     #list_filter = ('problem',)
 
     form_view_extra_js = ['monitor/js/inline.js', 'monitor/js/inline-monitor.js']
+    index_view_extra_js = ['monitor/js/refresh.js']
 
     panels = [
         MultiFieldPanel([
