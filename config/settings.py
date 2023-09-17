@@ -254,3 +254,4 @@ MEMBER_NEW_PERIOD = int(os.getenv('MEMBER_NEW_PERIOD', 3600))
 AXES_COOLOFF_TIME = float(os.getenv('AXES_COOLOFF_TIME', 2))
 AXES_RESET_ON_SUCCESS = True
 AXES_LOCKOUT_PARAMETERS = ['ip_address', 'username']
+AXES_LOCKOUT_TEMPLATE = 'axes/block.html'
