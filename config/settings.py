@@ -57,6 +57,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'axes',
+]
+
+AUTHENTICATION_BACKENDS = [
+    # AxesStandaloneBackend should be the first backend in the AUTHENTICATION_BACKENDS list.
+    'axes.backends.AxesStandaloneBackend',
+
+    # Django ModelBackend is the default authentication backend.
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +80,7 @@ MIDDLEWARE = [
 
 MIDDLEWARE += ('wagtail.contrib.redirects.middleware.RedirectMiddleware',)
 MIDDLEWARE += ('crum.CurrentRequestUserMiddleware',)
+MIDDLEWARE += ('axes.middleware.AxesMiddleware',)
 
 ROOT_URLCONF = 'config.urls'
 
@@ -239,3 +249,8 @@ MAP_REFRESH_INTERVAL = int(os.getenv('MAP_REFRESH_INTERVAL', 300))
 
 # MONITOR MEMBER
 MEMBER_NEW_PERIOD = int(os.getenv('MEMBER_NEW_PERIOD', 3600))
+
+# AXES
+AXES_COOLOFF_TIME = float(os.getenv('AXES_COOLOFF_TIME', 2))
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_PARAMETERS = ['ip_address', 'username']

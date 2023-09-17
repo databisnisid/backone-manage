@@ -6,6 +6,24 @@ from accounts.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
+'''
+from django.http import HttpRequest
+
+
+def get_lockout_parameters(request_or_attempt, credentials):
+
+    if isinstance(request_or_attempt, HttpRequest):
+       is_localhost = request.META.get("REMOTE_ADDR") == "127.0.0.1"
+
+    else:
+        is_localhost = request_or_attempt.ip_address == "127.0.0.1"
+
+    if is_localhost:
+       return ["username"]
+
+    return ["ip_address", "username"]
+'''
+
 
 def to_json(data):
     return json.loads(data.replace("\'", "\""))
