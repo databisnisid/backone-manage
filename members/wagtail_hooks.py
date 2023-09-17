@@ -176,10 +176,17 @@ class MembersPermissionHelper(PermissionHelper):
             return False
 
     def user_can_create(self, user):
-        if user.has_perm('members.add_members'):
-            return True
+        result = False
+        total_members = Members.objects.filter(organization=user.organization).count()
+        if user.organization.features.number_of_member > total_members: 
+            result = True
         else:
-            return False
+            result = False
+
+        if not user.has_perm('members.add_members'):
+            result = False
+
+        return result
 
     def user_can_delete_obj(self, user, obj):
         if user.has_perm('members.delete_members'):
