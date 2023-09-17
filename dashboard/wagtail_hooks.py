@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from django.utils.safestring import mark_safe
 from wagtail.admin.ui.components import Component
 from wagtail import hooks
@@ -7,6 +8,10 @@ from crum import get_current_user
 from wagtail.contrib.modeladmin.views import CreateView, EditView
 from .summary_panels import *
 from django.utils.html import format_html
+from django.utils.translation import gettext as _
+from axes.models import AccessAttempt, AccessLog, AccessFailureLog
+from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSet, SnippetViewSetGroup
 
 
 #@hooks.register("insert_global_admin_css", order=100)
@@ -77,4 +82,122 @@ def global_admin_js():
     return format_html(
         '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>'
     )
+
+'''
+@hooks.register('construct_snippet_listing_buttons')
+def remove_snippet_add_button_item(buttons, snippet, user, context=None):
+    for button in buttons:
+        index = buttons.index(button)
+
+        if 'add' in button.label.lower():
+            buttons.pop(index)
+            break
+'''
+
+class AccessAttemptSVS(SnippetViewSet):
+    model = AccessAttempt
+    menu_label = _('Access Attempt')
+    icon = 'lock-open'
+    index_template_name = 'dashboard/snippets/index.html'
+
+    exclude_from_explorer = False
+
+    add_to_admin_menu = False
+
+    list_display = [
+            "attempt_time",
+            "ip_address",
+            "user_agent",
+            "username",
+            "path_info",
+            "failures_since_start"
+            ]
+    list_filter = ["attempt_time", "path_info"]
+    search_fields = ["ip_address", "username", "user_agent", "path_info"]
+    date_hierarchy = "attempt_time"
+
+    readonly_fields = [
+            "user_agent",
+            "ip_address",
+            "username",
+            "http_accept",
+            "path_info",
+            "attempt_time",
+            "get_data",
+            "post_data",
+            "failures_since_start",
+            ]
+
+
+class AccessLogSVS(SnippetViewSet):
+    model = AccessLog
+    menu_label = _('Access Log')
+    icon = 'list-ul'
+    index_template_name = 'dashboard/snippets/index.html'
+
+    exclude_from_explorer = False
+
+    add_to_admin_menu = False
+
+    list_display = [
+            "attempt_time",
+            "logout_time",
+            "ip_address",
+            "username",
+            "user_agent",
+            "path_info",
+            ]
+    list_filter = ["attempt_time", "path_info"]
+    search_fields = ["ip_address", "username", "user_agent", "path_info"]
+    date_hierarchy = "attempt_time"
+
+    readonly_fields = [
+            "user_agent",
+            "ip_address",
+            "username",
+            "http_accept",
+            "path_info",
+            "attempt_time",
+            "logout_time",
+            ]
+
+class AccessFailureLogSVS(SnippetViewSet):
+    model = AccessFailureLog
+    menu_label = _('Access Failure')
+    icon = 'chain-broken'
+    index_template_name = 'dashboard/snippets/index.html'
+
+    exclude_from_explorer = False
+
+    add_to_admin_menu = False
+
+    list_display = [
+            "attempt_time",
+            "ip_address",
+            "username",
+            "user_agent",
+            "path_info",
+            "locked_out",
+            ]
+    list_filter = ["attempt_time", "path_info"]
+    search_fields = ["ip_address", "username", "user_agent", "path_info"]
+    date_hierarchy = "attempt_time"
+
+    readonly_fields = [
+            "user_agent",
+            "ip_address",
+            "username",
+            "http_accept",
+            "path_info",
+            "attempt_time",
+            "locked_out",
+            ]
+
+
+class AccessSnippetGroup(SnippetViewSetGroup):
+    items = (AccessAttemptSVS, AccessFailureLogSVS, AccessLogSVS)
+    menu_label = _('Access')
+    menu_icon = 'lock'
+
+register_snippet(AccessSnippetGroup)
 
