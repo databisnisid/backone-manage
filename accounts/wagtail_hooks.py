@@ -78,8 +78,12 @@ class FeaturesAdmin(ModelAdmin):
             FieldPanel('number_of_network')],
             heading=_('Network Features')),
         MultiFieldPanel([
-            FieldRowPanel([FieldPanel('authorize'), FieldPanel('member_multi_ip')]),
-            FieldRowPanel([FieldPanel('bridge'), FieldPanel('tags')])],
+            FieldRowPanel([
+                FieldPanel('authorize'), FieldPanel('member_multi_ip')]),
+            FieldRowPanel([
+                FieldPanel('bridge'), FieldPanel('tags')]),
+            FieldPanel('number_of_member'),
+            ],
             #FieldRowPanel([FieldPanel('synchronize')])],
             heading=_('Member Features')),
         MultiFieldPanel([
