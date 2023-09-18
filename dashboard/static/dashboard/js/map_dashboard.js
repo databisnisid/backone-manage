@@ -624,6 +624,7 @@ function showAllSites() {
 
 function searchSites(keyword_string) {
     var data;
+    var data_search;
 
     if (keyword_string!='') {
         if (data_backup.length)
