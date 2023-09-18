@@ -112,8 +112,8 @@ def readable_timedelta(last_online):
     now = timezone.now()
     duration = now - timezone.localtime(last_online)
     data = {}
-    data['days'], remaining = divmod(duration.total_seconds(), 86_400)
-    data['hours'], remaining = divmod(remaining, 3_600)
+    data['days'], remaining = divmod(duration.total_seconds(), 86400)
+    data['hours'], remaining = divmod(remaining, 3600)
     data['minutes'], data['seconds'] = divmod(remaining, 60)
 
     time_parts = ((name, round(value)) for name, value in data.items())
@@ -125,8 +125,8 @@ def readable_timedelta(last_online):
 
 def readable_timedelta_seconds(seconds):
     data = {}
-    data['days'], remaining = divmod(seconds, 86_400)
-    data['hours'], remaining = divmod(remaining, 3_600)
+    data['days'], remaining = divmod(seconds, 86400)
+    data['hours'], remaining = divmod(remaining, 3600)
     data['minutes'], data['seconds'] = divmod(remaining, 60)
 
     time_parts = ((name, round(value)) for name, value in data.items())
