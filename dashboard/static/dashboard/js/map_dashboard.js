@@ -141,7 +141,7 @@ function drawMarker(key) {
 
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
-    var pinGlyph;
+    var pinGlyph, glyphColor, markerColor;
     var data_marker = [];
     var return_renderer;
     var problem_link;
@@ -161,25 +161,32 @@ function drawMarker(key) {
 
       data_marker = marker_property[key].data[i];
 
-      if (key == 'is_problem')
-        if (data_marker['is_online']) {
-            marker_property[key].markerColor = marker_property['is_online'].markerColor;
-            //marker_property[key].glyphColor = marker_property['is_online'].glyphColor;
-            //marker_property[key].glyphBorder = marker_property['is_online'].glyphBorder;
-        }
-        else {
-            marker_property[key].markerColor = marker_property['is_offline'].markerColor;
-            //marker_property[key].glyphColor = marker_property['is_offline'].glyphColor;
-            //marker_property[key].glyphBorder = marker_property['is_offline'].glyphBorder;
-        }
+      markerColor = marker_property[key].markerColor;
+      if (key == 'is_problem') {
+        if (data_marker['is_online'])
+            markerColor = marker_property['is_online'].markerColor;
+            //marker_property[key].markerColor = marker_property['is_online'].markerColor;
+        else
+            markerColor = marker_property['is_offline'].markerColor;
+            //marker_property[key].markerColor = marker_property['is_offline'].markerColor;
+      }
+
+      glyphColor = marker_property[key].gyphColor;
+      if (key == 'is_offline') {
+        if (!data_marker['is_authorized'])
+          glyphColor = 'grey';
+      }
+
 
       const glyphImg = document.createElement("img");
       glyphImg.src = marker_property[key].glyph;
 
       pinGlyph = new google.maps.marker.PinElement({
-          background: marker_property[key].markerColor,
+          background: markerColor,
+          //background: marker_property[key].markerColor,
           borderColor: marker_property[key].glyphBorder,
-          glyphColor: marker_property[key].glyphColor,
+          //glyphColor: marker_property[key].glyphColor,
+          glyphColor: glyphColor,
           glyph: glyphImg,
           scale: marker_property[key].glyphScale
       });

@@ -74,6 +74,7 @@ def prepare_data(members, members_problems):
         member_geo['is_problem'] = is_found
         member_geo['problem_string'] = problem_string
         member_geo['is_new'] = 1 if is_new(member) else 0 
+        member_geo['is_authorized'] = 1 if member.is_authorized else 0 
         new_members.append(member_geo)
 
     return randomize_coordinate(new_members)
