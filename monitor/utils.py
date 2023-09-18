@@ -13,14 +13,14 @@ def compare_values(val1, val2):
 def is_problem_quota_first_gb(mqtt, threshold):
     quota_current, quota_total, quota_day = mqtt.get_quota_first()
     if quota_total:
-        return compare_value(threshold, quota_current)
+        return compare_values(threshold, quota_current)
     else:
         return False
 
 def is_problem_quota_first_day(mqtt, threshold):
     quota_current, quota_total, quota_day = mqtt.get_quota_first()
     if quota_total:
-        return compare_value(threshold, quota_day)
+        return compare_values(threshold, quota_day)
     else:
         return False
 
