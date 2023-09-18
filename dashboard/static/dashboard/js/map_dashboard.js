@@ -174,7 +174,7 @@ function drawMarker(key) {
       glyphColor = marker_property[key].gyphColor;
       if (key == 'is_offline') {
         if (!data_marker['is_authorized'])
-          glyphColor = 'grey';
+          markerColor = 'grey';
       }
 
 
