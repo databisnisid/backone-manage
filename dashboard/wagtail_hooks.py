@@ -37,8 +37,9 @@ def hide_snippets_menu_item(request, menu_items):
     menu_items[:] = [item for item in menu_items if item.name != 'images']
     menu_items[:] = [item for item in menu_items if item.name != 'help']
 
-    if not request.user.organization.features.is_nms:
-        menu_items[:] = [item for item in menu_items if item.name != 'monitor']
+    if not request.user.is_superuser:
+        if not request.user.organization.features.is_nms:
+            menu_items[:] = [item for item in menu_items if item.name != 'monitor']
 
     if not request.user.organization.features.network_rules:
         menu_items[:] = [item for item in menu_items if item.name != 'network-rules']

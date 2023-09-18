@@ -270,7 +270,7 @@ class OperationalTimeHelper(PermissionHelper):
 class OperationalTimeAdmin(ModelAdmin):
     model = OperationalTime
     permission_helper_class = OperationalTimeHelper
-    menu_label = 'Operational'
+    menu_label = 'Time'
     menu_icon = 'history'
     list_display = ('network', 'get_operational_time')
 

@@ -10,6 +10,20 @@ from .models import MonitorRules, OperationalTime
 def compare_values(val1, val2):
     return True if val1 > val2 else False
 
+def is_problem_quota_first_gb(mqtt, threshold):
+    quota_current, quota_total, quota_day = mqtt.get_quota_first()
+    if quota_total:
+        return compare_value(threshold, quota_current)
+    else:
+        return False
+
+def is_problem_quota_first_day(mqtt, threshold):
+    quota_current, quota_total, quota_day = mqtt.get_quota_first()
+    if quota_total:
+        return compare_value(threshold, quota_day)
+    else:
+        return False
+
 def is_problem_cpu(mqtt, threshold):
     load_1, load_5, load_15 = mqtt.get_cpu_usage()
     return compare_values(load_5, threshold)
@@ -31,9 +45,18 @@ check_functions = {
         'memory_usage': is_problem_memory,
         'packet_loss': is_problem_packet_loss,
         'round_trip': is_problem_round_trip,
+        'quota_first_gb': is_problem_quota_first_gb,
+        'quota_first_day': is_problem_quota_first_day,
         }
 
-item_id_list = ['cpu_usage', 'memory_usage', 'packet_loss', 'round_trip']
+item_id_list = [
+        'cpu_usage', 
+        'memory_usage', 
+        'packet_loss', 
+        'round_trip',
+        'quota_first_gb',
+        'quota_first_day',
+        ]
 
 def is_problem(member, rule, is_online):
     result = False
