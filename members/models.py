@@ -519,10 +519,10 @@ class Members(models.Model):
 
                 fifth_line = "<br /><small>QUO: {}</small>".format(quota_text)
 
-            if fifth_line == "":
-                vnstat_text = self.quota_vnstat()
-                if vnstat_text != "":
-                    fifth_line = "<br /><small>QUSE: {}</small>".format(vnstat_text)
+            sixth_line = ''
+            vnstat_text = self.quota_vnstat()
+            if vnstat_text != "":
+                sixth_line = "<br /><small>QUSE: {}</small>".format(vnstat_text)
 
             ''' Combine All Lines '''
             if self.is_mqtt_online():
@@ -531,7 +531,8 @@ class Members(models.Model):
                         second_line + 
                         third_line + 
                         fourth_line +
-                        fifth_line)
+                        fifth_line +
+                        sixth_line)
 
             else:
                 text = format_html(
@@ -540,6 +541,7 @@ class Members(models.Model):
                         third_line + 
                         fourth_line +
                         fifth_line +
+                        sixth_line +
                         "<br /><small style='color: red;'>LU: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
 
         return text
