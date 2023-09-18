@@ -623,6 +623,8 @@ function showAllSites() {
 
 
 function searchSites(keyword_string) {
+    var data;
+
     if (keyword_string!='') {
         if (data_backup.length)
             data_prev = data_backup;
@@ -635,18 +637,18 @@ function searchSites(keyword_string) {
                 data_search.push(data_prev[counter]);
             }
         } 
-        calculateMapCenter(data_search);
-        setCenterZoom();
-        
-        resetMarkersData(data_search);
-        refreshMarkersAfterReset();
-        console.log(data_search);
+
+        data = data_search;
     }
     else {
         data_prev = data_backup;
-        resetMarkersData(data_prev);
-        refreshMarkersAfterReset();
+        data = data_prev;
     }
+    calculateMapCenter(data);
+    setCenterZoom();
+        
+    resetMarkersData(data);
+    refreshMarkersAfterReset();
 }
 
 /*************************
