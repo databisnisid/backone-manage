@@ -45,7 +45,6 @@ class Mqtt(models.Model):
 
     def save(self):
         if self.packet_loss_string:
-            print(self.packet_loss_string)
             packet_loss_split = self.packet_loss_string.split(',')
             packet_loss_digit_string = packet_loss_split[2].split('%')
 

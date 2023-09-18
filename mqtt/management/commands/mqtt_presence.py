@@ -17,11 +17,11 @@ def on_message(client, userdata, message):
 
     print(str(current_time) ,msg)
     mqtt_msg = msg.split(';')
-    member_id = mqtt_msg[0:50] # max_length=50
-    model = mqtt_msg[1:50]
-    board_name = mqtt_msg[2:50]
-    release_version = mqtt_msg[3:50]
-    release_target = mqtt_msg[4:50]
+    member_id = mqtt_msg[0] # max_length=50
+    model = mqtt_msg[1]
+    board_name = mqtt_msg[2]
+    release_version = mqtt_msg[3]
+    release_target = mqtt_msg[4]
     ipaddress = mqtt_msg[5]
 
     try:
@@ -30,12 +30,12 @@ def on_message(client, userdata, message):
         is_rcall = False
 
     try:
-        uptime = mqtt_msg[7:100]
+        uptime = mqtt_msg[7]
     except IndexError:
         uptime = None
 
     try:
-        serialnumber = mqtt_msg[8:100]
+        serialnumber = mqtt_msg[8]
     except IndexError:
         serialnumber = None
 
@@ -55,35 +55,35 @@ def on_message(client, userdata, message):
     # Packet Loss
     try:
         mqtt_msg[11]
-        packet_loss_string = mqtt_msg[11:100]
+        packet_loss_string = mqtt_msg[11]
     except IndexError:
         packet_loss_string = None
 
     # Round Trip
     try:
         mqtt_msg[12]
-        round_trip_string = mqtt_msg[12:100]
+        round_trip_string = mqtt_msg[12]
     except IndexError:
         round_trip_string = None
 
     # Switch Port UP
     try:
         mqtt_msg[13]
-        switchport_up = mqtt_msg[13:20] # max_length=20
+        switchport_up = mqtt_msg[13] # max_length=20
     except IndexError:
         switchport_up = None
 
     # Port Status
     try:
         mqtt_msg[14]
-        port_status = mqtt_msg[14:200] # max_length=200
+        port_status = mqtt_msg[14] # max_length=200
     except IndexError:
         port_status = None
 
     # Quota VNSTAT
     try:
         mqtt_msg[15]
-        quota_vnstat = mqtt_msg[15:200]
+        quota_vnstat = mqtt_msg[15]
     except IndexError:
         quota_vnstat = None
 
