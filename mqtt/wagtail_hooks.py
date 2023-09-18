@@ -42,16 +42,25 @@ def remove_snippet_delete_button_item(buttons, snippet, user, context=None):
     for button in buttons:
         index = buttons.index(button)
 
-        if not user.is_superuser:
-            if 'delete' in button.label.lower():
-                buttons.pop(index)
-                break
+        if 'delete' in button.label.lower():
+            buttons.pop(index)
+            break
 '''
+
+@hooks.register('construct_snippet_listing_buttons')
+def remove_snippet_edit_button_item(buttons, snippet, user, context=None):
+    for button in buttons:
+        index = buttons.index(button)
+
+        if 'edit' in button.label.lower():
+            buttons.pop(index)
+            break
 
 #class MqttAdmin(ModelAdmin):
 class MqttAdmin(SnippetViewSet):
     model = Mqtt
     inspect_view_enabled = True
+    index_template_name = 'mqtt/snippets/index.html'
     menu_label = 'MQTT'  # ditch this to use verbose_name_plural from model
     #add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
