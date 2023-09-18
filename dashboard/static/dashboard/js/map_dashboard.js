@@ -3,6 +3,7 @@ let map;
 //var markers = [];
 var data_prev = [];
 var data_new = [];
+var data_backup = [];
 var bounds;
 var legend;
 
@@ -102,7 +103,7 @@ function setMapOnAll(key, map) {
 
 function setClusterOnAll(key, is_show) {
     if (marker_property[key].markersCluster != null) {
-        console.log(marker_property[key].markersCluster);
+        //console.log(marker_property[key].markersCluster);
         if (is_show) {
             marker_property[key].markersCluster.addMarkers(marker_property[key].markers);
             marker_property[key].markersCluster.render();
@@ -127,6 +128,11 @@ function showMarkers(key) {
         setMapOnAll(key, map);
 }
 
+function showMarkersData(data) {
+
+
+}
+
 // Deletes all markers in the array by removing references to them.
 function deleteMarkers(key) {
   hideMarkers(key);
@@ -141,7 +147,7 @@ function drawMarker(key) {
 
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
-    var pinGlyph, glyphColor, markerColor;
+    var pinGlyph, markerColor;
     var data_marker = [];
     var return_renderer;
     var problem_link;
@@ -171,12 +177,10 @@ function drawMarker(key) {
             //marker_property[key].markerColor = marker_property['is_offline'].markerColor;
       }
 
-      glyphColor = marker_property[key].gyphColor;
       if (key == 'is_offline') {
         if (!data_marker['is_authorized'])
           markerColor = 'grey';
       }
-
 
       const glyphImg = document.createElement("img");
       glyphImg.src = marker_property[key].glyph;
@@ -185,8 +189,7 @@ function drawMarker(key) {
           background: markerColor,
           //background: marker_property[key].markerColor,
           borderColor: marker_property[key].glyphBorder,
-          //glyphColor: marker_property[key].glyphColor,
-          glyphColor: glyphColor,
+          glyphColor: marker_property[key].glyphColor,
           glyph: glyphImg,
           scale: marker_property[key].glyphScale
       });
@@ -212,6 +215,7 @@ function drawMarker(key) {
       });
 
       const time = 1 + Math.random(); // 2s delay for easy to see the animation
+      //const time = Math.random(); // 2s delay for easy to see the animation
 
       content.style.setProperty("--delay-time", time + "s");
       intersectionObserverDrop.observe(content);
@@ -379,6 +383,84 @@ function toggleMarkers(key) {
     }
 }
 
+function resetMarkersData(data) {
+    marker_property.is_new.data = [];
+    marker_property.is_online.data = [];
+    marker_property.is_offline.data = [];
+    marker_property.is_problem.data = [];
+
+    for (i = 0; i < data.length; i++) {  
+        if (data[i]['is_new'])
+            marker_property.is_new.data.push(data[i]);
+        else
+            if (data[i]['is_problem'])
+                marker_property.is_problem.data.push(data[i]);
+            else
+                if (data[i]['is_online'])
+                    marker_property.is_online.data.push(data[i]);
+                else
+                    marker_property.is_offline.data.push(data[i]);
+    }
+    data_prev = data;
+}
+
+function refreshMarkersAfterReset() {
+    let total_sites = 0;
+
+    for (let key in marker_property) {
+        deleteMarkers(key);
+        drawMarker(key);
+
+        total_sites += marker_property[key].data.length;
+
+        // Remove Elements
+        let divRemove = document.getElementById(key);
+        if (divRemove)
+            divRemove.remove()
+
+        // Create Legend
+        if (marker_property[key].data.length > 0) {
+            let div = document.createElement('div');
+            div.innerHTML =  '<button id="' + key + '"' +
+                ' style="background-color: white;"' + 
+                ' onclick="toggleMarkers(\'' + key + '\');">' +
+                marker_property[key].title + 
+                ': ' + marker_property[key].data.length + '</button>';
+            legend.appendChild(div);
+
+            if (! marker_property[key].is_show) {
+                let keyElement = document.getElementById(key);
+                let keyElementText = keyElement.textContent;
+                keyElement.innerHTML = keyElementText.strike();
+            }
+        }
+    }
+
+    let divTotalRemove = document.getElementById('total_sites');
+    if (divTotalRemove)
+        divTotalRemove.remove()
+
+    let div = document.createElement('div');
+    div.innerHTML =  '<button id="total_sites"' +
+        ' style="background-color: white; margin-top: 5px;"' +
+        ' onclick="showAllSites()">TOTAL: ' + 
+        total_sites + '</button>';
+    legend.appendChild(div);
+
+}
+
+function calculateMapCenter(data) {
+    var latlngList = [];
+    for (i = 0; i < data.length; i++) {  
+        latlngList.push(new google.maps.LatLng(data[i]['lat'], data[i]['lng']));
+
+        bounds = new google.maps.LatLngBounds();
+        latlngList.forEach(function(n) {
+            bounds.extend(n);
+        });
+    }
+}
+
 async function redrawMarkers() {
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
@@ -401,8 +483,10 @@ async function redrawMarkers() {
     if (! is_equal) {
 
         //data_prev = data_new;
-        data = data_new;
+        //data = data_new;
 
+        calculateMapCenter(data_new);
+        /*
         var latlngList = [];
         for (i = 0; i < data.length; i++) {  
             latlngList.push(new google.maps.LatLng(data[i]['lat'], data[i]['lng']));
@@ -412,12 +496,16 @@ async function redrawMarkers() {
                 bounds.extend(n);
             });
         }
+        */
 
         if (! data_prev.length)
             setCenterZoom();
 
-        data_prev = data_new;
+        //data_prev = data_new;
 
+        resetMarkersData(data_new);
+        refreshMarkersAfterReset();
+        /*
         marker_property.is_new.data = [];
         marker_property.is_online.data = [];
         marker_property.is_offline.data = [];
@@ -435,14 +523,17 @@ async function redrawMarkers() {
                     else
                         marker_property.is_offline.data.push(data[i]);
         }
+        */
 
         //deleteMarkers();
+        /*
         let total_sites = 0;
 
         for (let key in marker_property) {
-            total_sites += marker_property[key].data.length;
             deleteMarkers(key);
             drawMarker(key);
+
+            total_sites += marker_property[key].data.length;
 
             // Remove Elements
             let divRemove = document.getElementById(key);
@@ -477,6 +568,7 @@ async function redrawMarkers() {
             ' onclick="showAllSites()">TOTAL: ' + 
             total_sites + '</button>';
         legend.appendChild(div);
+        */
     }
 }
 
@@ -529,13 +621,46 @@ function showAllSites() {
     */
 }
 
+
+function searchSites(keyword_string) {
+    if (keyword_string!='') {
+        if (data_backup.length)
+            data_prev = data_backup;
+        else
+            data_backup = data_prev;
+        data_search = [];
+        for (let counter=0; counter < data_prev.length; counter++) {
+            data_string = JSON.stringify(data_prev[counter]).toLowerCase();
+            if (data_string.includes(keyword_string.toLowerCase())) {
+                data_search.push(data_prev[counter]);
+            }
+        } 
+        resetMarkersData(data_search);
+        refreshMarkersAfterReset();
+        console.log(data_search);
+    }
+    else {
+        data_prev = data_backup;
+        resetMarkersData(data_prev);
+        refreshMarkersAfterReset();
+    }
+}
+
 /*************************
  * Toggle Cluster Button
  *************************/
-function createToggleClusterControl(map) {
-  const controlButton = document.createElement("button");
+function searchSitesControl(map) {
+  const controlButton = document.createElement("input");
 
   // Set CSS for the control.
+  controlButton.style.margin = "8px 3px 22px";
+  controlButton.style.padding = "0 5px";
+  controlButton.style.border = "2px solid #fff";
+  controlButton.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+  controlButton.style.fontFamily = "Roboto,Arial,sans-serif";
+  controlButton.style.fontSize = "16px";
+  controlButton.style.lineHeight = "32px";
+  /*
   controlButton.style.backgroundColor = "#fff";
   controlButton.style.border = "2px solid #fff";
   controlButton.style.borderRadius = "3px";
@@ -550,27 +675,16 @@ function createToggleClusterControl(map) {
   controlButton.style.textAlign = "center";
   controlButton.textContent = "Toggle Cluster";
   controlButton.title = "Click to toggle clustering";
-  controlButton.type = "button";
-  // Setup the click event listeners: simply set the map to Chicago.
-  controlButton.addEventListener("click", () => {
-    for (let key in marker_property) {
-        if (marker_property[key].is_cluster) {
-            marker_property[key].is_cluster = false;
-            hideMarkers(key);
-            showMarkers(key);
-        }
-        else {
-            if (key == 'is_online')
-                marker_property[key].is_cluster = true;
-
-            if (key == 'is_offline')
-                marker_property[key].is_cluster = true;
-            hideMarkers(key);
-            showMarkers(key);
-        }
+  */
+  controlButton.type = "input";
+  // Execute a function when the user presses a key on the keyboard
+  controlButton.addEventListener("keypress", function(event) {
+    // If the user presses the "Enter" key on the keyboard
+    if (event.key === "Enter") {
+        // Cancel the default action, if needed
+        event.preventDefault();
+        searchSites(controlButton.value);
     }
-    //api_params.new_query = false;
-    //redrawMarkers();
   });
   return controlButton;
 }
@@ -596,17 +710,15 @@ async function initMap() {
     // Create the control.
     const centerControl = createCenterControl(map);
 
-    const toggleClusterDiv = document.createElement("div");
-    const toggleCluster = createToggleClusterControl(map);
+    const searchSitesDiv = document.createElement("div");
+    const searchSites = searchSitesControl(map);
 
     // Append the control to the DIV.
     centerControlDiv.appendChild(centerControl);
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
 
-    /*
-    toggleClusterDiv.appendChild(toggleCluster);
-    map.controls[google.maps.ControlPosition.TOP_CENTER].push(toggleClusterDiv);
-    */
+    searchSitesDiv.appendChild(searchSites);
+    map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(searchSitesDiv);
 
     legend = document.getElementById("legend");
     map.controls[google.maps.ControlPosition.RIGHT_TOP].push(legend);
