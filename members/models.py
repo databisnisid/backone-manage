@@ -490,17 +490,19 @@ class Members(models.Model):
             item_id = 'packet_loss'
             value = self.packet_loss()
             color = 'red' if item_id in alarms else ''
-            fourth_line += "<br /><span style='color: {};'>PL: {}%</span>".format(color, value)
+            if value:
+                fourth_line += "<br /><span style='color: {};'>PL: {}% - </span>".format(color, value)
 
             ''' ROUND_TRIP '''
             item_id = 'round_trip'
             value = self.round_trip()
             color = 'red' if item_id in alarms else ''
-            fourth_line += " - <span style='color: {};'>RT: {}ms<span>".format(color, value)
+            if value:
+                fourth_line += "<span style='color: {};'>RT: {}ms<span>".format(color, value)
 
             fourth_line += "</small>"
 
-            ''' Fifth line QUOTA '''
+            ''' Fifth line QUOTA FIRST '''
             fifth_line = ""
 
             quota_current, quota_total, quota_day = self.mqtt.get_quota_first()
@@ -515,7 +517,12 @@ class Members(models.Model):
                 color = '' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
                 quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
 
-                fifth_line = "<br /><small>QUOTA: {}</small>".format(quota_text)
+                fifth_line = "<br /><small>QUO: {}</small>".format(quota_text)
+
+            if fifth_line == "":
+                vnstat_text = self.quota_vnstat()
+                if vnstat_text != "":
+                    fifth_line = "<br /><small>QUSE: {}</small>".format(vnstat_text)
 
             ''' Combine All Lines '''
             if self.is_mqtt_online():
