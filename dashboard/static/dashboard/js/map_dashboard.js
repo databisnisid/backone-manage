@@ -635,7 +635,7 @@ function searchSites(keyword_string) {
                 data_search.push(data_prev[counter]);
             }
         } 
-        calculateMapCenter();
+        calculateMapCenter(data_search);
         setCenterZoom();
         
         resetMarkersData(data_search);
