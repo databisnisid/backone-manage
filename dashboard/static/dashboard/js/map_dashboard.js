@@ -647,19 +647,22 @@ function searchSites(keyword_string) {
 }
 
 /*************************
- * Toggle Cluster Button
+ * Search Input
  *************************/
 function searchSitesControl(map) {
   const controlButton = document.createElement("input");
 
   // Set CSS for the control.
   controlButton.style.margin = "8px 3px 22px";
-  controlButton.style.padding = "0 5px";
-  controlButton.style.border = "2px solid #fff";
+  //controlButton.style.padding = "0 0px";
+  controlButton.style.borderRadius = "5em";
+  controlButton.style.border = "0px solid #fff";
   controlButton.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
   controlButton.style.fontFamily = "Roboto,Arial,sans-serif";
   controlButton.style.fontSize = "16px";
-  controlButton.style.lineHeight = "32px";
+  controlButton.style.lineHeight = "2em";
+  controlButton.style.textAlign = "center";
+  controlButton.placeholder = "search";
   /*
   controlButton.style.backgroundColor = "#fff";
   controlButton.style.border = "2px solid #fff";
