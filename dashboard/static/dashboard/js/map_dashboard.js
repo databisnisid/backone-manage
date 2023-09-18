@@ -635,6 +635,9 @@ function searchSites(keyword_string) {
                 data_search.push(data_prev[counter]);
             }
         } 
+        calculateMapCenter();
+        setCenterZoom();
+        
         resetMarkersData(data_search);
         refreshMarkersAfterReset();
         console.log(data_search);
