@@ -321,3 +321,4 @@ class MonitorAdminGroup(ModelAdminGroup):
 
 
 modeladmin_register(MonitorAdminGroup)
+
