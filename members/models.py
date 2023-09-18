@@ -399,10 +399,10 @@ class Members(models.Model):
 
     def get_alarms(self):
         result = []
-        rules = check_members_vs_rules(self, self.is_online())
-        for rule in rules:
-            result.append(rule.item.item_id)
-
+        if self.organization.features.is_nms:
+            rules = check_members_vs_rules(self, self.is_online())
+            for rule in rules:
+                result.append(rule.item.item_id)
         return result
 
     def memory_usage(self):

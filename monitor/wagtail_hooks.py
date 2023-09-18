@@ -315,9 +315,9 @@ class OperationalTimeAdmin(ModelAdmin):
 
 class MonitorAdminGroup(ModelAdminGroup):
     menu_label = _("Monitor")
+    menu_icon = 'view'
     items = (MonitorItemsAdmin, MonitorRulesAdmin, OperationalTimeAdmin,
              MemberProblemsAdmin, MemberProblemsHistoryAdmin)
-    #items = (MonitorItemsAdmin, MonitorRulesAdmin, OperationalTimeAdmin)
 
 
 modeladmin_register(MonitorAdminGroup)

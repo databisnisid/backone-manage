@@ -14,7 +14,7 @@ class Features(models.Model):
     network_multi_ip = models.BooleanField(_('Network Multi IP'), default=False)
     network_rules = models.BooleanField(_('Network Rules'), default=False)
     # Member
-    number_of_member = models.IntegerField(_('Number of Members'), default=100)
+    number_of_member = models.IntegerField(_('Number of Members'), default=10)
     member_multi_ip = models.BooleanField(_('Member Multi IP'), default=False)
     authorize = models.BooleanField(_('Authorize'), default=False)
     bridge = models.BooleanField(_('Bridge'), default=False)
