@@ -1,3 +1,4 @@
+from os import walk
 from wagtail.admin.ui.components import Component
 from django.db.models import Count
 from django.conf import settings
@@ -9,13 +10,13 @@ from random import randint
 from django.utils.translation import gettext as _
 from config.utils import to_dictionary
 from django.core.exceptions import ObjectDoesNotExist
+from members.utils import get_unique_members
 #from monitor.models import MemberProblems
 
 
 class MapSummaryPanel(Component):
     order = 40
     template_name = "dashboard/map_dashboard.html"
-    #template_name = "dashboard/map_summary.html"
 
     def __init__(self):
         user = get_current_user()
@@ -142,7 +143,10 @@ class MemberChartsPanel(Component):
         else:
             members = Members.objects.filter(organization=user.organization)
 
-        for member in members:
+        members_unique = get_unique_members(members)
+
+        #for member in members:
+        for member in members_unique:
             peers = to_dictionary('{}')
             if member.peers:
                 peers = to_dictionary(member.peers.peers)
