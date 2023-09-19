@@ -49,6 +49,7 @@ def remove_snippet_delete_button_item(buttons, snippet, user, context=None):
 
 @hooks.register('construct_snippet_listing_buttons')
 def remove_snippet_edit_button_item(buttons, snippet, user, context=None):
+    print(snippet)
     for button in buttons:
         index = buttons.index(button)
 

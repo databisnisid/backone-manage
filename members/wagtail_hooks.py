@@ -383,8 +383,8 @@ class MemberPeersAdmin(SnippetViewSet):
     list_per_page = 50
 
     # Wagtail 5.1.1
-    #add_to_admin_menu = True
-    #menu_order = 999
+    add_to_admin_menu = True
+    menu_order = 999
     #list_per_page = 50
     #icon = 'grip'  # change as required
 
