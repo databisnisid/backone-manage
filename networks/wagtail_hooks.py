@@ -30,20 +30,25 @@ def add_user_org_panel(request, panels):
 
 
 class NetworksPermissionHelper(PermissionHelper):
+    '''
     def user_can_list(self, user):
         result = False
         if user.has_perm('networks.view_networks'):
             result = True
         return result
+    '''
 
     def user_can_create(self, user):
-        result = False
+        result = True
         if user.is_superuser:
+            result = False
+            '''
             controllers = Controllers.objects.all().count()
             if controllers > 1:
                 result = False
             else:
                 result = True
+            '''
         else:
             total_networks = Networks.objects.filter(organization=user.organization).count()
             if user.organization.features.number_of_network > total_networks: 
@@ -56,6 +61,7 @@ class NetworksPermissionHelper(PermissionHelper):
 
         return result
 
+    '''
     def user_can_delete_obj(self, user, obj):
         result = False
         if user.has_perm('networks.delete_networks'):
@@ -67,14 +73,17 @@ class NetworksPermissionHelper(PermissionHelper):
         if user.has_perm('networks.change_networks'):
             result = True
         return result
+    '''
 
 
 class NetworkRulesPermissionHelper(PermissionHelper):
+    '''
     def user_can_list(self, user):
         result = False
-        if user.has_perm('networks.view_networks'):
+        if user.has_perm('networks.view_networkrules'):
             result = True
         return result
+    '''
 
     def user_can_create(self, user):
         return False
@@ -84,7 +93,9 @@ class NetworkRulesPermissionHelper(PermissionHelper):
 
     def user_can_edit_obj(self, user, obj):
         result = False
-        if user.is_superuser:
+        if not user.is_superuser:
+            result = True
+        '''
             controllers = Controllers.objects.all().count()
             if controllers > 1:
                 result = False
@@ -92,8 +103,9 @@ class NetworkRulesPermissionHelper(PermissionHelper):
                 result = True
         else:
             result = True
+        '''
 
-        if not user.has_perm('networks.change_networks'):
+        if not user.has_perm('networks.change_networkrules'):
             result = False
 
         return result
@@ -101,11 +113,14 @@ class NetworkRulesPermissionHelper(PermissionHelper):
 
 class NetworkRoutesPermissionHelper(PermissionHelper):
     def user_can_delete_obj(self, user, obj):
-        print('Instance Delete', user)
+        #print('Instance Delete', user)
+        result = True
         if obj.gateway is None:
             return False
         else:
             if user.is_superuser:
+                return False
+                '''
                 controllers = Controllers.objects.all().count()
                 if controllers > 1:
                     return False
@@ -113,6 +128,12 @@ class NetworkRoutesPermissionHelper(PermissionHelper):
                     return True
             else:
                 return True
+                '''
+
+        if not user.has_perm('networks.delete_networkroutes'):
+            result = False
+
+        return result
 
     def user_can_edit_obj(self, user, obj):
         return False
