@@ -48,7 +48,7 @@ def remove_snippet_delete_button_item(buttons, snippet, user, context=None):
 '''
 
 @hooks.register('construct_snippet_listing_buttons')
-def remove_snippet_edit_button_item(buttons, snippet, user, context=None):
+def remove_snippet_edit_button_mqtt(buttons, snippet, user, context=None):
     #print(snippet)
     for button in buttons:
         index = buttons.index(button)
@@ -56,8 +56,9 @@ def remove_snippet_edit_button_item(buttons, snippet, user, context=None):
         print(button.url)
 
         if 'edit' in button.label.lower():
-            buttons.pop(index)
-            break
+            if 'mqtt/mqtt/' in button.url:
+                buttons.pop(index)
+                break
 
 #class MqttAdmin(ModelAdmin):
 class MqttAdmin(SnippetViewSet):
