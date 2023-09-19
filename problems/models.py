@@ -62,7 +62,7 @@ class MemberProblems(ClusterableModel):
     def save(self):
         if self.is_done:
             delta = timezone.now() - timezone.localtime(self.start_at)
-            self.duration = delta.seconds
+            self.duration = delta.total_seconds()
 
         return super(MemberProblems, self).save()
 
@@ -71,12 +71,13 @@ class MemberProblems(ClusterableModel):
         delta = timezone.now() - timezone.localtime(self.start_at)
 
         color = 'black'
-        if delta.seconds > DURATION_RED_ALERT:
+        #if delta.seconds > DURATION_RED_ALERT:
+        if delta.total_seconds() > DURATION_RED_ALERT:
             color = 'red'
 
-        print(readable_timedelta_seconds(delta.seconds), delta.seconds)
+        #print(readable_timedelta_seconds(delta.total_seconds()), delta.seconds)
         duration_html = format_html("<span style='style: {}'>{}</span>",
-                                    color, readable_timedelta_seconds(delta.seconds))
+                                    color, readable_timedelta_seconds(delta.total_seconds()))
         return duration_html
     duration_text_undone.short_description = _('Duration')
 
