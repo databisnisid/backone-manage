@@ -371,6 +371,7 @@ class MemberPeersAdmin(SnippetViewSet):
 
     model = MemberPeers
     inspect_view_enabled = True
+    index_template_name = 'mqtt/snippets/index.html'
     menu_label = 'MemberPeers'  # ditch this to use verbose_name_plural from model
     #add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
@@ -378,7 +379,7 @@ class MemberPeersAdmin(SnippetViewSet):
     permission_helper_class = MemberPeersPermissionHelper
     list_filter = ('network',)
     #search_fields = ('name', 'member_id', 'ipaddress')
-    menu_icon = 'grip'
+    #menu_icon = 'grip'
     #ordering = ['name']
     list_per_page = 50
 
@@ -386,7 +387,7 @@ class MemberPeersAdmin(SnippetViewSet):
     add_to_admin_menu = True
     menu_order = 999
     #list_per_page = 50
-    #icon = 'grip'  # change as required
+    icon = 'grip'  # change as required
 
 
 modeladmin_register(MembersAdmin)

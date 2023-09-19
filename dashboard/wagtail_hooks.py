@@ -103,6 +103,7 @@ class AccessAttemptSVS(SnippetViewSet):
     model = AccessAttempt
     menu_label = _('Access Attempt')
     icon = 'lock-open'
+    inspect_view_enabled = True
     index_template_name = 'dashboard/snippets/index.html'
 
     exclude_from_explorer = False
