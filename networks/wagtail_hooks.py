@@ -261,6 +261,13 @@ class NetworksAdmin(ModelAdmin):
         else:
             return Networks.objects.all()
 
+    def get_list_display(self, request):
+        if request.user.is_superuser:
+            list_display = ['name', 'network_id', 'ip_allocation', 'controller', 'qr_network_id']
+        else:
+            list_display = ['name', 'network_id', 'ip_allocation', 'qr_network_id']
+        return list_display
+
 
 class NetworkRoutesAdmin(ModelAdmin):
     model = NetworkRoutes
