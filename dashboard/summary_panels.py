@@ -49,7 +49,7 @@ class NetworksChartsPanel(Component):
         for network in networks:
             self.networks_name[network.network_id] = network.name
             self.routes_per_network[network.network_id] = NetworkRoutes.objects.filter(network=network).count()
-            members = Members.objects.filter(network=network).count()
+            members = Members.objects.filter(network=network)
             members_unique = get_unique_members(members)
             self.member_per_network[network.network_id] = len(members_unique)
             #self.member_per_network[network.network_id] = Members.objects.filter(network=network).count()
