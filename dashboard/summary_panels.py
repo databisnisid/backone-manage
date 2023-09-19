@@ -15,7 +15,7 @@ from members.utils import get_unique_members
 
 
 class MapSummaryPanel(Component):
-    order = 40
+    order = 10
     template_name = "dashboard/map_dashboard.html"
 
     def __init__(self):
@@ -31,7 +31,7 @@ class MapSummaryPanel(Component):
 
 
 class NetworksChartsPanel(Component):
-    order = 60
+    order = 90
     template_name = 'dashboard/networks_charts.html'
 
     def __init__(self):
@@ -49,21 +49,14 @@ class NetworksChartsPanel(Component):
         for network in networks:
             self.networks_name[network.network_id] = network.name
             self.routes_per_network[network.network_id] = NetworkRoutes.objects.filter(network=network).count()
-            #members = Members.objects.filter(network=network)
-            #members_unique = get_unique_members(members)
-            #self.member_per_network[network.network_id] = len(members_unique)
             self.member_per_network[network.network_id] = Members.objects.filter(network=network).count()
 
-        #print(self.networks_name)
-        #print(self.routes_per_network)
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
         data_route = []
         data_member = []
         labels = []
-        #backgroundColor_route = []
-        #backgroundColor_member = []
         chart_title_route = _('Number of Routes per Network')
         chart_title_member = _('Number of Members per Network')
 
@@ -73,21 +66,13 @@ class NetworksChartsPanel(Component):
             data_member.append(member)
         for name in self.networks_name.values():
             labels.append(name)
-            '''
-            backgroundColor_route.append('rgba({}, {}, {}, 0.7'.format(
-                randint(0, 200), randint(0, 200), 255))
-            backgroundColor_member.append('rgba({}, {}, {}, 0.7'.format(
-                255, randint(0, 200), randint(0, 200)))
-            '''
 
         context['data_route'] = data_route
         context['data_member'] = data_member
         context['labels'] = labels
-        #context['backgroundColor_route'] = backgroundColor_route
-        #context['backgroundColor_member'] = backgroundColor_member
         context['chart_title_route'] = chart_title_route
         context['chart_title_member'] = chart_title_member
-        #print(context)
+
         return context
 
 
@@ -117,16 +102,6 @@ class NetworksSummaryPanel(Component):
         context['members'] = self.members
 
         return context
-    '''
-    def render_html(self, parent_context):
-        return mark_safe("""
-        <section class="panel summary nice-padding">
-          <h1>Networks: """ + str(self.networks) +
-                         """<br />Routes: """ + str(self.network_routes) +
-                         """<br />Members: """ + str(self.members) + """</h1>
-        </section>
-        """)
-    '''
 
 
 class MemberChartsPanel(Component):
@@ -139,13 +114,7 @@ class MemberChartsPanel(Component):
             'ONLINE': 0,
             'OFFLINE': 0,
         }
-        '''
-        self.member_status = {
-            'DIRECT': 0,
-            'OFFLINE': 0,
-            'RELAY': 0,
-        }
-        '''
+
         self.member_version = {}
         if user.is_superuser:
             members = Members.objects.all()
@@ -156,7 +125,6 @@ class MemberChartsPanel(Component):
 
         members_unique = get_unique_members(members)
 
-        #for member in members:
         for member in members_unique:
             peers = to_dictionary('{}')
             if member.peers:
@@ -176,30 +144,11 @@ class MemberChartsPanel(Component):
             else:
                 self.member_status['OFFLINE'] += 1
 
-            '''
-                if latency < 0:
-                    self.member_status['RELAY'] += 1
-                else:
-                    self.member_status['DIRECT'] += 1
-
-            else:
-                self.member_status['OFFLINE'] += 1
-            '''
-
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
         data_status = []
         data_version = []
-        #labels = ['DIRECT', 'OFFLINE', 'RELAY']
         labels = ['ONLINE', 'OFFLINE']
-        '''
-        backgroundColor_status = [
-            'rgba(0, 76, 76, 1.0)',
-            'rgba(79, 78, 81, 1.0)',
-            'rgba(100, 33, 51, 1.0)'
-        ]
-        '''
-        #backgroundColor_version = []
 
         labels_version = []
 
@@ -209,8 +158,6 @@ class MemberChartsPanel(Component):
         for version in self.member_version:
             labels_version.append(version)
             data_version.append(self.member_version[version])
-            #backgroundColor_version.append('rgba({}, {}, {}, 0.7'.format(
-            #    randint(0, 100), 125, randint(100, 255)))
 
         is_data_status = False
         is_data_version = False
@@ -224,8 +171,6 @@ class MemberChartsPanel(Component):
 
         context['labels'] = labels
         context['labels_version'] = labels_version
-        #context['backgroundColor_status'] = backgroundColor_status
-        #context['backgroundColor_version'] = backgroundColor_version
         context['data_status'] = data_status
         context['data_version'] = data_version
         context['chart_title_status'] = 'Members Status Distribution'
@@ -316,29 +261,21 @@ class ModelChartsPanel(Component):
 
         labels_model = []
         data_model = []
-        #backgroundColor_model = []
         labels_version = []
         data_version = []
-        #backgroundColor_version = []
 
         for model in self.model:
             labels_model.append(model['mqtt__model'])
             data_model.append(model['mcount'])
-            #backgroundColor_model.append('rgba({}, {}, {}, 0.7'.format(
-            #    randint(0, 100), randint(100, 255), 100))
 
         for version in self.version:
             labels_version.append(version['mqtt__release_version'])
             data_version.append(version['mcount'])
-            #backgroundColor_version.append('rgba({}, {}, {}, 0.7'.format(
-            #    200, randint(0, 200), randint(200, 255)))
 
         context['labels_model'] = labels_model
         context['labels_version'] = labels_version
         context['data_model'] = data_model
         context['data_version'] = data_version
-        #context['backgroundColor_model'] = backgroundColor_model
-        #context['backgroundColor_version'] = backgroundColor_version
         context['chart_title_model'] = 'Model Distribution'
         context['chart_title_version'] = 'Platform Distribution'
         context['is_data_model'] = True if len(data_model)>1 else False
