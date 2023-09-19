@@ -51,10 +51,12 @@ class NetworksPermissionHelper(PermissionHelper):
             '''
         else:
             total_networks = Networks.objects.filter(organization=user.organization).count()
-            if user.organization.features.number_of_network > total_networks: 
-                result = True
+            if user.organization.features.number_of_network <= total_networks: 
+                result = False
+            '''
             else:
                 result = False
+            '''
 
         if not user.has_perm('networks.add_networks'):
             result = False
