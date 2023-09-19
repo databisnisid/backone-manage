@@ -49,10 +49,10 @@ class NetworksChartsPanel(Component):
         for network in networks:
             self.networks_name[network.network_id] = network.name
             self.routes_per_network[network.network_id] = NetworkRoutes.objects.filter(network=network).count()
-            members = Members.objects.filter(network=network)
-            members_unique = get_unique_members(members)
-            self.member_per_network[network.network_id] = len(members_unique)
-            #self.member_per_network[network.network_id] = Members.objects.filter(network=network).count()
+            #members = Members.objects.filter(network=network)
+            #members_unique = get_unique_members(members)
+            #self.member_per_network[network.network_id] = len(members_unique)
+            self.member_per_network[network.network_id] = Members.objects.filter(network=network).count()
 
         #print(self.networks_name)
         #print(self.routes_per_network)
@@ -163,6 +163,7 @@ class MemberChartsPanel(Component):
                 except KeyError:
                     self.member_version['v' + version] = 1
 
+            '''
                 if latency < 0:
                     self.member_status['RELAY'] += 1
                 else:
@@ -170,12 +171,20 @@ class MemberChartsPanel(Component):
 
             else:
                 self.member_status['OFFLINE'] += 1
+            '''
+            if member.is_online():
+                self.member_status['ONLINE'] += 1
+            else:
+                self.member_status['OFFLINE'] += 1
+
+
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
         data_status = []
         data_version = []
-        labels = ['DIRECT', 'OFFLINE', 'RELAY']
+        #labels = ['DIRECT', 'OFFLINE', 'RELAY']
+        labels = ['ONLINE', 'OFFLINE']
         backgroundColor_status = [
             'rgba(0, 76, 76, 1.0)',
             'rgba(79, 78, 81, 1.0)',
@@ -206,8 +215,8 @@ class MemberChartsPanel(Component):
 
         context['labels'] = labels
         context['labels_version'] = labels_version
-        context['backgroundColor_status'] = backgroundColor_status
-        context['backgroundColor_version'] = backgroundColor_version
+        #context['backgroundColor_status'] = backgroundColor_status
+        #context['backgroundColor_version'] = backgroundColor_version
         context['data_status'] = data_status
         context['data_version'] = data_version
         context['chart_title_status'] = 'Members Status Distribution'
