@@ -134,10 +134,16 @@ class MemberChartsPanel(Component):
     def __init__(self):
         user = get_current_user()
         self.member_status = {
+            'ONLINE': 0,
+            'OFFLINE': 0,
+        }
+        '''
+        self.member_status = {
             'DIRECT': 0,
             'OFFLINE': 0,
             'RELAY': 0,
         }
+        '''
         self.member_version = {}
         if user.is_superuser:
             members = Members.objects.all()
