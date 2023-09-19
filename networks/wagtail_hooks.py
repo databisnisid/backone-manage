@@ -1,6 +1,8 @@
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, PermissionHelper, modeladmin_register)
-
+#from wagtail import hooks
+#from wagtail.snippets.models import register_snippet
+#from wagtail.snippets.views.snippets import SnippetViewSet
 from members.models import Members
 #from wagtail.contrib.modeladmin.views import InspectView
 from .models import Networks, NetworkRoutes, NetworkRules
@@ -268,21 +270,53 @@ class NetworkRoutesAdmin(ModelAdmin):
         else:
             return NetworkRoutes.objects.all()
 
+'''
+@hooks.register('construct_snippet_listing_buttons')
+def remove_snippet_delete_button_networkrules(buttons, snippet, user, context=None):
+    for button in buttons:
+        index = buttons.index(button)
+
+        if 'delete' in button.label.lower():
+            if 'networks/networkrules/' in button.url:
+                buttons.pop(index)
+                break
+
+@hooks.register('construct_snippet_listing_buttons')
+def remove_snippet_edit_button_networkrules(buttons, snippet, user, context=None):
+    for button in buttons:
+        index = buttons.index(button)
+
+        if 'edit' in button.label.lower():
+            if user.is_superuser:
+                buttons.pop(index)
+                break
+'''
 
 class NetworkRulesAdmin(ModelAdmin):
+#class NetworkRulesAdmin(SnippetViewSet):
     model = NetworkRules
     #inspect_view_enabled = True
+    #index_template_name = 'networks/snippets/index.html'
     menu_label = 'Network Rules'  # ditch this to use verbose_name_plural from model
     menu_icon = 'tag'  # change as required
+    #icon = 'tag'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
+    #add_to_admin_menu = True
     list_display = ('name', 'network',)
-    list_filter = ('network',)
+    #list_filter = ('network',)
+    #menu_order = 999
     #search_fields = ('__str__',)
     #ordering = ['network', 'gateway']
     permission_helper_class = NetworkRulesPermissionHelper
+    panels = [
+        MultiFieldPanel([FieldPanel('network'),
+            FieldPanel('rules_definition')],
+                heading=_('Network Rules')),
+    ]
 
     #def get_edit_handler(self, instance=None, request=None):
+    '''
     def get_edit_handler(self):
         basic_panels = [
             MultiFieldPanel([FieldPanel('network'),
@@ -301,6 +335,7 @@ class NetworkRulesAdmin(ModelAdmin):
             return ObjectList(advance_panels)
         else:
             return ObjectList(basic_panels)
+    '''
 
     def get_queryset(self, request):
         #current_user = get_user()
@@ -318,6 +353,7 @@ class NetworkRulesAdmin(ModelAdmin):
 modeladmin_register(NetworksAdmin)
 modeladmin_register(NetworkRoutesAdmin)
 modeladmin_register(NetworkRulesAdmin)
+#register_snippet(NetworkRulesAdmin)
 
 
 '''
