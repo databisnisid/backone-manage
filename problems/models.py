@@ -74,6 +74,7 @@ class MemberProblems(ClusterableModel):
         if delta.seconds > DURATION_RED_ALERT:
             color = 'red'
 
+        print(readable_timedelta_seconds(delta.seconds), delta.seconds)
         duration_html = format_html("<span style='style: {}'>{}</span>",
                                     color, readable_timedelta_seconds(delta.seconds))
         return duration_html
