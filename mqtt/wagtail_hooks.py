@@ -53,6 +53,7 @@ def remove_snippet_edit_button_item(buttons, snippet, user, context=None):
     for button in buttons:
         index = buttons.index(button)
         print(button.label)
+        print(button.url)
 
         if 'edit' in button.label.lower():
             buttons.pop(index)
