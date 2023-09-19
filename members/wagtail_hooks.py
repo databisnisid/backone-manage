@@ -366,8 +366,8 @@ class MembersAdmin(ModelAdmin):
 
 
 
-#class MemberPeersAdmin(SnippetViewSet):
-class MemberPeersAdmin(ModelAdmin):
+class MemberPeersAdmin(SnippetViewSet):
+#class MemberPeersAdmin(ModelAdmin):
 
     model = MemberPeers
     inspect_view_enabled = True
@@ -390,5 +390,5 @@ class MemberPeersAdmin(ModelAdmin):
 
 
 modeladmin_register(MembersAdmin)
-modeladmin_register(MemberPeersAdmin)
-#register_snippet(MemberPeersAdmin)
+#modeladmin_register(MemberPeersAdmin)
+register_snippet(MemberPeersAdmin)
