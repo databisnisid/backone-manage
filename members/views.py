@@ -39,7 +39,7 @@ def is_new(member):
     am_i_new = True
 
     timedelta = timezone.now() - member.created_at
-    if timedelta.seconds > settings.MEMBER_NEW_PERIOD:
+    if timedelta.total_seconds() > settings.MEMBER_NEW_PERIOD:
         am_i_new = False
 
     if member.online_at is not None: # If online_at is setup
