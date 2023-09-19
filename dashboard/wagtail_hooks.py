@@ -72,12 +72,12 @@ def add_another_welcome_panel(request, panels):
 
     #panels.append(NetworksSummaryPanel())
     #panels.append(MembersProblemPanel())
+    panels.append(MemberChartsPanel())
+    panels.append(ModelChartsPanel())
     if request.user.is_superuser:
         panels.append(NetworksChartsPanel())
     if request.user.organization.features.number_of_network > 1:
         panels.append(NetworksChartsPanel())
-    panels.append(MemberChartsPanel())
-    panels.append(ModelChartsPanel())
 
 
 @hooks.register("insert_global_admin_js", order=100)
