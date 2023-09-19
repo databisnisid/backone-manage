@@ -267,6 +267,7 @@ class OperationalTimeHelper(PermissionHelper):
             return False
         else:
             return True
+
 class OperationalTimeAdmin(ModelAdmin):
     model = OperationalTime
     permission_helper_class = OperationalTimeHelper
