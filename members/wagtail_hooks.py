@@ -7,6 +7,7 @@ from .models import Members, MemberPeers
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
+from wagtail import hooks
 from wagtailgeowidget import geocoders
 from wagtailgeowidget.panels import GeoAddressPanel, GoogleMapsPanel
 #from django.forms import HiddenInput
@@ -363,6 +364,16 @@ class MembersAdmin(ModelAdmin):
                 return Members.objects.filter(organization=current_user.organization)
         else:
             return Members.objects.all()
+
+@hooks.register('construct_snippet_listing_buttons')
+def remove_snippet_edit_button_memberpeers(buttons, snippet, user, context=None):
+    for button in buttons:
+        index = buttons.index(button)
+
+        if 'edit' in button.label.lower():
+            if 'members/memberpeers/' in button.url:
+                buttons.pop(index)
+                break
 
 
 
