@@ -210,7 +210,7 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
     #list_display = ('member', 'problem', 'duration_text', 'start_at', 'end_at')
     list_display = ('member', 'problem_duration_start_end', 'get_update_progress')
     search_fields = ('member__name', 'problem__name', 'member__member_id')
-    #list_filter = ('problem',)
+    list_filter = ('start_at',)
 
     form_view_extra_js = ['monitor/js/inline.js', 'monitor/js/inline-history.js']
 
@@ -239,11 +239,14 @@ class MemberProblemsHistoryAdmin(ModelAdmin):
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
                 #return MemberProblems.objects.filter(member__user=current_user)
-                return MemberProblemsDone.objects.filter(member__user=current_user, duration__gt=settings.MONITOR_DELAY).order_by('-duration')
+                #return MemberProblemsDone.objects.filter(member__user=current_user, duration__gt=settings.MONITOR_DELAY).order_by('-duration')
+                return MemberProblemsDone.objects.filter(member__user=current_user, duration__gt=settings.MONITOR_DELAY).order_by('-end_at')
             else:
-                return MemberProblemsDone.objects.filter(member__organization=current_user.organization, duration__gt=settings.MONITOR_DELAY).order_by('-duration')
+                #return MemberProblemsDone.objects.filter(member__organization=current_user.organization, duration__gt=settings.MONITOR_DELAY).order_by('-duration')
+                return MemberProblemsDone.objects.filter(member__organization=current_user.organization, duration__gt=settings.MONITOR_DELAY).order_by('-end_at')
         else:
-            return MemberProblemsDone.objects.filter(duration__gt=settings.MONITOR_DELAY).order_by('-duration')
+            #return MemberProblemsDone.objects.filter(duration__gt=settings.MONITOR_DELAY).order_by('-duration')
+            return MemberProblemsDone.objects.filter(duration__gt=settings.MONITOR_DELAY).order_by('-end_at')
 
 
 class OperationalTimeHelper(PermissionHelper):
