@@ -208,6 +208,8 @@ class Members(models.Model):
                     raise ValidationError({'member_id': _('Member ID already exist in this network!')})
                 except ObjectDoesNotExist:
                     pass
+            if len(self.member_id) != 10:
+                raise ValidationError({'member_id': _('Member ID must be 10 characters!')})
 
         # CHECK: For multiple IP in self.ipaddress
         # Check for list IP_address
