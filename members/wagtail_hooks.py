@@ -187,6 +187,9 @@ class MembersPermissionHelper(PermissionHelper):
         if not user.has_perm('members.add_members'):
             result = False
 
+        if user.is_superuser:
+            result = False
+
         return result
 
     def user_can_delete_obj(self, user, obj):
@@ -196,10 +199,14 @@ class MembersPermissionHelper(PermissionHelper):
             return False
 
     def user_can_edit_obj(self, user, obj):
+        result = False
         if user.has_perm('members.change_members'):
-            return True
-        else:
-            return False
+            result = True
+
+        if user.is_superuser:
+            result = False
+
+        return result
 
 
 class MembersAdmin(ModelAdmin):
