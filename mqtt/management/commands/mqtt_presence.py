@@ -118,10 +118,13 @@ def on_message(client, userdata, message):
     mqtt_member.quota_vnstat = quota_vnstat
     mqtt_member.save()
 
-    members = Members.objects.filter(member_id=member_id, mqtt=None)
+    #members = Members.objects.filter(member_id=member_id, mqtt=None)
+    members = Members.objects.filter(member_id=member_id)
 
     for member in members:
-        member.save()
+        if member.member_id != mqtt_member.member_id:
+            member.mqtt = mqtt_member
+            member.save()
 
     '''
     members = Members.objects.filter(member_id=member_id)
