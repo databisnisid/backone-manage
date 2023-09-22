@@ -12,16 +12,13 @@ def delete_member_peers(sender, instance, **kwargs):
     if members == 0:
         try:
             MemberPeers.objects.get(member_id=instance.member_id).delete()
-        #member_peers = MemberPeers.objects.filter(member_id=instance.member_id)
+
         except ObjectDoesNotExist:
             pass
 
         try:
             Mqtt.objects.get(member_id=instance.member_id).delete()
-        #member_peers = MemberPeers.objects.filter(member_id=instance.member_id)
+
         except ObjectDoesNotExist:
             pass
-        #for member_peer in member_peers:
-        #    member_peer.delete()
 
-        #instance.peers.delete()

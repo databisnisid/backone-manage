@@ -101,6 +101,63 @@ def check_members_vs_rules(member, is_online):
 
 '''
 
+def check_member_problem(member):
+    pass
+    problems = []
+    problems_offline = []
+    is_solved = True
+
+    if member.ipaddress and is_operationaltime(member):
+        if member.is_online() or ping.ping(member.ipaddress):
+            print('Checking Online {} ({})'. format(member.name, member.member_id))
+            print(".", end='')
+            problems = check_members_vs_rules(member, True)
+        else:
+            print('Checking Offline {} ({})'. format(member.name, member.member_id))
+            print(",", end='')
+            problems_offline = check_members_vs_rules(member, False)
+
+        for prob in problems_offline:
+            problems.append(prob)
+
+        if problems:
+            is_solved = False
+            for problem in problems:
+                try:
+                    member_problem = MemberProblems.unsolved.get(
+                        member=member,
+                        problem=problem
+                    )
+                except ObjectDoesNotExist:
+                    member_problem = MemberProblems()
+                    member_problem.member = member
+                    member_problem.problem = problem
+                    #member_problem.mqtt = mqtt
+
+                member_problem.save()
+                print(".")
+                print('Problem {} ({}) - {}'. format(
+                    member.name,
+                    member.member_id,
+                    problem
+                ))
+
+
+    if is_solved:
+        member_problems = MemberProblems.unsolved.filter(
+            member=member
+        )
+        for member_problem in member_problems:
+            member_problem.is_done = True
+            member_problem.save()
+            print(".")
+            print('Solved {} ({}) - {}'. format(
+                member.name,
+                member.member_id,
+                member_problem.problem
+            ))
+
+
 def monitor_members() :
     """
     Monitoring all member via mqtt
@@ -111,6 +168,8 @@ def monitor_members() :
 
     print("Start", end='')
     for member in members:
+        check_member_problem(member)
+        '''
         problems = []
         problems_offline = []
         is_solved = True
@@ -163,6 +222,7 @@ def monitor_members() :
                     member.member_id,
                     member_problem.problem
                 ))
+        '''
 
     print(".")
     print("Fin.")
