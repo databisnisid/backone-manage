@@ -122,9 +122,10 @@ def on_message(client, userdata, message):
     members = Members.objects.filter(member_id=member_id)
 
     for member in members:
-        if member.mqtt.member_id != mqtt_member.member_id:
-            member.mqtt = mqtt_member
-            member.save()
+        if member.mqtt:
+            if member.mqtt.member_id != mqtt_member.member_id:
+                member.mqtt = mqtt_member
+                member.save()
 
     '''
     members = Members.objects.filter(member_id=member_id)
