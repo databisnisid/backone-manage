@@ -186,7 +186,6 @@ class MemberProblemsAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         current_user = get_current_user()
-        #problem_time = datetime.now() - timedelta(seconds=settings.MONITOR_DELAY)
         problem_time = timezone.now() - timezone.timedelta(seconds=settings.MONITOR_DELAY)
         if not current_user.is_superuser:
             if current_user.organization.is_no_org:
