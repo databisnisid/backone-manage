@@ -490,17 +490,18 @@ class Members(models.Model):
 
             ''' PACKET LOSS '''
             item_id = 'packet_loss'
-            value = self.packet_loss()
+            value_pl = self.packet_loss()
+            value_rt = self.round_trip()
             color = 'red' if item_id in alarms else ''
-            if value:
-                fourth_line += "<br /><span style='color: {};'>PL: {}% - </span>".format(color, value)
+            if value_rt:
+                fourth_line += "<br /><span style='color: {};'>PL: {}% - </span>".format(color, value_pl)
 
             ''' ROUND_TRIP '''
             item_id = 'round_trip'
-            value = self.round_trip()
+            #value = self.round_trip()
             color = 'red' if item_id in alarms else ''
-            if value:
-                fourth_line += "<span style='color: {};'>RT: {}ms<span>".format(color, value)
+            if value_rt:
+                fourth_line += "<span style='color: {};'>RT: {}ms<span>".format(color, value_rt)
 
             fourth_line += "</small>"
 
