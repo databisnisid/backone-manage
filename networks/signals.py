@@ -35,7 +35,8 @@ def update_organization(sender, instance, created, **kwargs):
         organization=instance.organization)
     NetworkRules.objects.filter(network=instance).update(
         user=instance.user,
-        organization=instance.organization)
+        organization=instance.organization,
+        name=instance.name)
     Members.objects.filter(network=instance).update(
         user=instance.user,
         organization=instance.organization)
