@@ -505,6 +505,9 @@ class NetworkRules(models.Model):
         self.user = self.network.user
         self.organization = self.network.organization
 
+        # Ensure Name of Rule follow Network name
+        self.name = self.network.name
+
         filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
         file = open(filename_rule, 'w')
         file.write(self.rules_definition)
