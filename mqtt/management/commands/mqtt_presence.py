@@ -26,7 +26,7 @@ def on_message(client, userdata, message):
 
     try:
         is_rcall = True if int(mqtt_msg[6]) > 0 else False
-    except IndexError:
+    except (IndexError, ValueError) as error:
         is_rcall = False
 
     try:
