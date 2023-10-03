@@ -424,14 +424,14 @@ class Members(models.Model):
         return result
 
     def packet_loss(self):
-        result = 0.0
+        result = -1.0
         if self.mqtt:
             result = round(self.mqtt.get_packet_loss(), 1)
 
         return result
 
     def round_trip(self):
-        result = 0.0
+        result = -1.0
         if self.mqtt:
             result = round(self.mqtt.get_round_trip(), 1)
 
@@ -492,16 +492,18 @@ class Members(models.Model):
             ''' PACKET LOSS '''
             item_id = 'packet_loss'
             value_pl = self.packet_loss()
-            value_rt = self.round_trip()
+            #value_rt = self.round_trip()
             color = 'red' if item_id in alarms else ''
-            if value_rt:
+            #if value_rt:
+            if value_pl >= 0:
                 fourth_line += "<br /><span style='color: {};'>PL: {}% - </span>".format(color, value_pl)
 
             ''' ROUND_TRIP '''
             item_id = 'round_trip'
             #value = self.round_trip()
+            value_rt = self.round_trip()
             color = 'red' if item_id in alarms else ''
-            if value_rt:
+            if value_rt > 0:
                 fourth_line += "<span style='color: {};'>RT: {}ms<span>".format(color, value_rt)
 
             fourth_line += "</small>"
