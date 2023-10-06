@@ -44,7 +44,8 @@ def check_member_problem(member):
                     )
                     ''' Find solved problem '''
                     #if member_problems_all:
-                    #    member_problems_all = member_problems_all.difference(member_problem)
+                    member_problems_all = member_problems_all.exclude(problem=problem)
+                        #member_problems_all = member_problems_all.difference(member_problem)
                 except ObjectDoesNotExist:
                     member_problem = MemberProblems()
                     member_problem.member = member
@@ -65,7 +66,6 @@ def check_member_problem(member):
                 ))
 
             ''' Solved Problems Test '''
-            '''
             for member_problem_solved in member_problems_all:
                 member_problem_solved.is_done = True
                 member_problem_solved.save()
@@ -75,7 +75,6 @@ def check_member_problem(member):
                     member.member_id,
                     member_problem_solved.problem
                 ))
-            '''
 
     if is_solved:
         member_problems = MemberProblems.unsolved.filter(
