@@ -32,9 +32,9 @@ def check_member_problem(member):
             is_solved = False
             ''' Write Code to remove solved Problem '''
             ''' Code here '''
-            #member_problems_all = MemberProblems.unsolved.filter(
-            #        member=member
-            #        )
+            member_problems_all = MemberProblems.unsolved.filter(
+                    member=member
+                    )
 
             for problem in problems:
                 try:
@@ -43,18 +43,19 @@ def check_member_problem(member):
                         problem=problem
                     )
                     ''' Find solved problem '''
-                    #if member_problems_all:
-                    #    member_problems_all = member_problems_all.difference(member_problem)
+                    if member_problems_all:
+                        member_problems_all = member_problems_all.difference(member_problem)
                 except ObjectDoesNotExist:
                     member_problem = MemberProblems()
                     member_problem.member = member
                     member_problem.problem = problem
                     #member_problem.mqtt = mqtt
+                    member_problem.save()
 
                 #except AttributeError:
                 #    pass
 
-                member_problem.save()
+                #member_problem.save()
 
                 #print(".")
                 print('Problem {} ({}) - {}'. format(
@@ -64,7 +65,6 @@ def check_member_problem(member):
                 ))
 
             ''' Solved Problems Test '''
-            '''
             for member_problem_solved in member_problems_all:
                 member_problem_solved.is_done = True
                 member_problem_solved.save()
@@ -74,7 +74,6 @@ def check_member_problem(member):
                     member.member_id,
                     member_problem_solved.problem
                 ))
-            '''
 
     if is_solved:
         member_problems = MemberProblems.unsolved.filter(
