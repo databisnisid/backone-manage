@@ -151,7 +151,7 @@ def check_member_problem(member):
                     problem
                 ))
 
-            ''' Solved Problems '''
+            ''' Solved Problems Test '''
             for member_problem_solved in member_problems_all:
                 member_problem_solved.is_done = True
                 member_problem_solved.save()
