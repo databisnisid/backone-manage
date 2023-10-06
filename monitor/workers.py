@@ -83,7 +83,7 @@ def check_member_problem(member):
         for member_problem in member_problems:
             member_problem.is_done = True
             member_problem.save()
-            print(".")
+            #print(".")
             print('Solved {} ({}) - {}'. format(
                 member.name,
                 member.member_id,
