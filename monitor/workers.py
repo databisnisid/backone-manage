@@ -17,12 +17,12 @@ def check_member_problem(member):
 
     if member.ipaddress and is_operationaltime(member):
         if member.is_online() or ping.ping(member.ipaddress):
-            print('Checking Online {} ({})'. format(member.name, member.member_id))
-            print(".", end='')
+            #print('Checking Online {} ({})'. format(member.name, member.member_id))
+            #print(".", end='')
             problems = check_members_vs_rules(member, True)
         else:
-            print('Checking Offline {} ({})'. format(member.name, member.member_id))
-            print(",", end='')
+            #print('Checking Offline {} ({})'. format(member.name, member.member_id))
+            #print(",", end='')
             problems_offline = check_members_vs_rules(member, False)
 
         for prob in problems_offline:
@@ -56,7 +56,7 @@ def check_member_problem(member):
 
                 member_problem.save()
 
-                print(".")
+                #print(".")
                 print('Problem {} ({}) - {}'. format(
                     member.name,
                     member.member_id,
