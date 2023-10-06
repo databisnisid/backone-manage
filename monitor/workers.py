@@ -51,6 +51,8 @@ def check_member_problem(member):
                     #member_problem.mqtt = mqtt
 
                     member_problem.save()
+                except AttributeError:
+                    pass
 
                 print(".")
                 print('Problem {} ({}) - {}'. format(
