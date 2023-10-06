@@ -107,7 +107,7 @@ def is_operationaltime(member):
         currtime = timezone.localtime()
         dayname = currtime.strftime('%a')
 
-        print(dayname)
+        #print(dayname)
 
         if dayname.lower() == 'mon' and optime.is_mon:
             if currtime.hour > optime.mon_start and currtime.hour < optime.mon_end:
