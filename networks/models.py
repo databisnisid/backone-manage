@@ -333,7 +333,7 @@ class NetworkRoutes(models.Model):
                     pass
 
                 num_routes = NetworkRoutes.objects.filter(network=self.network).count()
-                if num_routes == 32:
+                if num_routes == 128:
                     raise ValidationError(_("Maximum routes is reached!"))
 
             except ValueError:
