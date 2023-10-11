@@ -68,7 +68,6 @@ def check_member_problem(member):
                 ))
 
             ''' Solved Problems Test '''
-            '''
             if is_problem_found:
                 for member_problem_solved in member_problems_all:
                     member_problem_solved.is_done = True
@@ -79,7 +78,6 @@ def check_member_problem(member):
                         member.member_id,
                         member_problem_solved.problem
                     ))
-            '''
 
     if is_solved:
         member_problems = MemberProblems.unsolved.filter(
