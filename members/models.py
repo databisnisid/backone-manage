@@ -439,6 +439,13 @@ class Members(models.Model):
 
         return result
 
+    def ipaddress_ts(self):
+        result = ""
+        if self.mqtt:
+            result = self.mqtt.ipaddress_ts
+
+        return result
+
     def model_release(self):
         text = None
         if self.mqtt:
