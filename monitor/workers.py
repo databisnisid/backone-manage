@@ -42,9 +42,10 @@ def check_member_problem(member):
                         member=member,
                         problem=problem
                     )
+                    is_problem_found = True
                     ''' Find solved problem '''
                     #if member_problems_all:
-                    #member_problems_all = member_problems_all.exclude(problem=problem)
+                    member_problems_all = member_problems_all.exclude(problem=problem)
                         #member_problems_all = member_problems_all.difference(member_problem)
                 except ObjectDoesNotExist:
                     member_problem = MemberProblems()
@@ -52,6 +53,7 @@ def check_member_problem(member):
                     member_problem.problem = problem
                     #member_problem.mqtt = mqtt
                     member_problem.save()
+                    is_problem_found = False
 
                 #except AttributeError:
                 #    pass
@@ -66,17 +68,16 @@ def check_member_problem(member):
                 ))
 
             ''' Solved Problems Test '''
-            '''
-            for member_problem_solved in member_problems_all:
-                member_problem_solved.is_done = True
-                member_problem_solved.save()
-                print(".")
-                print('Solved {} ({}) - {}'. format(
-                    member.name,
-                    member.member_id,
-                    member_problem_solved.problem
-                ))
-            '''
+            if is_problem_found:
+                for member_problem_solved in member_problems_all:
+                    member_problem_solved.is_done = True
+                    member_problem_solved.save()
+                    print(".")
+                    print('Resolved {} ({}) - {}'. format(
+                        member.name,
+                        member.member_id,
+                        member_problem_solved.problem
+                    ))
 
     if is_solved:
         member_problems = MemberProblems.unsolved.filter(
