@@ -354,7 +354,7 @@ class Members(models.Model):
         #return text
         ipaddress_ts = self.ipaddress_ts()
         if ipaddress_ts:
-            return format_html(self.list_ipaddress() + '/' + ipaddress_ts  + '<br />' + text)
+            return format_html(self.list_ipaddress() + '<br />' + text + '<br /><small>IP TS: ' + ipaddress_ts + '</small>')
         else:
             return format_html(self.list_ipaddress() + '<br />' + text)
 
