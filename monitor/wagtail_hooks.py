@@ -159,7 +159,7 @@ class MemberProblemsAdmin(ModelAdmin):
     #list_display = ('member', 'get_network' ,'problem', 'duration_text_undone')
     list_display = ('member_name_with_update_progress', 'problem_duration_start', 'get_parameters')
     search_fields = ('member__name', 'problem__name', 'member__member_id')
-    list_filter = ('problem',)
+    #list_filter = ('problem',)
 
     form_view_extra_js = ['monitor/js/inline.js', 'monitor/js/inline-monitor.js']
     index_view_extra_js = ['monitor/js/refresh.js']
