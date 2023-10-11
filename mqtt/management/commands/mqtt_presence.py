@@ -87,6 +87,12 @@ def on_message(client, userdata, message):
     except IndexError:
         quota_vnstat = None
 
+    # Tailscale IP Address
+    try:
+        mqtt_msg[16]
+        ipaddress_ts = mqtt_msg[16]
+    except IndexError:
+        ipaddress_ts = None
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
 
     try:
@@ -116,6 +122,7 @@ def on_message(client, userdata, message):
     mqtt_member.switchport_up = switchport_up
     mqtt_member.port_status = port_status
     mqtt_member.quota_vnstat = quota_vnstat
+    mqtt_member.ipaddress_ts = ipaddress_ts
     mqtt_member.save()
 
     #members = Members.objects.filter(member_id=member_id, mqtt=None)
