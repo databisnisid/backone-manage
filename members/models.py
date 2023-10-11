@@ -352,7 +352,11 @@ class Members(models.Model):
                 text = format_html("<small style='color: red;'>OFFLINE</small>")
 
         #return text
-        return format_html(self.list_ipaddress() + '<br />' + text)
+        ipaddress_ts = self.ipaddress_ts()
+        if ipaddress_ts:
+            return format_html(self.list_ipaddress() + '/' + ipaddress_ts  + '<br />' + text)
+        else:
+            return format_html(self.list_ipaddress() + '<br />' + text)
 
     member_status.short_description = _('Member Status')
 
@@ -440,7 +444,7 @@ class Members(models.Model):
         return result
 
     def ipaddress_ts(self):
-        result = ""
+        result = None
         if self.mqtt:
             result = self.mqtt.ipaddress_ts
 
