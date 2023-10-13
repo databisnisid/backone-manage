@@ -117,14 +117,24 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': str(os.getenv('DB_ENGINE')),
-        'NAME': str(os.getenv('DB_NAME')),
+        'ENGINE': str(os.getenv('DB_ENGINE', 'django.db.backends.sqlite3')),
+        'NAME': str(os.getenv('DB_NAME', 'db.sqlite3')),
         'USER': str(os.getenv('DB_USER')),
         'PASSWORD': str(os.getenv('DB_PASSWORD')),
         'HOST': str(os.getenv('DB_HOST')),
         'PORT': str(os.getenv('DB_PORT')),
+    },
+    'headscale': {
+        'ENGINE': str(os.getenv('HS_DB_ENGINE', 'django.db.backends.sqlite3')),
+        'NAME': str(os.getenv('HS_DB_NAME', 'db.sqlite3.hs')),
+        'USER': str(os.getenv('HS_DB_USER')),
+        'PASSWORD': str(os.getenv('HS_DB_PASSWORD')),
+        'HOST': str(os.getenv('HS_DB_HOST')),
+        'PORT': str(os.getenv('HS_DB_PORT')),
     }
 }
+
+DATABASE_ROUTERS = ['config.db_routers.HeadscaleRouter']
 
 
 # Password validation
