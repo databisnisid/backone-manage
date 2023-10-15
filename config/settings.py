@@ -25,6 +25,7 @@ ALLOWED_HOSTS = [str(os.getenv('ALLOWED_HOSTS', '*'))]
 # Application definition
 
 INSTALLED_APPS = [
+    'headscale',
     'accounts',
     'dashboard',
     'controllers',
