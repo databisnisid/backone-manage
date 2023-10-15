@@ -51,10 +51,13 @@ def get_quota():
             quota_current = quota_record['quota_current'].replace(' ', '')
             quota_day = quota_record['quota_day'].replace(' ', '')
 
+            mqtt_quota_first_prev = quota_record['quota_prev'].replace(' ', '')
+
             mqtt_quota_first = '{}/{}/{}'.format(quota_current, quota_total, quota_day)
             try:
                 mqtt = Mqtt.objects.get(member_id=member.member_id)
                 mqtt.quota_first = mqtt_quota_first
+                mqtt.quota_first_prev = mqtt_quota_first_prev
                 mqtt.save()
 
             except ObjectDoesNotExist:
