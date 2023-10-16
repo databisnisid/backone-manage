@@ -117,7 +117,7 @@ class Mqtt(models.Model):
         quota_total = 0
         quota_day = 0
 
-        if self.quota_first:
+        if self.quota_first_prev:
             quota_split = self.quota_first_prev.split('/')
             try:
                 quota_split[0]
