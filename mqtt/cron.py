@@ -47,9 +47,20 @@ def get_quota():
             pass
 
         try:
-            quota_total = quota_record['quota_total'].replace(' ', '')
-            quota_current = quota_record['quota_current'].replace(' ', '')
-            quota_day = quota_record['quota_day'].replace(' ', '')
+            try:
+                quota_total = quota_record['quota_total'].replace(' ', '')
+            except AttributeError:
+                quota_total = ''
+
+            try:
+                quota_current = quota_record['quota_current'].replace(' ', '')
+            except AttributeError:
+                quota_current = ''
+            
+            try:
+                quota_day = quota_record['quota_day'].replace(' ', '')
+            except AttributeError:
+                quota_day = ''
 
             mqtt_quota_first_prev = quota_record['quota_prev'].replace(' ', '')
 
