@@ -534,6 +534,7 @@ class Members(models.Model):
             quota_current, quota_total, quota_day = self.mqtt.get_quota_first()
 
             #if not quota_current==0 and not quota_total==0 and not quota_day==0:
+            quota_current = quota_current / 1024
             if not quota_total==0:
                 item_id = 'quota_first_gb'
                 color = 'red' if item_id in alarms else ''
