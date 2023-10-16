@@ -88,6 +88,9 @@ class Mqtt(models.Model):
             try:
                 quota_split[0]
                 quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
+                if 'GB' in quota_split[0]:
+                    quota_current = quota_current * 1024
+
             except (ValueError, IndexError) as error:
                 quota_current = 0
 
@@ -107,6 +110,42 @@ class Mqtt(models.Model):
                 quota_day = 0
 
         return quota_current, quota_total, quota_day
+
+
+    def get_quota_first_prev(self):
+        quota_current = 0
+        quota_total = 0
+        quota_day = 0
+
+        if self.quota_first:
+            quota_split = self.quota_first_prev.split('/')
+            try:
+                quota_split[0]
+                quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
+
+                if 'GB' in quota_split[0]:
+                    quota_current = quota_current * 1024
+
+            except (ValueError, IndexError) as error:
+                quota_current = 0
+
+            try:
+                quota_split[1]
+                quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
+            except (ValueError, IndexError) as error:
+                quota_current = 0
+                quota_total = 0 
+
+            try:
+                quota_split[2]
+                quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
+            except (ValueError, IndexError) as error:
+                quota_current = 0
+                quota_total = 0 
+                quota_day = 0
+
+        return quota_current, quota_total, quota_day
+
 
     def get_quota_vnstat(self):
         rx_usage = 0

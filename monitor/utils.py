@@ -10,6 +10,19 @@ from .models import MonitorRules, OperationalTime
 def compare_values(val1, val2):
     return True if val1 > val2 else False
 
+def is_problem_quota_first_high_gb(mqtt, threshold):
+    quota_current, quota_total, quota_day = mqtt.get_quota_first()
+    quota_current_prev, quota_total_prev, quota_day_prev = mqtt.get_quota_first_prev()
+
+    quota_delta = 0
+    if quota_current and quota_current_prev:
+        quota_delta = (quota_current_prev * 1024) - (quota_current * 1024)
+
+    if quota_delta:
+        return compare_values(quota_delta, threshold)
+    else:
+        return False
+
 def is_problem_quota_first_gb(mqtt, threshold):
     quota_current, quota_total, quota_day = mqtt.get_quota_first()
     if quota_total:
@@ -47,6 +60,7 @@ check_functions = {
         'round_trip': is_problem_round_trip,
         'quota_first_gb': is_problem_quota_first_gb,
         'quota_first_day': is_problem_quota_first_day,
+        'quota_first_high_gb': is_problem_quota_first_high_gb,
         }
 
 item_id_list = [
@@ -56,6 +70,8 @@ item_id_list = [
         'round_trip',
         'quota_first_gb',
         'quota_first_day',
+        'quota_first_day',
+        'quota_first_high_gb',
         ]
 
 def is_problem(member, rule, is_online):
@@ -69,23 +85,6 @@ def is_problem(member, rule, is_online):
         if mqtt is not None:
             if rule.item.item_id in item_id_list:
                 result = check_functions[rule.item.item_id](mqtt, rule.item_threshold)
-            '''
-                result = check_functions[rule.item.item_id](mqtt, rule.item_threshold)
-            if rule.item.item_id == 'cpu_usage':
-                result = check_functions['cpu_usage'](mqtt, rule.item_threshold)
-                #result = is_problem_cpu(mqtt, rule.item_threshold)
-            if rule.item.item_id == 'memory_usage':
-                result = check_functions[rule.item.item_id](mqtt, rule.item_threshold)
-                #result = is_problem_memory(mqtt, rule.item_threshold)
-            if rule.item.item_id == 'packet_loss':
-                result = check_functions[rule.item.item_id](mqtt, rule.item_threshold)
-                #result = is_problem_packet_loss(mqtt, rule.item_threshold)
-                #result = compare_values(mqtt.packet_loss, rule.item_threshold)
-            if rule.item.item_id == 'round_trip':
-                result = check_functions[rule.item.item_id](mqtt, rule.item_threshold)
-                #result = is_problem_round_trip(mqtt, rule.item_threshold)
-                #result = compare_values(mqtt.round_trip, rule.item_threshold)
-            '''
 
     else:
         if rule.item.item_id == 'online_status':
