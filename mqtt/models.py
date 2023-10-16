@@ -87,9 +87,12 @@ class Mqtt(models.Model):
             quota_split = self.quota_first.split('/')
             try:
                 quota_split[0]
-                quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
+                #quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
                 if 'GB' in quota_split[0]:
+                    quota_current = float(quota_split[0].replace('GB', ''))
                     quota_current = quota_current * 1024
+                else:
+                    quota_current = float(quota_split[0].replace('MB', ''))
 
             except (ValueError, IndexError) as error:
                 quota_current = 0
@@ -121,10 +124,13 @@ class Mqtt(models.Model):
             quota_split = self.quota_first_prev.split('/')
             try:
                 quota_split[0]
-                quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
 
                 if 'GB' in quota_split[0]:
+                    quota_current = float(quota_split[0].replace('GB', ''))
                     quota_current = quota_current * 1024
+                else:
+                    quota_current = float(quota_split[0].replace('MB', ''))
+
 
             except (ValueError, IndexError) as error:
                 quota_current = 0
