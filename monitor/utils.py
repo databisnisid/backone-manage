@@ -16,7 +16,7 @@ def is_problem_quota_first_high_gb(mqtt, threshold):
 
     quota_delta = 0
     if quota_current and quota_current_prev:
-        quota_delta = (quota_current_prev * 1024) - (quota_current * 1024)
+        quota_delta = quota_current_prev - quota_current
 
     if quota_delta:
         return compare_values(quota_delta, threshold)
