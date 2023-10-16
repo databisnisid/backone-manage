@@ -535,6 +535,7 @@ class Members(models.Model):
 
             #if not quota_current==0 and not quota_total==0 and not quota_day==0:
             quota_current = quota_current / 1024
+            quota_current_prev = quota_current_prev / 1024
             if not quota_total==0:
                 item_id = 'quota_first_gb'
                 color = 'red' if item_id in alarms else ''
@@ -550,6 +551,22 @@ class Members(models.Model):
                 quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
 
                 fifth_line = "<br /><small>QUO: {}</small>".format(quota_text)
+
+            quota_current_prev, quota_total_prev, quota_day_prev = self.mqtt.get_quota_first_prev()
+            quota_current_prev = quota_current_prev / 1024
+
+            if not quota_total_prev==0:
+                item_id = 'quota_first_high_gb'
+                color = 'red' if item_id in alarms else ''
+                quota_text_prev = ""
+                #color = '' if quota_current > settings.QUOTA_GB_WARNING else 'red'
+                quota_text_prev += "<span style='color: {};'>{}GB</span>".format(color, quota_current_prev)
+
+                quota_text_prev += "<span>/{}GB/</span>".format(quota_total_prev)
+
+                quota_text_prev += "<span>{}Hari</span>".format(quota_day_prev)
+
+                fifth_line += "<br /><small>QUO_PREV: {}</small>".format(quota_text_prev)
 
             sixth_line = ''
             vnstat_text = self.quota_vnstat()
