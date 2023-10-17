@@ -14,7 +14,7 @@ def is_problem_quota_first_high_gb(mqtt, threshold):
     quota_current, quota_total, quota_day = mqtt.get_quota_first()
     quota_current_prev, quota_total_prev, quota_day_prev = mqtt.get_quota_first_prev()
 
-    if quota_day_prev - quota_day <= 0:
+    if quota_day_prev - quota_day < 0:
         return False
 
     else:
