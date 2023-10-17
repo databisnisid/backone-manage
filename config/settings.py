@@ -268,7 +268,7 @@ AXES_RESET_ON_SUCCESS = True
 #AXES_LOCKOUT_PARAMETERS = ['ip_address', 'username']
 AXES_LOCKOUT_PARAMETERS = ['username']
 AXES_LOCKOUT_TEMPLATE = 'axes/block.html'
-AXES_IPWARE_PROXY_COUNT = int(os.getenv('AXES_IPWARE_PROXY_COUNT', 1))
+AXES_IPWARE_PROXY_COUNT = int(os.getenv('AXES_IPWARE_PROXY_COUNT', 0))
 # refer to the Django request and response objects documentation
 #AXES_IPWARE_META_PRECEDENCE_ORDER = [
 #    'HTTP_X_FORWARDED_FOR',
