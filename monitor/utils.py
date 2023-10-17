@@ -17,7 +17,7 @@ def is_problem_quota_first_high_gb(mqtt, threshold):
     if quota_day_prev - quota_day < 0:
         return False
 
-    if quota_current_prev - quota_current > 30000: # If difference to big 30GB
+    if quota_current_prev - quota_current > 20000: # If difference to big 20GB
         return False
 
     else:
