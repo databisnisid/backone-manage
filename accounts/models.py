@@ -33,6 +33,9 @@ class Features(models.Model):
     # Project Related
     is_telkomsel = models.BooleanField(_('Telkomsel Project'), default=False)
 
+    # Custom List
+    is_simple_list = models.BooleanField(_('Simple List'), default=False)
+
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 

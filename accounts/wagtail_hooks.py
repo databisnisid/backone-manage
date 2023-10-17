@@ -96,7 +96,10 @@ class FeaturesAdmin(ModelAdmin):
             heading=_('Additional Features')),
         MultiFieldPanel([
             FieldRowPanel([FieldPanel('is_telkomsel')])],
-            heading=_('Project Related'))
+            heading=_('Project Related')),
+        MultiFieldPanel([
+            FieldRowPanel([FieldPanel('is_simple_list')])],
+            heading=_('Custom Features')),
     ]
 
 
