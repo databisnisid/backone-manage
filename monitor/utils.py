@@ -14,14 +14,18 @@ def is_problem_quota_first_high_gb(mqtt, threshold):
     quota_current, quota_total, quota_day = mqtt.get_quota_first()
     quota_current_prev, quota_total_prev, quota_day_prev = mqtt.get_quota_first_prev()
 
-    quota_delta = 0
-    if quota_current and quota_current_prev:
-        quota_delta = quota_current_prev - quota_current
-
-    if quota_delta:
-        return compare_values(quota_delta, threshold)
-    else:
+    if quota_day_prev == 0:
         return False
+
+    else:
+        quota_delta = 0
+        if quota_current and quota_current_prev:
+            quota_delta = quota_current_prev - quota_current
+
+        if quota_delta:
+            return compare_values(quota_delta, threshold)
+        else:
+            return False
 
 def is_problem_quota_first_gb(mqtt, threshold):
     quota_current, quota_total, quota_day = mqtt.get_quota_first()
