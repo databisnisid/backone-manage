@@ -262,16 +262,19 @@ class MembersAdmin(ModelAdmin):
                         'member_status', 'model_release',
                         'get_routes', 'list_peers']
         list_export_telkomsel = ['name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'online_status', 'quota_vnstat']
+        list_export_simple = ['name', 'member_code', 'address', 'ipaddress', 'switchport_up', 'online_status']
         
         if current_user.organization.features.is_export:
             if current_user.organization.features.is_telkomsel:
                 list_export =  list_export_telkomsel
+            elif current_user.organization.features.is_simple_list:
+                list_export =  list_export_simple
             else:
                 list_export =  list_export_default
 
-        if current_user.organization.features.online_offline:
-            list_export.append('online_at')
-            list_export.append('offline_at')
+            if current_user.organization.features.online_offline:
+                list_export.append('online_at')
+                list_export.append('offline_at')
 
         return list_export
         #return super().get_list_export(request)
