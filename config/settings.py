@@ -26,6 +26,7 @@ ALLOWED_HOSTS = [str(os.getenv('ALLOWED_HOSTS', '*'))]
 
 INSTALLED_APPS = [
     #'headscale',
+    'webfilters',
     'accounts',
     'dashboard',
     'controllers',
@@ -125,17 +126,17 @@ DATABASES = {
         'HOST': str(os.getenv('DB_HOST')),
         'PORT': str(os.getenv('DB_PORT')),
     },
-    'headscale': {
-        'ENGINE': str(os.getenv('HS_DB_ENGINE', 'django.db.backends.sqlite3')),
-        'NAME': str(os.getenv('HS_DB_NAME', 'db.sqlite3.hs')),
-        'USER': str(os.getenv('HS_DB_USER')),
-        'PASSWORD': str(os.getenv('HS_DB_PASSWORD')),
-        'HOST': str(os.getenv('HS_DB_HOST')),
-        'PORT': str(os.getenv('HS_DB_PORT')),
-    }
+#    'headscale': {
+#        'ENGINE': str(os.getenv('HS_DB_ENGINE', 'django.db.backends.sqlite3')),
+#        'NAME': str(os.getenv('HS_DB_NAME', 'db.sqlite3.hs')),
+#        'USER': str(os.getenv('HS_DB_USER')),
+#        'PASSWORD': str(os.getenv('HS_DB_PASSWORD')),
+#        'HOST': str(os.getenv('HS_DB_HOST')),
+#        'PORT': str(os.getenv('HS_DB_PORT')),
+#    }
 }
 
-DATABASE_ROUTERS = ['config.db_routers.HeadscaleRouter']
+#DATABASE_ROUTERS = ['config.db_routers.HeadscaleRouter']
 
 
 # Password validation
@@ -275,3 +276,7 @@ AXES_IPWARE_PROXY_COUNT = int(os.getenv('AXES_IPWARE_PROXY_COUNT', 0))
 #    'REMOTE_ADDR',
 #]
 
+# HEADSCALE
+HEADSCALE_URI = str(os.getenv('HEADSCALE_URI'))
+HEADSCALE_KEY = str(os.getenv('HEADSCALE_KEY'))
+HEADSCALE_ON = int(os.getenv('HEADSCALE_ON', 0))

@@ -30,6 +30,9 @@ class Features(models.Model):
     map_dashboard = models.BooleanField(_('Map Dashboard'), default=False)
     is_nms = models.BooleanField(_('Monitoring'), default=False)
 
+    # WebFilters
+    is_webfilter = models.BooleanField(_('Web Filters'), default=False)
+
     # Project Related
     is_telkomsel = models.BooleanField(_('Telkomsel Project'), default=False)
 

@@ -92,14 +92,12 @@ class FeaturesAdmin(ModelAdmin):
         MultiFieldPanel([
             FieldRowPanel([FieldPanel('geolocation'), FieldPanel('online_offline')]),
             FieldRowPanel([FieldPanel('is_export'), FieldPanel('mobile_connect')]),
-            FieldRowPanel([FieldPanel('map_dashboard'), FieldPanel('is_nms')])],
+            FieldRowPanel([FieldPanel('map_dashboard'), FieldPanel('is_nms')]),
+            FieldRowPanel([FieldPanel('is_webfilter'), FieldPanel('is_simple_list')])],
             heading=_('Additional Features')),
         MultiFieldPanel([
             FieldRowPanel([FieldPanel('is_telkomsel')])],
             heading=_('Project Related')),
-        MultiFieldPanel([
-            FieldRowPanel([FieldPanel('is_simple_list')])],
-            heading=_('Custom Features')),
     ]
 
 

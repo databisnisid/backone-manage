@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 from axes.models import AccessAttempt, AccessLog, AccessFailureLog
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet, SnippetViewSetGroup
+from django.conf import settings
 
 
 #@hooks.register("insert_global_admin_css", order=100)
@@ -44,9 +45,18 @@ def hide_snippets_menu_item(request, menu_items):
     if not request.user.is_superuser:
         if not request.user.organization.features.network_rules:
             menu_items[:] = [item for item in menu_items if item.name != 'network-rules']
+
+    if not request.user.is_superuser:
+        if not request.user.organization.features.is_webfilter:
+            menu_items[:] = [item for item in menu_items if item.name != 'webfilters']
+
     if not request.user.is_superuser:
         menu_items[:] = [item for item in menu_items if item.name != 'memberpeers']
         menu_items[:] = [item for item in menu_items if item.name != 'controllers']
+        menu_items[:] = [item for item in menu_items if item.name != 'backone-hs']
+
+    if settings.HEADSCALE_ON == 0:
+        menu_items[:] = [item for item in menu_items if item.name != 'backone-hs']
 
 
 @hooks.register("construct_settings_menu", order=3)
