@@ -43,6 +43,7 @@ class WebFilters(models.Model):
         return '{}'.format(self.name)
 
     def save(self):
+        self.domains = self.domains.lower()
         current_user = get_current_user()
         if self.user is None:
             self.user = current_user
