@@ -164,10 +164,10 @@ class MemberChartsPanel(Component):
         if len(data_version) > 0:
             is_data_version = True
 
-        print(data_status)
+        #print(data_status)
 
-        if len(data_status) > 0:
-        #if data_status['ONLINE'] > 0 or data_status['OFFLINE'] > 0:
+        #if len(data_status) > 0:
+        if data_status[0] > 0 or data_status[1] > 0:
             is_data_status = True
         '''
         for data in data_version:
