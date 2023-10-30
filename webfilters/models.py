@@ -112,15 +112,18 @@ class WebFiltersMembers(models.Model):
             if current_user.organization.features.is_webfilter and not current_user.organization.features.is_webfilter_multinet:
                 try:
                     network = WebFiltersOrg.objects.get(organization=current_user.organization)
-                    return {'network': network.network, 'mqtt.is_rcall': True }
+                    return {'network': network.network, 
+                            'is_waf': True }
 
                 except ObjectDoesNotExist or MultipleObjectsReturned:
-                    return {'organization': current_user.organization}
+                    return {'organization': current_user.organization, 
+                            'is_waf': True }
             else:
-                return {'organization': current_user.organization, 'mqtt.is_rcall': True }
+                return {'organization': current_user.organization, 
+                        'is_waf': True }
 
         else:
-            return {}
+            return { 'is_waf': True }
 
     member = models.OneToOneField(
             Members,

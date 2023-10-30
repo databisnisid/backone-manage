@@ -95,6 +95,9 @@ class Members(models.Model):
     online_at = models.DateField(_('Start Online'), blank=True, null=True)
     offline_at = models.DateTimeField(_('Stop Online'), blank=True, null=True)
 
+    # WAF
+    is_waf = models.BooleanField(_('WebFilter Active'), default=False)
+
     # Mobile
     mobile_regex = RegexValidator(regex=r'^62\d{9,15}$', message=_("Mobile number must be entered in the format: '628XXXXXXXXXXX'. Up to 15 digits allowed."))
     mobile_number_first = models.CharField(_('Mobile Number'), 
@@ -103,6 +106,7 @@ class Members(models.Model):
 
 
     configuration = models.TextField(_('Configuration'), blank=True)
+
     peers = models.ForeignKey(
         MemberPeers,
         on_delete=models.SET_NULL,

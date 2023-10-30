@@ -94,6 +94,13 @@ def on_message(client, userdata, message):
     except IndexError:
         ipaddress_ts = None
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
+    # WAF
+    try:
+        mqtt_msg[17]
+        is_waf = True if int(mqtt_msg[17]) > 0 else False
+    except IndexError:
+        is_waf = None
+    #print(member_id, model, board_name, release_version, release_target, ipaddress)
 
     try:
         mqtt_member = Mqtt.objects.get(member_id=member_id)
@@ -123,6 +130,7 @@ def on_message(client, userdata, message):
     mqtt_member.port_status = port_status
     mqtt_member.quota_vnstat = quota_vnstat
     mqtt_member.ipaddress_ts = ipaddress_ts
+    mqtt_member.is_waf = is_waf
     mqtt_member.save()
 
     #members = Members.objects.filter(member_id=member_id, mqtt=None)
@@ -132,9 +140,11 @@ def on_message(client, userdata, message):
         if member.mqtt:
             if member.mqtt.member_id != mqtt_member.member_id:
                 member.mqtt = mqtt_member
+                member.is_waf = mqtt_member.is_waf
                 member.save()
         else:
             member.mqtt = mqtt_member
+            member.is_waf = mqtt_member.is_waf
             member.save()
 
     '''
