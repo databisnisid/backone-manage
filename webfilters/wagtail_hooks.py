@@ -92,9 +92,9 @@ class WebfiltersAdmin(ModelAdmin):
         return ObjectList(custom_panels)
 
     def get_list_display(self, request):
-        list_display = ['name', 'uuid']
+        list_display = ['name', 'domains', 'uuid']
         if request.user.is_superuser:
-            list_display = ['name', 'uuid', 'organization']
+            list_display = ['name', 'domains', 'uuid', 'network', 'organization']
 
         return list_display
 
