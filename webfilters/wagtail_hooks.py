@@ -1,4 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, ModelAdminGroup, PermissionHelper, modeladmin_register)
 from .models import WebFilters, WebFiltersOrg, WebFiltersMembers
@@ -111,6 +111,21 @@ class WebFiltersMembersAdmin(ModelAdmin):
     #base_form_class = NetworksForm
     #permission_helper_class = WebfiltersPermissionHelper
 
+    def get_queryset(self, request):
+        if request.user.is_superuser:
+            return WebFiltersMembers.objects.all()
+        else:
+            if request.user.organization.features.is_webfilter:
+                if request.user.organization.features.is_webfilter_multinet:
+                    return WebFiltersMembers(member__organization=network.organization)
+                else:
+                    try:
+                        network = WebFiltersOrg.objects.get(organization=request.user.organization)
+                        return WebFiltersMembers(member__network=network.network)
+                    except ObjectDoesNotExist or MultipleObjectsReturned:
+                        return WebFiltersMembers.objects.none()
+            else:
+                return WebFiltersMembers.objects.none()
 
 #modeladmin_register(WebfiltersAdmin)
 
