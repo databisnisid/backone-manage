@@ -32,6 +32,7 @@ class Features(models.Model):
 
     # WebFilters
     is_webfilter = models.BooleanField(_('Web Filters'), default=False)
+    is_webfilter_multinet = models.BooleanField(_('Web Filters Multi Net'), default=False)
 
     # Project Related
     is_telkomsel = models.BooleanField(_('Telkomsel Project'), default=False)

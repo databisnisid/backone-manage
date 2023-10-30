@@ -101,6 +101,7 @@ class Members(models.Model):
                                      validators=[mobile_regex], 
                                      max_length=20, blank=True, null=True)
 
+
     configuration = models.TextField(_('Configuration'), blank=True)
     peers = models.ForeignKey(
         MemberPeers,

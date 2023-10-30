@@ -90,10 +90,13 @@ class FeaturesAdmin(ModelAdmin):
             FieldRowPanel([FieldPanel('web'), FieldPanel('ssh')])],
             heading=_('Remote Access Features')),
         MultiFieldPanel([
+            FieldRowPanel([FieldPanel('is_webfilter'), FieldPanel('is_webfilter_multinet')])],
+            heading=_('Web Filters')),
+        MultiFieldPanel([
             FieldRowPanel([FieldPanel('geolocation'), FieldPanel('online_offline')]),
             FieldRowPanel([FieldPanel('is_export'), FieldPanel('mobile_connect')]),
             FieldRowPanel([FieldPanel('map_dashboard'), FieldPanel('is_nms')]),
-            FieldRowPanel([FieldPanel('is_webfilter'), FieldPanel('is_simple_list')])],
+            FieldRowPanel([FieldPanel('is_simple_list')])],
             heading=_('Additional Features')),
         MultiFieldPanel([
             FieldRowPanel([FieldPanel('is_telkomsel')])],

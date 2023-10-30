@@ -1,10 +1,21 @@
+from django.core.exceptions import ObjectDoesNotExist
 from wagtail.contrib.modeladmin.options import (
-    ModelAdmin, PermissionHelper, modeladmin_register)
-from .models import WebFilters
+    ModelAdmin, ModelAdminGroup, PermissionHelper, modeladmin_register)
+from .models import WebFilters, WebFiltersOrg, WebFiltersMembers
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, ObjectList
 from django.utils.translation import gettext as _
 from crum import get_current_user
 
+
+
+class WebFiltersOrgAdmin(ModelAdmin):
+    model = WebFiltersOrg
+    menu_label = 'Org and Network'  # ditch this to use verbose_name_plural from model
+    menu_icon = 'resubmit'  # change as required
+    add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
+    exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
+    list_display = ('organization', 'network')
+    #base_form_class = NetworksForm
 
 
 class WebfiltersPermissionHelper(PermissionHelper):
@@ -40,7 +51,15 @@ class WebfiltersAdmin(ModelAdmin):
             if request.user.organization.is_no_org:
                 return WebFilters.objects.filter(user=request.user)
             else:
-                return WebFilters.objects.filter(organization=request.user.organization)
+                if request.user.organization.is_webfilter:
+                    if request.user.organization.features.is_webfilter_multinet:
+                        return WebFilters.objects.filter(organization=request.user.organization)
+                    else:
+                        try:
+                            network = WebFiltersOrg.objects.get(organization=request.user.organization)
+                            return WebFilters.objects.filter(network=network.network)
+                        except ObjectDoesNotExist:
+                            return None
         else:
             return WebFilters.objects.all()
 
@@ -79,5 +98,26 @@ class WebfiltersAdmin(ModelAdmin):
         return list_display
 
 
-modeladmin_register(WebfiltersAdmin)
+class WebFiltersMembersAdmin(ModelAdmin):
+    model = WebFiltersMembers
+    menu_label = 'Member WebFilter'  # ditch this to use verbose_name_plural from model
+    menu_icon = 'upload'  # change as required
+    add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
+    exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
+    list_display = ('member', 'webfilter')
+    #search_fields = ('organization', 'uuid',)
+    #list_filter = ('controller',)
+    #base_form_class = NetworksForm
+    #permission_helper_class = WebfiltersPermissionHelper
+
+
+#modeladmin_register(WebfiltersAdmin)
+
+class WebFiltersAdminGroup(ModelAdminGroup):
+    menu_label = _("WAF")
+    menu_icon = 'download'
+    items = (WebFiltersOrgAdmin, WebfiltersAdmin, WebFiltersMembersAdmin)
+
+
+modeladmin_register(WebFiltersAdminGroup)
 
