@@ -39,7 +39,7 @@ class WebfiltersAdmin(ModelAdmin):
     menu_icon = 'globe'  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    list_display = ('name', 'uuid')
+    list_display = ('name', 'domains', 'uuid')
     #list_filter = ('name',)
     search_fields = ('name', 'uuid',)
     #list_filter = ('controller',)
