@@ -106,7 +106,7 @@ class WebFilters(models.Model):
 
 
 class WebFiltersMembers(models.Model):
-    def limit_choices_to_current_user():
+    def limit_choices_to_member():
         current_user = get_current_user()
         if not current_user.is_superuser:
             if current_user.organization.features.is_webfilter and not current_user.organization.features.is_webfilter_multinet:
@@ -121,14 +121,28 @@ class WebFiltersMembers(models.Model):
             else:
                 return {'organization': current_user.organization, 
                         'is_waf': True }
-
         else:
             return { 'is_waf': True }
+
+    def limit_choices_to_current_user():
+        current_user = get_current_user()
+        if not current_user.is_superuser:
+            if current_user.organization.features.is_webfilter and not current_user.organization.features.is_webfilter_multinet:
+                try:
+                    network = WebFiltersOrg.objects.get(organization=current_user.organization)
+                    return {'network': network.network }
+
+                except ObjectDoesNotExist or MultipleObjectsReturned:
+                    return {'organization': current_user.organization }
+            else:
+                return {'organization': current_user.organization }
+        else:
+            return {}
 
     member = models.OneToOneField(
             Members,
             on_delete=models.CASCADE,
-            limit_choices_to=limit_choices_to_current_user,
+            limit_choices_to=limit_choices_to_member,
             verbose_name=_('Member'),
 
             )
