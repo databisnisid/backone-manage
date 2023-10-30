@@ -142,6 +142,9 @@ def on_message(client, userdata, message):
                 member.mqtt = mqtt_member
                 member.is_waf = mqtt_member.is_waf
                 member.save()
+            else:
+                member.is_waf = mqtt_member.is_waf
+                member.save()
         else:
             member.mqtt = mqtt_member
             member.is_waf = mqtt_member.is_waf
