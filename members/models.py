@@ -359,9 +359,15 @@ class Members(models.Model):
         #return text
         ipaddress_ts = self.ipaddress_ts()
         if ipaddress_ts:
-            return format_html(self.list_ipaddress() + '<br />' + text + '<br /><small>IP TS: ' + ipaddress_ts + '</small>')
+            text =  format_html(self.list_ipaddress() + '<br />' + text + '<br /><small>IP TS: ' + ipaddress_ts + '</small>')
         else:
-            return format_html(self.list_ipaddress() + '<br />' + text)
+            text = format_html(self.list_ipaddress() + '<br />' + text)
+
+        if self.is_waf:
+            return format_html(text + '<br /><small>WAF: On</small>')
+        else:
+            return format_html(text + '<br /><small>WAF: Off</small>')
+
 
     member_status.short_description = _('Member Status')
 
