@@ -51,7 +51,7 @@ class WebfiltersAdmin(ModelAdmin):
             if request.user.organization.is_no_org:
                 return WebFilters.objects.filter(user=request.user)
             else:
-                if request.user.organization.is_webfilter:
+                if request.user.organization.features.is_webfilter:
                     if request.user.organization.features.is_webfilter_multinet:
                         return WebFilters.objects.filter(organization=request.user.organization)
                     else:
