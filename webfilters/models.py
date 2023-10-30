@@ -108,13 +108,19 @@ class WebFilters(models.Model):
 class WebFiltersMembers(models.Model):
     def limit_choices_to_current_user():
         current_user = get_current_user()
-        try:
-            network = WebFiltersOrg.objects.get(organization=current_user.organization)
-            return {'network': network.network }
+        if not current_user.is_superuser:
+            if current_user.organization.features.is_webfilter and not current_user.organization.features.is_webfilter_multinet:
+                try:
+                    network = WebFiltersOrg.objects.get(organization=current_user.organization)
+                    return {'network': network.network }
 
-        except ObjectDoesNotExist or MultipleObjectsReturned:
+                except ObjectDoesNotExist or MultipleObjectsReturned:
+                    return {'organization': current_user.organization}
+            else:
                 return {'organization': current_user.organization}
 
+        else:
+            return {}
 
     member = models.OneToOneField(
             Members,
