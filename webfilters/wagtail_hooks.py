@@ -117,11 +117,11 @@ class WebFiltersMembersAdmin(ModelAdmin):
         else:
             if request.user.organization.features.is_webfilter:
                 if request.user.organization.features.is_webfilter_multinet:
-                    return WebFiltersMembers(member.organization==request.user.organization)
+                    return WebFiltersMembers(member__organization=request.user.organization)
                 else:
                     try:
                         network = WebFiltersOrg.objects.get(organization=request.user.organization)
-                        return WebFiltersMembers(member.network==network.network)
+                        return WebFiltersMembers(member__network=network.network)
                     except ObjectDoesNotExist or MultipleObjectsReturned:
                         return WebFiltersMembers.objects.none()
             else:
