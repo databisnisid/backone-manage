@@ -98,7 +98,7 @@ def on_message(client, userdata, message):
     try:
         mqtt_msg[17]
         is_waf = True if int(mqtt_msg[17]) > 0 else False
-    except IndexError:
+    except (IndexError, ValueError) as error:
         is_waf = False
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
 
