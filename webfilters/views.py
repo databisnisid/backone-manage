@@ -21,7 +21,7 @@ def get_webfilter(request, uuid):
 def get_webfilter_by_member(request, member):
     print(member)
     try:
-        webfilter = WebFiltersMembers.objects.get(member__member_id=uuid)
+        webfilter = WebFiltersMembers.objects.get(member__member_id=member)
         webfilters = WebFilters.objects.get(webfilter=webfilter)
         alldomains = webfilters.domains
     except ObjectDoesNotExist:
