@@ -78,6 +78,7 @@ class WebfiltersAdmin(ModelAdmin):
                     FieldPanel('description'),
                     ], heading=_('Name and Description')),
                 FieldPanel('organization'),
+                FieldPanel('network'),
                 FieldPanel('domains'),
                 ]
 
