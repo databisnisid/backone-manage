@@ -59,7 +59,7 @@ class WebfiltersAdmin(ModelAdmin):
                             network = WebFiltersOrg.objects.get(organization=request.user.organization)
                             return WebFilters.objects.filter(network=network.network)
                         except ObjectDoesNotExist:
-                            return None
+                            return WebFilters.objects.none()
         else:
             return WebFilters.objects.all()
 
