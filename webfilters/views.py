@@ -13,15 +13,21 @@ def get_webfilter(request, uuid):
         #    alldomains += filter.domains
         #    alldomains += '\n'
     except ObjectDoesNotExist:
-        try:
-            webfilter = WebFiltersMembers.objects.get(member__member_id=uuid)
-            webfilters = WebFilters.objects.get(webfilter=webfilter)
-            alldomains = webfilters.domains
-        except ObjectDoesNotExist:
-            alldomains = ''
+        alldomains = ''
 
     return HttpResponse(alldomains, content_type='text/plain')
 
+
+def get_webfilter_by_member(request, member):
+    print(member)
+    try:
+        webfilter = WebFiltersMembers.objects.get(member__member_id=uuid)
+        webfilters = WebFilters.objects.get(webfilter=webfilter)
+        alldomains = webfilters.domains
+    except ObjectDoesNotExist:
+        alldomains = ''
+
+    return HttpResponse(alldomains, content_type='text/plain')
 
 
 
