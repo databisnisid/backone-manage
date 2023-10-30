@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
-from .models import WebFilters
+from .models import WebFilters, WebFiltersMembers
 
 
 def get_webfilter(request, uuid):
@@ -13,7 +13,12 @@ def get_webfilter(request, uuid):
         #    alldomains += filter.domains
         #    alldomains += '\n'
     except ObjectDoesNotExist:
-        alldomains = ''
+        try:
+            webfilter = WebFiltersMembers.objects.get(member__member_id=uuid)
+            webfilters = WebFilters.objects.get(webfilter=webfilter)
+            alldomains = webfilters.domains
+        except ObjectDoesNotExist:
+            alldomains = ''
 
     return HttpResponse(alldomains, content_type='text/plain')
 
