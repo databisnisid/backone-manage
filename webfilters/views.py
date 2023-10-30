@@ -5,7 +5,7 @@ from .models import WebFilters, WebFiltersMembers
 
 
 def get_webfilter(request, uuid):
-    print(uuid)
+    print('Get WebFilters base on uuid:', uuid)
     try:
         webfilters = WebFilters.objects.get(uuid=uuid)
         alldomains = webfilters.domains
@@ -19,7 +19,7 @@ def get_webfilter(request, uuid):
 
 
 def get_webfilter_by_member(request, member):
-    print(member)
+    print('Get WebFilters base on member: ', member)
     try:
         result = WebFiltersMembers.objects.get(member__member_id=member)
         #webfilters = WebFilters.objects.get(webfilter=result.webfilter)
