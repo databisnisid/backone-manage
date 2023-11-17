@@ -83,7 +83,8 @@ class Zerotier:
         return self.query('DELETE', uri_command)
 
     def set_network(self, network_id, data={}):
-        uri_command = self.uri + '/controller/network/' + network_id + '/'
+        #uri_command = self.uri + '/controller/network/' + network_id + '/'
+        uri_command = self.uri + '/controller/network/' + network_id
         return self.query('POST', uri_command, data)
 
     def set_member(self, network_id, member_id, data={}):
