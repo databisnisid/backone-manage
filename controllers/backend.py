@@ -53,7 +53,8 @@ class Zerotier:
         return self.query('GET', uri_command)
 
     def get_network_info(self, network_id):
-        uri_command = self.uri + '/controller/network/' + network_id + '/'
+        #uri_command = self.uri + '/controller/network/' + network_id + '/'
+        uri_command = self.uri + '/controller/network/' + network_id
         result = self.query('GET', uri_command)
         return result
 
