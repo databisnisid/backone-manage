@@ -124,12 +124,12 @@ class Networks(models.Model):
 
         if self.network_id is not None and self.network_id not in result:
             result = zt.add_network()
-            print(result)
-            print(self.network_id)
+            #print(result)
+            #print(self.network_id)
         else:
             result = zt.get_network_info(self.network_id)
-            print(result)
-            print(self.network_id)
+            #print(result)
+            #print(self.network_id)
 
         if 'nwid' in result:
             self.network_id = result['nwid']
