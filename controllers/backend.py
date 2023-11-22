@@ -44,7 +44,8 @@ class Zerotier:
         return self.query('GET', uri_command)
 
     def list_networks(self):
-        uri_command = self.uri + '/controller/network/'
+        #uri_command = self.uri + '/controller/network/'
+        uri_command = self.uri + '/controller/network'
         result = self.query('GET', uri_command)
         return result
 
