@@ -7,6 +7,7 @@ from .models import Members, MemberPeers
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
+from django.conf import settings
 from wagtail import hooks
 from wagtailgeowidget import geocoders
 from wagtailgeowidget.panels import GeoAddressPanel, GoogleMapsPanel
@@ -67,6 +68,8 @@ class MembersButtonHelper(ButtonHelper):
     current_classnames = ['button button-small button-primary']
     ssh_uri = 'https://remotessh.backone.cloud'
     web_uri = 'https://remoteweb.backone.cloud'
+    #rtty_uri = 'https://remote.manage.backone.cloud'
+    rtty_uri = settings.RTTY_URI
 
     '''
     def synchronize_button(self, obj):
@@ -86,13 +89,20 @@ class MembersButtonHelper(ButtonHelper):
 
     def ssh_button(self, obj):
         text = _('SSH')
-        ssh_uri_login = self.ssh_uri
+        #ssh_uri_login = self.ssh_uri
+        ssh_uri_login = self.rtty_uri
 
+        '''
         if obj.ipaddress:
             ssh_uri_login += '/?hostname=' + obj.ipaddress + '&username=root&password=SzBsMHIxajANCg==&term=xterm-256color&title='
 
         if obj.name:
             ssh_uri_login += obj.name.replace(' ', '-')
+        '''
+
+        if obj.serialnumber():
+            ssh_uri_login += '/rtty/' + obj.serialnumber()
+
 
         return {
             'url': ssh_uri_login, # Modify this to get correct action
@@ -103,10 +113,13 @@ class MembersButtonHelper(ButtonHelper):
 
     def web_button(self, obj):
         text = _('WEB')
-        web_uri_login = self.web_uri
+        #web_uri_login = self.web_uri
+        web_uri_login = self.rtty_uri
 
-        if obj.ipaddress:
-            web_uri_login += '/?hostname=' + obj.ipaddress
+        #if obj.ipaddress:
+        #    web_uri_login += '/?hostname=' + obj.ipaddress
+        if obj.serialnumber():
+            web_uri_login += '/web/' + obj.serialnumber() + '/http/127.0.0.1:80/'
 
         return {
             'url': web_uri_login, # Modify this to get correct action
@@ -120,7 +133,8 @@ class MembersButtonHelper(ButtonHelper):
     ):
         current_user = get_current_user()
 
-        is_ssh_web = True if obj.ipaddress else False
+        #is_ssh_web = True if obj.ipaddress else False
+        is_ssh_web = True if obj.serialnumber() else False
 
         """
         This function is used to gather all available buttons.

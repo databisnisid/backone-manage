@@ -468,6 +468,13 @@ class Members(models.Model):
 
         return result
 
+    def serialnumber(self):
+        result = None
+        if self.mqtt:
+            result = self.mqtt.serialnumber
+
+        return result
+
     def model_release(self):
         text = None
         if self.mqtt:

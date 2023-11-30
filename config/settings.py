@@ -280,3 +280,7 @@ AXES_IPWARE_PROXY_COUNT = int(os.getenv('AXES_IPWARE_PROXY_COUNT', 0))
 HEADSCALE_URI = str(os.getenv('HEADSCALE_URI'))
 HEADSCALE_KEY = str(os.getenv('HEADSCALE_KEY'))
 HEADSCALE_ON = int(os.getenv('HEADSCALE_ON', 0))
+
+# RTTY
+RTTY_URI = str(os.getenv('RTTY_URI', 'https://remote.manage.backone.cloud'))
+
