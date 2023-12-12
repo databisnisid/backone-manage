@@ -40,8 +40,8 @@ class WebFilters(models.Model):
     name = models.CharField(_('Name'), max_length=50, unique=True)
     description = models.TextField(_('Description'), blank=True)
     uuid = models.UUIDField(editable=False, default=uuid.uuid4, unique=True)
-    domains = models.TextField(_('Black List'), help_text=_('List top domain to block'), default='atleastonedomain.com')
-    domains_white = models.TextField(_('White List'), help_text=_('List top domain to allow'), blank=True, null=True)
+    domains = models.TextField(_('Black List'), help_text=_('List top domain to block'), default='atleastoneblacklistdomain.com')
+    domains_white = models.TextField(_('White List'), help_text=_('List top domain to allow'), default='atleastonewhitelistdomain.com')
     is_default_block = models.BooleanField(_('Default Block All'), help_text=_('Check this for block all website as default'), default=False)
 
     #network_id = models.CharField(_('Network ID'), max_length=50, blank=True, null=True)
