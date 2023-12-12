@@ -81,7 +81,7 @@ def get_webfilter_by_network(request, network_id):
 
         try:
             webfilters = WebFilters.objects.get(network=network)
-            alldomains = '1' if webfilters.is_default_block else '0'
+            alldomains = '1\n' if webfilters.is_default_block else '0\n'
             alldomains += webfilters.domains_white if webfilters.is_default_block else webfilters.domains
 
         except ObjectDoesNotExist:
