@@ -91,5 +91,5 @@ def get_webfilter_by_network(request, network_id):
         alldomains = ''
 
 
-
+    return HttpResponse(alldomains, content_type='text/plain')
 
