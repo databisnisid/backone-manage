@@ -394,10 +394,12 @@ class Members(models.Model):
 
     def online_status(self):
         text = 'OFFLINE'
+        color = 'red'
         if self.is_online():
             text = 'ONLINE'
+            color = 'green'
 
-        return text
+        return format_html("<span style='color: " + color + ";'>" + text + "</span>")
     online_status.short_description = _('Online Status')
 
     def get_routes(self):
