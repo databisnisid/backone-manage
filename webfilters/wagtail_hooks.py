@@ -2,7 +2,7 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, ModelAdminGroup, PermissionHelper, modeladmin_register)
 from .models import WebFilters, WebFiltersOrg, WebFiltersMembers
-from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, ObjectList
+from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, ObjectList, FieldRowPanel
 from django.utils.translation import gettext as _
 from crum import get_current_user
 
@@ -23,10 +23,16 @@ class WebfiltersPermissionHelper(PermissionHelper):
         return True
 
     def user_can_create(self, user):
-        return True
+        if user.is_superuser:
+            return True
+        else:
+            return False
 
     def user_can_delete_obj(self, user, obj):
-        return True
+        if user.is_superuser:
+            return True
+        else:
+            return False
 
     def user_can_edit_obj(self, user, obj):
         return True
@@ -69,7 +75,11 @@ class WebfiltersAdmin(ModelAdmin):
                     FieldPanel('name'),
                     FieldPanel('description'),
                     ], heading=_('Name and Description')),
-                FieldPanel('domains'),
+                FieldPanel('is_default_block'),
+                FieldRowPanel([
+                    FieldPanel('domains'),
+                    FieldPanel('domains_white'),
+                    ])
                 ]
 
         superuser_panels = [
@@ -79,7 +89,11 @@ class WebfiltersAdmin(ModelAdmin):
                     ], heading=_('Name and Description')),
                 FieldPanel('organization'),
                 FieldPanel('network'),
-                FieldPanel('domains'),
+                FieldPanel('is_default_block'),
+                FieldRowPanel([
+                    FieldPanel('domains'),
+                    FieldPanel('domains_white'),
+                    ])
                 ]
 
         current_user = get_current_user()
@@ -92,9 +106,9 @@ class WebfiltersAdmin(ModelAdmin):
         return ObjectList(custom_panels)
 
     def get_list_display(self, request):
-        list_display = ['name', 'domains', 'uuid']
+        list_display = ['name', 'is_default_block', 'domains', 'domains_white', 'uuid']
         if request.user.is_superuser:
-            list_display = ['name', 'domains', 'uuid', 'network', 'organization']
+            list_display = ['name', 'is_default_block', 'domains', 'domains_white', 'uuid', 'network', 'organization']
 
         return list_display
 

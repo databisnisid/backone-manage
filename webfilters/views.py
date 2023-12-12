@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from .models import WebFilters, WebFiltersMembers
+from networks.models import Networks
 
 
 def get_webfilter(request, uuid):
@@ -18,6 +19,49 @@ def get_webfilter(request, uuid):
     return HttpResponse(alldomains, content_type='text/plain')
 
 
+def get_webfilter_white(request, uuid):
+    print('Get WebFilters White base on uuid:', uuid)
+    try:
+        webfilters = WebFilters.objects.get(uuid=uuid)
+        alldomains = webfilters.domains_white
+        #for filter in webfilters:
+        #    alldomains += filter.domains
+        #    alldomains += '\n'
+    except ObjectDoesNotExist:
+        alldomains = ''
+
+    return HttpResponse(alldomains, content_type='text/plain')
+
+
+def get_webfilter_block(request, uuid):
+    print('Get WebFilters Block base on uuid:', uuid)
+    try:
+        webfilters = WebFilters.objects.get(uuid=uuid)
+        #alldomains = webfilters.is_default_block
+        alldomains = '1' if webfilters.is_default_block else '0'
+        #for filter in webfilters:
+        #    alldomains += filter.domains
+        #    alldomains += '\n'
+    except ObjectDoesNotExist:
+        alldomains = '0'
+
+    return HttpResponse(alldomains, content_type='text/plain')
+
+
+def network_webfilter_block(request, network):
+    print('Get WebFilters Block base on network_id:', network)
+    try:
+        webfilters = WebFilters.objects.get(uuid=uuid)
+        #alldomains = webfilters.is_default_block
+        alldomains = '1' if webfilters.is_default_block else '0'
+        #for filter in webfilters:
+        #    alldomains += filter.domains
+        #    alldomains += '\n'
+    except ObjectDoesNotExist:
+        alldomains = '0'
+
+    return HttpResponse(alldomains, content_type='text/plain')
+
 def get_webfilter_by_member(request, member):
     print('Get WebFilters base on member: ', member)
     try:
@@ -28,6 +72,24 @@ def get_webfilter_by_member(request, member):
         alldomains = ''
 
     return HttpResponse(alldomains, content_type='text/plain')
+
+
+def get_webfilter_by_network(request, network_id):
+    #print('Get WebFilters base on member: ', member)
+    try:
+        network = Networks.objects.get(network_id=network_id)
+
+        try:
+            webfilters = WebFilters.objects.get(network=network)
+            alldomains = '1' if webfilters.is_default_block else '0'
+            alldomains += webfilters.domains_white if webfilters.is_default_block else webfilters.domains
+
+        except ObjectDoesNotExist:
+            alldomains = ''
+
+    except ObjectDoesNotExist:
+        alldomains = ''
+
 
 
 

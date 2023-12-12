@@ -1,5 +1,6 @@
 from .models import Networks, NetworkRoutes, NetworkRules
 from members.models import Members
+#from webfilters.models import WebFilters
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
@@ -52,6 +53,20 @@ def create_network_rules(sender, instance, created, **kwargs):
         net_rules.name = instance.name + ' Rules'
         net_rules.network = instance
         net_rules.save()
+
+
+'''
+@receiver(post_save, sender=Networks)
+def create_webfilters(sender, instance, created, **kwargs):
+    try:
+        WebFilters.objects.get(network=instance)
+    except ObjectDoesNotExist:
+        webfilter = WebFilters()
+
+        webfilter.name = instance.name + ' Webfilter'
+        webfilter.network = instance
+        webfilter.save()
+'''
 
 
 @receiver(post_save, sender=NetworkRules)
