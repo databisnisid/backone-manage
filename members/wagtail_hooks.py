@@ -238,8 +238,8 @@ class MembersAdmin(ModelAdmin):
                     'member_status', 'model_release',
                     'get_routes', 'list_peers', 'online_at', 'offline_at')
     list_filter = ('is_authorized', 'network',)
-    search_fields = ('name', 'member_id', 'ipaddress', 'address', 
-                     'mobile_number_first',
+    search_fields = ('name', 'member_id', 'member_code', 'ipaddress', 
+                     'address', 'mobile_number_first',
                      'mqtt__serialnumber', 'mqtt__model', 'mqtt__uptime',
                      'mqtt__release_version')
 
