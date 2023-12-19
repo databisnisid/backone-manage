@@ -622,6 +622,7 @@ class Members(models.Model):
             text = format_html('{}<br /><small>{}</small>', self.name, address_html)
         return text
     member_name_with_address.short_description = _('Member Name')
+    member_name_with_address.admin_order_field = 'name'
 
     def switchport_up(self):
         text = ''
