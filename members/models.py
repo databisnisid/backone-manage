@@ -370,6 +370,7 @@ class Members(models.Model):
 
 
     member_status.short_description = _('Member Status')
+    member_status.admin_order_field = 'member_id'
 
     def is_online(self):
         online_status = False
