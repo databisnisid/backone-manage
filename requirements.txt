@@ -45,7 +45,7 @@ tablib==3.2.1
 telepath==0.2
 typing_extensions==4.5.0
 urllib3==1.26.11
-wagtail==5.2.1
+wagtail==5.2.2
 wagtail-modeladmin==1.0.0
 wagtailgeowidget==8.0.0
 webencodings==0.5.1
