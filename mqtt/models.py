@@ -243,3 +243,6 @@ class Mqtt(models.Model):
 
         return online_status
 
+    def rssi(self):
+        return self.rssi_signal
+
