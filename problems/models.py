@@ -98,6 +98,7 @@ class MemberProblems(ClusterableModel):
         text = format_html('{}<br />{}', self.member, self.get_update_progress())
         return text
     member_name_with_update_progress.short_description = _('Member Name')
+    member_name_with_update_progress.admin_order_field = 'member__name'
         
 
     def problem_duration_start(self):
@@ -110,6 +111,7 @@ class MemberProblems(ClusterableModel):
         return format_html("{}<br><small>D: {}<br />S: {}</small>", self.problem, duration, start_local_text)
 
     problem_duration_start.short_description = _('Problem')
+    problem_duration_start.admin_order_field = 'duration'
 
     def get_network(self):
         return self.member.network
@@ -118,6 +120,7 @@ class MemberProblems(ClusterableModel):
     def get_parameters(self):
         return self.member.model_release()
     get_parameters.short_description = _('Parameters')
+    get_parameters.admin_order_field = 'duration'
 
 
 class ProblemUpdate(models.Model):
@@ -158,4 +161,5 @@ class MemberProblemsDone(MemberProblems):
         return format_html("{}<br><small>D: {}<br />S: {}<br />E: {}</small>", self.problem, duration, start_local_text, end_local_text)
 
     problem_duration_start_end.short_description = _('Problem')
+    problem_duration_start_end.admin_order_field = 'duration'
 
