@@ -102,6 +102,14 @@ def on_message(client, userdata, message):
         is_waf = False
     #print(member_id, model, board_name, release_version, release_target, ipaddress)
 
+    # RSSI SIGNAL
+    try:
+        rssi_signal = int(mqtt_msg[18]) if mqtt_msg[18] else 0
+    #except IndexError or ValueError:
+    except IndexError:
+        rssi_signal = 0
+
+    # Insert Into DB
     try:
         mqtt_member = Mqtt.objects.get(member_id=member_id)
 
@@ -131,6 +139,7 @@ def on_message(client, userdata, message):
     mqtt_member.quota_vnstat = quota_vnstat
     mqtt_member.ipaddress_ts = ipaddress_ts
     mqtt_member.is_waf = is_waf
+    mqtt_member.rssi_signal = rssi_signal
     mqtt_member.save()
 
     #members = Members.objects.filter(member_id=member_id, mqtt=None)

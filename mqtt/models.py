@@ -34,6 +34,7 @@ class Mqtt(models.Model):
     quota_first = models.CharField(_('Quota'), max_length=200, blank=True, null=True)
     quota_first_prev = models.CharField(_('Quota Prev Day'), max_length=200, blank=True, null=True)
     is_waf = models.BooleanField(_('WAF Running'), default=False)
+    rssi_signal = models.IntegerField(_('RSSI Signal'), default=0)
 
     class Meta:
         db_table = 'mqtt'
