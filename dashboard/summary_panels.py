@@ -272,12 +272,14 @@ class ModelChartsPanel(Component):
         data_version = []
 
         for model in self.model:
-            labels_model.append(model['mqtt__model'])
-            data_model.append(model['mcount'])
+            if model['mcount'] != 0:
+                labels_model.append(model['mqtt__model'])
+                data_model.append(model['mcount'])
 
         for version in self.version:
-            labels_version.append(version['mqtt__release_version'])
-            data_version.append(version['mcount'])
+            if version['mcount'] != 0:
+                labels_version.append(version['mqtt__release_version'])
+                data_version.append(version['mcount'])
 
         context['labels_model'] = labels_model
         context['labels_version'] = labels_version
