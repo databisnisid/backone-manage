@@ -111,7 +111,7 @@ class MemberProblems(ClusterableModel):
         return format_html("{}<br><small>D: {}<br />S: {}</small>", self.problem, duration, start_local_text)
 
     problem_duration_start.short_description = _('Problem')
-    problem_duration_start.admin_order_field = 'duration'
+    problem_duration_start.admin_order_field = 'start_at'
 
     def get_network(self):
         return self.member.network
@@ -120,7 +120,7 @@ class MemberProblems(ClusterableModel):
     def get_parameters(self):
         return self.member.model_release()
     get_parameters.short_description = _('Parameters')
-    get_parameters.admin_order_field = 'duration'
+    get_parameters.admin_order_field = 'start_at'
 
 
 class ProblemUpdate(models.Model):
