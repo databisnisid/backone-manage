@@ -267,6 +267,9 @@ class MembersAdmin(ModelAdmin):
             list_display.append('offline_at')
         #return super().get_list_display(request)
 
+        if current_user.organization.features.is_lte_signal:
+            list_display.append('rssi')
+
         return list_display
 
     def get_list_export(self, request):

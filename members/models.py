@@ -665,5 +665,5 @@ class Members(models.Model):
         #return text
         return format_html("<span style='color: {};'>{}</span>", color, text)
 
-    rssi.short_description = _('RSSI Signal')
+    rssi.short_description = _('LTE Signal')
 

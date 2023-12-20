@@ -39,6 +39,7 @@ class Features(models.Model):
 
     # Custom List
     is_simple_list = models.BooleanField(_('Simple List'), default=False)
+    is_lte_signal = models.BooleanField(_('LTE Signal'), default=False)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -55,6 +56,10 @@ class Features(models.Model):
         if self.map_dashboard:
             if self.geolocation is False:
                 raise ValidationError({'geolocation': _('MAP Dashboard require GeoLocation feature!')})
+
+        if self.is_lte_signal:
+            if self.mobile_connect is False:
+                raise ValidationError({'mobile_connect': _('LTE Signal require Mobile Connect!')})
 
 
 class Organizations(models.Model):
