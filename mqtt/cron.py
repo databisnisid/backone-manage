@@ -20,6 +20,7 @@ def delete_non_member():
             Members.objects.get(member_id=mqtt.member_id)
 
         except ObjectDoesNotExist:
+            print('Delete MQTT member_id=' + mqtt.member_id)
             mqtt.delete()
 
         except MultipleObjectsReturned:
