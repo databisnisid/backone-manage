@@ -115,7 +115,7 @@ class AccessAttemptSVS(SnippetViewSet):
     menu_label = _('Access Attempt')
     icon = 'lock-open'
     inspect_view_enabled = True
-    index_template_name = 'dashboard/snippets/index.html'
+    #index_template_name = 'dashboard/snippets/index.html'
 
     exclude_from_explorer = False
 
@@ -150,7 +150,7 @@ class AccessLogSVS(SnippetViewSet):
     model = AccessLog
     menu_label = _('Access Log')
     icon = 'list-ul'
-    index_template_name = 'dashboard/snippets/index.html'
+    #index_template_name = 'dashboard/snippets/index.html'
 
     exclude_from_explorer = False
 
@@ -182,7 +182,7 @@ class AccessFailureLogSVS(SnippetViewSet):
     model = AccessFailureLog
     menu_label = _('Access Failure')
     icon = 'chain-broken'
-    index_template_name = 'dashboard/snippets/index.html'
+    #index_template_name = 'dashboard/snippets/index.html'
 
     exclude_from_explorer = False
 

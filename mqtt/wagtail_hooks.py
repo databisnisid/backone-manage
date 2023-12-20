@@ -1,5 +1,5 @@
-#from wagtail.contrib.modeladmin.options import (
-#    ModelAdmin, PermissionHelper, modeladmin_register)
+from wagtail.contrib.modeladmin.options import (
+    ModelAdmin, PermissionHelper, modeladmin_register)
 from wagtail import hooks
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
@@ -60,7 +60,7 @@ def remove_snippet_edit_button_mqtt(buttons, snippet, user, context=None):
 class MqttAdmin(SnippetViewSet):
     model = Mqtt
     inspect_view_enabled = True
-    index_template_name = 'mqtt/snippets/index.html'
+    #index_template_name = 'mqtt/snippets/index.html'
     menu_label = 'MQTT'  # ditch this to use verbose_name_plural from model
     #add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
@@ -73,6 +73,7 @@ class MqttAdmin(SnippetViewSet):
     menu_order = 999
     list_per_page = 50
     icon = 'doc-full'  # change as required
+    #menu_icon = 'doc-full'  # change as required
 
 
 #modeladmin_register(MqttAdmin)
