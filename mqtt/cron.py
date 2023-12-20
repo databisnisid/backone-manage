@@ -8,6 +8,24 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from connectors.drivers import mqtt, ping
 from controllers.workers import zt_check_member_peers
 
+
+def delete_non_member():
+    '''
+    Delete All MQTT Record which doesn't have member record
+    '''
+    mqtts = Mqtt.objects.all()
+
+    for mqtt in mqtts:
+        try:
+            Members.objects.get(member_id=mqtt.member_id)
+
+        except ObjectDoesNotExist:
+            mqtt.delete()
+
+        except MultipleObjectsReturned:
+            pass
+
+
 def fix_inconsistent_online():
     '''
     To fix status Online in BackOne
