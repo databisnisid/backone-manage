@@ -1,7 +1,7 @@
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, ModelAdminGroup, PermissionHelper, modeladmin_register)
-from .models import WebFilters, WebFiltersOrg, WebFiltersMembers
+from .models import WebFilters, WebFiltersOrg, WebFiltersMembers, WebFiltersMembersList
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, ObjectList, FieldRowPanel
 from django.utils.translation import gettext as _
 from crum import get_current_user
@@ -36,6 +36,20 @@ class WebfiltersPermissionHelper(PermissionHelper):
 
     def user_can_edit_obj(self, user, obj):
         return True
+
+
+class WebfiltersMembersListPermissionHelper(PermissionHelper):
+    def user_can_list(self, user):
+        return True
+
+    def user_can_create(self, user):
+        return False
+
+    def user_can_delete_obj(self, user, obj):
+        return False
+
+    def user_can_edit_obj(self, user, obj):
+        return False
 
 
 class WebfiltersAdmin(ModelAdmin):
@@ -113,6 +127,32 @@ class WebfiltersAdmin(ModelAdmin):
         return list_display
 
 
+class WebFiltersMembersListAdmin(ModelAdmin):
+    model = WebFiltersMembersList
+    menu_label = 'Members Webfilter'
+    menu_icon = 'upload'  # change as required
+    add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
+    exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
+    list_display = ('name')
+    #search_fields = ('organization', 'uuid',)
+
+    def get_queryset(self, request):
+        if request.user.is_superuser:
+            return WebFiltersMembersList.objects.all()
+        else:
+            if request.user.organization.features.is_webfilter:
+                if request.user.organization.features.is_webfilter_multinet:
+                    return WebFiltersMembersList.objects.filter(organization=request.user.organization)
+                else:
+                    try:
+                        network = WebFiltersOrg.objects.get(organization=request.user.organization)
+                        return WebFiltersMembersList.objects.filter(network=network.network)
+                    except ObjectDoesNotExist or MultipleObjectsReturned:
+                        return WebFiltersMembersList.objects.none()
+            else:
+                return WebFiltersMembersList.objects.none()
+
+
 class WebFiltersMembersAdmin(ModelAdmin):
     model = WebFiltersMembers
     menu_label = 'Member WebFilter'  # ditch this to use verbose_name_plural from model
@@ -146,7 +186,8 @@ class WebFiltersMembersAdmin(ModelAdmin):
 class WebFiltersAdminGroup(ModelAdminGroup):
     menu_label = _("WAF")
     menu_icon = 'download'
-    items = (WebFiltersOrgAdmin, WebfiltersAdmin, WebFiltersMembersAdmin)
+    #items = (WebFiltersOrgAdmin, WebfiltersAdmin, WebFiltersMembersAdmin)
+    items = (WebFiltersOrgAdmin, WebfiltersAdmin, WebFiltersMembersListAdmin)
 
 
 modeladmin_register(WebFiltersAdminGroup)

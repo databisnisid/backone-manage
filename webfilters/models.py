@@ -119,6 +119,13 @@ class WebFilters(models.Model):
         return super(WebFilters, self).save()
 
 
+class WebFiltersMembersList(Members):
+    class Meta:
+        proxy = True
+
+    def __str__(self):
+        return '%s' % self.name
+
 class WebFiltersMembers(models.Model):
     def limit_choices_to_member():
         current_user = get_current_user()
