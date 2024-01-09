@@ -138,15 +138,15 @@ class WebFiltersMembersListAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         if request.user.is_superuser:
-            return WebFiltersMembersList.objects.all()
+            return WebFiltersMembersList.objects.filter(is_waf=True)
         else:
             if request.user.organization.features.is_webfilter:
                 if request.user.organization.features.is_webfilter_multinet:
-                    return WebFiltersMembersList.objects.filter(organization=request.user.organization)
+                    return WebFiltersMembersList.objects.filter(organization=request.user.organization, is_waf=True)
                 else:
                     try:
                         network = WebFiltersOrg.objects.get(organization=request.user.organization)
-                        return WebFiltersMembersList.objects.filter(network=network.network)
+                        return WebFiltersMembersList.objects.filter(network=network.network, is_waf=True)
                     except ObjectDoesNotExist or MultipleObjectsReturned:
                         return WebFiltersMembersList.objects.none()
             else:
