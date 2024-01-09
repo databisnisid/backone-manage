@@ -134,6 +134,7 @@ class WebFiltersMembersListAdmin(ModelAdmin):
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('name')
+    permission_helper_class = WebfiltersMembersListPermissionHelper
     #search_fields = ('organization', 'uuid',)
 
     def get_queryset(self, request):
