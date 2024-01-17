@@ -35,13 +35,14 @@ def deauthorize_member_offline_at():
 
         #if time_delta > 0:
         if time_delta > 0 and member.is_authorized:
-            print('Deauthorize member {} - {} - {}'.format(member.name, member.member_id, member.offline_at))
+            print('Deauthorize member {} - {} - {} - {}'.format(member.name, member.member_id, member.offline_at, time_delta))
             member.is_authorized = False
             member.save()
 
         '''
         Delete member base on MEMBER_DELETE_PERIOD
         if time_delta > (settings.MEMBER_DELETE_PERIOD * 24 * 3600):
+            print('Delete member {} - {} - {} - {}'.format(member.name, member.member_id, member.offline_at, time_delta))
             member.delete()
         '''
 

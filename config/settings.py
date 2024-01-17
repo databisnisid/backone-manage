@@ -285,5 +285,5 @@ HEADSCALE_ON = int(os.getenv('HEADSCALE_ON', 0))
 RTTY_URI = str(os.getenv('RTTY_URI', 'https://remote.manage.backone.cloud'))
 
 # DELETE MEMBER PERIOD
-MEMBER_DELETE_PERIOD = int(os.getenv('MEMBER_DELETE_PERIOD', 30))
+MEMBER_DELETE_PERIOD = int(os.getenv('MEMBER_DELETE_PERIOD', 60))
 
