@@ -41,10 +41,10 @@ def deauthorize_member_offline_at():
 
         '''
         Delete member base on MEMBER_DELETE_PERIOD
+        '''
         if time_delta > (settings.MEMBER_DELETE_PERIOD * 24 * 3600):
             print('Delete member {} - {} - {} - {}'.format(member.name, member.member_id, member.offline_at, time_delta))
             member.delete()
-        '''
 
     print(timezone.localtime(), 'DONE - deauthorize_member_offline_at() function')
 
