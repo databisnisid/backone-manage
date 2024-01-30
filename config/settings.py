@@ -84,6 +84,12 @@ MIDDLEWARE += ('wagtail.contrib.redirects.middleware.RedirectMiddleware',)
 MIDDLEWARE += ('crum.CurrentRequestUserMiddleware',)
 MIDDLEWARE += ('axes.middleware.AxesMiddleware',)
 
+MIDDLEWARE += [
+    "django.middleware.cache.UpdateCacheMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.cache.FetchFromCacheMiddleware",
+]
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
