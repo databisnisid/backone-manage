@@ -287,3 +287,12 @@ RTTY_URI = str(os.getenv('RTTY_URI', 'https://remote.manage.backone.cloud'))
 # DELETE MEMBER PERIOD
 MEMBER_DELETE_PERIOD = int(os.getenv('MEMBER_DELETE_PERIOD', 60))
 
+# REDIS CACHE
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": str(os.getenv("REDIS_URL", "redis://localhost:6379/")),
+        "KEY_PREFIX": "backone",
+        "TIMEOUT": 60 * 15,  # in seconds: 60 * 15 (15 minutes)
+    }
+}
