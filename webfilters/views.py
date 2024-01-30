@@ -6,7 +6,6 @@ from .models import WebFilters, WebFiltersMembers
 from networks.models import Networks
 
 
-@cache_page
 def get_webfilter(request, uuid):
     print('Get WebFilters base on uuid:', uuid)
     try:
@@ -21,7 +20,6 @@ def get_webfilter(request, uuid):
     return HttpResponse(alldomains, content_type='text/plain')
 
 
-@cache_page
 def get_webfilter_white(request, uuid):
     print('Get WebFilters White base on uuid:', uuid)
     try:
@@ -36,7 +34,6 @@ def get_webfilter_white(request, uuid):
     return HttpResponse(alldomains, content_type='text/plain')
 
 
-@cache_page
 def get_webfilter_block(request, uuid):
     print('Get WebFilters Block base on uuid:', uuid)
     try:
@@ -52,7 +49,6 @@ def get_webfilter_block(request, uuid):
     return HttpResponse(alldomains, content_type='text/plain')
 
 
-@cache_page
 def network_webfilter_block(request, network):
     print('Get WebFilters Block base on network_id:', network)
     try:
@@ -68,7 +64,6 @@ def network_webfilter_block(request, network):
     return HttpResponse(alldomains, content_type='text/plain')
 
 
-@cache_page
 def get_webfilter_by_member(request, member):
     print('Get WebFilters base on member: ', member)
     try:
@@ -81,7 +76,6 @@ def get_webfilter_by_member(request, member):
     return HttpResponse(alldomains, content_type='text/plain')
 
 
-@cache_page
 def get_webfilter_by_network(request, network_id):
     #print('Get WebFilters base on member: ', member)
     try:
