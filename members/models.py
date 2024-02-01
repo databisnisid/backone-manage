@@ -387,7 +387,8 @@ class Members(models.Model):
                     online_status = True
             except AttributeError:
                 pass
-        except KeyError:
+        #except KeyError or ObjectDoesNotExist:
+        except ObjectDoesNotExist:
             pass
 
         return online_status
