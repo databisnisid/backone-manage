@@ -45,10 +45,10 @@ six==1.16.0
 soupsieve==2.3.2.post1
 sqlparse==0.4.2
 tablib==3.2.1
-telepath==0.2
+telepath==0.3.1
 typing_extensions==4.5.0
 urllib3==1.26.11
-wagtail==5.2.2
+wagtail==5.2.3
 wagtail-modeladmin==1.0.0
 wagtailgeowidget==8.0.0
 webencodings==0.5.1
