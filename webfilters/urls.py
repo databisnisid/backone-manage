@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import get_webfilter, get_webfilter_white, get_webfilter_block, get_webfilter_by_member, get_webfilter_by_network
+from .views import get_webfilter_by_member, get_webfilter_by_network
 
 # Adds site header, site title, index title to the admin side.
 
