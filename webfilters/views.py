@@ -65,7 +65,7 @@ def network_webfilter_block(request, network):
 
 
 def get_webfilter_by_member(request, member):
-    print('Get WebFilters base on member: ', member)
+    print('(return empty) Get WebFilters base on member: ', member)
     '''
     try:
         result = WebFiltersMembers.objects.get(member__member_id=member)
