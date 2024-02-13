@@ -66,18 +66,21 @@ def network_webfilter_block(request, network):
 
 def get_webfilter_by_member(request, member):
     print('Get WebFilters base on member: ', member)
+    '''
     try:
         result = WebFiltersMembers.objects.get(member__member_id=member)
         #webfilters = WebFilters.objects.get(webfilter=result.webfilter)
         alldomains = result.webfilter.domains
     except ObjectDoesNotExist:
         alldomains = ''
+    '''
+    alldomains = ''
 
     return HttpResponse(alldomains, content_type='text/plain')
 
 
 def get_webfilter_by_network(request, network_id):
-    #print('Get WebFilters base on member: ', member)
+    print('Get WebFilters base on NetworkID: ', network_id)
     try:
         network = Networks.objects.get(network_id=network_id)
 
