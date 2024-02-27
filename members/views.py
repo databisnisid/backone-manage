@@ -1,6 +1,6 @@
 import random
-#from django.core.serializers import serialize
-#from django.http import HttpResponse
+from django.core.serializers import serialize
+from django.http import HttpResponse
 #from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
@@ -122,5 +122,12 @@ def get_members_by_network(request, network_id):
             network__network_id=network_id,
             online_at__isnull=False
             )
-    return JsonResponse(members, safe=False)
+    data = serialize(
+            "json", members, 
+            fields=(
+                'name', 'description', 'member_id', 'online_at', 'offline_at'
+                )
+            )
+    return HttpResponse(data, content_type="application/json")
+    #return JsonResponse(members, safe=False)
 
