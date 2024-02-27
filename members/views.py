@@ -125,7 +125,8 @@ def get_members_by_network(request, network_id):
     data = serialize(
             "json", members, 
             fields=(
-                'name', 'description', 'member_id', 'member_code', 'online_at', 'offline_at'
+                'name', 'member_code', 'description', 
+                'member_id', 'online_at', 'offline_at'
                 )
             )
     return HttpResponse(data, content_type="application/json")
