@@ -1,10 +1,13 @@
 import random
-from django.shortcuts import render
+#from django.core.serializers import serialize
+#from django.http import HttpResponse
+#from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+#from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
-from .models import Members, Mqtt
+#from .models import Members, Mqtt
+from .models import Members
 from .utils import get_unique_members
 from problems.models import MemberProblems
 
@@ -91,7 +94,6 @@ def get_members_all(request):
 
     return JsonResponse(members_data, safe=False)
 
-
 def get_members_user(request, user):
     members = Members.objects.filter(user__id=user)
     members_problems = MemberProblems.unsolved.filter(
@@ -110,4 +112,15 @@ def get_members_org(request, organization):
     members_data = prepare_data(get_unique_members(members), members_problems)
 
     return JsonResponse(members_data, safe=False)
+
+
+'''
+List Members by NetworkID
+'''
+def get_members_by_network(request, network_id):
+    members = Members.objects.filter(
+            network__network_id=network_id,
+            online_at__isnull=False
+            )
+    return JsonResponse(members, safe=False)
 
