@@ -11,7 +11,8 @@ from members.views import get_members_all, get_members_user, get_members_org
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),
-    path('networks/qr_code/<str:network_id>/', views.qr_code),
+    #path('networks/qr_code/<str:network_id>/', views.qr_code),
+    path('networks/', include('networks.urls')),
     path('api/members/get_all/', get_members_all, name='get_members_all'),
     path('api/members/get_by_user/<int:user>/', get_members_user, name='get_members_by_user'),
     path('api/members/get_by_org/<int:organization>/', get_members_org, name='get_members_by_org'),
