@@ -227,8 +227,9 @@ WAGTAIL_USER_EDIT_FORM = 'accounts.forms.CustomUserEditForm'
 WAGTAIL_USER_CREATION_FORM = 'accounts.forms.CustomUserCreationForm'
 WAGTAIL_USER_CUSTOM_FIELDS = ['organization']
 
-# WAGTAIL 4.1
+# WAGTAIL 4.2
 WAGTAIL_ENABLE_WHATS_NEW_BANNER = False
+WAGTAIL_ENABLE_UPDATE_CHECK = False
 
 # MQTT
 MQTT_USER = str(os.getenv('MQTT_USER'))

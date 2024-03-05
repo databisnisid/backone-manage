@@ -8,7 +8,7 @@ cffi==1.15.1
 charset-normalizer==2.1.0
 cryptography==39.0.0
 defusedxml==0.7.1
-Django==4.2.4
+Django==4.2.11
 django-axes==6.1.1
 django-crum==0.7.9
 django-filter==23.3
