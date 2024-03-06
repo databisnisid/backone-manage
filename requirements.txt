@@ -40,6 +40,7 @@ python-dotenv==0.20.0
 pytz==2023.3.post1
 redis==5.0.1
 requests==2.28.1
+rsa==4.9
 segno==1.5.2
 six==1.16.0
 soupsieve==2.3.2.post1
