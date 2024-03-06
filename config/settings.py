@@ -26,6 +26,7 @@ ALLOWED_HOSTS = [str(os.getenv('ALLOWED_HOSTS', '*'))]
 
 INSTALLED_APPS = [
     #'headscale',
+    'licenses',
     'webfilters',
     'accounts',
     'dashboard',
@@ -129,8 +130,8 @@ DATABASES = {
         'NAME': str(os.getenv('DB_NAME', 'db.sqlite3')),
         'USER': str(os.getenv('DB_USER')),
         'PASSWORD': str(os.getenv('DB_PASSWORD')),
-        'HOST': str(os.getenv('DB_HOST')),
-        'PORT': str(os.getenv('DB_PORT')),
+        'HOST': str(os.getenv('DB_HOST', 'localhost')),
+        'PORT': str(os.getenv('DB_PORT', '3306')),
     },
 #    'headscale': {
 #        'ENGINE': str(os.getenv('HS_DB_ENGINE', 'django.db.backends.sqlite3')),
