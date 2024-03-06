@@ -6,6 +6,7 @@ from datetime import datetime
 from uuid import getnode
 from base64 import b64decode
 from rsa import PrivateKey, decrypt
+from config.utils import to_json, to_dictionary
 import json
 
 
@@ -36,16 +37,29 @@ class Licenses(models.Model):
 
     def check_license(self):
         license_status = False
+        license_valid_until = None
         if self.license_string:
             lic_decode = b64decode(self.license_string)
-            lic_key = PrivateKey.load_pkcs1(self.license_key)
-            lic_decrypt = decrypt(lic_decode, lic_key).decode()
-            lic_json = json.load(lic_decrypt)
-            datetime_format = '%Y-%m-%d %H:%M:%S.%f%z'
-            lic_valid_until = datetime.strptime(lic_json['valid_until'], datetime_format) 
+            try:
+                lic_key = PrivateKey.load_pkcs1(b64decode(self.license_key))
+                lic_decrypt = decrypt(lic_decode, lic_key).decode()
+                lic_json = to_json(lic_decrypt)
+                datetime_format = '%Y-%m-%d %H:%M:%S%z'
+                license_valid_until = datetime.strptime(lic_json['valid_until'], datetime_format) 
+                current_time = timezone.now()
 
-            if lic_valid_until >= timezone.now():
-                license_status = True
+                if license_valid_until >= current_time:
+                    license_status = True
+
+            except ValueError:
+                pass
             
-        return license_status
+        #license_status = True
+        return license_status, license_valid_until
+
+    def get_license_time(self):
+        lic_status, lic_time = self.check_license()
+        return lic_time
+
+    get_license_time.short_description = _('Valid Until')
 

@@ -13,6 +13,7 @@ from axes.models import AccessAttempt, AccessLog, AccessFailureLog
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet, SnippetViewSetGroup
 from django.conf import settings
+from licenses.models import Licenses
 
 
 #@hooks.register("insert_global_admin_css", order=100)
@@ -38,6 +39,7 @@ def hide_snippets_menu_item(request, menu_items):
     menu_items[:] = [item for item in menu_items if item.name != 'images']
     menu_items[:] = [item for item in menu_items if item.name != 'help']
 
+
     if not request.user.is_superuser:
         if not request.user.organization.features.is_nms:
             menu_items[:] = [item for item in menu_items if item.name != 'monitor']
@@ -60,6 +62,29 @@ def hide_snippets_menu_item(request, menu_items):
         menu_items[:] = [item for item in menu_items if item.name != 'backone-hs']
 
 
+    '''
+    License
+    '''
+    try:
+        lic = Licenses.objects.get(id=1)
+        lic_status, lic_day = lic.check_license()
+
+    except ObjectDoesNotExist:
+        lic_status = False
+
+    if not lic_status:
+        menu_items[:] = [item for item in menu_items if item.name != 'monitor']
+        menu_items[:] = [item for item in menu_items if item.name != 'waf']
+        menu_items[:] = [item for item in menu_items if item.name != 'members']
+        menu_items[:] = [item for item in menu_items if item.name != 'networks']
+        menu_items[:] = [item for item in menu_items if item.name != 'network-routes']
+        menu_items[:] = [item for item in menu_items if item.name != 'network-rules']
+        menu_items[:] = [item for item in menu_items if item.name != 'mqtt']
+        menu_items[:] = [item for item in menu_items if item.name != 'memberpeers']
+        menu_items[:] = [item for item in menu_items if item.name != 'controllers']
+        menu_items[:] = [item for item in menu_items if item.name != 'backone-hs']
+
+
 @hooks.register("construct_settings_menu", order=3)
 def hide_user_menu_item(request, menu_items):
     menu_items[:] = [item for item in menu_items if item.name != "workflows"]
@@ -77,9 +102,19 @@ def add_another_welcome_panel(request, panels):
     panels[:] = [panel for panel in panels if panel.name != "user_pages_in_workflow_moderation"]
     panels[:] = [panel for panel in panels if panel.name != "locked_pages"]
 
-    if request.user.is_superuser:
+    '''
+    License
+    '''
+    try:
+        lic = Licenses.objects.get(id=1)
+        lic_status, lic_day = lic.check_license()
+
+    except ObjectDoesNotExist:
+        lic_status = False
+
+    if request.user.is_superuser and lic_status:
         panels.append(MapSummaryPanel())
-    if request.user.organization.features.map_dashboard:
+    if request.user.organization.features.map_dashboard and lic_status:
         panels.append(MapSummaryPanel())
 
     #panels.append(NetworksSummaryPanel())
