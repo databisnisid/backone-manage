@@ -54,7 +54,6 @@ class Licenses(models.Model):
             except ValueError:
                 pass
             
-        #license_status = True
         return license_status, license_valid_until
 
     def get_license_time(self):
