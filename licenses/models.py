@@ -35,6 +35,7 @@ class Licenses(models.Model):
 
         return super(Licenses, self).save()
 
+    ''' Checking License '''
     def check_license(self):
         license_status = False
         license_valid_until = None
