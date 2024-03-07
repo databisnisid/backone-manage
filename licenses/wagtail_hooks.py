@@ -53,8 +53,8 @@ class LicensesAdmin(ModelAdmin):
     ]
 
     def __init__(self, *args, **kwargs):
-        super(LicensesAdmin, self).__init__(*args, **kwargs)
         self.inspect_view_enabled = False
+        super(LicensesAdmin, self).__init__(*args, **kwargs)
 
 modeladmin_register(LicensesAdmin)
 
