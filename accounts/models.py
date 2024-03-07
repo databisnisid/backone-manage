@@ -3,6 +3,7 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.models import AbstractUser
 from controllers.models import Controllers
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+import uuid
 
 
 class Features(models.Model):
@@ -40,6 +41,9 @@ class Features(models.Model):
     # Custom List
     is_simple_list = models.BooleanField(_('Simple List'), default=False)
     is_lte_signal = models.BooleanField(_('LTE Signal'), default=False)
+
+    #uuid = models.UUIDField(_('UUID'), blank=True, null=True)
+    uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), editable=False)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -79,6 +83,9 @@ class Organizations(models.Model):
     )
 
     is_no_org = models.BooleanField(default=False)
+
+    #uuid = models.UUIDField(_('UUID'), blank=True, null=True)
+    uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), editable=False)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
