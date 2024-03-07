@@ -65,6 +65,7 @@ def hide_snippets_menu_item(request, menu_items):
     '''
     License
     '''
+    '''
     try:
         lic = Licenses.objects.get(id=1)
         lic_status, lic_day = lic.check_license()
@@ -83,6 +84,7 @@ def hide_snippets_menu_item(request, menu_items):
         menu_items[:] = [item for item in menu_items if item.name != 'memberpeers']
         menu_items[:] = [item for item in menu_items if item.name != 'controllers']
         menu_items[:] = [item for item in menu_items if item.name != 'backone-hs']
+    '''
 
 
 @hooks.register("construct_settings_menu", order=3)
@@ -105,12 +107,15 @@ def add_another_welcome_panel(request, panels):
     '''
     License
     '''
+    '''
     try:
         lic = Licenses.objects.get(id=1)
         lic_status, lic_day = lic.check_license()
 
     except ObjectDoesNotExist:
         lic_status = False
+    '''
+    lic_status = True
 
     if request.user.is_superuser and lic_status:
         panels.append(MapSummaryPanel())
