@@ -51,6 +51,14 @@ class Licenses(models.Model):
 
         return super(Licenses, self).save()
 
+
+    def get_organization_uuid(self):
+        if self.organization:
+            return self.organization.uuid
+        else:
+            return None
+    get_organization_uuid.short_description = _('Organization UUID')
+
     ''' Checking License '''
     def check_license(self):
         license_status = False
