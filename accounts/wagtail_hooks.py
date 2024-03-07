@@ -38,7 +38,7 @@ class OrganizationsAdmin(ModelAdmin):
     menu_icon = 'group'  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    list_display = ('name', 'features')
+    list_display = ('name', 'features', 'controller', 'uuid')
     search_fields = ('name', 'features')
     permission_helper_class = AccountsPermissionHelper
 
@@ -62,7 +62,7 @@ class FeaturesAdmin(ModelAdmin):
     menu_icon = 'snippet'  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    list_display = ('name', 'description')
+    list_display = ('name', 'description', 'uuid')
     list_filter = ('name',)
     search_fields = ('name',)
     #ordering = ['name']

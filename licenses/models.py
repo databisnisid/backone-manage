@@ -8,6 +8,7 @@ from base64 import b64decode
 from rsa import PrivateKey, decrypt
 from config.utils import to_json, to_dictionary
 import json
+from accounts.models import Organizations
 
 
 class Licenses(models.Model):
@@ -15,6 +16,13 @@ class Licenses(models.Model):
     license_key = models.TextField(_('License Key'), blank=True, null=True)
     license_string = models.TextField(_('License String'), blank=True, null=True)
 
+    organization = models.OneToOneField(
+            Organizations,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True,
+            verbose_name=('Organization')
+            )
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)

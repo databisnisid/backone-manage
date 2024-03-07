@@ -44,6 +44,7 @@ class LicensesAdmin(ModelAdmin):
 
     panels = [
         FieldPanel('node_id', read_only=True),
+        FieldPanel('organization'),
         FieldPanel('license_key'),
     ]
 
