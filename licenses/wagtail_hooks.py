@@ -4,6 +4,7 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
 from django.utils.translation import gettext_lazy as _
 from .models import Licenses
 from accounts.models import Organizations
+from crum import get_current_user
 
 
 class LicensesPermissionHelper(PermissionHelper):
@@ -34,7 +35,7 @@ class LicensesPermissionHelper(PermissionHelper):
 class LicensesAdmin(ModelAdmin):
     model = Licenses
     #button_helper_class = ControllerButtonHelper   # Uncomment this to enable button
-    inspect_view_enabled = True
+    #inspect_view_enabled = True
     menu_label = 'License'  # ditch this to use verbose_name_plural from model
     menu_icon = 'key'  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
@@ -52,9 +53,13 @@ class LicensesAdmin(ModelAdmin):
             ], heading=_('License'))
     ]
 
+    ''' Working INIT modeladmin '''
+    ''' Not Really Working. Need more test '''
+    '''
     def __init__(self, *args, **kwargs):
         self.inspect_view_enabled = False
         super(LicensesAdmin, self).__init__(*args, **kwargs)
+    '''
 
 modeladmin_register(LicensesAdmin)
 
