@@ -3,6 +3,7 @@ from wagtail.contrib.modeladmin.options import (
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
 from django.utils.translation import gettext_lazy as _
 from .models import Licenses
+from accounts.models import Organizations
 
 
 class LicensesPermissionHelper(PermissionHelper):
@@ -14,7 +15,7 @@ class LicensesPermissionHelper(PermissionHelper):
     
     def user_can_create(self, user):
         if user.is_superuser:
-            if Licenses.objects.all().count() == 0:
+            if Licenses.objects.all().count() < Organizations.objects.all().count():
                 return True
             else:
                 return False
@@ -38,7 +39,7 @@ class LicensesAdmin(ModelAdmin):
     menu_icon = 'key'  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    list_display = ('node_id', 'get_license_time',)
+    list_display = ('node_id', 'organization.uuid', 'organization', 'get_license_time',)
     #search_fields = ('node_id', )
     permission_helper_class = LicensesPermissionHelper
 
