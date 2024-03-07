@@ -1,4 +1,5 @@
 from enum import unique
+from django.core.validators import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
@@ -12,6 +13,8 @@ from accounts.models import Organizations
 
 
 class Licenses(models.Model):
+    def limit_choices_to_org():
+        return { 'is_no_org': False }
     node_id = models.CharField(_('Node ID'), max_length=20, blank=True, null=True, unique=True)
     license_key = models.TextField(_('License Key'), blank=True, null=True)
     license_string = models.TextField(_('License String'), blank=True, null=True)
@@ -21,7 +24,8 @@ class Licenses(models.Model):
             on_delete=models.SET_NULL,
             blank=True,
             null=True,
-            verbose_name=('Organization')
+            verbose_name=('Organization'),
+            limit_choices_to=limit_choices_to_org
             )
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -34,6 +38,10 @@ class Licenses(models.Model):
 
     def __str__(self):
         return '%s' % self.node_id
+
+    def clean(self):
+        if self.organization is None:
+            raise ValidationError({'organization': _('Organization must be filled')})
 
     def save(self):
         ''' Get 12 first 12 characters (Docker supported) '''
@@ -48,9 +56,9 @@ class Licenses(models.Model):
         license_status = False
         license_valid_until = None
         if self.license_string:
-            lic_decode = b64decode(self.license_string)
+            lic_decode = b64decode(str(self.license_string))
             try:
-                lic_key = PrivateKey.load_pkcs1(b64decode(self.license_key))
+                lic_key = PrivateKey.load_pkcs1(b64decode(str(self.license_key)))
                 lic_decrypt = decrypt(lic_decode, lic_key).decode()
                 lic_json = to_json(lic_decrypt)
                 datetime_format = '%Y-%m-%d %H:%M:%S%z'

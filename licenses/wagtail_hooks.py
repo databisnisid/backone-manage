@@ -45,7 +45,10 @@ class LicensesAdmin(ModelAdmin):
     panels = [
         FieldPanel('node_id', read_only=True),
         FieldPanel('organization'),
-        FieldPanel('license_key'),
+        MultiFieldPanel([
+            FieldPanel('license_key'),
+            FieldPanel('license_string'),
+            ], heading=_('License'))
     ]
 
     '''
