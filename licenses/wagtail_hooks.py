@@ -52,10 +52,9 @@ class LicensesAdmin(ModelAdmin):
             ], heading=_('License'))
     ]
 
-    '''
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-    '''
+        super(LicensesAdmin, self).__init__(*args, **kwargs)
+        self.inspect_view_enabled = False
 
 modeladmin_register(LicensesAdmin)
 
