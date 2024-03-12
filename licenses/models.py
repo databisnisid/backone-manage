@@ -102,7 +102,7 @@ class Licenses(models.Model):
                 ''' Check Token '''
                 ''' EC1103 - Token is not match '''
                 status_token = True
-                if lic_json['controller_token'] != self.get_token():
+                if lic_json['controller_token'] != self.get_controller_token():
                     status_token = False
                     license_status_msg.append('EC1103')
 
