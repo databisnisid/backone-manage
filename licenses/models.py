@@ -11,11 +11,16 @@ from rsa import PrivateKey, decrypt
 from config.utils import to_json, to_dictionary
 import json
 from accounts.models import Organizations
+from crum import get_current_user
 
 
 class Licenses(models.Model):
     def limit_choices_to_org():
-        return { 'is_no_org': False }
+        current_user = get_current_user()
+        if current_user.is_superuser:
+            return { 'is_no_org': False }
+        else:
+            return { 'id': current_user.organization.id }
 
     node_id = models.CharField(_('Node ID'), max_length=20, blank=True, null=True)
     license_key = models.TextField(_('License Key'), blank=True, null=True)
