@@ -80,6 +80,17 @@ class LicensesAdmin(ModelAdmin):
         else:
             return ObjectList(admin_panels)
 
+    def get_queryset(self, request):
+        if request.user.is_superuser:
+            qs = Licenses.objects.all()
+
+        else:
+            if request.user.organization:
+                qs = Licenses.objects.filter(organization=request.user.organization)
+            else:
+                qs = Licenses.objects.none()
+
+        return qs
 
     ''' Working INIT modeladmin '''
     ''' Not Really Working. Need more test '''
