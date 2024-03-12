@@ -1,6 +1,7 @@
 from enum import unique
 from django.core.validators import ValidationError
 from django.db import models
+from django.db.models.fields import b64encode
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from datetime import datetime
@@ -58,7 +59,19 @@ class Licenses(models.Model):
             return self.organization.uuid
         else:
             return None
-    get_organization_uuid.short_description = _('Organization UUID')
+    get_organization_uuid.short_description = _('UUID')
+
+    def get_token(self):
+        if self.organization:
+            if self.organization.controller:
+                token = self.organization.controller.token
+                token_encode = b64encode(token.encode()).decode()
+                return token_encode
+            else:
+                return None
+        else:
+            return None
+    get_token.short_description = _('Token')
 
     ''' Checking License '''
     def check_license(self):
@@ -73,20 +86,27 @@ class Licenses(models.Model):
                 lic_json = to_json(lic_decrypt)
 
                 ''' Check Node ID '''
-                ''' EC1101 - Node ID is no match '''
+                ''' EC1101 - Node ID is not match '''
                 status_node_id = True
                 if lic_json['node_id'] != self.node_id:
                     status_node_id = True
                     license_status_msg.append('EC1101')
 
                 ''' Check Organiation UUID '''
-                ''' EC1102 - Organization UUID is no match '''
+                ''' EC1102 - Organization UUID is not match '''
                 status_organization_uuid = True
                 if lic_json['organization_uuid'] != str(self.get_organization_uuid()):
                     status_organization_uuid = False
                     license_status_msg.append('EC1102')
 
-                if status_node_id and status_organization_uuid:
+                ''' Check Token '''
+                ''' EC1103 - Token is not match '''
+                status_token = True
+                if lic_json['controller_token'] != self.get_token():
+                    status_token = False
+                    license_status_msg.append('EC1103')
+
+                if status_node_id and status_organization_uuid and status_token:
                     ''' Check Validity '''
                     datetime_format = '%Y-%m-%d %H:%M:%S%z'
                     license_valid_until = datetime.strptime(lic_json['valid_until'], datetime_format) 
