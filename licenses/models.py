@@ -82,7 +82,7 @@ class Licenses(models.Model):
                 ''' Check Organiation UUID '''
                 ''' EC1102 - Organization UUID is no match '''
                 status_organization_uuid = True
-                if lic_json['organization_uuid'] != self.get_organization_uuid():
+                if lic_json['organization_uuid'] != str(self.get_organization_uuid()):
                     status_organization_uuid = False
                     license_status_msg.append('EC1102')
 
