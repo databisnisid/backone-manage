@@ -120,7 +120,12 @@ class Licenses(models.Model):
 
 
             except ValueError:
-                pass
+                ''' License Key Error '''
+                license_status_msg.append('EC1105')
+
+        else:
+            ''' Initial Create License, licenses key and code are empty'''
+            license_status_msg.append('EC1100')
 
         license_msg = '; '.join(license_status_msg)
             
