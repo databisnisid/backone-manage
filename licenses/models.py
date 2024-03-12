@@ -61,7 +61,7 @@ class Licenses(models.Model):
             return None
     get_organization_uuid.short_description = _('UUID')
 
-    def get_token(self):
+    def get_controller_token(self):
         if self.organization:
             if self.organization.controller:
                 token = self.organization.controller.token
@@ -71,7 +71,7 @@ class Licenses(models.Model):
                 return None
         else:
             return None
-    get_token.short_description = _('Token')
+    get_controller_token.short_description = _('Token')
 
     ''' Checking License '''
     def check_license(self):
