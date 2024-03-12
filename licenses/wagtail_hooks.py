@@ -1,5 +1,5 @@
 from wagtail.contrib.modeladmin.options import (
-    ModelAdmin, ModelAdminGroup, PermissionHelper, modeladmin_register)
+    ModelAdmin, ModelAdminGroup, ObjectList, PermissionHelper, modeladmin_register)
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
 from django.utils.translation import gettext_lazy as _
 from .models import Licenses
@@ -24,7 +24,10 @@ class LicensesPermissionHelper(PermissionHelper):
             return False
 
     def user_can_delete_obj(self, user, obj):
-        return False
+        if user.is_superuser:
+            return True
+        else:
+            return False
 
     '''
     def user_can_edit_obj(self, user, obj):
@@ -52,6 +55,31 @@ class LicensesAdmin(ModelAdmin):
             FieldPanel('license_string'),
             ], heading=_('License'))
     ]
+
+    def get_edit_handler(self):
+        superuser_panels = [
+            FieldPanel('node_id', read_only=True),
+            FieldPanel('organization'),
+            MultiFieldPanel([
+                FieldPanel('license_key'),
+                FieldPanel('license_string'),
+                ], heading=_('License'))
+        ]
+
+        admin_panels = [
+            FieldPanel('node_id', read_only=True),
+            FieldPanel('organization', read_only=True),
+            MultiFieldPanel([
+                FieldPanel('license_string'),
+                ], heading=_('License'))
+        ]
+
+        current_user = get_current_user()
+        if current_user.is_superuser:
+            return ObjectList(superuser_panels)
+        else:
+            return ObjectList(admin_panels)
+
 
     ''' Working INIT modeladmin '''
     ''' Not Really Working. Need more test '''
