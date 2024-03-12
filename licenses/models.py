@@ -63,6 +63,7 @@ class Licenses(models.Model):
     ''' Checking License '''
     def check_license(self):
         license_status = False
+        license_status_msg = []
         license_valid_until = None
         if self.license_string:
             lic_decode = b64decode(str(self.license_string))
@@ -70,21 +71,48 @@ class Licenses(models.Model):
                 lic_key = PrivateKey.load_pkcs1(b64decode(str(self.license_key)))
                 lic_decrypt = decrypt(lic_decode, lic_key).decode()
                 lic_json = to_json(lic_decrypt)
-                datetime_format = '%Y-%m-%d %H:%M:%S%z'
-                license_valid_until = datetime.strptime(lic_json['valid_until'], datetime_format) 
-                current_time = timezone.now()
 
-                if license_valid_until >= current_time:
-                    license_status = True
+                ''' Check Node ID '''
+                ''' EC1101 - Node ID is no match '''
+                status_node_id = True
+                if lic_json['node_id'] != self.node_id:
+                    status_node_id = True
+                    license_status_msg.append('EC1101')
+
+                ''' Check Organiation UUID '''
+                ''' EC1102 - Organization UUID is no match '''
+                status_organization_uuid = True
+                if lic_json['organization_uuid'] != self.get_organization_uuid():
+                    status_organization_uuid = False
+                    license_status_msg.append('EC1102')
+
+                if status_node_id and status_organization_uuid:
+                    ''' Check Validity '''
+                    datetime_format = '%Y-%m-%d %H:%M:%S%z'
+                    license_valid_until = datetime.strptime(lic_json['valid_until'], datetime_format) 
+                    current_time = timezone.now()
+
+                    if license_valid_until >= current_time:
+                        license_status = True
+                        license_status_msg.append('VALID')
+                    else:
+                        license_status_msg.append('EC1104')
+
 
             except ValueError:
                 pass
+
+        license_msg = '; '.join(license_status_msg)
             
-        return license_status, license_valid_until
+        return license_status, license_valid_until, license_msg
 
     def get_license_time(self):
-        lic_status, lic_time = self.check_license()
+        lic_status, lic_time, lic_msg = self.check_license()
         return lic_time
-
     get_license_time.short_description = _('Valid Until')
+
+    def get_license_msg(self):
+        lic_status, lic_time, lic_msg = self.check_license()
+        return lic_msg
+    get_license_msg.short_description = _('License Status')
 

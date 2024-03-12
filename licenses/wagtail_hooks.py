@@ -40,7 +40,7 @@ class LicensesAdmin(ModelAdmin):
     menu_icon = 'key'  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
-    list_display = ('node_id', 'get_organization_uuid', 'organization', 'get_license_time',)
+    list_display = ('node_id', 'get_organization_uuid', 'organization', 'get_license_time', 'get_license_msg',)
     #search_fields = ('node_id', )
     permission_helper_class = LicensesPermissionHelper
 
