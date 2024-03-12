@@ -15,9 +15,10 @@ from accounts.models import Organizations
 class Licenses(models.Model):
     def limit_choices_to_org():
         return { 'is_no_org': False }
+
     node_id = models.CharField(_('Node ID'), max_length=20, blank=True, null=True, unique=True)
     license_key = models.TextField(_('License Key'), blank=True, null=True)
-    license_string = models.TextField(_('License String'), blank=True, null=True)
+    license_string = models.TextField(_('License Code'), blank=True, null=True)
 
     organization = models.OneToOneField(
             Organizations,
