@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='features',
             name='uuid',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True, verbose_name='UUID'),
+            field=models.UUIDField(default=uuid.uuid4, editable=False, null=True, verbose_name='UUID'),
         ),
         migrations.AddField(
             model_name='organizations',
             name='uuid',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True, verbose_name='UUID'),
+            field=models.UUIDField(default=uuid.uuid4, editable=False, null=True, verbose_name='UUID'),
         ),
     ]
