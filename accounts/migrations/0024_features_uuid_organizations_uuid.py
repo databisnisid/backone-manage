@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='features',
             name='uuid',
-            field=models.UUIDField(default=uuid.UUID('83bcbbfb-32a2-4905-b2ff-290d46cbb38d'), editable=False, unique=True, verbose_name='UUID'),
+            field=models.UUIDField(default=uuid.UUID('83bcbbfb-32a2-4905-b2ff-290d46cbb38d'), editable=False, verbose_name='UUID'),
         ),
         migrations.AddField(
             model_name='organizations',
             name='uuid',
-            field=models.UUIDField(default=uuid.UUID('ca618719-9f4f-49de-a032-048e2f242227'), editable=False, unique=True, verbose_name='UUID'),
+            field=models.UUIDField(default=uuid.UUID('ca618719-9f4f-49de-a032-048e2f242227'), editable=False, verbose_name='UUID'),
         ),
     ]
