@@ -1,4 +1,6 @@
+from enum import unique
 from django.db import models
+from django.template.defaultfilters import default
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import AbstractUser
 from controllers.models import Controllers
@@ -43,7 +45,8 @@ class Features(models.Model):
     is_lte_signal = models.BooleanField(_('LTE Signal'), default=False)
 
     #uuid = models.UUIDField(_('UUID'), blank=True, null=True)
-    uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), editable=False)
+    #uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), editable=False)
+    #uuid_unique = models.UUIDField(_('UUID'), default=uuid.uuid4(), unique=True, editable=False)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -85,7 +88,8 @@ class Organizations(models.Model):
     is_no_org = models.BooleanField(default=False)
 
     #uuid = models.UUIDField(_('UUID'), blank=True, null=True)
-    uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), editable=False)
+    #uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), editable=False)
+    #uuid_unique = models.UUIDField(_('UUID'), default=uuid.uuid4, unique=True, editable=False)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
