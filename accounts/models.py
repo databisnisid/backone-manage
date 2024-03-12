@@ -46,7 +46,7 @@ class Features(models.Model):
 
     #uuid = models.UUIDField(_('UUID'), blank=True, null=True)
     #uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), editable=False)
-    #uuid_unique = models.UUIDField(_('UUID'), default=uuid.uuid4(), unique=True, editable=False)
+    uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), unique=True, editable=False)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -89,7 +89,7 @@ class Organizations(models.Model):
 
     #uuid = models.UUIDField(_('UUID'), blank=True, null=True)
     #uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), editable=False)
-    #uuid_unique = models.UUIDField(_('UUID'), default=uuid.uuid4, unique=True, editable=False)
+    uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), unique=True, editable=False)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
