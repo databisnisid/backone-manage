@@ -18,5 +18,5 @@ def json_download(request, license_id):
 
     return HttpResponse(lic_json, 
                         content_type='application/json',
-                        mimetype='application/force-download')
+                        )
 
