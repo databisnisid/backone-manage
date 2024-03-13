@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render
+import json
 from .models import Licenses
 
 
@@ -16,7 +17,12 @@ def json_download(request, license_id):
     except ObjectDoesNotExist:
         lic_json = {}
 
-    return HttpResponse(str(lic_json), 
-                        content_type='application/json',
-                        )
+    print(lic_json)
+
+    #filename = f"{context['title']}.json"
+    filename = 'lic.json'
+    response = HttpResponse(content_type='application/json')
+    json_dump(lic_json, response, indent=4)
+
+    return response
 
