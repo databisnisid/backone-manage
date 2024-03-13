@@ -11,6 +11,7 @@ def json_download(request, license_id):
     try:
         lic = Licenses.objects.get(id=license_id)
         lic_json = {
+                'name': str(lic.organization.name),
                 'node_id': str(lic.node_id),
                 'uuid': str(lic.organization.uuid),
                 'token': str(lic.organization.controller.token),
