@@ -304,3 +304,7 @@ CACHES = {
         "TIMEOUT": 60 * 15,  # in seconds: 60 * 15 (15 minutes)
     }
 }
+
+# SESSION TIMEOUT
+SESSION_COOKIE_AGE = int(os.getenv('SESSION_COOKIE_AGE', 86400))
+
