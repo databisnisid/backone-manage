@@ -22,7 +22,7 @@ def json_download(request, license_id):
     #filename = f"{context['title']}.json"
     filename = 'lic.json'
     response = HttpResponse(content_type='application/json')
-    json_dump(lic_json, response, indent=4)
+    json.dump(lic_json, response, indent=4)
 
     return response
 
