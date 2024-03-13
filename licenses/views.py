@@ -9,10 +9,10 @@ def json_download(request, license_id):
     try:
         lic = Licenses.objects.get(id=license_id)
         lic_json = {
-                'node_id': lic.node_id,
-                'uuid': lic.organization.uuid,
-                'token': lic.organization.controller.token,
-                'license_code': lic.license_string
+                'node_id': str(lic.node_id),
+                'uuid': str(lic.organization.uuid),
+                'token': str(lic.organization.controller.token),
+                'license_code': str(lic.license_string)
                 }
     except ObjectDoesNotExist:
         lic_json = {}
