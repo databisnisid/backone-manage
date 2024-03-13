@@ -23,7 +23,10 @@ def json_download(request, license_id):
     #print(lic_json)
 
     #filename = f"{context['title']}.json"
-    filename = 'lic.json'
+    try:
+        filename = lic_json['token'] + '.json'
+    except:
+        filename = 'lic.json'
     response = HttpResponse(content_type='application/json')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     json.dump(lic_json, response, indent=4)

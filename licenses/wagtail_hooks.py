@@ -85,6 +85,16 @@ class LicensesAdmin(ModelAdmin):
             ], heading=_('License'))
     ]
 
+
+    def get_list_display(self, request):
+        if request.user.is_superuser:
+            list_display = ('node_id', 'get_organization_uuid', 'get_controller_token', 'organization', 'get_license_time', 'get_license_msg',)
+        else:
+            list_display = ('node_id', 'organization', 'get_license_time', 'get_license_msg',)
+
+        return list_display
+
+
     def get_edit_handler(self):
         superuser_panels = [
             FieldPanel('node_id', read_only=True),
