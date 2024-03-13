@@ -86,38 +86,75 @@ class Licenses(models.Model):
                 lic_decrypt = decrypt(lic_decode, lic_key).decode()
                 lic_json = to_json(lic_decrypt)
 
-                ''' Check Node ID '''
-                ''' EC1101 - Node ID is not match '''
-                status_node_id = True
-                if lic_json['node_id'] != self.node_id:
+                if lic_json:
+
+                    node_id = ''
+                    organization_uuid = ''
+                    controller_token = ''
+
+                    try:
+                        node_id = lic_json['node_id']
+                    except:
+                        license_status_msg.append('EC1111')
+
+                    ''' Check Node ID '''
+                    ''' EC1101 - Node ID is not match '''
                     status_node_id = True
-                    license_status_msg.append('EC1101')
+                    if node_id != self.node_id:
+                        status_node_id = True
+                        license_status_msg.append('EC1101')
 
-                ''' Check Organiation UUID '''
-                ''' EC1102 - Organization UUID is not match '''
-                status_organization_uuid = True
-                if lic_json['organization_uuid'] != str(self.get_organization_uuid()):
-                    status_organization_uuid = False
-                    license_status_msg.append('EC1102')
+                    try:
+                        organization_uuid = lic_json['organization_uuid']
+                    except:
+                        license_status_msg.append('EC1112')
 
-                ''' Check Token '''
-                ''' EC1103 - Token is not match '''
-                status_token = True
-                if lic_json['controller_token'] != self.get_controller_token():
-                    status_token = False
-                    license_status_msg.append('EC1103')
+                    ''' Check Organiation UUID '''
+                    ''' EC1102 - Organization UUID is not match '''
+                    status_organization_uuid = True
+                    if organization_uuid != str(self.get_organization_uuid()):
+                        status_organization_uuid = False
+                        license_status_msg.append('EC1102')
 
-                if status_node_id and status_organization_uuid and status_token:
-                    ''' Check Validity '''
-                    datetime_format = '%Y-%m-%d %H:%M:%S%z'
-                    license_valid_until = datetime.strptime(lic_json['valid_until'], datetime_format) 
-                    current_time = timezone.now()
+                    try:
+                        controller_token = lic_json['controller_token']
+                    except:
+                        license_status_msg.append('EC1113')
 
-                    if license_valid_until >= current_time:
-                        license_status = True
-                        license_status_msg.append('VALID')
-                    else:
-                        license_status_msg.append('EC1104')
+                    ''' Check Token '''
+                    ''' EC1103 - Token is not match '''
+                    status_token = True
+                    if controller_token != self.get_controller_token():
+                        status_token = False
+                        license_status_msg.append('EC1103')
+
+                    if status_node_id and status_organization_uuid and status_token:
+                        try:
+                            valid_until = lic_json['valid_until']
+                            ''' Check Validity '''
+                            datetime_format = '%Y-%m-%d %H:%M:%S%z'
+                            try:
+                                license_valid_until = datetime.strptime(valid_until, datetime_format) 
+                                current_time = timezone.now()
+
+                                if license_valid_until >= current_time:
+                                    license_status = True
+                                    license_status_msg.append('VALID')
+                                else:
+                                    license_status_msg.append('EC1104')
+                            except:
+                                ''' Validity Error - Wrong date string '''
+                                license_status_msg.append('EC1114')
+
+                        except:
+                            ''' Validity Error - No valid_until '''
+                            license_status_msg.append('EC1114')
+                            
+
+                else:
+                    ''' if lic_json '''
+                    ''' JSON is None '''
+                    license_status_msg.append('EC1106')
 
 
             except ValueError:
