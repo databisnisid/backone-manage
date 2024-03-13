@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from .models import Licenses
 from accounts.models import Organizations
 from crum import get_current_user
+from django.urls import reverse
 
 
 class LicensesButtonHelper(ButtonHelper):
@@ -15,7 +16,8 @@ class LicensesButtonHelper(ButtonHelper):
 
     def json_button(self, obj):
         text = _('Download JSON')
-        button_url = ''
+        #obj_id = obj.id
+        button_url = reverse('json_download', args=[obj.id])
 
         return {
                 'url': button_url,
