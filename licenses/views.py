@@ -1,10 +1,12 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 import json
 from .models import Licenses
 
 
+@login_required
 def json_download(request, license_id):
     try:
         lic = Licenses.objects.get(id=license_id)
