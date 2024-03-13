@@ -16,7 +16,7 @@ def json_download(request, license_id):
     except ObjectDoesNotExist:
         lic_json = {}
 
-    return HttpResponse(lic_json, 
+    return HttpResponse(str(lic_json), 
                         content_type='application/json',
                         )
 
