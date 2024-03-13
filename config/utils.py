@@ -8,7 +8,10 @@ from django.utils import timezone
 
 
 def to_json(data):
-    return json.loads(data.replace("\'", "\""))
+    try:
+        return json.loads(data.replace("\'", "\""))
+    except json.JSONDecodeError:
+        return None
 
 
 def to_dictionary(data):
