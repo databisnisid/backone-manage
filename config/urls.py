@@ -19,6 +19,7 @@ urlpatterns = [
     #path('api/members/get_by_user/<int:user>/', get_members_user, name='get_members_by_user'),
     #path('api/members/get_by_org/<int:organization>/', get_members_org, name='get_members_by_org'),
     path('api/webfilters/', include('webfilters.urls')),
+    path('api/licenses/', include('licenses.urls')),
     path("", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     #path("search/", search_views.search, name="search"),
