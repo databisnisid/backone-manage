@@ -15,7 +15,7 @@ class LicensesButtonHelper(ButtonHelper):
 
 
     def json_button(self, obj):
-        text = _('Download JSON')
+        text = _('Download License')
         #obj_id = obj.id
         button_url = reverse('json_download', args=[obj.id])
 
