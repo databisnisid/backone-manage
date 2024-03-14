@@ -80,11 +80,50 @@ class Licenses(models.Model):
         license_status_msg = []
         license_valid_until = None
         if self.license_string:
-            lic_decode = b64decode(str(self.license_string))
+            lic_decode = None
+            lic_key_enc = None
+            lic_key = None
+            lic_decrypt = None
+            lic_json = None
+
             try:
-                lic_key = PrivateKey.load_pkcs1(b64decode(str(self.license_key)))
-                lic_decrypt = decrypt(lic_decode, lic_key).decode()
-                lic_json = to_json(lic_decrypt)
+                lic_decode = b64decode(str(self.license_string))
+            except:
+                ''' License Code Decode Error '''
+                license_status_msg.append('EC1105')
+
+
+            if lic_decode:
+                lic_key_enc = None
+                lic_key = None
+                lic_decrypt = None
+                lic_json = None
+
+                try:
+                    lic_key_enc = b64decode(str(self.license_key))
+
+                except:
+                    ''' License Key Decode Error '''
+                    license_status_msg.append('EC1107')
+
+                if lic_key_enc:
+                    try:
+                        lic_key = PrivateKey.load_pkcs1(lic_key_enc)
+                    except: 
+                        ''' License Key Load Error '''
+                        license_status_msg.append('EC1108')
+
+                if lic_key:
+                    try:
+                        lic_decrypt = decrypt(lic_decode, lic_key).decode()
+                        lic_json = to_json(lic_decrypt)
+                    except:
+                        ''' License Key Decrypt Error '''
+                        license_status_msg.append('EC1109')
+
+                #lic_key = PrivateKey.load_pkcs1(b64decode(str(self.license_key)))
+                #lic_decrypt = decrypt(lic_decode, lic_key).decode()
+                #lic_json = to_json(lic_decrypt)
 
                 if lic_json:
 
@@ -157,9 +196,9 @@ class Licenses(models.Model):
                     license_status_msg.append('EC1106')
 
 
-            except ValueError:
-                ''' License Key Error '''
-                license_status_msg.append('EC1105')
+            #except ValueError:
+            #    ''' License Key Error '''
+            #    license_status_msg.append('EC1105')
 
         else:
             ''' Initial Create License, licenses key and code are empty'''
