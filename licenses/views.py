@@ -41,8 +41,9 @@ def json_download(request, license_id):
     #from io import StringIO
     #buffer = StringIO()
     #buffer.write(lic_json_enc)
+    print(lic_json_enc)
 
-    response = HttpResponse(lic_json_enc, content_type='application/text')
+    response = HttpResponse(lic_json_enc, content_type='application/zip')
     #response = HttpResponse(FileWrapper(buffer.getvalue()), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     #json.dump(lic_json, response, indent=4)
