@@ -2,8 +2,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.db.models.fields import b64encode
 from django.http import HttpResponse
-from django.shortcuts import render
-from wsgiref.util import FileWrapper
+#from django.shortcuts import render
+#from wsgiref.util import FileWrapper
 import json
 from .models import Licenses
 
