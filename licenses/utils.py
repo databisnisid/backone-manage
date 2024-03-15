@@ -22,7 +22,7 @@ def check_license(lic_json):
 
     try:
         valid_until = lic_json['valid_until']
-    except ValueError or IndexError:
+    except KeyError:
         valid_until = str(timezone.now())
 
     lic_result = {
