@@ -1,14 +1,15 @@
+from django.core.exceptions import ObjectDoesNotExist
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin, PermissionHelper, modeladmin_register)
 #from wagtail import hooks
 #from wagtail.snippets.models import register_snippet
 #from wagtail.snippets.views.snippets import SnippetViewSet
-from members.models import Members
+#from members.models import Members
 #from wagtail.contrib.modeladmin.views import InspectView
 from .models import Networks, NetworkRoutes, NetworkRules
 from controllers.models import Controllers
 #from config.utils import get_user
-from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, ObjectList
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList
 from django.utils.translation import gettext as _
 from crum import get_current_user
 #from wagtail.admin.forms import WagtailAdminPageForm
@@ -16,6 +17,7 @@ from crum import get_current_user
 #from django.core.exceptions import ObjectDoesNotExist
 #from wagtail.snippets.models import register_snippet
 #from wagtail.snippets.views.snippets import SnippetViewSet
+from licenses.utils import is_license_valid
 
 
 '''
@@ -58,26 +60,37 @@ class NetworksPermissionHelper(PermissionHelper):
                 result = False
             '''
 
+            ''' Check License '''
+            if not is_license_valid(user):
+                result = False
+
         if not user.has_perm('networks.add_networks'):
             result = False
 
         return result
 
-    '''
     def user_can_delete_obj(self, user, obj):
-        result = False
-        if user.has_perm('networks.delete_networks'):
+        result = True
+        ''' Check License '''
+        if not is_license_valid(user):
+            result = False
+
+        if not user.has_perm('networks.delete_networks'):
             result = True
+
         return result
-    '''
 
     def user_can_edit_obj(self, user, obj):
-        result = False
-        if user.has_perm('networks.change_networks'):
-            result = True
+        result = True
+        if not user.has_perm('networks.change_networks'):
+            result = False
 
         if user.is_superuser:
             result = False
+        else:
+            ''' Check License '''
+            if not is_license_valid(user):
+                result = False
 
         return result
 

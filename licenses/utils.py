@@ -19,6 +19,25 @@ def encrypt_node_id(key):
     return node_id_b64
 
 
+''' Check License Validity True/False'''
+def is_license_valid(user):
+
+    result = False
+
+    if not user.organization.is_no_org:
+        try:
+            lic = Licenses.objects.get(organization=user.organization)
+            lic_status, lic_valid_until, lic_msg = lic.check_license()
+
+            if lic_status:
+                result = True
+
+        except ObjectDoesNotExist:
+            pass
+
+    return result
+
+
 def check_license(lic_json):
     node_id = lic_json['node_id']
     uuid = lic_json['uuid']
