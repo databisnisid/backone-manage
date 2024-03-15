@@ -60,8 +60,10 @@ def download_license(request, license_id):
 @requires_csrf_token
 def license_handler(request):
     is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
-    response = JsonResponse({'error': 'Uknown Error'})
-    response.status_code = 500
+    response_json = {
+            'status': 0,
+            'msg': 'Uknown Error'
+            }
     if request.method == 'POST' and is_ajax:
         if request.body:
             #print(request.body)
@@ -78,20 +80,17 @@ def license_handler(request):
                 lic_json = to_json(lic_json_str)
                 if lic_json:
                     print(lic_json)
-                    lic_json_check = check_license(lic_json)
-                    response = JsonResponse(lic_json_check,
-                                            json_dumps_params={'indent': 4})
-                    response.status_code = 200
+                    response_json = check_license(lic_json)
                 else:
-                    response = JsonResponse({'error': 'License Code Error'})
-                    response.status_code = 500
+                    response_json['msg'] = 'License Code Error'
 
             else:
-                response = JsonResponse({'error': 'License Decode Error'})
-                response.status_code = 500
+                response_json['msg'] = 'License Decode Error'
         else:
-            response = JsonResponse({'error': 'License is empty'})
-            response.status_code = 500
+            response_json['msg'] = 'License is empty'
+
+    response = JsonResponse(response_json)
+    response.status_code = 200
 
     return response
 
