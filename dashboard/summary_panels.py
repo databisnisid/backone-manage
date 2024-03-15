@@ -14,6 +14,15 @@ from members.utils import get_unique_members
 #from monitor.models import MemberProblems
 
 
+class LicenseDecoderPanel(Component):
+    order = 200
+    template_name = "dashboard/license_decoder.html"
+
+    def get_context_data(self, parent_context):
+        context = super().get_context_data(parent_context)
+        return context
+
+
 class MapSummaryPanel(Component):
     order = 10
     template_name = "dashboard/map_dashboard.html"

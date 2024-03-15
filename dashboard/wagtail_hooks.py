@@ -130,6 +130,8 @@ def add_another_welcome_panel(request, panels):
         panels.append(NetworksChartsPanel())
     if request.user.organization.features.number_of_network > 1:
         panels.append(NetworksChartsPanel())
+    if request.user.is_superuser:
+        panels.append(LicenseDecoderPanel())
 
 
 @hooks.register("insert_global_admin_js", order=100)

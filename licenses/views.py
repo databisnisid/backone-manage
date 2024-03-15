@@ -14,12 +14,14 @@ def json_download(request, license_id):
         lic = Licenses.objects.get(id=license_id)
         token = lic.organization.controller.token
         token_encode = b64encode(token.encode()).decode()
+        is_block_rule = 1 if lic.is_block_rule else 0
         lic_json = {
                 'name': str(lic.organization.name),
                 'node_id': str(lic.node_id),
                 'uuid': str(lic.organization.uuid),
                 'token': token_encode,
-                'license_code': str(lic.license_string)
+                'license_code': str(lic.license_string),
+                'is_block_rule': is_block_rule
                 }
     except ObjectDoesNotExist:
         lic_json = {}
