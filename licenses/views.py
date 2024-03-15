@@ -77,7 +77,7 @@ def license_handler(request):
                 lic_json_str = None
 
             if lic_json_str:
-                #print(lic_json_str)
+                print(lic_json_str)
                 lic_json = to_json(lic_json_str)
                 if lic_json:
                     print(lic_json)
