@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from django.utils.timezone import datetime, timezone
+from django.utils.timezone import datetime
+from django.utils import timezone
 from rsa import PublicKey, encrypt
 from uuid import getnode
 from base64 import b64encode
