@@ -1,4 +1,5 @@
 from os import walk
+from django.urls import reverse
 from wagtail.admin.ui.components import Component
 from django.db.models import Count
 from django.conf import settings
@@ -20,6 +21,7 @@ class LicenseDecoderPanel(Component):
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
+        context['license_handler'] = reverse('license_handler')
         return context
 
 

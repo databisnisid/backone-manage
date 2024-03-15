@@ -61,9 +61,10 @@ $(document).ready(function (e) {
         // set the headers
         headers = {'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest', 'X-CSRFToken': csrf_token};
 
+        //url: '/api/licenses/handler/', // point to server-side URL
         $.ajax({
             type: 'POST',
-            url: '/api/licenses/handler/', // point to server-side URL
+            url: '{{ license_handler }}', // point to server-side URL
             dataType: "json",
             ContentType: false,
             cache: false,
