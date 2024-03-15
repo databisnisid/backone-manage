@@ -5,11 +5,15 @@ from django.http import HttpResponse
 #from django.shortcuts import render
 #from wsgiref.util import FileWrapper
 import json
+from base64 import b64encode, b64decode
+from django.http.response import JsonResponse
+from django.views.defaults import requires_csrf_token
 from .models import Licenses
+from .utils import check_license
 
 
 @login_required
-def json_download(request, license_id):
+def download_license(request, license_id):
     try:
         lic = Licenses.objects.get(id=license_id)
         token = lic.organization.controller.token
@@ -49,6 +53,45 @@ def json_download(request, license_id):
     #response = HttpResponse(FileWrapper(buffer.getvalue()), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     #json.dump(lic_json, response, indent=4)
+
+    return response
+
+
+@requires_csrf_token
+def license_handler(request):
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    response = JsonResponse({'error': 'Uknown Error'})
+    response.status_code = 500
+    if request.method == 'POST' and is_ajax:
+        if request.body:
+            #print(request.body)
+            lic_enc = request.body
+
+            try:
+                lic_json_str = b64decode(lic_enc).decode()
+
+            except:
+                lic_json_str = None
+
+            if lic_json_str:
+                #print(lic_json_str)
+                lic_json = to_json(lic_json_str)
+                if lic_json:
+                    print(lic_json)
+                    lic_json_check = check_license(lic_json)
+                    response = JsonResponse(lic_json_check,
+                                            json_dumps_params={'indent': 4})
+                    response.status_code = 200
+                else:
+                    response = JsonResponse({'error': 'License Code Error'})
+                    response.status_code = 500
+
+            else:
+                response = JsonResponse({'error': 'License Decode Error'})
+                response.status_code = 500
+        else:
+            response = JsonResponse({'error': 'License is empty'})
+            response.status_code = 500
 
     return response
 

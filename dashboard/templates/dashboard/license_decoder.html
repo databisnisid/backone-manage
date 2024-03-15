@@ -15,7 +15,7 @@
 <section class="panel summary nice-padding">
 <br />
 <br />
-<h1>License Decoder</h1>
+<h1>Update License</h1>
 
 <div id="msg"></div>
 <form id="snipForm" method="POST" enctype="multipart/form-data">
@@ -115,14 +115,9 @@ $(document).ready(function (e) {
             data: licenseContent,
             success: function (response) { // display success response
                 if (response.status)
-                    $('#lic_status').html('<span style="color:green">FOUND</span>');
-                else
-                    $('#lic_status').html('<span style="color:red">NOT FOUND</span>');
-		        $( '#lic_name' ).text(response.name);
-		        $( '#lic_node_id' ).text(response.node_id);
-		        $( '#lic_uuid' ).text(response.uuid);
-		        $( '#lic_token' ).text(response.token);
-		        $( '#lic_valid_until' ).text(response.valid_until);
+                    $('#msg').html('<span style="color:green">' + response.msg + '</span>');
+                else 
+                    $('#msg').html('<span style="color:red">' + response.msg + '</span>');
                 //console.log(response)
             },
             error: function (response) {
