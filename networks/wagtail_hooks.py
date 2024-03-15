@@ -60,9 +60,9 @@ class NetworksPermissionHelper(PermissionHelper):
                 result = False
             '''
 
-            ''' Check License '''
-            if not is_license_valid(user):
-                result = False
+        ''' Check License '''
+        if not is_license_valid(user):
+            result = False
 
         if not user.has_perm('networks.add_networks'):
             result = False
@@ -87,10 +87,10 @@ class NetworksPermissionHelper(PermissionHelper):
 
         if user.is_superuser:
             result = False
-        else:
-            ''' Check License '''
-            if not is_license_valid(user):
-                result = False
+
+        ''' Check License '''
+        if not is_license_valid(user):
+            result = False
 
         return result
 
