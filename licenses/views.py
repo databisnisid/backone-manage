@@ -7,7 +7,7 @@ from django.http import HttpResponse
 import json
 from base64 import b64encode, b64decode
 from django.http.response import JsonResponse
-from django.views.defaults import requires_csrf_token
+from django.views.decorators.csrf import requires_csrf_token
 from .models import Licenses
 from .utils import check_license
 
