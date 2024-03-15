@@ -4,7 +4,7 @@ from django.utils.timezone import datetime
 from django.utils import timezone
 from rsa import PublicKey, encrypt
 from uuid import getnode
-from base64 import b64encode
+from base64 import b64decode, b64encode
 
 from accounts.models import Organizations
 from controllers.models import Controllers
@@ -22,7 +22,7 @@ def encrypt_node_id(key):
 def check_license(lic_json):
     node_id = lic_json['node_id']
     uuid = lic_json['uuid']
-    token = lic_json['token']
+    token = b64decode(lic_json['token'])
 
     try:
         valid_until = lic_json['valid_until']
