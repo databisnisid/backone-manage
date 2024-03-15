@@ -65,6 +65,8 @@ def check_license(lic_json):
                 if new_license_valid_until > lic_valid_until:
                     lic_result['status'] = 1
                     lic_result['msg'] = 'License Update is success'
+                    lic.valid_until = new_license_valid_until
+                    lic.save()
                 else:
                     lic_result['msg'] = 'New license validity is older than installed license'
             else:
