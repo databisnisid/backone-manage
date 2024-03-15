@@ -5,6 +5,9 @@ from django.utils import timezone
 from rsa import PublicKey, encrypt
 from uuid import getnode
 from base64 import b64encode
+
+from accounts.models import Organizations
+from controllers.models import Controllers
 from .models import Licenses
 
 
@@ -31,11 +34,22 @@ def check_license(lic_json):
             'msg': 'License is NOT VALID'
             }
     try:
-        lic = Licenses.objects.get(node_id=node_id,
-                                   organization_uuid=uuid,
-                                   controller_token=token)
+        controller = Controllers.objects.get(token=token)
     except ObjectDoesNotExist:
-        lic = None
+        controller = None
+
+    lic = None
+        
+    if controller:
+        try:
+            organization = Organizations.objects.get(uuid=uuid,
+                                                    controller=controller)
+        except ObjectDoesNotExist:
+            organization = None
+
+        if organization:
+            lic = Licenses.objects.get(node_id=node_id,
+                                   organization=organization)
 
     datetime_format = '%Y-%m-%d %H:%M:%S%z'
     try:
