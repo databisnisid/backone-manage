@@ -36,7 +36,7 @@ def download_license(request, license_id):
     #filename = f"{context['title']}.json"
     try:
         #filename = lic_json['token'] + '.json'
-        filename = lic_json['token'] + '.lic'
+        filename = lic_json['uuid'] + '.lic'
     except:
         filename = 'license.lic'
         #filename = 'lic.json'
