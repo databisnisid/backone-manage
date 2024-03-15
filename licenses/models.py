@@ -21,6 +21,7 @@ class Licenses(models.Model):
     node_id = models.CharField(_('Node ID'), max_length=20, blank=True, null=True)
     license_key = models.TextField(_('License Key'), blank=True, null=True)
     license_string = models.TextField(_('License Code'), blank=True, null=True)
+    is_block_rule = models.BooleanField(_('Block Rule at Expired'), default=True)
 
     organization = models.OneToOneField(
             Organizations,
