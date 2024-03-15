@@ -31,8 +31,6 @@
 </form>
 </section>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
 <script>
 $(document).ready(function (e) {
   $('#upload_license').on('click', function (event) {
@@ -57,6 +55,7 @@ $(document).ready(function (e) {
 
         // obtain CSFR token
         csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        console.log(csrf_token);
 
         // set the headers
         headers = {'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest', 'X-CSRFToken': csrf_token};
