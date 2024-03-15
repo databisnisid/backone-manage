@@ -3,6 +3,8 @@ from wagtail.contrib.modeladmin.options import (
 from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
+
+from licenses.utils import is_license_valid
 from .models import Members, MemberPeers
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
@@ -16,6 +18,7 @@ from wagtailgeowidget.panels import GeoAddressPanel, GoogleMapsPanel
 #from wagtail.admin.forms import WagtailAdminModelForm
 #from django import forms
 #from networks.models import Networks
+from licenses.utils import is_license_valid
 
 
 '''
@@ -185,17 +188,16 @@ class MemberPeersPermissionHelper(PermissionHelper):
 
 class MembersPermissionHelper(PermissionHelper):
     def user_can_list(self, user):
-        if user.has_perm('members.view_members'):
-            return True
-        else:
-            return False
+        result = True
+        if not user.has_perm('members.view_members'):
+            result = False
+
+        return result
 
     def user_can_create(self, user):
-        result = False
+        result = True
         total_members = Members.objects.filter(organization=user.organization).count()
-        if user.organization.features.number_of_member > total_members: 
-            result = True
-        else:
+        if not (user.organization.features.number_of_member > total_members): 
             result = False
 
         if not user.has_perm('members.add_members'):
@@ -204,20 +206,33 @@ class MembersPermissionHelper(PermissionHelper):
         if user.is_superuser:
             result = False
 
+        ''' Check License '''
+        if not is_license_valid(user):
+            result = False
+
         return result
 
     def user_can_delete_obj(self, user, obj):
-        if user.has_perm('members.delete_members'):
-            return True
-        else:
-            return False
+        result = True
+        if not user.has_perm('members.delete_members'):
+            result = False
+
+        ''' Check License '''
+        if not is_license_valid(user):
+            result = False
+
+        return result
 
     def user_can_edit_obj(self, user, obj):
-        result = False
-        if user.has_perm('members.change_members'):
-            result = True
+        result = True
+        if not user.has_perm('members.change_members'):
+            result = False
 
         if user.is_superuser:
+            result = False
+
+        ''' Check License '''
+        if not is_license_valid(user):
             result = False
 
         return result

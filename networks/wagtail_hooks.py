@@ -111,9 +111,9 @@ class NetworkRulesPermissionHelper(PermissionHelper):
         return False
 
     def user_can_edit_obj(self, user, obj):
-        result = False
-        if not user.is_superuser:
-            result = True
+        result = True
+        if user.is_superuser:
+            result = False
         '''
             controllers = Controllers.objects.all().count()
             if controllers > 1:
@@ -125,6 +125,10 @@ class NetworkRulesPermissionHelper(PermissionHelper):
         '''
 
         if not user.has_perm('networks.change_networkrules'):
+            result = False
+
+        ''' Check License '''
+        if not is_license_valid(user):
             result = False
 
         return result
@@ -152,6 +156,10 @@ class NetworkRoutesPermissionHelper(PermissionHelper):
         if not user.has_perm('networks.delete_networkroutes'):
             result = False
 
+        ''' Check License '''
+        if not is_license_valid(user):
+            result = False
+
         return result
 
     def user_can_edit_obj(self, user, obj):
@@ -163,6 +171,10 @@ class NetworkRoutesPermissionHelper(PermissionHelper):
             result = False
 
         if not user.has_perm('networks.add_networkroutes'):
+            result = False
+
+        ''' Check License '''
+        if not is_license_valid(user):
             result = False
 
         return result

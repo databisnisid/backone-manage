@@ -5,6 +5,7 @@ from .models import WebFilters, WebFiltersOrg, WebFiltersMembers, WebFiltersMemb
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, ObjectList, FieldRowPanel
 from django.utils.translation import gettext as _
 from crum import get_current_user
+from licenses.utils import is_license_valid
 
 
 
@@ -23,19 +24,34 @@ class WebfiltersPermissionHelper(PermissionHelper):
         return True
 
     def user_can_create(self, user):
-        if user.is_superuser:
-            return True
-        else:
-            return False
+        result = True
+        if not user.is_superuser:
+            result = False
+
+        ''' Check License '''
+        if not is_license_valid(user):
+            result = False
+
+        return result
 
     def user_can_delete_obj(self, user, obj):
-        if user.is_superuser:
-            return True
-        else:
-            return False
+        result = True
+        if not user.is_superuser:
+            result = False
+
+        ''' Check License '''
+        if not is_license_valid(user):
+            result = False
+
+        return result
 
     def user_can_edit_obj(self, user, obj):
-        return True
+        result = True
+        ''' Check License '''
+        if not is_license_valid(user):
+            result = False
+
+        return result
 
 
 class WebfiltersMembersListPermissionHelper(PermissionHelper):
