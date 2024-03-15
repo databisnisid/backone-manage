@@ -19,18 +19,22 @@ def check_license(lic_json):
     node_id = lic_json['node_id']
     uuid = lic_json['uuid']
     token = lic_json['token']
-    valid_until = lic_json['valid_until']
+
+    try:
+        valid_until = lic_json['valid_until']
+    except ValueError or IndexError:
+        valid_until = str(timezone.now())
+
+    lic_result = {
+            'status': 0,
+            'msg': 'License is NOT VALID'
+            }
     try:
         lic = Licenses.objects.get(node_id=node_id,
                                    organization_uuid=uuid,
                                    controller_token=token)
     except ObjectDoesNotExist:
         lic = None
-
-    lic_result = {
-            'status': 0,
-            'msg': 'License is NOT VALID'
-            }
 
     datetime_format = '%Y-%m-%d %H:%M:%S%z'
     try:
