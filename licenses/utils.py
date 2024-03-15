@@ -75,7 +75,7 @@ def check_license(lic_json):
                     try:
                         license_key = lic_json['license_key']
                         lic.license_key = license_key
-                        lic.license_code = license_code
+                        lic.license_string = license_code
                         lic.save()
                         lic_result['status'] = 1
                         lic_result['msg'] = 'License Init is succeed'
