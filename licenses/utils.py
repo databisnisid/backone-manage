@@ -23,6 +23,7 @@ def check_license(lic_json):
     node_id = lic_json['node_id']
     uuid = lic_json['uuid']
     token = b64decode(lic_json['token']).decode()
+    license_code = lic_json['license_code']
 
     try:
         valid_until = lic_json['valid_until']
@@ -65,7 +66,7 @@ def check_license(lic_json):
                 if new_license_valid_until > lic_valid_until:
                     lic_result['status'] = 1
                     lic_result['msg'] = 'License Update is success'
-                    lic.valid_until = new_license_valid_until
+                    lic.license_string = license_code
                     lic.save()
                 else:
                     lic_result['msg'] = 'New license validity is older than installed license'
