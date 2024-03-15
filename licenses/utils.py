@@ -63,13 +63,25 @@ def check_license(lic_json):
             lic_status, lic_valid_until, lic_msg = lic.check_license()
 
             if new_license_valid_until > timezone.now():
-                if new_license_valid_until > lic_valid_until:
-                    lic_result['status'] = 1
-                    lic_result['msg'] = 'License Update is success'
-                    lic.license_string = license_code
-                    lic.save()
+                if lic_valid_until:
+                    if new_license_valid_until > lic_valid_until:
+                        lic.license_string = license_code
+                        lic.save()
+                        lic_result['status'] = 1
+                        lic_result['msg'] = 'License Update is succeed'
+                    else:
+                        lic_result['msg'] = 'New license validity is older than installed license'
                 else:
-                    lic_result['msg'] = 'New license validity is older than installed license'
+                    try:
+                        license_key = lic_json['license_key']
+                        lic.license_key = license_key
+                        lic.license_code = license_code
+                        lic.save()
+                        lic_result['status'] = 1
+                        lic_result['msg'] = 'License Init is succeed'
+                    except:
+                        lic_result['msg'] = 'Init License is required' 
+
             else:
                 lic_result['msg'] = 'License validity must be in the future'
 

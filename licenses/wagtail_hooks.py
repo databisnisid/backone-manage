@@ -67,7 +67,7 @@ class LicensesPermissionHelper(PermissionHelper):
 class LicensesAdmin(ModelAdmin):
     model = Licenses
     button_helper_class = LicensesButtonHelper   # Uncomment this to enable button
-    #inspect_view_enabled = True
+    inspect_view_enabled = True
     menu_label = 'License'  # ditch this to use verbose_name_plural from model
     menu_icon = 'key'  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
@@ -79,11 +79,17 @@ class LicensesAdmin(ModelAdmin):
     panels = [
         FieldPanel('node_id', read_only=True),
         FieldPanel('organization'),
+    ]
+    '''
+    panels = [
+        FieldPanel('node_id', read_only=True),
+        FieldPanel('organization'),
         MultiFieldPanel([
             FieldPanel('license_key'),
             FieldPanel('license_string'),
             ], heading=_('License'))
     ]
+    '''
 
 
     def get_list_display(self, request):
@@ -99,18 +105,11 @@ class LicensesAdmin(ModelAdmin):
         superuser_panels = [
             FieldPanel('node_id', read_only=True),
             FieldPanel('organization'),
-            MultiFieldPanel([
-                FieldPanel('license_key'),
-                FieldPanel('license_string'),
-                ], heading=_('License'))
         ]
 
         admin_panels = [
             FieldPanel('node_id', read_only=True),
             FieldPanel('organization', read_only=True),
-            MultiFieldPanel([
-                FieldPanel('license_string'),
-                ], heading=_('License'))
         ]
 
         current_user = get_current_user()
