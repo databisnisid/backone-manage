@@ -22,7 +22,7 @@ def encrypt_node_id(key):
 def check_license(lic_json):
     node_id = lic_json['node_id']
     uuid = lic_json['uuid']
-    token = b64decode(lic_json['token'])
+    token = b64decode(lic_json['token']).decode()
 
     try:
         valid_until = lic_json['valid_until']
