@@ -25,60 +25,17 @@
                 <input type="file" id="licenseFile" name="files"/>
         </div>
         <div class="column" style="width: 30%; padding-left: 10px;">
-                <button id="upload" class="button button-longrunning">Upload</button>
+                <button id="upload_license" class="button button-longrunning">Upload</button>
         </div>
     </div>
 </form>
-<br />
-<table id="status_table">
-    <tr>
-        <th>
-            STATUS
-        </th>
-        <th>
-            SITE NAME
-        </th>
-        <th>
-            NODE ID
-        </th>
-        <th>
-            UUID
-        </th>
-        <th>
-            TOKEN
-        </th>
-        <th>
-            VALID UNTIL
-        </th>
-    </tr>
-    <tr>
-        <td>
-            <span id="lic_status"></span>
-        </td>
-        <td>
-            <span id="lic_name"></span>
-        </td>
-        <td>
-            <span id="lic_node_id"></span>
-        </td>
-        <td>
-            <span id="lic_uuid"></span>
-        </td>
-        <td>
-            <span id="lic_token"></span>
-        </td>
-        <td>
-            <span id="lic_valid_until"></span>
-        </td>
-    </tr>
-</table>
 </section>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script>
 $(document).ready(function (e) {
-  $('#upload').on('click', function (event) {
+  $('#upload_license').on('click', function (event) {
     //Prevent page from reloading
     event.preventDefault()
 
@@ -118,10 +75,11 @@ $(document).ready(function (e) {
                     $('#msg').html('<span style="color:green">' + response.msg + '</span>');
                 else 
                     $('#msg').html('<span style="color:red">' + response.msg + '</span>');
-                //console.log(response)
+                console.log(response)
             },
             error: function (response) {
-                //console.log(response.responseJSON);
+                console.log(response);
+                console.log(response.responseJSON);
                 //let resp_json = $.parseJSON(response);
                 if ('error' in response.responseJSON) {
                     $('#msg').html('<span style="color:red">' + response.responseJSON.error + '</span>');
