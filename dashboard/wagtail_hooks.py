@@ -13,7 +13,7 @@ from axes.models import AccessAttempt, AccessLog, AccessFailureLog
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet, SnippetViewSetGroup
 from django.conf import settings
-from licenses.models import Licenses
+from licenses.utils import is_license_valid
 
 
 #@hooks.register("insert_global_admin_css", order=100)
@@ -117,9 +117,11 @@ def add_another_welcome_panel(request, panels):
     '''
     lic_status = True
 
-    if request.user.is_superuser and lic_status:
+    #if request.user.is_superuser and lic_status:
+    if request.user.is_superuser and is_license_valid(request.user):
         panels.append(MapSummaryPanel())
-    if request.user.organization.features.map_dashboard and lic_status:
+    #if request.user.organization.features.map_dashboard and lic_status:
+    if request.user.organization.features.map_dashboard and is_license_valid(request.user):
         panels.append(MapSummaryPanel())
 
     #panels.append(NetworksSummaryPanel())
