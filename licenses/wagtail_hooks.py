@@ -67,7 +67,7 @@ class LicensesPermissionHelper(PermissionHelper):
 class LicensesAdmin(ModelAdmin):
     model = Licenses
     button_helper_class = LicensesButtonHelper   # Uncomment this to enable button
-    inspect_view_enabled = True
+    #inspect_view_enabled = True
     menu_label = 'License'  # ditch this to use verbose_name_plural from model
     menu_icon = 'key'  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
