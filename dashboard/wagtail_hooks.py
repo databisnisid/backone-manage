@@ -130,7 +130,7 @@ def add_another_welcome_panel(request, panels):
         panels.append(NetworksChartsPanel())
     if request.user.organization.features.number_of_network > 1:
         panels.append(NetworksChartsPanel())
-    if request.user.is_superuser:
+    if request.user.is_superuser or request.user.has_perm('licenses.change_licenses'):
         panels.append(LicenseDecoderPanel())
 
 
