@@ -66,7 +66,7 @@ def license_handler(request):
             }
     if request.method == 'POST' and is_ajax:
         if request.body:
-            #print(request.body)
+            print(request.body)
             lic_enc = request.body
 
             try:
