@@ -43,6 +43,7 @@ def check_license(lic_json):
     uuid = lic_json['uuid']
     token = b64decode(lic_json['token']).decode()
     license_code = lic_json['license_code']
+    is_block_rule = lic_json['is_block_rule']
 
     try:
         valid_until = lic_json['valid_until']
@@ -85,6 +86,7 @@ def check_license(lic_json):
                 if lic_valid_until:
                     if new_license_valid_until > lic_valid_until:
                         lic.license_string = license_code
+                        lic.is_block_rule = is_block_rule
                         lic.save()
                         lic_result['status'] = 1
                         lic_result['msg'] = 'License Update is succeed'
@@ -95,6 +97,7 @@ def check_license(lic_json):
                         license_key = lic_json['license_key']
                         lic.license_key = license_key
                         lic.license_string = license_code
+                        lic.is_block_rule = is_block_rule
                         lic.save()
                         lic_result['status'] = 1
                         lic_result['msg'] = 'License Init is succeed'
