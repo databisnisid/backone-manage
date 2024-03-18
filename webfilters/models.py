@@ -107,6 +107,14 @@ class WebFilters(models.Model):
                 else:
                     pass
 
+            try:
+                WebFilters.objects.get(network=self.network)
+                raise ValidationError({'network': _('IntegrityError: Network already have Webfilter')})
+
+            except ObjectDoesNotExist:
+                pass
+
+
     def save(self):
         self.domains = self.domains.lower()
         current_user = get_current_user()
