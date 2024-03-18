@@ -25,8 +25,6 @@ class WebfiltersPermissionHelper(PermissionHelper):
 
     def user_can_create(self, user):
         result = True
-        if not user.is_superuser:
-            result = False
 
         ''' Check License '''
         if not is_license_valid(user):
@@ -36,8 +34,6 @@ class WebfiltersPermissionHelper(PermissionHelper):
 
     def user_can_delete_obj(self, user, obj):
         result = True
-        if not user.is_superuser:
-            result = False
 
         ''' Check License '''
         if not is_license_valid(user):
