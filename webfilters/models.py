@@ -134,6 +134,7 @@ class WebFiltersMembersList(Members):
     def __str__(self):
         return '%s' % self.name
 
+
 class WebFiltersMembers(models.Model):
     def limit_choices_to_member():
         current_user = get_current_user()
