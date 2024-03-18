@@ -109,7 +109,7 @@ class WebFilters(models.Model):
 
             try:
                 WebFilters.objects.get(network=self.network)
-                raise ValidationError({'network': _('IntegrityError: Network already have Webfilter')})
+                raise ValidationError(_('IntegrityError: Duplicate Webfilter'))
 
             except ObjectDoesNotExist:
                 pass
