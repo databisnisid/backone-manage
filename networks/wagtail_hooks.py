@@ -60,23 +60,24 @@ class NetworksPermissionHelper(PermissionHelper):
                 result = False
             '''
 
-        ''' Check License '''
-        if not is_license_valid(user):
+        if not user.has_perm('networks.add_networks'):
             result = False
 
-        if not user.has_perm('networks.add_networks'):
+        ''' Check License '''
+        if not is_license_valid(user):
             result = False
 
         return result
 
     def user_can_delete_obj(self, user, obj):
         result = True
-        ''' Check License '''
-        if not is_license_valid(user):
-            result = False
 
         if not user.has_perm('networks.delete_networks'):
             result = True
+
+        ''' Check License '''
+        if not is_license_valid(user):
+            result = False
 
         return result
 
