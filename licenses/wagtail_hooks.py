@@ -45,7 +45,7 @@ class LicensesPermissionHelper(PermissionHelper):
     
     def user_can_create(self, user):
         if user.is_superuser:
-            if Licenses.objects.all().count() < Organizations.objects.all().count():
+            if Licenses.objects.all().count() < Organizations.objects.filter(is_no_org=True).count():
                 return True
             else:
                 return False
