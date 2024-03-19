@@ -8,6 +8,7 @@ from base64 import b64decode, b64encode
 
 from accounts.models import Organizations
 from controllers.models import Controllers
+from networks.models import NetworkRules
 from .models import Licenses
 
 
@@ -117,10 +118,25 @@ def check_license(lic_json):
 
     return lic_result
 
-    
 
+''' Preparation for Block Rule base on License '''
+''' Running every midnite in cronjob '''
+def check_license_status():
+    licenses = Licenses.objects.all()
 
+    for license in licenses:
+        if license.is_block_rule:
 
+            is_block_rule = True
+            ''' License status True - VALID '''
+            if license.get_license_status():
+                is_block_rule = False
 
+            network_rules = NetworkRules.objects.filter(
+                            organization=license.organization)
 
+            for network_rule in network_rules:
+                if network_rule.is_block_rule != is_block_rule:
+                    network_rule.is_block_rule = is_block_rule
+                    network_rule.save()
 

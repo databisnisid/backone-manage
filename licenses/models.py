@@ -209,6 +209,11 @@ class Licenses(models.Model):
             
         return license_status, license_valid_until, license_msg
 
+    def get_license_status(self):
+        lic_status, lic_time, lic_msg = self.check_license()
+        return lic_status
+    get_license_status.short_description = _('License Validity')
+
     def get_license_time(self):
         lic_status, lic_time, lic_msg = self.check_license()
         return lic_time
