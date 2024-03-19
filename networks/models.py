@@ -461,6 +461,8 @@ class NetworkRules(models.Model):
                                         default=DEFAULT_RULE_DEFINITION)
     rules = models.TextField(_('Network Rules'), blank=True, default=DEFAULT_RULE)
 
+    is_block_rule = models.BooleanField(_('Block Traffic'), default=False)
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -509,12 +511,20 @@ class NetworkRules(models.Model):
         self.user = self.network.user
         self.organization = self.network.organization
 
-        filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
-        file = open(filename_rule, 'w')
-        file.write(self.rules_definition)
-        file.close()
+        if rules_definition is not None:
+            filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
+            file = open(filename_rule, 'w')
 
-        if self.rules_definition is not None:
+            rules_definition = self.rules_definition
+            if self.is_block_rule:
+                rules_definition = "drop;"
+
+            file.write(rules_definition)
+            #file.write(self.rules_definition)
+            file.close()
+
+        #if self.rules_definition is not None:
+        #if rules_definition is not None:
             print('FILENAME ', filename_rule)
 
             result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
@@ -528,7 +538,7 @@ class NetworkRules(models.Model):
             zt.set_network(self.network.network_id, data)
             #self.network.save()
 
-        os.remove(filename_rule)
+            os.remove(filename_rule)
         return super(NetworkRules, self).save()
 
 

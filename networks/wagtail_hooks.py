@@ -368,6 +368,13 @@ class NetworkRulesAdmin(ModelAdmin):
             return ObjectList(basic_panels)
     '''
 
+    def get_list_display(self, request):
+        list_display = ('name', 'network',)
+        if request.user.is_superuser:
+            list_display = ('name', 'network', 'is_block_rule',)
+
+        return list_display
+
     def get_queryset(self, request):
         #current_user = get_user()
         current_user = get_current_user()
