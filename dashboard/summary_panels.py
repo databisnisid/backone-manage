@@ -60,7 +60,7 @@ class LicenseSummaryPanel(Component):
 
                 elif delta_time.days < 30:
                     license_status['status'] = 0
-                    license_status['msg'] = _('License will expired in ' + delta_time.days + ' days')
+                    license_status['msg'] = _('License will expired in ' + str(delta_time.days) + ' days')
                     license_status_list.append(license_status)
 
         print(license_status_list)
