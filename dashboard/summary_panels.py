@@ -42,25 +42,25 @@ class LicenseSummaryPanel(Component):
                 } 
 
         for license in licenses:
-            licence_time = license.get_license_time()
+            license_time = license.get_license_time()
             if license_time:
 
-                licence_status['node_id'] = license.node_id
-                licence_status['uuid'] = str(license.organization_uuid)
-                licence_status['name'] = license.description
+                license_status['node_id'] = license.node_id
+                license_status['uuid'] = str(license.organization_uuid)
+                license_status['name'] = license.description
 
                 delta_time = license_time - timezone.now()
 
                 print('License day', delta_time.days)
 
                 if delta_time.days < 0:
-                    licence_status['status'] = 0
-                    licence_status['msg'] = _('License Expired')
+                    license_status['status'] = 0
+                    license_status['msg'] = _('License Expired')
                     license_status_list.append(license_status)
 
                 elif delta_time.days < 30:
-                    licence_status['status'] = 0
-                    licence_status['msg'] = _('License will expired in ' + delta_time.days + ' days')
+                    license_status['status'] = 0
+                    license_status['msg'] = _('License will expired in ' + delta_time.days + ' days')
                     license_status_list.append(license_status)
 
         print(license_status_list)
