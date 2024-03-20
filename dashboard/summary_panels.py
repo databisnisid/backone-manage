@@ -1,6 +1,6 @@
 from os import walk
 from django.urls import reverse
-from django.utils.timezone import timezone
+from django.utils import timezone
 from wagtail.admin.ui.components import Component
 from django.db.models import Count
 from django.conf import settings
