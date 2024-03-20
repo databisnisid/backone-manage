@@ -23,7 +23,7 @@ class LicenseSummaryPanel(Component):
     template_name = 'dashboard/license_summary.html'
 
     def get_context_data(self, parent_context):
-        return super().get_context_data(parent_context)
+        context = super().get_context_data(parent_context)
 
         current_user = get_current_user()
 
