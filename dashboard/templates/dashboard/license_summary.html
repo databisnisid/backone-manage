@@ -1,0 +1,37 @@
+{% load i18n wagtailadmin_tags %}
+{% if summary_items %}
+    <section class="panel summary nice-padding">
+        <table style="width: 90%">
+            <th>
+                <td style="text-align: center;">
+                    NODE ID
+                </td>
+                <td style="text-align: center;">
+                    UUID
+                </td>
+                <td style="text-align: center;">
+                    NAME
+                </td>
+                <td style="text-align: center;">
+                    STATUS
+                </td>
+            </th>
+            {% for license in license_status %}
+            <tr>
+                <td>
+                    {{ license.node_id }}
+                </td>
+                <td>
+                    {{ license.uuid }}
+                </td>
+                <td>
+                    {{ license.name }}
+                </td>
+                <td>
+                    {{ license.msg }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </section>
+{% endif %}

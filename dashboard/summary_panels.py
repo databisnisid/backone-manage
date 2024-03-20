@@ -1,5 +1,6 @@
 from os import walk
 from django.urls import reverse
+from django.utils.timezone import timezone
 from wagtail.admin.ui.components import Component
 from django.db.models import Count
 from django.conf import settings
@@ -13,6 +14,55 @@ from config.utils import to_dictionary
 from django.core.exceptions import ObjectDoesNotExist
 from members.utils import get_unique_members
 #from monitor.models import MemberProblems
+from licenses.models import Licenses
+
+
+
+class LicenseSummaryPanel(Component):
+    order = 5
+    template_name = 'dashboard/license_summary.html'
+
+    def get_context_data(self, parent_context):
+        return super().get_context_data(parent_context)
+
+        current_user = get_current_user()
+
+        if current_user.is_superuser:
+            licences = Licenses.objects.all()
+        else:
+            licenses = Licenses.objects.filter(organzation=user.organization)
+
+        license_status_list = []
+        license_status = {
+                'node_id': None,
+                'uuid': None,
+                'name': None,
+                'msg': None,
+                'status': 0
+                } 
+
+        for license in licenses:
+            licence_time = license.get_license_time()
+            if license_time:
+
+                licence_status['node_id'] = license.node_id
+                licence_status['uuid'] = str(license.organization_uuid)
+                licence_status['name'] = license.description
+
+                delta_time = license_time - timezone.now()
+
+                if delta_time.days < 0:
+                    licence_status['status'] = 0
+                    licence_status['msg'] = _('License Expired')
+                    license_status_list.append(license_status)
+
+                elif delta_time.days < 30:
+                    licence_status['status'] = 0
+                    licence_status['msg'] = _('License will expired in ' + delta_time.days + ' days')
+                    license_status_list.append(license_status)
+
+        context['license_status'] = license_status_list
+        return context
 
 
 class LicenseDecoderPanel(Component):
