@@ -51,6 +51,8 @@ class LicenseSummaryPanel(Component):
 
                 delta_time = license_time - timezone.now()
 
+                print('License day', delta_time.days)
+
                 if delta_time.days < 0:
                     licence_status['status'] = 0
                     licence_status['msg'] = _('License Expired')
@@ -61,6 +63,7 @@ class LicenseSummaryPanel(Component):
                     licence_status['msg'] = _('License will expired in ' + delta_time.days + ' days')
                     license_status_list.append(license_status)
 
+        print(license_status_list)
         context['license_status'] = license_status_list
         return context
 
