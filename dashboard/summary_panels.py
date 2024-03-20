@@ -28,7 +28,7 @@ class LicenseSummaryPanel(Component):
         current_user = get_current_user()
 
         if current_user.is_superuser:
-            licences = Licenses.objects.all()
+            licenses = Licenses.objects.all()
         else:
             licenses = Licenses.objects.filter(organzation=user.organization)
 
