@@ -46,7 +46,7 @@ class LicenseSummaryPanel(Component):
             if license_time:
 
                 license_status['node_id'] = license.node_id
-                license_status['uuid'] = str(license.organization_uuid)
+                license_status['uuid'] = str(license.organization.uuid)
                 license_status['name'] = license.description
 
                 delta_time = license_time - timezone.now()
