@@ -30,7 +30,7 @@ class LicenseSummaryPanel(Component):
         if current_user.is_superuser:
             licenses = Licenses.objects.all()
         else:
-            licenses = Licenses.objects.filter(organzation=current_user.organization)
+            licenses = Licenses.objects.filter(organization=current_user.organization)
 
         license_status_list = []
         license_status = {
