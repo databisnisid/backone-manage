@@ -121,11 +121,7 @@ def add_another_welcome_panel(request, panels):
     panels.append(LicenseSummaryPanel())
     if request.user.is_superuser:
         panels.append(MapSummaryPanel())
-    elif is_license_valid(request.user):
-        panels.append(MapSummaryPanel())
-
-    #if request.user.organization.features.map_dashboard and lic_status:
-    if request.user.organization.features.map_dashboard and is_license_valid(request.user):
+    elif request.user.organization.features.map_dashboard and is_license_valid(request.user):
         panels.append(MapSummaryPanel())
 
     #panels.append(NetworksSummaryPanel())
