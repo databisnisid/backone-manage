@@ -107,12 +107,13 @@ class WebFilters(models.Model):
                 else:
                     pass
 
-            try:
-                WebFilters.objects.get(network=self.network)
-                raise ValidationError(_('IntegrityError: Duplicate Webfilter'))
+            if self.id is None:
+                try:
+                    WebFilters.objects.get(network=self.network)
+                    raise ValidationError(_('IntegrityError: Duplicate Webfilter'))
 
-            except ObjectDoesNotExist:
-                pass
+                except ObjectDoesNotExist:
+                    pass
 
 
     def save(self):
