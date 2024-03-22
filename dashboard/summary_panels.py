@@ -49,7 +49,7 @@ class LicenseSummaryPanel(Component):
                     'uuid': None,
                     'name': None,
                     'msg': None,
-                    'status': 0
+                    'status': None
                     } 
             license_time = license.get_license_time()
             license_status['node_id'] = license.node_id
