@@ -33,6 +33,7 @@ class LicenseSummaryPanel(Component):
             licenses = Licenses.objects.filter(organization=current_user.organization)
 
         license_status_list = []
+        '''
         license_status = {
                 'node_id': None,
                 'uuid': None,
@@ -40,14 +41,23 @@ class LicenseSummaryPanel(Component):
                 'msg': None,
                 'status': 0
                 } 
+        '''
 
         for license in licenses:
+            license_status = {
+                    'node_id': None,
+                    'uuid': None,
+                    'name': None,
+                    'msg': None,
+                    'status': 0
+                    } 
             license_time = license.get_license_time()
             license_status['node_id'] = license.node_id
             license_status['uuid'] = str(license.organization.uuid)
             license_status['name'] = license.organization.name
 
             if license_time:
+                license_status = license.get_license_status()
 
                 #license_status['node_id'] = license.node_id
                 #license_status['uuid'] = str(license.organization.uuid)
