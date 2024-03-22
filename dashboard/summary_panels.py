@@ -44,20 +44,14 @@ class LicenseSummaryPanel(Component):
         '''
 
         for license in licenses:
-            license_status = {
-                    'node_id': None,
-                    'uuid': None,
-                    'name': None,
-                    'msg': None,
-                    'status': None
-                    } 
+
             license_time = license.get_license_time()
-            license_status['node_id'] = license.node_id
-            license_status['uuid'] = str(license.organization.uuid)
-            license_status['name'] = license.organization.name
+            #license_status['node_id'] = license.node_id
+            #license_status['uuid'] = str(license.organization.uuid)
+            #license_status['name'] = license.organization.name
 
             if license_time:
-                license_status = license.get_license_status()
+                #license_status = license.get_license_status()
 
                 #license_status['node_id'] = license.node_id
                 #license_status['uuid'] = str(license.organization.uuid)
@@ -68,18 +62,39 @@ class LicenseSummaryPanel(Component):
                 print('License day', delta_time.days)
 
                 if delta_time.days < 0:
-                    license_status['status'] = 2
-                    license_status['msg'] = _('License Expired')
+                    license_status = {
+                        'node_id': license.node_id,
+                        'uuid': str(license.organization.uuid),
+                        'name': license.organization.name,
+                        'msg': _('License Expired'),
+                        'status': 2
+                        } 
+                    #license_status['status'] = 2
+                    #license_status['msg'] = _('License Expired')
                     license_status_list.append(license_status)
 
                 elif delta_time.days < 30:
-                    license_status['status'] = 1
-                    license_status['msg'] = _('License will expired in ' + str(delta_time.days) + ' days')
+                    license_status = {
+                        'node_id': license.node_id,
+                        'uuid': str(license.organization.uuid),
+                        'name': license.organization.name,
+                        'msg': _('License will expired in ' + str(delta_time.days) + ' days'),
+                        'status': 1
+                        } 
+                    #license_status['status'] = 1
+                    #license_status['msg'] = _('License will expired in ' + str(delta_time.days) + ' days')
                     license_status_list.append(license_status)
 
             else:
-                license_status['status'] = 0
-                license_status['msg'] = _('License is Empty')
+                license_status = {
+                   'node_id': license.node_id,
+                   'uuid': str(license.organization.uuid),
+                   'name': license.organization.name,
+                   'msg': _('License is Empty'),
+                   'status': 0
+                   } 
+                #license_status['status'] = 0
+                #license_status['msg'] = _('License is Empty')
                 license_status_list.append(license_status)
 
         print(license_status_list)
