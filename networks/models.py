@@ -511,7 +511,8 @@ class NetworkRules(models.Model):
         self.user = self.network.user
         self.organization = self.network.organization
 
-        if rules_definition is not None:
+
+        if self.rules_definition is not None:
             filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
             file = open(filename_rule, 'w')
 
