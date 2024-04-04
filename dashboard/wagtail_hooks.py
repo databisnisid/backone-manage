@@ -135,6 +135,10 @@ def add_another_welcome_panel(request, panels):
     if request.user.is_superuser or request.user.has_perm('licenses.change_licenses'):
         panels.append(LicenseDecoderPanel())
 
+    # Testing Ping Summary Panel
+    if request.user.is_superuser:
+        panels.append(PingSummaryPanel())
+
 
 @hooks.register("insert_global_admin_js", order=100)
 def global_admin_js():

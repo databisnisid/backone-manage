@@ -17,7 +17,48 @@ from members.utils import get_unique_members
 from licenses.models import Licenses
 
 
+class PingSummaryPanel(Component):
+    order = 300
+    template = 'dashboard/ping_summary.html'
 
+    def get_context_data(self, parent_context):
+        context = super().get_context_data(parent_context)
+
+        current_user = get_current_user()
+
+        if current_user.is_superuser:
+            members = Members.objects.filter(peers__isnull=False)
+        else:
+            if not current_user.organization.is_no_org:
+                members = Members.objects.filter(
+                        peers__isnull=False,
+                        organization=current_user.organization
+                        )
+            else:
+                members = Members.objects.none()
+
+        packet_loss_array = []
+        round_trip_array = []
+
+        for member in members:
+            if member.is_online():
+                packet_loss = member.packet_loss()
+                round_trip = member.round_trip()
+
+                if packet_loss >= 0 and round_trip >= 0:
+                    packet_loss_array.append(packet_loss)
+                    round_trip_array.append(round_trip)
+
+        packet_loss_avg = sum(packet_loss_array) / len(packet_loss_array)    
+        round_trip_avg = sum(round_trip_array) / len(round_trip_array)    
+
+        context['packet_loss'] = packet_loss_avg
+        context['round_trip'] = round_trip_avg
+        context['num_sample'] = len(packet_loss_array)
+
+        return context
+
+        
 class LicenseSummaryPanel(Component):
     order = 5
     template_name = 'dashboard/license_summary.html'
