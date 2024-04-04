@@ -1,7 +1,9 @@
+from django.db.models import ObjectDoesNotExist
 from django.shortcuts import render
 from qr_code.qrcode.utils import QRCodeOptions
 from django.core.serializers import serialize
 from django.http import HttpResponse
+from members.models import Members
 from .models import Networks
 
 
@@ -22,6 +24,52 @@ def networks_list_json(request):
             "json", network, fields=('id', 'name', 'description', 'network_id')
             )
     return HttpResponse(data, content_type="application/json")
+
+
+def network_ping_stats(request, network_id):
+    packet_loss_array = []
+    round_trip_array = []
+    packet_loss_avg = 100
+    round_trip_avg = 1000
+
+    try:
+        network = Networks.objects.get(network_id=network_id)
+
+        members = Members.objects.filter(
+                peers__isnull=False,
+                network=network)
+
+        for member in members:
+            if member.is_online():
+                packet_loss = member.packet_loss()
+                round_trip = member.round_trip()
+
+                if packet_loss >= 0 and round_trip >= 0:
+                    packet_loss_array.append(packet_loss)
+                    round_trip_array.append(round_trip)
+
+    except ObjectDoesNotExist:
+        network = None
+
+    if network and packet_loss_array and round_trip_array:
+        packet_loss_avg = sum(packet_loss_array) / len(packet_loss_array)
+        round_trip_avg = sum(round_trip_array) / len(round_trip_array)
+
+        data = {
+                'network_name': network.name,
+                'packet_loss': packet_loss_avg,
+                'round_trip': round_trip_avg
+            }
+    else:
+        data = {
+                'status': False
+                }
+
+    return HttpResponse(data, content_type="application/json")
+
+
+
+
 
 
 
