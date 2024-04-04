@@ -1,8 +1,11 @@
 {% load i18n wagtailadmin_tags %}
     <br />
     <br />
+    <br />
+    <br />
+    <br />
     <section class="panel summary nice-padding">
-        <table style="width: 90%">
+        <table style="width: 100%">
             <tr>
                 <th style="text-align: center; border-bottom: 1px solid #ddd;">
                     Number of Sample 
@@ -19,10 +22,10 @@
                     {{ num_sample }}
                 </td>
                 <td style="text-align: center;">
-                    {{ packet_loss }}
+                    {{ packet_loss|floatformat:2 }}
                 </td>
                 <td style="text-align: center;">
-                    {{ round_trip }}
+                    {{ round_trip|floatformat:2 }}
                 </td>
             </tr>
         </table>
