@@ -2,7 +2,7 @@ from django.db.models import ObjectDoesNotExist
 from django.shortcuts import render
 from qr_code.qrcode.utils import QRCodeOptions
 from django.core.serializers import serialize
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from members.models import Members
 from .models import Networks
 
@@ -65,11 +65,6 @@ def network_ping_stats(request, network_id):
                 'status': False
                 }
 
-    return HttpResponse(data, content_type="application/json")
-
-
-
-
-
+    return JsonResponse(data)
 
 
