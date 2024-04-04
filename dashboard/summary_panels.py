@@ -19,7 +19,7 @@ from licenses.models import Licenses
 
 class PingSummaryPanel(Component):
     order = 300
-    template = 'dashboard/ping_summary.html'
+    template_name = 'dashboard/ping_summary.html'
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
