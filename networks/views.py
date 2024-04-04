@@ -58,13 +58,16 @@ def network_ping_stats(request, network_id):
         data = {
                 'network_name': network.name,
                 'packet_loss': packet_loss_avg,
-                'round_trip': round_trip_avg
+                'round_trip': round_trip_avg,
+                'num_sample': len(packet_loss_array)
             }
+
     else:
         data = {
                 'status': False
                 }
 
+    #print(data)
     return JsonResponse(data)
 
 
