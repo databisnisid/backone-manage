@@ -70,8 +70,12 @@ def check_license(lic_json):
             organization = None
 
         if organization:
-            lic = Licenses.objects.get(node_id=node_id,
+            try:
+                lic = Licenses.objects.get(node_id=node_id,
                                    organization=organization)
+            except ObjectDoesNotExist:
+                lic_result['msg'] = 'License is NOT FOUND! Check Node ID'
+
 
     datetime_format = '%Y-%m-%d %H:%M:%S%z'
     try:
