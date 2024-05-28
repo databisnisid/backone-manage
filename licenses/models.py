@@ -48,9 +48,10 @@ class Licenses(models.Model):
             raise ValidationError({'organization': _('Organization must be filled')})
 
     def save(self):
-        ''' Get first 12 characters (Docker supported) '''
+        ''' Get first 11 characters (Docker supported) '''
         node_id = hex(getnode())[:11]
-        if self.node_id is None or self.node_id != node_id:
+        #if self.node_id is None or self.node_id != node_id:
+        if self.node_id is None:
             self.node_id = node_id
 
         return super(Licenses, self).save()
