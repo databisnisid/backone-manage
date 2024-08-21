@@ -58,3 +58,4 @@ Willow==1.6.2
 xlrd==2.0.1
 XlsxWriter==3.0.3
 xlwt==1.3.0
+zabbix-utils==2.0.0

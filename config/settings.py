@@ -308,3 +308,8 @@ CACHES = {
 # SESSION TIMEOUT
 SESSION_COOKIE_AGE = int(os.getenv('SESSION_COOKIE_AGE', 86400))
 
+
+# ZABBIX
+ZABBIX_URL = os.getenv('ZABBIX_URL', 'localhost')
+ZABBIX_TOKEN = os.getenv('ZABBIX_TOKEN', 'zabbixToken')
+
