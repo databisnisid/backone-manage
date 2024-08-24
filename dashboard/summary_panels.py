@@ -49,8 +49,15 @@ class PingSummaryPanel(Component):
                     packet_loss_array.append(packet_loss)
                     round_trip_array.append(round_trip)
 
-        packet_loss_avg = sum(packet_loss_array) / len(packet_loss_array)    
-        round_trip_avg = sum(round_trip_array) / len(round_trip_array)    
+        """ Prevent division by zero """
+        packet_loss_avg = 0
+        if len(packet_loss_array) > 0:
+            packet_loss_avg = sum(packet_loss_array) / len(packet_loss_array)    
+
+        """ Prevent division by zero """
+        round_trip_avg = 0
+        if len(round_trip_array) > 0:
+            round_trip_avg = sum(round_trip_array) / len(round_trip_array)    
 
         context['packet_loss'] = packet_loss_avg
         context['round_trip'] = round_trip_avg
