@@ -104,10 +104,18 @@ def on_message(client, userdata, message):
 
     # RSSI SIGNAL
     try:
+        mqtt_msg[18]
         rssi_signal = int(mqtt_msg[18]) if mqtt_msg[18] else 99999
     #except IndexError or ValueError:
     except IndexError:
         rssi_signal = 99999
+
+    # Hostname
+    try:
+        mqtt_msg[19]
+        hostname = mqtt_msg[19]
+    except IndexError:
+        hostname = None
 
     # Insert Into DB
     try:
@@ -122,6 +130,7 @@ def on_message(client, userdata, message):
         mqtt_member = Mqtt()
         mqtt_member.member_id = member_id
 
+    mqtt_member.hostname = hostname
     mqtt_member.model = model
     mqtt_member.board_name = board_name
     mqtt_member.release_version = release_version
