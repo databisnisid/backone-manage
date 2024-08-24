@@ -10,6 +10,7 @@ from wagtail import permissions
 
 class Mqtt(models.Model):
     member_id = models.CharField(_('Member ID'), max_length=50)
+    hostname = models.CharField(_('Hostname'), max_length=50, blank=True, null=True)
     model = models.CharField(_('Model'), max_length=50, blank=True, null=True)
     board_name = models.CharField(_('Board Name'), max_length=50, blank=True, null=True)
     release_version = models.CharField(_('Release Version'), max_length=50, blank=True, null=True)
