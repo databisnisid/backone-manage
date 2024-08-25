@@ -276,22 +276,17 @@ class Members(models.Model):
 
     def list_ipaddress(self):
         #text = ''
-        text : string = self.get_hostname()
 
         if self.ipaddress is not None:
             ipaddress_list = self.ipaddress.split(',')
-            try: 
-                text += format_html('<br />'.join([str(p) for p in ipaddress_list]))
-            except TypeError:
-                text = format_html('<br />'.join([str(p) for p in ipaddress_list]))
-
+            text = format_html('<br />'.join([str(p) for p in ipaddress_list]))
 
         is_authorized = "icon-yes.svg" if self.is_authorized else "icon-no.svg"
         #return text
 
         # Get Hostname from MQTT
-        #if self.get_hostname():
-        #    text += format_html('<br />{}', self.get_hostname())
+        if self.get_hostname():
+            text = format_html('{}<br />{}', self.get_hostname(), text)
 
         if self.mobile_number_first is not None:
             text += format_html('<br />{}', self.mobile_number_first)
