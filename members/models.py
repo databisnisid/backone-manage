@@ -276,7 +276,7 @@ class Members(models.Model):
 
     def list_ipaddress(self):
         #text = ''
-        text = self.get_hostname()
+        text : string = self.get_hostname()
 
         if self.ipaddress is not None:
             ipaddress_list = self.ipaddress.split(',')
