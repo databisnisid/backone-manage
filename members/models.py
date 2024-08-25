@@ -275,7 +275,7 @@ class Members(models.Model):
                 raise ValidationError(_('First, please setup IP Network in ' + self.network.name))
 
     def list_ipaddress(self):
-        #text = ''
+        text = ''
 
         if self.ipaddress is not None:
             ipaddress_list = self.ipaddress.split(',')
