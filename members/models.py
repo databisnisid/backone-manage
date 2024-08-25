@@ -283,6 +283,10 @@ class Members(models.Model):
         is_authorized = "icon-yes.svg" if self.is_authorized else "icon-no.svg"
         #return text
 
+        # Get Hostname from MQTT
+        if self.get_hostname():
+            text += format_html('<br />{}', self.get_hostname())
+
         if self.mobile_number_first is not None:
             text += format_html('<br />{}', self.mobile_number_first)
 
@@ -424,6 +428,13 @@ class Members(models.Model):
             online_status = self.mqtt.is_online()
         return online_status
     is_mqtt_online.short_description = _('Internet Online')
+
+    def get_hostname(self):
+        hostname = None
+        if self.mqtt:
+            hostname = self.mqtt.hostname
+
+        return hostname
 
     def get_alarms(self):
         result = []
