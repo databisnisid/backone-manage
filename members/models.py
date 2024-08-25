@@ -280,7 +280,11 @@ class Members(models.Model):
 
         if self.ipaddress is not None:
             ipaddress_list = self.ipaddress.split(',')
-            text += format_html('<br />'.join([str(p) for p in ipaddress_list]))
+            try: 
+                text += format_html('<br />'.join([str(p) for p in ipaddress_list]))
+            except TypeError:
+                text = format_html('<br />'.join([str(p) for p in ipaddress_list]))
+
 
         is_authorized = "icon-yes.svg" if self.is_authorized else "icon-no.svg"
         #return text
