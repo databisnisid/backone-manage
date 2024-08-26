@@ -17,6 +17,6 @@ class ZabbixNetworks(models.Model):
         verbose_name_plural = 'Zabbix Networks'
 
     def __str__(self):
-        return '%s' % self.networks
+        return '%s' % self.name
 
     
