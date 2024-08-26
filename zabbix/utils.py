@@ -32,7 +32,7 @@ def sync_member_inventory(network):
                         'location_lon': lng
                         }
                     }
-            zabbix.host_update(hostname, params)
+            zabbix.host_update_inventory(hostname, params)
 
             
 
