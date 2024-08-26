@@ -15,6 +15,7 @@ class ZabbixNetworksAdmin(ModelAdmin):
 
     panels = [
         FieldPanel('name'),
+        FieldPanel('networks'),
     ]
 
 modeladmin_register(ZabbixNetworksAdmin)
