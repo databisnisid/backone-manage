@@ -13,10 +13,12 @@ class ZabbixNetworksAdmin(ModelAdmin):
     exclude_from_explorer = False # or True to exclude pages of this type from Wagtail's explorer view
     list_display = ('name')
 
+    '''
     panels = [
         FieldPanel('name'),
         FieldPanel('networks'),
     ]
+    '''
 
 modeladmin_register(ZabbixNetworksAdmin)
 
