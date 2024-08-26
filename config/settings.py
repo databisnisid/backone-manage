@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'monitor',
     'problems',
     'qr_code',
+    'zabbix',
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.embeds',

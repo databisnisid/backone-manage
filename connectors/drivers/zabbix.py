@@ -31,26 +31,14 @@ class Zabbix:
     def host_update(self, hostname="Zabbix server"):
         pass
 
-    def host_update_inventory(self, hostname="Zabbix server"):
+    def host_update_inventory(self, hostname="Zabbix server", params={}):
         hostid = self.host_get_hostid(hostname)
 
         result = None
         if hostid:
             print(hostid)
-            #self.api.login(token=self.token)
-            params = {
-                    "hostid": hostid,
-                    "inventory_mode": 1,
-                    "inventory": {
-                        "location": "Jakarta"
-                        }
-                    }
-            result = self.api.host.update(
-                    params
-                    #hostid=hostid,
-                    #inventory_mode=1,
-                    #inventory='{"location": "Indonesia"}'
-                    )
+            params = {"hostid": hostid} | params
+            result = self.api.host.update(params)
 
         return result
 
