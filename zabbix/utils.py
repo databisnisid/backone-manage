@@ -24,6 +24,11 @@ def sync_member_inventory(network):
                 lat = settings.GEO_WIDGET_DEFAULT_LOCATION['lat'] + random.uniform(-0.0025, 0.0025)
                 lng = settings.GEO_WIDGET_DEFAULT_LOCATION['lng'] + random.uniform(-0.0025, 0.0025)
 
+            if type(lat) != str:
+                lat = str(lat)
+            if type(lng) != str:
+                lng = str(lng)
+
             params = {
                     'inventory_mode': 1,
                     'inventory': {
