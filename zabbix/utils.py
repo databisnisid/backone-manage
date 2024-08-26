@@ -28,8 +28,8 @@ def sync_member_inventory(network):
                     'inventory_mode': 1,
                     'inventory': {
                         'location': member.address,
-                        'location_lat': lat,
-                        'location_lon': lng
+                        'location_lat': lat[:16],
+                        'location_lon': lng[:16]
                         }
                     }
             zabbix.host_update_inventory(hostname, params)
