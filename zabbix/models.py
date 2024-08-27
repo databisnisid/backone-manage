@@ -24,7 +24,8 @@ class ZabbixNetworks(models.Model):
     name = models.CharField(_('Name'), max_length=50, default='ZabbixNet')
     networks = models.ManyToManyField(Networks)
 
-    config = models.ForeignKey(
+    #config = models.ForeignKey(
+    config = models.OneToOneField(
             ZabbixConfigs, 
             on_delete=models.SET_NULL,
             verbose_name=_('Zabbix Config'),
