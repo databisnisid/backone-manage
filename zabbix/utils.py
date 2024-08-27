@@ -32,17 +32,30 @@ def sync_member_inventory(network):
             params = {
                     'inventory_mode': 1,
                     'inventory': {
+                        'alias': member.name[:128],
                         'location': member.address,
                         'location_lat': lat[:16],
-                        'location_lon': lng[:16]
+                        'location_lon': lng[:16],
+                        'model': member.model()[:64],
+                        'hardware': member.board_name(),
+                        'hw_arch': member.release_target()[:32],
+                        'software': member.release_version(),
+                        'serialno_a': member.serialnumber()[:64],
+                        'serialno_b': member.serialnumber()[:64],
+
                         }
                     }
             zabbix.host_update_inventory(hostname, params)
 
-            
 
+def sync_zabbix_networks():
 
+    zabbix_networks = ZabbixNetworks.objects.all()
 
-    
+    for zabbix_network in zabbix_networks:
+        networks = zabbix_network.networks.all()
+
+        for network in networks:
+            sync_member_inventory(network)
 
 

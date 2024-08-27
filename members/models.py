@@ -434,7 +434,6 @@ class Members(models.Model):
         hostname = None
         if self.mqtt:
             hostname = self.mqtt.hostname
-
         return hostname
 
     def get_alarms(self):
@@ -445,14 +444,12 @@ class Members(models.Model):
                 rules = check_members_vs_rules(self, True)
                 for rule in rules:
                     result.append(rule.item.item_id)
-
         return result
 
     def memory_usage(self):
         result = 0.0
         if self.mqtt:
             result = round(self.mqtt.memory_usage, 1)
-
         return result
 
     def cpu_usage(self):
@@ -460,35 +457,54 @@ class Members(models.Model):
         if self.mqtt:
             load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
             result = round(load_5, 1)
-
         return result
 
     def packet_loss(self):
         result = -1.0
         if self.mqtt:
             result = round(self.mqtt.get_packet_loss(), 1)
-
         return result
 
     def round_trip(self):
         result = -1.0
         if self.mqtt:
             result = round(self.mqtt.get_round_trip(), 1)
-
         return result
 
     def ipaddress_ts(self):
         result = None
         if self.mqtt:
             result = self.mqtt.ipaddress_ts
-
         return result
 
     def serialnumber(self):
         result = None
         if self.mqtt:
             result = self.mqtt.serialnumber
+        return result
 
+    def model(self):
+        result = None
+        if self.mqtt:
+            result = self.mqtt.model
+        return result
+
+    def board_name(self):
+        result = None
+        if self.mqtt:
+            result = self.mqtt.board_name
+        return result
+
+    def release_target(self):
+        result = None
+        if self.mqtt:
+            result = self.mqtt.release_target
+        return result
+
+    def release_version(self):
+        result = None
+        if self.mqtt:
+            result = self.mqtt.release_version
         return result
 
     def model_release(self):

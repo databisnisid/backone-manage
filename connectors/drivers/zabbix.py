@@ -44,7 +44,7 @@ class Zabbix:
 
         result = None
         if hostid:
-            print(hostid)
+            #print(hostid)
             params = {"hostid": hostid} | params
             result = self.api.host.update(params)
 
