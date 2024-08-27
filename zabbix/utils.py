@@ -57,8 +57,10 @@ def sync_zabbix_networks():
         networks = zabbix_network.networks.all()
 
         if zabbix_network.config:
+            print("Use Zabbix Config")
             zabbix = Zabbix(zabbix_network.config.url, zabbix_network.config.token)
         else:
+            print("Use Environment Variable")
             zabbix = Zabbix()
 
         for network in networks:
