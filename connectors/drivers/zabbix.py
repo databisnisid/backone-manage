@@ -3,11 +3,19 @@ from zabbix_utils import ZabbixAPI
 from django.conf import settings
 
 
-
 class Zabbix:
-    def __init__(self):
-        self.url = settings.ZABBIX_URL
-        self.token = settings.ZABBIX_TOKEN
+    def __init__(self, zabbix_url=None, zabbix_token=None):
+
+        if zabbix_url:
+            self.url = zabbix_url
+        else:
+            self.url = settings.ZABBIX_URL
+
+        if zabbix_token:
+            self.token = zabbix_token
+        else:
+            self.token = settings.ZABBIX_TOKEN
+
         self.api = ZabbixAPI(url=self.url)
         self.api.login(token=self.token)
         self.hosts = []
