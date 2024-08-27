@@ -6,11 +6,11 @@ from connectors.drivers.zabbix import Zabbix
 from django.conf import settings
 
 
-def sync_member_inventory(network):
+def sync_member_inventory(network, zabbix):
 
     members = Members.objects.filter(network=network)
 
-    zabbix = Zabbix()
+    #zabbix = Zabbix()
 
     for member in members:
         hostname = member.get_hostname()
@@ -56,7 +56,12 @@ def sync_zabbix_networks():
     for zabbix_network in zabbix_networks:
         networks = zabbix_network.networks.all()
 
+        if zabbix_network.config:
+            zabbix = Zabbix(zabbix_network.config.url, zabbix_network.config.token)
+        else:
+            zabbix = Zabbix()
+
         for network in networks:
-            sync_member_inventory(network)
+            sync_member_inventory(network, zabbix)
 
 
