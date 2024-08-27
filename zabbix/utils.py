@@ -45,7 +45,8 @@ def sync_member_inventory(network):
 
                         }
                     }
-            zabbix.host_update_inventory(hostname, params)
+            result = zabbix.host_update_inventory(hostname, params)
+            print(result)
 
 
 def sync_zabbix_networks():
