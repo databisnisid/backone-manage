@@ -260,7 +260,7 @@ MAP_CENTER = str(os.getenv('MAP_CENTER', "{lat: -1.233982000061532, lng: 116.837
 MAP_ZOOM = int(os.getenv('MAP_ZOOM', 5))
 
 # INTERCONNECT TO data.backone.cloud
-DATA_URI_QUOTA = str(os.getenv('DATA_URI_QUOTA', 'https://data.backone.cloud/quota/'))
+DATA_URI_QUOTA = str(os.getenv('DATA_URI_QUOTA', 'https://admin.backone.cloud/quota/'))
 
 # QUOTA
 QUOTA_GB_WARNING = int(os.getenv('QUOTA_GB_WARNING', 5))
