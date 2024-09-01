@@ -289,7 +289,10 @@ class Members(models.Model):
             text = format_html('{}<br />{}', self.get_hostname(), text)
 
         if self.mobile_number_first is not None:
-            text += format_html('<br />{}', self.mobile_number_first)
+            if text == '':
+                text = format_html('{}', self.mobile_number_first)
+            else:
+                text += format_html('<br />{}', self.mobile_number_first)
 
         return format_html('<small>'
                            + '<strong>{}</strong>'
