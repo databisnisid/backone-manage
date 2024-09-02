@@ -30,6 +30,8 @@ def sync_member_inventory(network, zabbix):
                 lng = str(lng)
 
             params = {
+                    'name': member.name,
+                    'description': member.description,
                     'inventory_mode': 1,
                     'inventory': {
                         'alias': member.name[:128],
@@ -42,7 +44,9 @@ def sync_member_inventory(network, zabbix):
                         'software': member.release_version(),
                         'serialno_a': member.serialnumber()[:64],
                         'serialno_b': member.serialnumber()[:64],
-
+                        'poc_1_cell': member.mobile_number_first[:64],
+                        'host_router': member.member_id,
+                        'host_networks': member.network.name,
                         }
                     }
             result = zabbix.host_update_inventory(hostname, params)
@@ -60,7 +64,7 @@ def sync_zabbix_networks():
             print("Use Zabbix Config")
             zabbix = Zabbix(zabbix_network.config.url, zabbix_network.config.token)
         else:
-            print("Use Environment Variable")
+            print("Use Settings from settings.py")
             zabbix = Zabbix()
 
         for network in networks:
