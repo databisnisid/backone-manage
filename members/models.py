@@ -531,7 +531,7 @@ class Members(models.Model):
 
                 if second_line_var:
                     second_line = "<br />"
-                    second_line += "<small>{}</small>'>".format(second_line_var)
+                    second_line += "<small>{}</small>".format(second_line_var)
                     #second_line += "{} <img src='/static/admin/img/{}'>".format(
                     #        second_line_var, is_authorized) if self.is_authorized else second_line_var
 
