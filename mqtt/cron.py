@@ -93,12 +93,16 @@ def get_quota():
                 mqtt.quota_first_prev = mqtt_quota_first_prev
                 mqtt.save()
 
+                print("MQTT Update")
+
             except ObjectDoesNotExist:
                 mqtt = Mqtt(
                         member_id=member.member_id,
                         quota_first=mqtt_quota_first
                         )
                 mqtt.save()
+                print("MQTT Create")
+
             except MultipleObjectsReturned:
                 Mqtt.objects.filter(member_id=member.member_id).delete()
                 mqtt = Mqtt(
@@ -106,10 +110,12 @@ def get_quota():
                         quota_first=mqtt_quota_first
                         )
                 mqtt.save()
+                print("MQTT Delete and Create")
 
-            if member.mqtt is None:
+            if not member.mqtt:
                 member.mqtt = mqtt
                 member.save()
+                print("Member link to MQTT")
 
         except TypeError or KeyError:
             pass
