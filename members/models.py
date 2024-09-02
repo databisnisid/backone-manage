@@ -524,16 +524,16 @@ class Members(models.Model):
                 first_line = "<small>{} ({})</small>".format(mqtt.model, mqtt.num_core)
 
             ''' Second Line: SerialNumber and Release Version'''
+            second_line = ""
             second_line_var = ""
-            if mqtt.serialnumber:
+            if mqtt.serialnumber or mqtt.release_version:
                 second_line_var = mqtt.serialnumber + ' - ' + mqtt.release_version if mqtt.serialnumber else mqtt.release_version
 
-            second_line = ""
-            if second_line_var:
-                second_line = "<br />"
-                second_line += "<small>{}</small>'>".format(second_line_var)
-                #second_line += "{} <img src='/static/admin/img/{}'>".format(
-                #        second_line_var, is_authorized) if self.is_authorized else second_line_var
+                if second_line_var:
+                    second_line = "<br />"
+                    second_line += "<small>{}</small>'>".format(second_line_var)
+                    #second_line += "{} <img src='/static/admin/img/{}'>".format(
+                    #        second_line_var, is_authorized) if self.is_authorized else second_line_var
 
             ''' Third Line: SwitchPortUp and PortStatus'''
             third_line = ""
