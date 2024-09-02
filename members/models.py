@@ -641,7 +641,7 @@ class Members(models.Model):
                         fifth_line +
                         sixth_line)
 
-            elif not mqtt.uptime:
+            elif mqtt.uptime:
                 text = format_html(
                         first_line + 
                         second_line + 
