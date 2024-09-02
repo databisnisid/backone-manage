@@ -112,7 +112,7 @@ def get_quota():
                 mqtt.save()
                 print("MQTT Delete and Create")
 
-            if not member.mqtt:
+            if member.mqtt is None:
                 member.mqtt = mqtt
                 member.save()
                 print("Member link to MQTT")
