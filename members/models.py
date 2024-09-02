@@ -650,8 +650,17 @@ class Members(models.Model):
                         fifth_line +
                         sixth_line +
                         "<br /><small style='color: red;'>LU: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
+            else:
+                text = format_html(
+                        first_line + 
+                        second_line + 
+                        third_line + 
+                        fourth_line +
+                        fifth_line +
+                        sixth_line)
 
         return text
+
     model_release.short_description = _('Parameters')
     model_release.admin_order_field = 'mqtt__model'
 
