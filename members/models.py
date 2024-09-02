@@ -516,20 +516,24 @@ class Members(models.Model):
             mqtt = self.mqtt
             alarms = self.get_alarms()
             updated_at = timezone.localtime(mqtt.updated_at).strftime("%d-%m-%Y, %H:%M:%S")
-            is_rcall = "icon-yes.svg" if mqtt.is_rcall else "icon-no.svg"
+            #is_authorized = "icon-yes.svg" if self.is_authorized else "icon-no.svg"
 
             ''' First Line: Model and CPU Core'''
-            first_line = "<small>{} ({})</small>".format(mqtt.model, mqtt.num_core)
+            first_line = ""
+            if mqtt.model:
+                first_line = "<small>{} ({})</small>".format(mqtt.model, mqtt.num_core)
 
             ''' Second Line: SerialNumber and Release Version'''
-            second_line_var = mqtt.serialnumber + ' - ' + mqtt.release_version if mqtt.serialnumber else mqtt.release_version
+            second_line_var = ""
+            if mqtt.serialnumber:
+                second_line_var = mqtt.serialnumber + ' - ' + mqtt.release_version if mqtt.serialnumber else mqtt.release_version
 
             second_line = ""
             if second_line_var:
-                second_line = "<br /><small>"
-                second_line += "{} <img src='/static/admin/img/{}'>".format(
-                        second_line_var, is_rcall) if mqtt.is_rcall else second_line_var
-                second_line += "</small>"
+                second_line = "<br />"
+                second_line += "<small>{}</small>'>".format(second_line_var)
+                #second_line += "{} <img src='/static/admin/img/{}'>".format(
+                #        second_line_var, is_authorized) if self.is_authorized else second_line_var
 
             ''' Third Line: SwitchPortUp and PortStatus'''
             third_line = ""
@@ -544,42 +548,44 @@ class Members(models.Model):
                 third_line += "</small>"
 
             ''' Fourth Line: Uptime, CPU and Memory '''
-            fourth_line = "<br /><small>"
+            fourth_line = ""
+            if mqtt.uptime:
+                fourth_line = "<br /><small>"
 
-            ''' UPTIME '''
-            uptime_string = self.mqtt.get_uptime_string()
-            fourth_line += "<span>UP: {}</span>".format(uptime_string)
+                ''' UPTIME '''
+                uptime_string = self.mqtt.get_uptime_string()
+                fourth_line += "<span>UP: {}</span>".format(uptime_string)
 
-            ''' CPU '''
-            item_id = 'cpu_usage'
-            value = self.cpu_usage()
-            color = 'red' if item_id in alarms else ''
-            fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, value)
+                ''' CPU '''
+                item_id = 'cpu_usage'
+                value = self.cpu_usage()
+                color = 'red' if item_id in alarms else ''
+                fourth_line += " - <span style='color: {};'>CPU: {}%</span>".format(color, value)
 
-            ''' MEMORY '''
-            item_id = 'memory_usage'
-            value = self.memory_usage()
-            color = 'red' if item_id in alarms else ''
-            fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, value)
+                ''' MEMORY '''
+                item_id = 'memory_usage'
+                value = self.memory_usage()
+                color = 'red' if item_id in alarms else ''
+                fourth_line += " - <span style='color: {};'>MEM: {}%</span>".format(color, value)
 
-            ''' PACKET LOSS '''
-            item_id = 'packet_loss'
-            value_pl = self.packet_loss()
-            #value_rt = self.round_trip()
-            color = 'red' if item_id in alarms else ''
-            #if value_rt:
-            if value_pl >= 0:
-                fourth_line += "<br /><span style='color: {};'>PL: {}% - </span>".format(color, value_pl)
+                ''' PACKET LOSS '''
+                item_id = 'packet_loss'
+                value_pl = self.packet_loss()
+                #value_rt = self.round_trip()
+                color = 'red' if item_id in alarms else ''
+                #if value_rt:
+                if value_pl >= 0:
+                    fourth_line += "<br /><span style='color: {};'>PL: {}% - </span>".format(color, value_pl)
 
-            ''' ROUND_TRIP '''
-            item_id = 'round_trip'
-            #value = self.round_trip()
-            value_rt = self.round_trip()
-            color = 'red' if item_id in alarms else ''
-            if value_rt > 0:
-                fourth_line += "<span style='color: {};'>RT: {}ms<span>".format(color, value_rt)
+                ''' ROUND_TRIP '''
+                item_id = 'round_trip'
+                #value = self.round_trip()
+                value_rt = self.round_trip()
+                color = 'red' if item_id in alarms else ''
+                if value_rt > 0:
+                    fourth_line += "<span style='color: {};'>RT: {}ms<span>".format(color, value_rt)
 
-            fourth_line += "</small>"
+                fourth_line += "</small>"
 
             ''' Fifth line QUOTA FIRST '''
             fifth_line = ""
@@ -635,7 +641,7 @@ class Members(models.Model):
                         fifth_line +
                         sixth_line)
 
-            else:
+            elif not mqtt.uptime:
                 text = format_html(
                         first_line + 
                         second_line + 
