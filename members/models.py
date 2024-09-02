@@ -641,7 +641,7 @@ class Members(models.Model):
                         fifth_line +
                         sixth_line)
 
-            elif mqtt.uptime:
+            else:
                 text = format_html(
                         first_line + 
                         second_line + 
@@ -650,7 +650,8 @@ class Members(models.Model):
                         fifth_line +
                         sixth_line +
                         "<br /><small style='color: red;'>LU: {} ago</span></small>", readable_timedelta(mqtt.updated_at))
-            else:
+
+            if not mqtt.uptime:
                 text = format_html(
                         first_line + 
                         second_line + 
