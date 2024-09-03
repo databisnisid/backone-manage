@@ -35,7 +35,7 @@ def sync_member_inventory(network, zabbix):
                     'inventory_mode': 1,
                     'inventory': {
                         'alias': member.name[:128],
-                        'location': member.address,
+                        'location': member.address if member.address else '',
                         'location_lat': lat[:16],
                         'location_lon': lng[:16],
                         'model': member.model()[:64],
@@ -44,7 +44,7 @@ def sync_member_inventory(network, zabbix):
                         'software': member.release_version(),
                         'serialno_a': member.serialnumber()[:64],
                         'serialno_b': member.serialnumber()[:64],
-                        'poc_1_cell': member.mobile_number_first[:64],
+                        'poc_1_cell': member.mobile_number_first[:64] if member.mobile_number_first else '',
                         'host_router': member.member_id,
                         'host_networks': member.network.name,
                         }
