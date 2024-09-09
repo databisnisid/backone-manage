@@ -12,6 +12,7 @@ from .utils import get_unique_members
 from problems.models import MemberProblems
 from .serializers import MembersSerializers
 from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
 
 
 def randomize_coordinate(members):
@@ -149,7 +150,7 @@ def get_members_by_network_serializers(request, network_id):
                 'online_at', 'offline_at', 'mobile_number_first'
                 )
             )
-    serial = MembersSerializers(members)
-    return Response(serial.data)
+    serial = MembersSerializers(members, many=True)
+    #return Response(serial.data)
     #return HttpResponse(serial.data, content_type="application/json")
-    #return JsonResponse(members, safe=False)
+    return JsonResponse(serial.data, safe=False)
