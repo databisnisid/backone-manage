@@ -11,8 +11,8 @@ from .models import Members
 from .utils import get_unique_members
 from problems.models import MemberProblems
 from .serializers import MembersSerializers
-from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
+#from rest_framework.response import Response
+#from rest_framework.renderers import JSONRenderer
 
 
 def randomize_coordinate(members):
