@@ -10,7 +10,7 @@ from django.utils import timezone
 from .models import Members
 from .utils import get_unique_members
 from problems.models import MemberProblems
-from rest_framework import serializers
+from .serializers import MembersSerializers
 
 
 def randomize_coordinate(members):
@@ -134,3 +134,20 @@ def get_members_by_network(request, network_id):
     return HttpResponse(data, content_type="application/json")
     #return JsonResponse(members, safe=False)
 
+
+def get_members_by_network_serializers(request, network_id):
+    members = Members.objects.filter(
+            network__network_id=network_id,
+            online_at__isnull=False
+            )
+    data = serialize(
+            "json", members, 
+            fields=(
+                'name', 'member_code', 'description', 
+                'member_id', 'address', 'location',
+                'online_at', 'offline_at', 'mobile_number_first'
+                )
+            )
+    serial = MembersSerializers(members, many=True)
+    return HttpResponse(serial.data, content_type="application/json")
+    #return JsonResponse(members, safe=False)
