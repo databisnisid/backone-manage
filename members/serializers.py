@@ -4,7 +4,7 @@ from mqtt.serializers import MqttSerializers
 
 
 class MembersSerializers(serializers.ModelSerializer):
-    mqtt = MqttSerializers
+    mqtt = MqttSerializers()
 
     class Meta:
         model = Members
