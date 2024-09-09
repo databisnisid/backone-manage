@@ -149,7 +149,7 @@ def get_members_by_network_serializers(request, network_id):
                 'online_at', 'offline_at', 'mobile_number_first'
                 )
             )
-    serial = MembersSerializers(members, many=True)
+    serial = MembersSerializers(members)
     return Response(serial.data)
     #return HttpResponse(serial.data, content_type="application/json")
     #return JsonResponse(members, safe=False)
