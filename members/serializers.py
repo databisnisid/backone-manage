@@ -10,5 +10,6 @@ class MembersSerializers(serializers.ModelSerializer):
         model = Members
         fields = ('name', 'member_code', 'description',
                   'member_id', 'address', 'location',
-                  'online_at', 'offline_at', 'mobile_number_first'
+                  'online_at', 'offline_at', 'mobile_number_first',
+                  'mqtt',
                   )
