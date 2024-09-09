@@ -137,7 +137,7 @@ def get_members_by_network(request, network_id):
     #return JsonResponse(members, safe=False)
 
 
-def get_members_by_network_serializers(request, network_id):
+def get_members_by_network_mqtt(request, network_id):
     members = Members.objects.filter(
             network__network_id=network_id,
             online_at__isnull=False
