@@ -10,6 +10,7 @@ from django.utils import timezone
 from .models import Members
 from .utils import get_unique_members
 from problems.models import MemberProblems
+from rest_framework import serializers
 
 
 def randomize_coordinate(members):
