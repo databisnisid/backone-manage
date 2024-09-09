@@ -100,8 +100,8 @@ class Members(models.Model):
 
     # Mobile
     mobile_regex = RegexValidator(regex=r'^62\d{9,15}$', message=_("Mobile number must be entered in the format: '628XXXXXXXXXXX'. Up to 15 digits allowed."))
-    mobile_number_first = models.CharField(_('Mobile Number'), 
-                                     validators=[mobile_regex], 
+    mobile_number_first = models.CharField(_('Mobile Number/Service Line'), 
+                                     #validators=[mobile_regex], 
                                      max_length=20, blank=True, null=True)
 
 
