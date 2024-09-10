@@ -608,6 +608,9 @@ class Members(models.Model):
                 #color = '' if quota_day > settings.QUOTA_DAY_WARNING else 'red'
                 quota_text += "<span style='color: {};'>{}Hari</span>".format(color, quota_day)
 
+                if quota_type:
+                    quota_text += "<span>/{}</span>".format(quota_type.upper())
+
                 fifth_line = "<br /><small>QUO: {}</small>".format(quota_text)
 
             quota_current_prev, quota_total_prev, quota_day_prev, quota_type_prev = self.mqtt.get_quota_first_prev()
@@ -623,6 +626,9 @@ class Members(models.Model):
                 quota_text_prev += "<span>/{}GB/</span>".format(quota_total_prev)
 
                 quota_text_prev += "<span>{}Hari</span>".format(quota_day_prev)
+
+                if quota_type_prev:
+                    quota_text += "<span>/{}</span>".format(quota_type_prev.upper())
 
                 fifth_line += "<br /><small>QUO_PREV: {}</small>".format(quota_text_prev)
 
