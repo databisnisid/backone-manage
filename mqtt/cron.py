@@ -86,7 +86,12 @@ def get_quota():
             except AttributeError:
                 mqtt_quota_first_prev = ''
 
-            mqtt_quota_first = '{}/{}/{}'.format(quota_current, quota_total, quota_day)
+            try:
+                quota_type = quota_record['quota_type'].replace(' ', '')
+            except AttributeError:
+                quota_type = ''
+
+            mqtt_quota_first = '{}/{}/{}/{}'.format(quota_current, quota_total, quota_day, quota_type)
             try:
                 mqtt = Mqtt.objects.get(member_id=member.member_id)
                 mqtt.quota_first = mqtt_quota_first
