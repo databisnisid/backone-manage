@@ -590,7 +590,7 @@ class Members(models.Model):
             ''' Fifth line QUOTA FIRST '''
             fifth_line = ""
 
-            quota_current, quota_total, quota_day = self.mqtt.get_quota_first()
+            quota_current, quota_total, quota_day, quota_type = self.mqtt.get_quota_first()
 
             #if not quota_current==0 and not quota_total==0 and not quota_day==0:
             quota_current = quota_current / 1024
@@ -610,7 +610,7 @@ class Members(models.Model):
 
                 fifth_line = "<br /><small>QUO: {}</small>".format(quota_text)
 
-            quota_current_prev, quota_total_prev, quota_day_prev = self.mqtt.get_quota_first_prev()
+            quota_current_prev, quota_total_prev, quota_day_prev, quota_type_prev = self.mqtt.get_quota_first_prev()
             quota_current_prev = quota_current_prev / 1024
 
             if not quota_total_prev==0:

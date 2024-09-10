@@ -86,6 +86,7 @@ class Mqtt(models.Model):
         quota_current = 0
         quota_total = 0
         quota_day = 0
+        quota_type = ''
 
         if self.quota_first:
             quota_split = self.quota_first.split('/')
@@ -116,13 +117,24 @@ class Mqtt(models.Model):
                 quota_total = 0 
                 quota_day = 0
 
-        return quota_current, quota_total, quota_day
+            try:
+                quota_split[3]
+                quota_type = quota_split[3]
+            except (ValueError, IndexError) as error:
+                quota_current = 0
+                quota_total = 0 
+                quota_day = 0
+                quota_type = ''
+
+
+        return quota_current, quota_total, quota_day, quota_type
 
 
     def get_quota_first_prev(self):
         quota_current = 0
         quota_total = 0
         quota_day = 0
+        quota_type = ''
 
         if self.quota_first_prev:
             quota_split = self.quota_first_prev.split('/')
@@ -154,7 +166,16 @@ class Mqtt(models.Model):
                 quota_total = 0 
                 quota_day = 0
 
-        return quota_current, quota_total, quota_day
+            try:
+                quota_split[3]
+                quota_type = quota_split[3]
+            except (ValueError, IndexError) as error:
+                quota_current = 0
+                quota_total = 0 
+                quota_day = 0
+                quota_type = ''
+
+        return quota_current, quota_total, quota_day, quota_type
 
 
     def get_quota_vnstat(self):

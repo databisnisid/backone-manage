@@ -11,8 +11,8 @@ def compare_values(val1, val2):
     return True if val1 > val2 else False
 
 def is_problem_quota_first_high_gb(mqtt, threshold):
-    quota_current, quota_total, quota_day = mqtt.get_quota_first()
-    quota_current_prev, quota_total_prev, quota_day_prev = mqtt.get_quota_first_prev()
+    quota_current, quota_total, quota_day, quota_type = mqtt.get_quota_first()
+    quota_current_prev, quota_total_prev, quota_day_prev, quota_type_prev = mqtt.get_quota_first_prev()
 
     if quota_day_prev - quota_day < 0:
         return False
@@ -31,14 +31,14 @@ def is_problem_quota_first_high_gb(mqtt, threshold):
             return False
 
 def is_problem_quota_first_gb(mqtt, threshold):
-    quota_current, quota_total, quota_day = mqtt.get_quota_first()
+    quota_current, quota_total, quota_day, quota_type = mqtt.get_quota_first()
     if quota_total:
         return compare_values(threshold, quota_current)
     else:
         return False
 
 def is_problem_quota_first_day(mqtt, threshold):
-    quota_current, quota_total, quota_day = mqtt.get_quota_first()
+    quota_current, quota_total, quota_day, quota_type = mqtt.get_quota_first()
     if quota_total:
         return compare_values(threshold, quota_day)
     else:
