@@ -256,7 +256,7 @@ class MembersAdmin(ModelAdmin):
     search_fields = ('name', 'member_id', 'member_code', 'ipaddress', 
                      'address', 'mobile_number_first',
                      'mqtt__serialnumber', 'mqtt__model', 'mqtt__uptime',
-                     'mqtt__release_version', 'mqtt__hostname')
+                     'mqtt__release_version', 'mqtt__hostname', 'mqtt__quota_first')
 
     create_template_name = 'modeladmin/create.html'
     edit_template_name = 'modeladmin/edit.html'
