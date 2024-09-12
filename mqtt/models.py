@@ -51,7 +51,7 @@ class Mqtt(models.Model):
 
     def save(self):
         if self.packet_loss_string:
-            packet_loss_split = self.packet_loss_string.split(',')
+            packet_loss_split = str(self.packet_loss_string).split(',')
             packet_loss_digit_string = packet_loss_split[2].split('%')
 
             try:
@@ -60,7 +60,7 @@ class Mqtt(models.Model):
                 self.packet_loss = 0
 
         if self.round_trip_string:
-            round_trip_string = self.round_trip_string.split('=')
+            round_trip_string = str(self.round_trip_string).split('=')
             round_trip_digit = round_trip_string[1].split('/')
 
             try:
@@ -70,8 +70,6 @@ class Mqtt(models.Model):
 
         if self.uptime:
             load_1, load_5, load_15 = get_cpu_usage(self.uptime, self.num_core)
-            #load_string = self.uptime.split('load average:')
-            #load_digit = load_string[1].split(',')
 
             try:
                 #self.cpu_usage = float(load_digit[1]) / self.num_core * 100
@@ -89,7 +87,7 @@ class Mqtt(models.Model):
         quota_type = ''
 
         if self.quota_first:
-            quota_split = self.quota_first.split('/')
+            quota_split = str(self.quota_first).split('/')
             try:
                 quota_split[0]
                 #quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
@@ -99,20 +97,20 @@ class Mqtt(models.Model):
                 else:
                     quota_current = float(quota_split[0].replace('MB', ''))
 
-            except (ValueError, IndexError) as error:
+            except (ValueError, IndexError):
                 quota_current = 0
 
             try:
                 quota_split[1]
                 quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
-            except (ValueError, IndexError) as error:
+            except (ValueError, IndexError):
                 quota_current = 0
                 quota_total = 0 
 
             try:
                 quota_split[2]
                 quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
-            except (ValueError, IndexError) as error:
+            except (ValueError, IndexError):
                 quota_current = 0
                 quota_total = 0 
                 quota_day = 0
@@ -120,7 +118,7 @@ class Mqtt(models.Model):
             try:
                 quota_split[3]
                 quota_type = quota_split[3]
-            except (ValueError, IndexError) as error:
+            except (ValueError, IndexError):
                 quota_current = 0
                 quota_total = 0 
                 quota_day = 0
@@ -137,7 +135,7 @@ class Mqtt(models.Model):
         quota_type = ''
 
         if self.quota_first_prev:
-            quota_split = self.quota_first_prev.split('/')
+            quota_split = str(self.quota_first_prev).split('/')
             try:
                 quota_split[0]
 
@@ -148,20 +146,20 @@ class Mqtt(models.Model):
                     quota_current = float(quota_split[0].replace('MB', ''))
 
 
-            except (ValueError, IndexError) as error:
+            except (ValueError, IndexError):
                 quota_current = 0
 
             try:
                 quota_split[1]
                 quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
-            except (ValueError, IndexError) as error:
+            except (ValueError, IndexError):
                 quota_current = 0
                 quota_total = 0 
 
             try:
                 quota_split[2]
                 quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
-            except (ValueError, IndexError) as error:
+            except (ValueError, IndexError):
                 quota_current = 0
                 quota_total = 0 
                 quota_day = 0
@@ -169,7 +167,7 @@ class Mqtt(models.Model):
             try:
                 quota_split[3]
                 quota_type = quota_split[3]
-            except (ValueError, IndexError) as error:
+            except (ValueError, IndexError):
                 quota_current = 0
                 quota_total = 0 
                 quota_day = 0
@@ -185,24 +183,24 @@ class Mqtt(models.Model):
         split_text = []
     
         if self.quota_vnstat:
-            split_text = self.quota_vnstat.split(',')
+            split_text = str(self.quota_vnstat).split(',')
 
             ''' RX Usage '''
             try:
                 rx_usage = int(split_text[2])
-            except (IndexError, ValueError) as error:
+            except (IndexError, ValueError):
                 pass
 
             ''' TX Usage '''
             try:
                 tx_usage = int(split_text[3])
-            except (IndexError, ValueError) as error:
+            except (IndexError, ValueError):
                 pass
 
             ''' Total Usage '''
             try:
                 total_usage = int(split_text[4])
-            except (IndexError, ValueError) as error:
+            except (IndexError, ValueError):
                 pass
 
         return rx_usage, tx_usage, total_usage
@@ -232,7 +230,7 @@ class Mqtt(models.Model):
         packet_loss = -1
 
         if self.packet_loss_string:
-            packet_loss_split = self.packet_loss_string.split(',')
+            packet_loss_split = str(self.packet_loss_string).split(',')
             packet_loss_digit_string = packet_loss_split[2].split('%')
 
             try:
@@ -247,7 +245,7 @@ class Mqtt(models.Model):
         round_trip = -1
 
         if self.round_trip_string:
-            round_trip_string = self.round_trip_string.split('=')
+            round_trip_string = str(self.round_trip_string).split('=')
             round_trip_digit = round_trip_string[1].split('/')
 
             try:
