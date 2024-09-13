@@ -9,50 +9,68 @@ from wagtail import permissions
 
 
 class Mqtt(models.Model):
-    member_id = models.CharField(_('Member ID'), max_length=50)
-    hostname = models.CharField(_('Hostname'), max_length=50, blank=True, null=True)
-    model = models.CharField(_('Model'), max_length=50, blank=True, null=True)
-    board_name = models.CharField(_('Board Name'), max_length=50, blank=True, null=True)
-    release_version = models.CharField(_('Release Version'), max_length=50, blank=True, null=True)
-    release_target = models.CharField(_('Release Target'), max_length=50, blank=True, null=True)
+    member_id = models.CharField(_("Member ID"), max_length=50)
+    hostname = models.CharField(_("Hostname"), max_length=50, blank=True, null=True)
+    model = models.CharField(_("Model"), max_length=50, blank=True, null=True)
+    board_name = models.CharField(_("Board Name"), max_length=50, blank=True, null=True)
+    release_version = models.CharField(
+        _("Release Version"), max_length=50, blank=True, null=True
+    )
+    release_target = models.CharField(
+        _("Release Target"), max_length=50, blank=True, null=True
+    )
 
-    ipaddress = models.GenericIPAddressField(_('IP Address'), blank=True, null=True)
+    ipaddress = models.GenericIPAddressField(_("IP Address"), blank=True, null=True)
 
-    is_rcall = models.BooleanField(_('RCALL Running'), default=False)
-    uptime = models.CharField(_('Uptime'), max_length=100, blank=True, null=True)
-    serialnumber = models.CharField(_('SN'), max_length=100, blank=True, null=True)
-    num_core = models.IntegerField(_('Number of Core'), default=1)
-    cpu_usage = models.FloatField(_('CPU Usage'), default=0.0)
-    memory_usage = models.FloatField(_('Memory Usage'), default=0.0)
-    packet_loss_string = models.CharField(_('Packet Loss String'),  max_length=100, blank=True, null=True)
-    round_trip_string = models.CharField(_('Round Trip String'),  max_length=100, blank=True, null=True)
-    packet_loss = models.FloatField(_('Packet Lost'), default=0)
-    round_trip = models.FloatField(_('Round Trip'), default=0)
-    switchport_up = models.CharField(_('Switch Port Up'), max_length=20, blank=True, null=True)
-    port_status = models.CharField(_('Port Status'), max_length=200, blank=True, null=True)
-    ipaddress_ts = models.GenericIPAddressField(_('Tailscale IP'), blank=True, null=True)
-    quota_vnstat = models.CharField(_('Quota VNStat'), max_length=200, blank=True, null=True)
-    quota_first = models.CharField(_('Quota'), max_length=200, blank=True, null=True)
-    quota_first_prev = models.CharField(_('Quota Prev Day'), max_length=200, blank=True, null=True)
+    is_rcall = models.BooleanField(_("RCALL Running"), default=False)
+    uptime = models.CharField(_("Uptime"), max_length=100, blank=True, null=True)
+    serialnumber = models.CharField(_("SN"), max_length=100, blank=True, null=True)
+    num_core = models.IntegerField(_("Number of Core"), default=1)
+    cpu_usage = models.FloatField(_("CPU Usage"), default=0.0)
+    memory_usage = models.FloatField(_("Memory Usage"), default=0.0)
+    packet_loss_string = models.CharField(
+        _("Packet Loss String"), max_length=100, blank=True, null=True
+    )
+    round_trip_string = models.CharField(
+        _("Round Trip String"), max_length=100, blank=True, null=True
+    )
+    packet_loss = models.FloatField(_("Packet Lost"), default=0)
+    round_trip = models.FloatField(_("Round Trip"), default=0)
+    switchport_up = models.CharField(
+        _("Switch Port Up"), max_length=20, blank=True, null=True
+    )
+    port_status = models.CharField(
+        _("Port Status"), max_length=200, blank=True, null=True
+    )
+    ipaddress_ts = models.GenericIPAddressField(
+        _("Tailscale IP"), blank=True, null=True
+    )
+    quota_vnstat = models.CharField(
+        _("Quota VNStat"), max_length=200, blank=True, null=True
+    )
+    quota_first = models.CharField(_("Quota"), max_length=200, blank=True, null=True)
+    quota_first_prev = models.CharField(
+        _("Quota Prev Day"), max_length=200, blank=True, null=True
+    )
 
-    is_waf = models.BooleanField(_('WAF Running'), default=False)
-    rssi_signal = models.IntegerField(_('RSSI Signal'), default=0)
+    is_waf = models.BooleanField(_("WAF Running"), default=False)
+    rssi_signal = models.IntegerField(_("RSSI Signal"), default=0)
 
     class Meta:
-        db_table = 'mqtt'
-        verbose_name = 'MQTT'
-        verbose_name_plural = 'MQTT'
+        db_table = "mqtt"
+        verbose_name = "MQTT"
+        verbose_name_plural = "MQTT"
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     def __str__(self):
-        return '{}'.format(self.member_id)
+        return "{}".format(self.member_id)
 
     def save(self):
         if self.packet_loss_string:
-            packet_loss_split = str(self.packet_loss_string).split(',')
-            packet_loss_digit_string = packet_loss_split[2].split('%')
+            packet_loss_split = str(self.packet_loss_string).split(",")
+            packet_loss_digit_string = packet_loss_split[2].split("%")
 
             try:
                 self.packet_loss = float(packet_loss_digit_string[0])
@@ -60,8 +78,8 @@ class Mqtt(models.Model):
                 self.packet_loss = 0
 
         if self.round_trip_string:
-            round_trip_string = str(self.round_trip_string).split('=')
-            round_trip_digit = round_trip_string[1].split('/')
+            round_trip_string = str(self.round_trip_string).split("=")
+            round_trip_digit = round_trip_string[1].split("/")
 
             try:
                 self.round_trip = float(round_trip_digit[1])
@@ -72,30 +90,29 @@ class Mqtt(models.Model):
             load_1, load_5, load_15 = get_cpu_usage(self.uptime, self.num_core)
 
             try:
-                #self.cpu_usage = float(load_digit[1]) / self.num_core * 100
+                # self.cpu_usage = float(load_digit[1]) / self.num_core * 100
                 self.cpu_usage = load_5
             except ValueError:
                 self.cpu_usage = 0
 
         return super(Mqtt, self).save()
 
-
     def get_quota_first(self):
         quota_current = 0
         quota_total = 0
         quota_day = 0
-        quota_type = ''
+        quota_type = ""
 
         if self.quota_first:
-            quota_split = str(self.quota_first).split('/')
+            quota_split = str(self.quota_first).split("/")
             try:
                 quota_split[0]
-                #quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
-                if 'GB' in quota_split[0]:
-                    quota_current = float(quota_split[0].replace('GB', ''))
+                # quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
+                if "GB" in quota_split[0]:
+                    quota_current = float(quota_split[0].replace("GB", ""))
                     quota_current = quota_current * 1024
                 else:
-                    quota_current = float(quota_split[0].replace('MB', ''))
+                    quota_current = float(quota_split[0].replace("MB", ""))
 
             except (ValueError, IndexError):
                 quota_current = 0
@@ -105,14 +122,14 @@ class Mqtt(models.Model):
                 quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
             except (ValueError, IndexError):
                 quota_current = 0
-                quota_total = 0 
+                quota_total = 0
 
             try:
                 quota_split[2]
                 quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
             except (ValueError, IndexError):
                 quota_current = 0
-                quota_total = 0 
+                quota_total = 0
                 quota_day = 0
 
             try:
@@ -120,31 +137,28 @@ class Mqtt(models.Model):
                 quota_type = quota_split[3]
             except (ValueError, IndexError):
                 quota_current = 0
-                quota_total = 0 
+                quota_total = 0
                 quota_day = 0
-                quota_type = ''
-
+                quota_type = ""
 
         return quota_current, quota_total, quota_day, quota_type
-
 
     def get_quota_first_prev(self):
         quota_current = 0
         quota_total = 0
         quota_day = 0
-        quota_type = ''
+        quota_type = ""
 
         if self.quota_first_prev:
-            quota_split = str(self.quota_first_prev).split('/')
+            quota_split = str(self.quota_first_prev).split("/")
             try:
                 quota_split[0]
 
-                if 'GB' in quota_split[0]:
-                    quota_current = float(quota_split[0].replace('GB', ''))
+                if "GB" in quota_split[0]:
+                    quota_current = float(quota_split[0].replace("GB", ""))
                     quota_current = quota_current * 1024
                 else:
-                    quota_current = float(quota_split[0].replace('MB', ''))
-
+                    quota_current = float(quota_split[0].replace("MB", ""))
 
             except (ValueError, IndexError):
                 quota_current = 0
@@ -154,14 +168,14 @@ class Mqtt(models.Model):
                 quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
             except (ValueError, IndexError):
                 quota_current = 0
-                quota_total = 0 
+                quota_total = 0
 
             try:
                 quota_split[2]
                 quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
             except (ValueError, IndexError):
                 quota_current = 0
-                quota_total = 0 
+                quota_total = 0
                 quota_day = 0
 
             try:
@@ -169,35 +183,34 @@ class Mqtt(models.Model):
                 quota_type = quota_split[3]
             except (ValueError, IndexError):
                 quota_current = 0
-                quota_total = 0 
+                quota_total = 0
                 quota_day = 0
-                quota_type = ''
+                quota_type = ""
 
         return quota_current, quota_total, quota_day, quota_type
-
 
     def get_quota_vnstat(self):
         rx_usage = 0
         tx_usage = 0
         total_usage = 0
         split_text = []
-    
-        if self.quota_vnstat:
-            split_text = str(self.quota_vnstat).split(',')
 
-            ''' RX Usage '''
+        if self.quota_vnstat:
+            split_text = str(self.quota_vnstat).split(",")
+
+            """ RX Usage """
             try:
                 rx_usage = int(split_text[2])
             except (IndexError, ValueError):
                 pass
 
-            ''' TX Usage '''
+            """ TX Usage """
             try:
                 tx_usage = int(split_text[3])
             except (IndexError, ValueError):
                 pass
 
-            ''' Total Usage '''
+            """ Total Usage """
             try:
                 total_usage = int(split_text[4])
             except (IndexError, ValueError):
@@ -205,8 +218,8 @@ class Mqtt(models.Model):
 
         return rx_usage, tx_usage, total_usage
 
+    """ This is to get all 1min, 5 min, 15min load """
 
-    ''' This is to get all 1min, 5 min, 15min load '''
     def get_cpu_usage(self):
         if self.uptime:
             load_1, load_5, load_15 = get_cpu_usage(self.uptime, self.num_core)
@@ -215,29 +228,28 @@ class Mqtt(models.Model):
 
         return round(load_1, 1), round(load_5, 1), round(load_15, 1)
 
-
     def get_uptime_string(self):
-        uptime_string = ''
+        uptime_string = ""
         if self.uptime:
             uptime_load = get_uptime_string(self.uptime)
-            uptime_split = uptime_load.split('load average')
+            uptime_split = uptime_load.split("load average")
             uptime_string = uptime_split[0][:-3:]
 
         return uptime_string.strip()
 
     def get_packet_loss(self):
-        #packet_loss = 0
+        # packet_loss = 0
         packet_loss = -1
 
         if self.packet_loss_string:
-            packet_loss_split = str(self.packet_loss_string).split(',')
-            packet_loss_digit_string = packet_loss_split[2].split('%')
+            packet_loss_split = str(self.packet_loss_string).split(",")
+            packet_loss_digit_string = packet_loss_split[2].split("%")
 
             try:
                 packet_loss = float(packet_loss_digit_string[0])
             except ValueError:
                 packet_loss = -1
-                #packet_loss = 0
+                # packet_loss = 0
 
         return packet_loss
 
@@ -245,8 +257,8 @@ class Mqtt(models.Model):
         round_trip = -1
 
         if self.round_trip_string:
-            round_trip_string = str(self.round_trip_string).split('=')
-            round_trip_digit = round_trip_string[1].split('/')
+            round_trip_string = str(self.round_trip_string).split("=")
+            round_trip_digit = round_trip_string[1].split("/")
 
             try:
                 round_trip = float(round_trip_digit[1])
@@ -266,4 +278,3 @@ class Mqtt(models.Model):
 
     def rssi(self):
         return self.rssi_signal
-
