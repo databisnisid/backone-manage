@@ -13,10 +13,11 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 import os
 import subprocess
-#from config import settings
 
-''' Sample of Validator'''
-'''
+# from config import settings
+
+""" Sample of Validator"""
+"""
 def validate_even(value):
     if value % 2 != 0:
         raise ValidationError(
@@ -24,7 +25,7 @@ def validate_even(value):
             params={'value': value},
         )
 even_field = models.IntegerField(validators=[validate_even])
-'''
+"""
 
 
 class Networks(models.Model):
@@ -39,22 +40,20 @@ class Networks(models.Model):
         "zt": true
     },
     """
-    name = models.CharField(_('Name'), max_length=50)
-    description = models.TextField(_('Description'), blank=True)
-    network_id = models.CharField(_('Network ID'), max_length=50, unique=True)
+
+    name = models.CharField(_("Name"), max_length=50)
+    description = models.TextField(_("Description"), blank=True)
+    network_id = models.CharField(_("Network ID"), max_length=50, unique=True)
 
     user = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        verbose_name=_('Owner'),
-        null=True
+        User, on_delete=models.SET_NULL, verbose_name=_("Owner"), null=True
     )
 
     organization = models.ForeignKey(
         Organizations,
         on_delete=models.SET_NULL,
-        verbose_name=_('Organization'),
-        null=True
+        verbose_name=_("Organization"),
+        null=True,
     )
 
     controller = models.ForeignKey(
@@ -63,30 +62,34 @@ class Networks(models.Model):
     )
 
     # NOTE: This will be improvement in the future, to support many ip assigment in Network
-    ip_address_networks = models.CharField(_('IP Networks'), max_length=100,
-                                           blank=True, null=True,
-                                           help_text='Example: 192.168.0.0/24, 10.0.0.0/24')
-    '''
+    ip_address_networks = models.CharField(
+        _("IP Networks"),
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="Example: 192.168.0.0/24, 10.0.0.0/24",
+    )
+    """
     This auto assign is can be done later.
-    '''
-    '''
+    """
+    """
     is_auto_assign = models.BooleanField(_('Auto Assign IP'), default=False)
     ip_pools = models.CharField(_('IP Pools'), blank=True, null=True,
                                 help_text=_('Example: 192.168.0.10-192.168.0.200'))
-    '''
-    configuration = models.TextField(_('Configuration'), blank=True)
-    route = models.TextField(_('Route'), blank=True)
+    """
+    configuration = models.TextField(_("Configuration"), blank=True)
+    route = models.TextField(_("Route"), blank=True)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
-        db_table = 'networks'
-        verbose_name = 'network'
-        verbose_name_plural = 'networks'
+        db_table = "networks"
+        verbose_name = "network"
+        verbose_name_plural = "networks"
 
     def __str__(self):
-        return '%s' % self.name
+        return "%s" % self.name
 
     def delete(self, using=None, keep_parents=False):
         zt = Zerotier(self.controller.uri, self.controller.token)
@@ -94,7 +97,7 @@ class Networks(models.Model):
         return super(Networks, self).delete()
 
     def save(self):
-        '''
+        """
         try:
             self.user
             if self.user is None:
@@ -102,14 +105,14 @@ class Networks(models.Model):
                 self.user = get_current_user()
         except ObjectDoesNotExist:
             self.user = get_user()
-        '''
+        """
 
         if self.user is None:
             self.user = get_current_user()
 
-        print('Network Model', self.user)
+        print("Network Model", self.user)
 
-        #if self.organization is None:
+        # if self.organization is None:
         self.organization = self.user.organization
 
         try:
@@ -124,28 +127,28 @@ class Networks(models.Model):
 
         if self.network_id is not None and self.network_id not in result:
             result = zt.add_network()
-            #print(result)
-            #print(self.network_id)
+            # print(result)
+            # print(self.network_id)
         else:
             result = zt.get_network_info(self.network_id)
-            #print(result)
-            #print(self.network_id)
+            # print(result)
+            # print(self.network_id)
 
-        if 'nwid' in result:
-            self.network_id = result['nwid']
+        if "nwid" in result:
+            self.network_id = result["nwid"]
             if not self.name:
-                if not result['name']:
-                    self.name = self.network_id + ' Network'
+                if not result["name"]:
+                    self.name = self.network_id + " Network"
                 else:
-                    self.name = result['name']
+                    self.name = result["name"]
 
-            result['name'] = self.name
-            data = {'name': self.name}
+            result["name"] = self.name
+            data = {"name": self.name}
 
             # Working on IP Network array
             if self.ip_address_networks is not None:
-                self.ip_address_networks = self.ip_address_networks.replace(' ', '')
-                ip_network_lists = self.ip_address_networks.split(',')
+                self.ip_address_networks = self.ip_address_networks.replace(" ", "")
+                ip_network_lists = self.ip_address_networks.split(",")
                 # if len(ip_network_lists) >= 0:
                 try:
                     for ip_network_list in ip_network_lists:
@@ -155,72 +158,80 @@ class Networks(models.Model):
                     is_ip_networks = False
 
                 if is_ip_networks:
-                    if 'routes' in result:
-                        routes = result['routes']
+                    if "routes" in result:
+                        routes = result["routes"]
 
-                        ''' Delete all default route'''
+                        """ Delete all default route"""
                         j = 0
                         for i in range(len(routes)):
-                            if routes[i-j]['via'] is None:
+                            if routes[i - j]["via"] is None:
                                 routes.pop(i - j)
                                 j += 1
 
                         for i in range(len(ip_network_lists)):
-                            route = {'target': ip_network_lists[i], 'via': ''}
+                            route = {"target": ip_network_lists[i], "via": ""}
                             routes.insert(i, route)
 
-                        data['routes'] = routes
+                        data["routes"] = routes
             else:
                 # If no route
-                routes = result['routes']
+                routes = result["routes"]
                 j = 0
                 for i in range(len(routes)):
-                    if routes[i-j]['via'] is None:
-                        routes.pop(i-j)
+                    if routes[i - j]["via"] is None:
+                        routes.pop(i - j)
                         j += 1
-                data['routes'] = routes
+                data["routes"] = routes
 
-            print('Network', self.network_id, data)
+            print("Network", self.network_id, data)
             result = zt.set_network(self.network_id, data)
             self.configuration = result
-            self.route = result['routes']
+            self.route = result["routes"]
 
         return super(Networks, self).save()
 
     def clean(self):
-        #if self.user is None:
+        # if self.user is None:
         #    self.user = get_current_user()
         if self.ip_address_networks is not None:
-            self.ip_address_networks = self.ip_address_networks.replace(' ', '')
+            self.ip_address_networks = self.ip_address_networks.replace(" ", "")
 
-            ip_network_lists = self.ip_address_networks.split(',')
+            ip_network_lists = self.ip_address_networks.split(",")
 
             try:
                 for ip_network_list in ip_network_lists:
                     ip_network(ip_network_list)
             except ValueError:
-                raise ValidationError({'ip_address_networks': _('IP Format is not correct!')})
+                raise ValidationError(
+                    {"ip_address_networks": _("IP Format is not correct!")}
+                )
 
         if self.id:
             ctl_id = self.network_id[:10]
             ctl_config = to_dictionary(self.user.organization.controller.configuration)
-            if ctl_id != ctl_config['address']:
-                raise ValidationError(_('Controller Miss Match! Network should be in same controllers'))
+            if ctl_id != ctl_config["address"]:
+                raise ValidationError(
+                    _("Controller Miss Match! Network should be in same controllers")
+                )
 
     def ip_allocation(self):
-        text = ''
+        text = ""
         if self.ip_address_networks is not None:
-            ip_network_lists = self.ip_address_networks.split(',')
-            text = format_html('<br />'.join([str(p) for p in ip_network_lists]))
+            ip_network_lists = self.ip_address_networks.split(",")
+            text = format_html("<br />".join([str(p) for p in ip_network_lists]))
         return text
-    ip_allocation.short_description = 'IP Allocations'
 
+    ip_allocation.short_description = "IP Allocations"
 
     def qr_network_id(self):
-        text = format_html('<a href="../qr_code/' + self.network_id + '/" target="_blank"><img src="../../static/networks/qr.png"></a>')
+        text = format_html(
+            '<a href="../qr_code/'
+            + self.network_id
+            + '/" target="_blank"><img src="../../static/networks/qr.png"></a>'
+        )
         return text
-    qr_network_id.short_description = 'QR Code'
 
+    qr_network_id.short_description = "QR Code"
 
 
 class NetworkRoutes(models.Model):
@@ -230,72 +241,70 @@ class NetworkRoutes(models.Model):
         :return:
         """
         user = get_current_user()
-        print('Network User', user)
+        print("Network User", user)
         if not user.is_superuser:
             if user.organization.is_no_org:
-                return {'user': user}
+                return {"user": user}
             else:
-                return {'organization': user.organization}
+                return {"organization": user.organization}
         else:
             return {}
 
-    ip_network = models.CharField(_('IP Network'), max_length=50,
-                                  help_text=_('Example: 192.168.0.0/24'))
-    gateway = models.GenericIPAddressField(_('Gateway'), null=True)
+    ip_network = models.CharField(
+        _("IP Network"), max_length=50, help_text=_("Example: 192.168.0.0/24")
+    )
+    gateway = models.GenericIPAddressField(_("Gateway"), null=True)
     network = models.ForeignKey(
         Networks,
         on_delete=models.CASCADE,
         limit_choices_to=limit_choices_to_current_user,
-        verbose_name=_('Network'),
+        verbose_name=_("Network"),
     )
     user = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        verbose_name=_('Owner'),
-        null=True
+        User, on_delete=models.SET_NULL, verbose_name=_("Owner"), null=True
     )
 
     organization = models.ForeignKey(
         Organizations,
         on_delete=models.SET_NULL,
-        verbose_name=_('Organization'),
-        null=True
+        verbose_name=_("Organization"),
+        null=True,
     )
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
-        db_table = 'network_routes'
-        verbose_name = 'network route'
-        verbose_name_plural = 'network routes'
+        db_table = "network_routes"
+        verbose_name = "network route"
+        verbose_name_plural = "network routes"
 
     def __str__(self):
-        return '%s' % self.ip_network
+        return "%s" % self.ip_network
 
     def save(self):
         self.user = self.network.user
         self.organization = self.network.organization
 
         if self.ip_network:
-            self.ip_network = self.ip_network.replace(' ', '')
+            self.ip_network = self.ip_network.replace(" ", "")
         if self.gateway:
-            self.gateway = self.gateway.replace(' ', '')
+            self.gateway = self.gateway.replace(" ", "")
 
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         result = zt.get_network_info(self.network.network_id)
-        routes = result['routes']
+        routes = result["routes"]
 
         is_already_there = False
         for i in range(len(routes)):
-            if routes[i]['target'] == self.ip_network:
+            if routes[i]["target"] == self.ip_network:
                 is_already_there = True
                 break
 
         if not is_already_there:
-            route_add = {'target': self.ip_network, 'via': self.gateway}
+            route_add = {"target": self.ip_network, "via": self.gateway}
             routes.append(route_add)
-            routes_new = {'routes': routes}
+            routes_new = {"routes": routes}
             print(routes_new)
             zt.set_network(self.network.network_id, routes_new)
 
@@ -308,15 +317,18 @@ class NetworkRoutes(models.Model):
     def delete(self, using=None, keep_parents=False):
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         result = zt.get_network_info(self.network.network_id)
-        routes = result['routes']
+        routes = result["routes"]
 
         j = 0
         for i in range(len(routes)):
-            if routes[i - j]['via'] == self.gateway and routes[i - j]['target'] == self.ip_network:
+            if (
+                routes[i - j]["via"] == self.gateway
+                and routes[i - j]["target"] == self.ip_network
+            ):
                 routes.pop(i - j)
                 j += 1
 
-        routes_new = {'routes': routes}
+        routes_new = {"routes": routes}
         zt.set_network(self.network.network_id, routes_new)
         network = Networks.objects.get(id=self.network.id)
         network.save()
@@ -328,11 +340,12 @@ class NetworkRoutes(models.Model):
             try:
                 ip_network(self.ip_network)
                 try:
-                    NetworkRoutes.objects.exclude(
-                            id=self.id
-                            ).get(ip_network=self.ip_network,
-                                              network=self.network)
-                    raise ValidationError({'ip_network': _('IP Network is already used!')})
+                    NetworkRoutes.objects.exclude(id=self.id).get(
+                        ip_network=self.ip_network, network=self.network
+                    )
+                    raise ValidationError(
+                        {"ip_network": _("IP Network is already used!")}
+                    )
                 except ObjectDoesNotExist:
                     pass
 
@@ -347,20 +360,27 @@ class NetworkRoutes(models.Model):
         member = None
         if self.gateway:
             import members
+
             try:
                 member = members.models.Members.objects.get(ipaddress=self.gateway)
             except ObjectDoesNotExist:
                 member = None
-        #gateway_html = self.gateway
+        # gateway_html = self.gateway
         if member:
-            #gateway_html = format_html("{}<br /><a href='members/members/?q={}'>{}</a>", self.gateway, member.member_id, member)
-            gateway_html = format_html("{}<br /><a href='/members/members/?q={}'>{}</a>", self.gateway, member.ipaddress, member)
+            # gateway_html = format_html("{}<br /><a href='members/members/?q={}'>{}</a>", self.gateway, member.member_id, member)
+            gateway_html = format_html(
+                "{}<br /><a href='/members/members/?q={}'>{}</a>",
+                self.gateway,
+                member.ipaddress,
+                member,
+            )
         else:
-            gateway_html = format_html('{}', self.gateway)
+            gateway_html = format_html("{}", self.gateway)
 
         return gateway_html
 
-    get_member.short_description = 'Gateway'
+    get_member.short_description = "Gateway"
+
 
 DEFAULT_RULE_DEFINITION = """
 # This is a default rule set that allows IPv4 and IPv6 traffic.
@@ -441,105 +461,109 @@ class NetworkRules(models.Model):
         :return:
         """
         user = get_current_user()
-        print('Network User', user)
+        print("Network User", user)
         if not user.is_superuser:
             if user.organization.is_no_org:
-                return {'user': user}
+                return {"user": user}
             else:
-                return {'organization': user.organization}
+                return {"organization": user.organization}
         else:
             return {}
 
-    name = models.CharField(_('Name'), max_length=50)
+    name = models.CharField(_("Name"), max_length=50)
     network = models.OneToOneField(
         Networks,
         on_delete=models.CASCADE,
         limit_choices_to=limit_choices_to_current_user,
-        verbose_name=_('Network'),
+        verbose_name=_("Network"),
     )
-    rules_definition = models.TextField(_('Network Rule Definition'), blank=True,
-                                        default=DEFAULT_RULE_DEFINITION)
-    rules = models.TextField(_('Network Rules'), blank=True, default=DEFAULT_RULE)
-
-    is_block_rule = models.BooleanField(_('Block Traffic'), default=False)
-
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name=_('Owner')
+    rules_definition = models.TextField(
+        _("Network Rule Definition"), blank=True, default=DEFAULT_RULE_DEFINITION
     )
+    rules = models.TextField(_("Network Rules"), blank=True, default=DEFAULT_RULE)
+
+    is_block_rule = models.BooleanField(_("Block Traffic"), default=False)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("Owner"))
 
     organization = models.ForeignKey(
         Organizations,
         on_delete=models.SET_NULL,
-        verbose_name=_('Organization'),
-        null=True
+        verbose_name=_("Organization"),
+        null=True,
     )
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
-        db_table = 'network_rules'
-        verbose_name = 'network rule'
-        verbose_name_plural = 'network rules'
+        db_table = "network_rules"
+        verbose_name = "network rule"
+        verbose_name_plural = "network rules"
 
     def __str__(self):
-        return '%s' % self.network
+        return "%s" % self.network
 
     def clean(self):
 
-        filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
-        file = open(filename_rule, 'w')
+        filename_rule = "/tmp/net-rule-" + self.network.network_id + ".rules"
+        file = open(filename_rule, "w")
         file.write(self.rules_definition)
         file.close()
 
-        result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+        result = subprocess.run(
+            [settings.NODEJS, settings.CLIJS, filename_rule],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            shell=False,
+        )
 
-        result_txt = result.stdout.decode('utf-8')
+        result_txt = result.stdout.decode("utf-8")
 
-        print('RESULT', result_txt)
-        if 'ERROR' in result_txt:
-            error_msg = result_txt.split(':')
-            #print(rules)
-            raise ValidationError({'rules_definition': _('Syntax Error: ' + error_msg[1])})
+        print("RESULT", result_txt)
+        if "ERROR" in result_txt:
+            error_msg = result_txt.split(":")
+            # print(rules)
+            raise ValidationError(
+                {"rules_definition": _("Syntax Error: " + error_msg[1])}
+            )
         print(self.rules)
-        #os.remove(filename_rule)
+        # os.remove(filename_rule)
 
     def save(self):
         self.user = self.network.user
         self.organization = self.network.organization
 
-
         if self.rules_definition is not None:
-            filename_rule = '/tmp/net-rule-' + self.network.network_id + '.rules'
-            file = open(filename_rule, 'w')
+            filename_rule = "/tmp/net-rule-" + self.network.network_id + ".rules"
+            file = open(filename_rule, "w")
 
             rules_definition = self.rules_definition
             if self.is_block_rule:
                 rules_definition = "drop;"
 
             file.write(rules_definition)
-            #file.write(self.rules_definition)
+            # file.write(self.rules_definition)
             file.close()
 
-        #if self.rules_definition is not None:
-        #if rules_definition is not None:
-            print('FILENAME ', filename_rule)
+            # if self.rules_definition is not None:
+            # if rules_definition is not None:
+            print("FILENAME ", filename_rule)
 
-            result = subprocess.run([settings.NODEJS, settings.CLIJS, filename_rule],
-                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+            result = subprocess.run(
+                [settings.NODEJS, settings.CLIJS, filename_rule],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                shell=False,
+            )
 
-            self.rules = result.stdout.decode('utf-8')
-            rules_clean = to_json(self.rules.replace('\n', ''))
-            data = rules_clean['config']
+            self.rules = result.stdout.decode("utf-8")
+            rules_clean = to_json(self.rules.replace("\n", ""))
+            data = rules_clean["config"]
             zt = Zerotier(self.network.controller.uri, self.network.controller.token)
             print(data)
             zt.set_network(self.network.network_id, data)
-            #self.network.save()
+            # self.network.save()
 
             os.remove(filename_rule)
         return super(NetworkRules, self).save()
-
-
