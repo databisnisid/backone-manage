@@ -1,5 +1,6 @@
 from django.db import models
-from wagtail.admin.panels import FieldRowPanel
+
+# from wagtail.admin.panels import FieldRowPanel
 from accounts.models import User, Organizations
 from controllers.models import Controllers
 from crum import get_current_user
