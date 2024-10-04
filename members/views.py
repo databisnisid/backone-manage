@@ -108,7 +108,7 @@ def problem_time():
 
 def get_member(request, member_id):
     try:
-        member = Members.objects.get(member_id=member_id, is_authorized=True)
+        member = Members.objects.get(member_id=member_id)
         serial = MembersSerializers(member)
 
         return JsonResponse(serial.data)
