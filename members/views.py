@@ -1,5 +1,5 @@
 import random
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.core.serializers import serialize
 from django.http import HttpResponse
 
@@ -114,6 +114,28 @@ def get_member(request, member_id):
         return JsonResponse(serial.data)
 
     except ObjectDoesNotExist:
+        data = {}
+        return JsonResponse(data)
+
+    except MultipleObjectsReturned:
+        data = {}
+        return JsonResponse(data)
+
+
+def get_member_by_network(request, member_id, network_id):
+    try:
+        member = Members.objects.get(
+            member_id=member_id, network__network_id=network_id
+        )
+        serial = MembersSerializers(member)
+
+        return JsonResponse(serial.data)
+
+    except ObjectDoesNotExist:
+        data = {}
+        return JsonResponse(data)
+
+    except MultipleObjectsReturned:
         data = {}
         return JsonResponse(data)
 
