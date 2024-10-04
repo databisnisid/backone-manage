@@ -103,6 +103,9 @@ class Members(models.Model):
     online_at = models.DateField(_("Start Online"), blank=True, null=True)
     offline_at = models.DateTimeField(_("Stop Online"), blank=True, null=True)
 
+    # DPI Netify
+    is_dpi = models.BooleanField(_("DPI"), default=False)
+
     # WAF
     is_waf = models.BooleanField(_("WebFilter Active"), default=False)
 

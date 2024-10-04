@@ -16,6 +16,7 @@ class MembersSerializers(serializers.ModelSerializer):
             "address",
             "location",
             "is_authorized",
+            "is_dpi",
             "online_at",
             "offline_at",
             "mobile_number_first",
