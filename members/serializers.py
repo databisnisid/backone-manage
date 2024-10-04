@@ -8,8 +8,17 @@ class MembersSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Members
-        fields = ('name', 'member_code', 'description',
-                  'member_id', 'address', 'location',
-                  'online_at', 'offline_at', 'mobile_number_first',
-                  'mqtt',
-                  )
+        fields = [
+            "name",
+            "member_code",
+            "description",
+            "member_id",
+            "address",
+            "location",
+            "is_authorized",
+            "online_at",
+            "offline_at",
+            "mobile_number_first",
+            "mqtt",
+        ]
+        read_only_fields = ["__all__"]
