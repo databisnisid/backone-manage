@@ -40,6 +40,9 @@ class Features(models.Model):
         _("Web Filters Multi Net"), default=False
     )
 
+    # DPI Netify
+    is_dpi = models.BooleanField(_("DPI"), default=False)
+
     # Project Related
     is_telkomsel = models.BooleanField(_("Telkomsel Project"), default=False)
 
