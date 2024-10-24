@@ -815,17 +815,17 @@ class Members(models.Model):
 
     def quota_first(self):
         quota_string = None
-        #quota_current = 0
-        #quota_total = 0
-        #quota_day = 0
-        #quota_type = None
+        # quota_current = 0
+        # quota_total = 0
+        # quota_day = 0
+        # quota_type = None
         if self.mqtt:
-            quota_string = self.mqtt.quota_first
-            #quota_current, quota_total, quota_day, quota_type = (
-                #self.mqtt.get_quota_first()
-            #)
+            quota_string_split = str(self.mqtt.quota_first).split("/")
+            quota_strin = quota_string_split[0]
+            # quota_current, quota_total, quota_day, quota_type = (
+            # self.mqtt.get_quota_first()
+            # )
         return quota_string
-
 
     def rssi(self):
         text = "N/A"
