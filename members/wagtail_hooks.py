@@ -310,11 +310,12 @@ class MembersAdmin(ModelAdmin):
         ]
         list_display_simple = [
             "name",
-            "member_code",
+            # "member_code",
             "address",
             "ipaddress",
-            "switchport_up",
+            # "switchport_up",
             "online_status",
+            "quota_first",
         ]
         list_display_telkomsel = [
             "name",
