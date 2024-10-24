@@ -821,7 +821,7 @@ class Members(models.Model):
         # quota_type = None
         if self.mqtt:
             quota_string_split = str(self.mqtt.quota_first).split("/")
-            quota_strin = quota_string_split[0]
+            quota_string = quota_string_split[0]
             # quota_current, quota_total, quota_day, quota_type = (
             # self.mqtt.get_quota_first()
             # )
