@@ -11,6 +11,7 @@ cryptography==39.0.0
 defusedxml==0.7.1
 Django==4.2.11
 django-axes==6.1.1
+django-cors-headers==4.5.0
 django-crum==0.7.9
 django-filter==23.3
 django-ipware==5.0.0
