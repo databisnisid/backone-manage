@@ -8,21 +8,42 @@ from members.models import Members
 
 
 def on_connect(client, userdata, keepalive, bind_address):
-    #print(client, userdata, flags, rc)
+    # print(client, userdata, flags, rc)
     client.subscribe(settings.MQTT_TOPIC_PRESENCE)
+
 
 def on_message(client, userdata, message):
     current_time = timezone.now()
     msg = str(message.payload.decode("utf-8"))
 
-    print(str(current_time) ,msg)
-    mqtt_msg = msg.split(';')
-    member_id = mqtt_msg[0][:50] # max_length=50
-    model = mqtt_msg[1][0:50]
-    board_name = mqtt_msg[2][0:50]
-    release_version = mqtt_msg[3][0:50]
-    release_target = mqtt_msg[4][0:50]
-    ipaddress = mqtt_msg[5]
+    print(str(current_time), msg)
+    mqtt_msg = msg.split(";")
+    member_id = mqtt_msg[0][:50]  # max_length=50
+
+    try:
+        model = mqtt_msg[1][0:50]
+    except IndexError:
+        model = ""
+
+    try:
+        board_name = mqtt_msg[2][0:50]
+    except IndexError:
+        board_name = ""
+
+    try:
+        release_version = mqtt_msg[3][0:50]
+    except IndexError:
+        release_version = ""
+
+    try:
+        release_target = mqtt_msg[4][0:50]
+    except IndexError:
+        release_target = ""
+
+    try:
+        ipaddress = mqtt_msg[5]
+    except IndexError:
+        ipaddress = ""
 
     try:
         is_rcall = True if int(mqtt_msg[6]) > 0 else False
@@ -30,7 +51,7 @@ def on_message(client, userdata, message):
         is_rcall = False
 
     try:
-        uptime = mqtt_msg[7][:100] # max_length=100
+        uptime = mqtt_msg[7][:100]  # max_length=100
     except IndexError:
         uptime = None
 
@@ -41,7 +62,7 @@ def on_message(client, userdata, message):
 
     try:
         num_core = int(mqtt_msg[9]) if mqtt_msg[9] else 1
-    #except IndexError or ValueError:
+    # except IndexError or ValueError:
     except IndexError:
         num_core = 1
 
@@ -55,35 +76,35 @@ def on_message(client, userdata, message):
     # Packet Loss
     try:
         mqtt_msg[11]
-        packet_loss_string = mqtt_msg[11][:100] # max_length=100
+        packet_loss_string = mqtt_msg[11][:100]  # max_length=100
     except IndexError:
         packet_loss_string = None
 
     # Round Trip
     try:
         mqtt_msg[12]
-        round_trip_string = mqtt_msg[12][:100] # max_length=100
+        round_trip_string = mqtt_msg[12][:100]  # max_length=100
     except IndexError:
         round_trip_string = None
 
     # Switch Port UP
     try:
         mqtt_msg[13]
-        switchport_up = mqtt_msg[13][:20] # max_length=20
+        switchport_up = mqtt_msg[13][:20]  # max_length=20
     except IndexError:
         switchport_up = None
 
     # Port Status
     try:
         mqtt_msg[14]
-        port_status = mqtt_msg[14][:200] # max_length=200
+        port_status = mqtt_msg[14][:200]  # max_length=200
     except IndexError:
         port_status = None
 
     # Quota VNSTAT
     try:
         mqtt_msg[15]
-        quota_vnstat = mqtt_msg[15][:200] # max_length=200
+        quota_vnstat = mqtt_msg[15][:200]  # max_length=200
     except IndexError:
         quota_vnstat = None
 
@@ -93,20 +114,20 @@ def on_message(client, userdata, message):
         ipaddress_ts = mqtt_msg[16]
     except IndexError:
         ipaddress_ts = None
-    #print(member_id, model, board_name, release_version, release_target, ipaddress)
+    # print(member_id, model, board_name, release_version, release_target, ipaddress)
     # WAF
     try:
         mqtt_msg[17]
         is_waf = True if int(mqtt_msg[17]) > 0 else False
     except (IndexError, ValueError) as error:
         is_waf = False
-    #print(member_id, model, board_name, release_version, release_target, ipaddress)
+    # print(member_id, model, board_name, release_version, release_target, ipaddress)
 
     # RSSI SIGNAL
     try:
         mqtt_msg[18]
         rssi_signal = int(mqtt_msg[18]) if mqtt_msg[18] else 99999
-    #except IndexError or ValueError:
+    # except IndexError or ValueError:
     except IndexError:
         rssi_signal = 99999
 
@@ -151,7 +172,7 @@ def on_message(client, userdata, message):
     mqtt_member.rssi_signal = rssi_signal
     mqtt_member.save()
 
-    #members = Members.objects.filter(member_id=member_id, mqtt=None)
+    # members = Members.objects.filter(member_id=member_id, mqtt=None)
     members = Members.objects.filter(member_id=member_id)
 
     for member in members:
@@ -168,17 +189,17 @@ def on_message(client, userdata, message):
             member.is_waf = mqtt_member.is_waf
             member.save()
 
-    '''
+    """
     members = Members.objects.filter(member_id=member_id)
     for member in members:
         if member.serialnumber != serialnumber:
             member.serialnumber = serialnumber
             member.save()
-    '''
+    """
 
 
 class Command(BaseCommand):
-    help = 'Daemon to receive MQTT Presence Message'
+    help = "Daemon to receive MQTT Presence Message"
 
     def handle(self, *args, **options):
 
@@ -189,4 +210,3 @@ class Command(BaseCommand):
 
         client.connect(settings.MQTT_HOST, int(settings.MQTT_PORT))
         client.loop_forever()
-
