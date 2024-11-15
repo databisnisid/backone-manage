@@ -56,6 +56,10 @@ class Mqtt(models.Model):
     is_waf = models.BooleanField(_("WAF Running"), default=False)
     rssi_signal = models.IntegerField(_("RSSI Signal"), default=0)
 
+    netify_uuid = models.CharField(
+        _("Netify UUID"), max_length=50, blank=True, null=True
+    )
+
     class Meta:
         db_table = "mqtt"
         verbose_name = "MQTT"

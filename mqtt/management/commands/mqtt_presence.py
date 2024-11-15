@@ -138,6 +138,12 @@ def on_message(client, userdata, message):
     except IndexError:
         hostname = None
 
+    try:
+        mqtt_msg[20]
+        netify_uuid = mqtt_msg[20]
+    except IndexError:
+        netify_uuid = None
+
     # Insert Into DB
     try:
         mqtt_member = Mqtt.objects.get(member_id=member_id)
@@ -151,6 +157,7 @@ def on_message(client, userdata, message):
         mqtt_member = Mqtt()
         mqtt_member.member_id = member_id
 
+    mqtt_member.netify_uuid = netify_uuid
     mqtt_member.hostname = hostname
     mqtt_member.model = model
     mqtt_member.board_name = board_name
