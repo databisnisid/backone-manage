@@ -433,9 +433,21 @@ class Members(models.Model):
             text = format_html(self.list_ipaddress() + "<br />" + text)
 
         if self.is_waf:
-            return format_html(text + "<br /><small>WAF: On</small>")
+            # text += format_html(text + "<br /><small>WAF: On</small>")
+            text = format_html(text + "<br /><small>WAF: On</small>")
         else:
-            return format_html(text + "<br /><small>WAF: Off</small>")
+            text = format_html(text + "<br /><small>WAF: Off</small>")
+
+        if self.is_dpi:
+            netify_uuid = self.netify_uuid()
+            if netify_uuid:
+                text = format_html(text + f"<br /><small>DPI: {netify_uuid}</small>")
+            else:
+                text = format_html(text + "<br /><small>DPI: On</small>")
+        else:
+            text = format_html(text + "<br /><small>DPI: Off</small>")
+
+        return text
 
     member_status.short_description = _("Member Status")
     member_status.admin_order_field = "network"
@@ -582,6 +594,12 @@ class Members(models.Model):
         result = None
         if self.mqtt:
             result = self.mqtt.release_version
+        return result
+
+    def netify_uuid(self):
+        result = None
+        if self.mqtt:
+            result = self.mqtt.netify_uuid
         return result
 
     def model_release(self):
