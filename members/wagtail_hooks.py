@@ -277,6 +277,8 @@ class MembersAdmin(ModelAdmin):
         "offline_at",
     )
     list_filter = (
+        "is_waf",
+        "is_dpi",
         "is_authorized",
         "network",
     )
