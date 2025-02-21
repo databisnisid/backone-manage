@@ -11,13 +11,17 @@
 
         {% if 'backone.cloud' in request.build_absolute_uri %}
             <div id="login-logo" class="login-logo" style="width: 20rem;">
-                <!--
+              <!--
                 <img src="{% versioned_static 'dashboard/images/backone-manage-logo.svg' %}" alt=""/>
-                -->
+              -->
+            </div>
+        {% elif organization.logo.file.url %}
+            <div class="login-logo" style="width: 20rem;">
+              <img src="{{ organization.logo.file.url }}" />
             </div>
         {% else %}
             <div class="login-logo" style="width: 20rem;">
-                <img src="{% versioned_static 'dashboard/images/dashboard-logo.png' %}" alt=""/>
+              <img src="{% versioned_static 'dashboard/images/dashboard-logo.png' %}" alt=""/>
             </div>
         {% endif %}
 
