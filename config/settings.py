@@ -26,6 +26,7 @@ ALLOWED_HOSTS = [str(os.getenv("ALLOWED_HOSTS", "*"))]
 
 INSTALLED_APPS = [
     #'headscale',
+    # "sites_custom",
     "licenses",
     "webfilters",
     "accounts",
@@ -204,17 +205,28 @@ WAGTAILADMIN_BASE_URL = str(
     os.getenv("WAGTAILADMIN_BASE_URL", "https://manage.backone.cloud")
 )
 
+"""
 ADDITIONAL_DOMAIN_1 = str(
     os.getenv("ADDITIONAL_DOMAIN_1", "https://mn.mysmartrouter.net")
 )
 ADDITIONAL_DOMAIN_2 = str(
     os.getenv("ADDITIONAL_DOMAIN_2", "https://mn.guanghao-sdwan.id")
 )
+"""
 
 # CSRF
 # CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL, ADDITIONAL_DOMAINS]
-CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL, ADDITIONAL_DOMAIN_1, ADDITIONAL_DOMAIN_2]
+# CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL, ADDITIONAL_DOMAIN_1, ADDITIONAL_DOMAIN_2]
+CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL]
 
+ADDITIONAL_DOMAINS = os.getenv(
+    "ADDITIONAL_DOMAINS", "https://mn.guanghao-sdwan.id, https://manage.nexusnetwork.id"
+)
+
+domains_list = ADDITIONAL_DOMAINS.split(",")
+
+for domain_list in domains_list:
+    CSRF_TRUSTED_ORIGINS.append(domain_list.replace(" ", ""))
 # print(CSRF_TRUSTED_ORIGINS)
 
 # CSRF_TRUSTED_ORIGINS += ADDITIONAL_DOMAINS

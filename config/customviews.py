@@ -1,6 +1,9 @@
 from django.db.models import ObjectDoesNotExist
 from wagtail.admin.views import account
+from wagtail.models import Site
 from accounts.models import Organizations
+
+# from sites_custom.models import SitesCustom
 
 
 class CustomLoginView(account.LoginView):
@@ -19,13 +22,22 @@ class CustomLoginView(account.LoginView):
             User.USERNAME_FIELD
         ).verbose_name
 
-        print(context)
-        """
+        # print(context["site_name"])
+        # print(context["site"])
+
         try:
-            organization = Organizations.objects.get(domain="")
+            site = Site.objects.get(hostname__icontains=context["site_name"])
+            # print(site)
+
+            try:
+                organization = Organizations.objects.get(site=site)
+                context["organization"] = organization
+
+            except ObjectDoesNotExist:
+                pass
+                # print("NO Organization")
 
         except ObjectDoesNotExist:
             pass
-        """
 
         return context
