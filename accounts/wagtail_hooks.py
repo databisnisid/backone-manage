@@ -45,7 +45,7 @@ class OrganizationsAdmin(ModelAdmin):
     exclude_from_explorer = (
         False  # or True to exclude pages of this type from Wagtail's explorer view
     )
-    list_display = ("name", "features", "controller", "uuid")
+    list_display = ("name", "features", "controller", "uuid", "site")
     search_fields = ("name", "features")
     permission_helper_class = AccountsPermissionHelper
 
@@ -55,6 +55,10 @@ class OrganizationsAdmin(ModelAdmin):
         ),
         FieldPanel("controller"),
         FieldPanel("is_no_org"),
+        MultiFieldPanel(
+            [FieldPanel("site"), FieldPanel("logo"), FieldPanel("favicon")],
+            heading=_("Site Customization"),
+        ),
     ]
 
     def __init__(self, *args, **kwargs):

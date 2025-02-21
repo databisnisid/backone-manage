@@ -7,6 +7,8 @@ from django.contrib.auth.models import AbstractUser
 from controllers.models import Controllers
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 import uuid
+from wagtail.models import Site
+from wagtail.images import get_image_model_string
 
 
 class Features(models.Model):
@@ -98,6 +100,28 @@ class Organizations(models.Model):
     # uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), editable=False)
     uuid = models.UUIDField(_("UUID"), default=uuid.uuid4, unique=True, editable=False)
 
+    site = models.ForeignKey(
+        Site, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Site")
+    )
+
+    logo = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("Logo"),
+        help_text=_("Brand logo used in the navbar and throughout the site"),
+    )
+
+    favicon = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="favicon",
+        verbose_name=_("Favicon"),
+    )
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
