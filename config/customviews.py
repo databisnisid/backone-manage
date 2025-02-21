@@ -19,7 +19,7 @@ class CustomLoginView(account.LoginView):
             User.USERNAME_FIELD
         ).verbose_name
 
-        print(request)
+        print(context)
         """
         try:
             organization = Organizations.objects.get(domain="")
