@@ -282,8 +282,10 @@ class Members(models.Model):
                 # Second Raise
                 for ip_address_list in ip_address_lists:
 
+                    """Optimize this for different network"""
+                    """adding: network=self.network"""
                     members = Members.objects.filter(
-                        ipaddress__contains=ip_address_list
+                        ipaddress__contains=ip_address_list, network=self.network
                     ).exclude(member_id=self.member_id)
 
                     if members:
