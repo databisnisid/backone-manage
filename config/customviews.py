@@ -1,9 +1,29 @@
 from django.db.models import ObjectDoesNotExist
-from wagtail.admin.views import account
+from django.utils.translation import gettext_lazy as _
+from wagtail.admin.views import account, home
 from wagtail.models import Site
+from wagtail.admin.site_summary import SiteSummaryPanel
+from wagtail.admin.forms.search import SearchForm
 from accounts.models import Organizations
 
-# from sites_custom.models import SitesCustom
+
+class CustomHomeView(home.HomeView):
+    template_name = "wagtailadmin/home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        panels = self.get_panels()
+        site_summary = SiteSummaryPanel(self.request)
+        site_details = self.get_site_details()
+
+        context["media"] = self.get_media([*panels, site_summary])
+        context["panels"] = sorted(panels, key=lambda p: p.order)
+        context["site_summary"] = site_summary
+        context["upgrade_notification"] = home.UpgradeNotificationPanel()
+        context["search_form"] = SearchForm(placeholder=_("Search all pages…"))
+        context["user"] = self.request.user
+
+        return {**context, **site_details}
 
 
 class CustomLoginView(account.LoginView):
