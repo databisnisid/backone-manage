@@ -363,7 +363,9 @@ class NetworkRoutes(models.Model):
             import members
 
             try:
-                member = members.models.Members.objects.get(ipaddress=self.gateway)
+                member = members.models.Members.objects.get(
+                    ipaddress=self.gateway, network=self.network
+                )
             except ObjectDoesNotExist:
                 member = None
         # gateway_html = self.gateway
