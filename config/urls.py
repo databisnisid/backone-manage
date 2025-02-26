@@ -13,7 +13,7 @@ from .customviews import CustomLoginView, CustomHomeView
 
 custom_wagtailadmin_urls = wagtailadmin_urls
 custom_wagtailadmin_urls.urlpatterns[0] = path(
-    "", CustomHomeView.as_view(), name="custom_home_view"
+    "", CustomHomeView.as_view(), name="wagtailadmin_home"
 )
 
 urlpatterns = [
