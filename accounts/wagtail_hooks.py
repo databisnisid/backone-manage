@@ -59,7 +59,7 @@ class OrganizationsAdmin(ModelAdmin):
             [
                 FieldPanel("site"),
                 FieldPanel("logo"),
-                # FieldPanel("logo_dashboard"),
+                FieldPanel("logo_dashboard"),
                 FieldPanel("favicon"),
             ],
             heading=_("Site Customization"),
