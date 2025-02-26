@@ -5,7 +5,7 @@ from networks import views
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
-from .customviews import CustomLoginView
+from .customviews import CustomLoginView, CustomHomeView
 
 # from members.views import get_members_all, get_members_user, get_members_org
 
@@ -23,7 +23,8 @@ urlpatterns = [
     path("api/webfilters/", include("webfilters.urls")),
     path("api/licenses/", include("licenses.urls")),
     path("login/", CustomLoginView.as_view(), name="custom_login_view"),
-    path("", include(wagtailadmin_urls)),
+    path("", CustomHomeView.as_view(), name="custom_home_view"),
+    # path("", include(wagtailadmin_urls)),
     # path("login/", CustomLoginView.as_view(), name="custom_login_view"),
     path("documents/", include(wagtaildocs_urls)),
     # path("search/", search_views.search, name="search"),

@@ -23,6 +23,21 @@ class CustomHomeView(home.HomeView):
         context["search_form"] = SearchForm(placeholder=_("Search all pages…"))
         context["user"] = self.request.user
 
+        try:
+            site = Site.objects.get(hostname__icontains=context["site_name"])
+            # print(site)
+
+            try:
+                organization = Organizations.objects.get(site=site)
+                context["organization"] = organization
+
+            except ObjectDoesNotExist:
+                pass
+                # print("NO Organization")
+
+        except ObjectDoesNotExist:
+            pass
+
         return {**context, **site_details}
 
 
