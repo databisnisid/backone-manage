@@ -281,26 +281,26 @@ class MemberChartsPanel(Component):
             else:
                 members = Members.objects.filter(organization=user.organization)
 
-        members_unique = get_unique_members(members)
+            members_unique = get_unique_members(members)
 
-        for member in members_unique:
-            peers = to_dictionary("{}")
-            if member.peers:
-                peers = to_dictionary(member.peers.peers)
+            for member in members_unique:
+                peers = to_dictionary("{}")
+                if member.peers:
+                    peers = to_dictionary(member.peers.peers)
 
-            if "paths" in peers and len(peers["paths"]) != 0:
-                version = str(peers["version"])
-                latency = peers["latency"]
-                try:
-                    self.member_version["v" + version]
-                    self.member_version["v" + version] += 1
-                except KeyError:
-                    self.member_version["v" + version] = 1
+                if "paths" in peers and len(peers["paths"]) != 0:
+                    version = str(peers["version"])
+                    latency = peers["latency"]
+                    try:
+                        self.member_version["v" + version]
+                        self.member_version["v" + version] += 1
+                    except KeyError:
+                        self.member_version["v" + version] = 1
 
-            if member.is_online():
-                self.member_status["ONLINE"] += 1
-            else:
-                self.member_status["OFFLINE"] += 1
+                if member.is_online():
+                    self.member_status["ONLINE"] += 1
+                else:
+                    self.member_status["OFFLINE"] += 1
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
