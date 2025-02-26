@@ -265,6 +265,7 @@ class MemberChartsPanel(Component):
     order = 70
     template_name = "dashboard/members_charts.html"
 
+    """
     def __init__(self):
         user = get_current_user()
         self.member_status = {
@@ -275,34 +276,35 @@ class MemberChartsPanel(Component):
         self.member_version = {}
         if user.is_superuser:
             members = Members.objects.all()
-        elif not user.is_anonymous:
-            if user.organization.is_no_org:
-                members = Members.objects.filter(user=user)
+        elif user.organization.is_no_org:
+            members = Members.objects.filter(user=user)
+        else:
+            members = Members.objects.filter(organization=user.organization)
+
+        members_unique = get_unique_members(members)
+
+        for member in members_unique:
+            peers = to_dictionary("{}")
+            if member.peers:
+                peers = to_dictionary(member.peers.peers)
+
+            if "paths" in peers and len(peers["paths"]) != 0:
+                version = str(peers["version"])
+                latency = peers["latency"]
+                try:
+                    self.member_version["v" + version]
+                    self.member_version["v" + version] += 1
+                except KeyError:
+                    self.member_version["v" + version] = 1
+
+            if member.is_online():
+                self.member_status["ONLINE"] += 1
             else:
-                members = Members.objects.filter(organization=user.organization)
-
-            members_unique = get_unique_members(members)
-
-            for member in members_unique:
-                peers = to_dictionary("{}")
-                if member.peers:
-                    peers = to_dictionary(member.peers.peers)
-
-                if "paths" in peers and len(peers["paths"]) != 0:
-                    version = str(peers["version"])
-                    latency = peers["latency"]
-                    try:
-                        self.member_version["v" + version]
-                        self.member_version["v" + version] += 1
-                    except KeyError:
-                        self.member_version["v" + version] = 1
-
-                if member.is_online():
-                    self.member_status["ONLINE"] += 1
-                else:
-                    self.member_status["OFFLINE"] += 1
+                self.member_status["OFFLINE"] += 1
+    """
 
     def get_context_data(self, parent_context):
+        request = parent_context["request"]
         context = super().get_context_data(parent_context)
         data_status = []
         data_version = []
@@ -310,10 +312,44 @@ class MemberChartsPanel(Component):
 
         labels_version = []
 
-        for member in self.member_status.values():
+        member_status = {
+            "ONLINE": 0,
+            "OFFLINE": 0,
+        }
+
+        member_version = {}
+        if request.user.is_superuser:
+            members = Members.objects.all()
+        elif request.user.organization.is_no_org:
+            members = Members.objects.filter(user=request.user)
+        else:
+            members = Members.objects.filter(organization=request.user.organization)
+
+        members_unique = get_unique_members(members)
+
+        for member in members_unique:
+            peers = to_dictionary("{}")
+            if member.peers:
+                peers = to_dictionary(member.peers.peers)
+
+            if "paths" in peers and len(peers["paths"]) != 0:
+                version = str(peers["version"])
+                # latency = peers["latency"]
+                try:
+                    member_version["v" + version]
+                    member_version["v" + version] += 1
+                except KeyError:
+                    member_version["v" + version] = 1
+
+            if member.is_online():
+                member_status["ONLINE"] += 1
+            else:
+                member_status["OFFLINE"] += 1
+
+        for member in member_status.values():
             data_status.append(member)
 
-        for version in self.member_version:
+        for version in member_version:
             labels_version.append(version)
             data_version.append(self.member_version[version])
 
