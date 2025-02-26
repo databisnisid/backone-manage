@@ -56,7 +56,12 @@ class OrganizationsAdmin(ModelAdmin):
         FieldPanel("controller"),
         FieldPanel("is_no_org"),
         MultiFieldPanel(
-            [FieldPanel("site"), FieldPanel("logo"), FieldPanel("favicon")],
+            [
+                FieldPanel("site"),
+                FieldPanel("logo"),
+                # FieldPanel("logo_dashboard"),
+                FieldPanel("favicon"),
+            ],
             heading=_("Site Customization"),
         ),
     ]

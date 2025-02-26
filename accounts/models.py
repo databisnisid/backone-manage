@@ -111,8 +111,22 @@ class Organizations(models.Model):
         on_delete=models.SET_NULL,
         related_name="+",
         verbose_name=_("Logo"),
-        help_text=_("Brand logo used in the navbar and throughout the site"),
+        help_text=_(
+            "Brand logo used in login or throughout the site (Rec: 512x128 pixels)"
+        ),
     )
+
+    """
+    logo_dashboard = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("Logo Dashboard"),
+        help_text=_("Brand logo used in dashboard (Rec: 512x512 pixels)"),
+    )
+    """
 
     favicon = models.ForeignKey(
         get_image_model_string(),
