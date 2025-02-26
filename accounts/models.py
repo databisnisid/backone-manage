@@ -131,6 +131,7 @@ class Organizations(models.Model):
         on_delete=models.SET_NULL,
         related_name="favicon",
         verbose_name=_("Favicon"),
+        help_text=_("Favicon file with extension .ico"),
     )
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
