@@ -424,32 +424,33 @@ class ModelChartsPanel(Component):
                 .annotate(mcount=Count("mqtt__release_version"))
                 .order_by()
             )
-        elif user.organization.is_no_org:
-            self.model = (
-                Members.objects.values("mqtt__model")
-                .annotate(mcount=Count("mqtt__model"))
-                .filter(user=user)
-                .order_by()
-            )
-            self.version = (
-                Members.objects.values("mqtt__release_version")
-                .annotate(mcount=Count("mqtt__release_version"))
-                .filter(user=user)
-                .order_by()
-            )
-        else:
-            self.model = (
-                Members.objects.values("mqtt__model")
-                .annotate(mcount=Count("mqtt__model"))
-                .filter(organization=user.organization)
-                .order_by()
-            )
-            self.version = (
-                Members.objects.values("mqtt__release_version")
-                .annotate(mcount=Count("mqtt__release_version"))
-                .filter(organization=user.organization)
-                .order_by()
-            )
+        elif not user.is_anonymous:
+            if user.organization.is_no_org:
+                self.model = (
+                    Members.objects.values("mqtt__model")
+                    .annotate(mcount=Count("mqtt__model"))
+                    .filter(user=user)
+                    .order_by()
+                )
+                self.version = (
+                    Members.objects.values("mqtt__release_version")
+                    .annotate(mcount=Count("mqtt__release_version"))
+                    .filter(user=user)
+                    .order_by()
+                )
+            else:
+                self.model = (
+                    Members.objects.values("mqtt__model")
+                    .annotate(mcount=Count("mqtt__model"))
+                    .filter(organization=user.organization)
+                    .order_by()
+                )
+                self.version = (
+                    Members.objects.values("mqtt__release_version")
+                    .annotate(mcount=Count("mqtt__release_version"))
+                    .filter(organization=user.organization)
+                    .order_by()
+                )
         # self.model = (Mqtt.objects.values('model').annotate(mcount=Count('model')).order_by())
         # self.version = (Mqtt.objects.values('release_version').annotate(mcount=Count('release_version')).order_by())
 
