@@ -13,13 +13,14 @@ from django.utils.translation import gettext as _
 from config.utils import to_dictionary
 from django.core.exceptions import ObjectDoesNotExist
 from members.utils import get_unique_members
-#from monitor.models import MemberProblems
+
+# from monitor.models import MemberProblems
 from licenses.models import Licenses
 
 
 class PingSummaryPanel(Component):
     order = 300
-    template_name = 'dashboard/ping_summary.html'
+    template_name = "dashboard/ping_summary.html"
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
@@ -31,9 +32,8 @@ class PingSummaryPanel(Component):
         else:
             if not current_user.organization.is_no_org:
                 members = Members.objects.filter(
-                        peers__isnull=False,
-                        organization=current_user.organization
-                        )
+                    peers__isnull=False, organization=current_user.organization
+                )
             else:
                 members = Members.objects.none()
 
@@ -52,23 +52,23 @@ class PingSummaryPanel(Component):
         """ Prevent division by zero """
         packet_loss_avg = 0
         if len(packet_loss_array) > 0:
-            packet_loss_avg = sum(packet_loss_array) / len(packet_loss_array)    
+            packet_loss_avg = sum(packet_loss_array) / len(packet_loss_array)
 
         """ Prevent division by zero """
         round_trip_avg = 0
         if len(round_trip_array) > 0:
-            round_trip_avg = sum(round_trip_array) / len(round_trip_array)    
+            round_trip_avg = sum(round_trip_array) / len(round_trip_array)
 
-        context['packet_loss'] = packet_loss_avg
-        context['round_trip'] = round_trip_avg
-        context['num_sample'] = len(packet_loss_array)
+        context["packet_loss"] = packet_loss_avg
+        context["round_trip"] = round_trip_avg
+        context["num_sample"] = len(packet_loss_array)
 
         return context
 
-        
+
 class LicenseSummaryPanel(Component):
     order = 5
-    template_name = 'dashboard/license_summary.html'
+    template_name = "dashboard/license_summary.html"
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
@@ -81,7 +81,7 @@ class LicenseSummaryPanel(Component):
             licenses = Licenses.objects.filter(organization=current_user.organization)
 
         license_status_list = []
-        '''
+        """
         license_status = {
                 'node_id': None,
                 'uuid': None,
@@ -89,64 +89,66 @@ class LicenseSummaryPanel(Component):
                 'msg': None,
                 'status': 0
                 } 
-        '''
+        """
 
         for license in licenses:
 
             license_time = license.get_license_time()
-            #license_status['node_id'] = license.node_id
-            #license_status['uuid'] = str(license.organization.uuid)
-            #license_status['name'] = license.organization.name
+            # license_status['node_id'] = license.node_id
+            # license_status['uuid'] = str(license.organization.uuid)
+            # license_status['name'] = license.organization.name
 
             if license_time:
-                #license_status = license.get_license_status()
+                # license_status = license.get_license_status()
 
-                #license_status['node_id'] = license.node_id
-                #license_status['uuid'] = str(license.organization.uuid)
-                #license_status['name'] = license.organization.name
+                # license_status['node_id'] = license.node_id
+                # license_status['uuid'] = str(license.organization.uuid)
+                # license_status['name'] = license.organization.name
 
                 delta_time = license_time - timezone.now()
 
-                print('License day', delta_time.days)
+                print("License day", delta_time.days)
 
                 if delta_time.days < 0:
                     license_status = {
-                        'node_id': license.node_id,
-                        'uuid': str(license.organization.uuid),
-                        'name': license.organization.name,
-                        'msg': _('License Expired'),
-                        'status': 2
-                        } 
-                    #license_status['status'] = 2
-                    #license_status['msg'] = _('License Expired')
+                        "node_id": license.node_id,
+                        "uuid": str(license.organization.uuid),
+                        "name": license.organization.name,
+                        "msg": _("License Expired"),
+                        "status": 2,
+                    }
+                    # license_status['status'] = 2
+                    # license_status['msg'] = _('License Expired')
                     license_status_list.append(license_status)
 
                 elif delta_time.days < 30:
                     license_status = {
-                        'node_id': license.node_id,
-                        'uuid': str(license.organization.uuid),
-                        'name': license.organization.name,
-                        'msg': _('License will expired in ' + str(delta_time.days) + ' days'),
-                        'status': 1
-                        } 
-                    #license_status['status'] = 1
-                    #license_status['msg'] = _('License will expired in ' + str(delta_time.days) + ' days')
+                        "node_id": license.node_id,
+                        "uuid": str(license.organization.uuid),
+                        "name": license.organization.name,
+                        "msg": _(
+                            "License will expired in " + str(delta_time.days) + " days"
+                        ),
+                        "status": 1,
+                    }
+                    # license_status['status'] = 1
+                    # license_status['msg'] = _('License will expired in ' + str(delta_time.days) + ' days')
                     license_status_list.append(license_status)
 
             else:
                 license_status = {
-                   'node_id': license.node_id,
-                   'uuid': str(license.organization.uuid),
-                   'name': license.organization.name,
-                   'msg': _('License is Empty'),
-                   'status': 0
-                   } 
-                #license_status['status'] = 0
-                #license_status['msg'] = _('License is Empty')
+                    "node_id": license.node_id,
+                    "uuid": str(license.organization.uuid),
+                    "name": license.organization.name,
+                    "msg": _("License is Empty"),
+                    "status": 0,
+                }
+                # license_status['status'] = 0
+                # license_status['msg'] = _('License is Empty')
                 license_status_list.append(license_status)
 
         print(license_status_list)
-        context['license_status'] = license_status_list
+        context["license_status"] = license_status_list
         return context
 
 
@@ -156,7 +158,7 @@ class LicenseDecoderPanel(Component):
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
-        context['license_handler'] = reverse('license_handler')
+        context["license_handler"] = reverse("license_handler")
         return context
 
 
@@ -170,15 +172,15 @@ class MapSummaryPanel(Component):
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
-        context['settings'] = settings
-        context['user'] = self.user
+        context["settings"] = settings
+        context["user"] = self.user
 
         return context
 
 
 class NetworksChartsPanel(Component):
     order = 90
-    template_name = 'dashboard/networks_charts.html'
+    template_name = "dashboard/networks_charts.html"
 
     def __init__(self):
         user = get_current_user()
@@ -194,17 +196,20 @@ class NetworksChartsPanel(Component):
 
         for network in networks:
             self.networks_name[network.network_id] = network.name
-            self.routes_per_network[network.network_id] = NetworkRoutes.objects.filter(network=network).count()
-            self.member_per_network[network.network_id] = Members.objects.filter(network=network).count()
-
+            self.routes_per_network[network.network_id] = NetworkRoutes.objects.filter(
+                network=network
+            ).count()
+            self.member_per_network[network.network_id] = Members.objects.filter(
+                network=network
+            ).count()
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
         data_route = []
         data_member = []
         labels = []
-        chart_title_route = _('Number of Routes per Network')
-        chart_title_member = _('Number of Members per Network')
+        chart_title_route = _("Number of Routes per Network")
+        chart_title_member = _("Number of Members per Network")
 
         for route in self.routes_per_network.values():
             data_route.append(route)
@@ -213,11 +218,11 @@ class NetworksChartsPanel(Component):
         for name in self.networks_name.values():
             labels.append(name)
 
-        context['data_route'] = data_route
-        context['data_member'] = data_member
-        context['labels'] = labels
-        context['chart_title_route'] = chart_title_route
-        context['chart_title_member'] = chart_title_member
+        context["data_route"] = data_route
+        context["data_member"] = data_member
+        context["labels"] = labels
+        context["chart_title_route"] = chart_title_route
+        context["chart_title_member"] = chart_title_member
 
         return context
 
@@ -237,64 +242,71 @@ class NetworksSummaryPanel(Component):
             self.network_routes = NetworkRoutes.objects.filter(user=user).count()
             self.members = Members.objects.filter(user=user).count()
         else:
-            self.networks = Networks.objects.filter(organization=user.organization).count()
-            self.network_routes = NetworkRoutes.objects.filter(organization=user.organization).count()
-            self.members = Members.objects.filter(organization=user.organization).count()
+            self.networks = Networks.objects.filter(
+                organization=user.organization
+            ).count()
+            self.network_routes = NetworkRoutes.objects.filter(
+                organization=user.organization
+            ).count()
+            self.members = Members.objects.filter(
+                organization=user.organization
+            ).count()
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
-        context['networks'] = self.networks
-        context['network_routes'] = self.network_routes
-        context['members'] = self.members
+        context["networks"] = self.networks
+        context["network_routes"] = self.network_routes
+        context["members"] = self.members
 
         return context
 
 
 class MemberChartsPanel(Component):
     order = 70
-    template_name = 'dashboard/members_charts.html'
+    template_name = "dashboard/members_charts.html"
 
     def __init__(self):
         user = get_current_user()
         self.member_status = {
-            'ONLINE': 0,
-            'OFFLINE': 0,
+            "ONLINE": 0,
+            "OFFLINE": 0,
         }
 
         self.member_version = {}
         if user.is_superuser:
             members = Members.objects.all()
-        elif user.organization.is_no_org:
-            members = Members.objects.filter(user=user)
-        else:
-            members = Members.objects.filter(organization=user.organization)
+        elif not user.is_anonymous:
+            if user.organization.is_no_org:
+                members = Members.objects.filter(user=user)
+            else:
+                members = Members.objects.filter(organization=user.organization)
 
         members_unique = get_unique_members(members)
 
         for member in members_unique:
-            peers = to_dictionary('{}')
+            peers = to_dictionary("{}")
             if member.peers:
                 peers = to_dictionary(member.peers.peers)
 
-            if 'paths' in peers and len(peers['paths']) != 0:
-                version = str(peers['version'])
-                latency = peers['latency']
+            if "paths" in peers and len(peers["paths"]) != 0:
+                version = str(peers["version"])
+                latency = peers["latency"]
                 try:
-                    self.member_version['v' + version]
-                    self.member_version['v' + version] += 1
+                    self.member_version["v" + version]
+                    self.member_version["v" + version] += 1
                 except KeyError:
-                    self.member_version['v' + version] = 1
+                    self.member_version["v" + version] = 1
 
             if member.is_online():
-                self.member_status['ONLINE'] += 1
+                self.member_status["ONLINE"] += 1
             else:
-                self.member_status['OFFLINE'] += 1
+                self.member_status["OFFLINE"] += 1
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
         data_status = []
         data_version = []
-        labels = ['ONLINE', 'OFFLINE']
+        labels = ["ONLINE", "OFFLINE"]
 
         labels_version = []
 
@@ -310,28 +322,29 @@ class MemberChartsPanel(Component):
         if len(data_version) > 0:
             is_data_version = True
 
-        #print(data_status)
+        # print(data_status)
 
-        #if len(data_status) > 0:
+        # if len(data_status) > 0:
         if data_status[0] > 0 or data_status[1] > 0:
             is_data_status = True
-        '''
+        """
         for data in data_version:
             if data > 0:
                 is_data_status = True
                 break
-        '''
+        """
 
-        context['labels'] = labels
-        context['labels_version'] = labels_version
-        context['data_status'] = data_status
-        context['data_version'] = data_version
-        context['chart_title_status'] = 'Members Status Distribution'
-        context['chart_title_version'] = 'Members Version Distribution'
-        context['is_data_status'] = is_data_status
-        context['is_data_version'] = is_data_version
+        context["labels"] = labels
+        context["labels_version"] = labels_version
+        context["data_status"] = data_status
+        context["data_version"] = data_version
+        context["chart_title_status"] = "Members Status Distribution"
+        context["chart_title_version"] = "Members Version Distribution"
+        context["is_data_status"] = is_data_status
+        context["is_data_version"] = is_data_version
 
         return context
+
 
 class MemberProblemsAnalyticPanel(Component):
     """
@@ -343,9 +356,11 @@ class MemberProblemsAnalyticPanel(Component):
 
     m = MemberProblemsDone.objects.filter(member__user=user).order_by('-duration')
     """
+
     pass
 
-'''
+
+"""
 class MembersProblemPanel(Component):
     order = 55
     template_name = "dashboard/members_problem.html"
@@ -359,8 +374,8 @@ class MembersProblemPanel(Component):
             problem_text = []
 
             if member.is_online():
-'''
-'''
+"""
+"""
                 if not member.is_mqtt_online():
                     try:
                         Mqtt.objects.get(member_id=member.member_id)
@@ -368,8 +383,8 @@ class MembersProblemPanel(Component):
                         is_problem = True
                     except ObjectDoesNotExist:
                         pass
-'''
-'''
+"""
+"""
 
                 if member.memory_usage() > 50:
                     problem_text.append('High Memory Usage')
@@ -388,7 +403,8 @@ class MembersProblemPanel(Component):
 
         context['members_problem'] = self.members_problem
         return context
-'''
+"""
+
 
 class ModelChartsPanel(Component):
     order = 80
@@ -398,16 +414,44 @@ class ModelChartsPanel(Component):
         user = get_current_user()
 
         if user.is_superuser:
-            self.model = (Members.objects.values('mqtt__model').annotate(mcount=Count('mqtt__model')).order_by())
-            self.version = (Members.objects.values('mqtt__release_version').annotate(mcount=Count('mqtt__release_version')).order_by())
+            self.model = (
+                Members.objects.values("mqtt__model")
+                .annotate(mcount=Count("mqtt__model"))
+                .order_by()
+            )
+            self.version = (
+                Members.objects.values("mqtt__release_version")
+                .annotate(mcount=Count("mqtt__release_version"))
+                .order_by()
+            )
         elif user.organization.is_no_org:
-            self.model = (Members.objects.values('mqtt__model').annotate(mcount=Count('mqtt__model')).filter(user=user).order_by())
-            self.version = (Members.objects.values('mqtt__release_version').annotate(mcount=Count('mqtt__release_version')).filter(user=user).order_by())
+            self.model = (
+                Members.objects.values("mqtt__model")
+                .annotate(mcount=Count("mqtt__model"))
+                .filter(user=user)
+                .order_by()
+            )
+            self.version = (
+                Members.objects.values("mqtt__release_version")
+                .annotate(mcount=Count("mqtt__release_version"))
+                .filter(user=user)
+                .order_by()
+            )
         else:
-            self.model = (Members.objects.values('mqtt__model').annotate(mcount=Count('mqtt__model')).filter(organization=user.organization).order_by())
-            self.version = (Members.objects.values('mqtt__release_version').annotate(mcount=Count('mqtt__release_version')).filter(organization=user.organization).order_by())
-        #self.model = (Mqtt.objects.values('model').annotate(mcount=Count('model')).order_by())
-        #self.version = (Mqtt.objects.values('release_version').annotate(mcount=Count('release_version')).order_by())
+            self.model = (
+                Members.objects.values("mqtt__model")
+                .annotate(mcount=Count("mqtt__model"))
+                .filter(organization=user.organization)
+                .order_by()
+            )
+            self.version = (
+                Members.objects.values("mqtt__release_version")
+                .annotate(mcount=Count("mqtt__release_version"))
+                .filter(organization=user.organization)
+                .order_by()
+            )
+        # self.model = (Mqtt.objects.values('model').annotate(mcount=Count('model')).order_by())
+        # self.version = (Mqtt.objects.values('release_version').annotate(mcount=Count('release_version')).order_by())
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
@@ -418,23 +462,22 @@ class ModelChartsPanel(Component):
         data_version = []
 
         for model in self.model:
-            if model['mcount'] != 0:
-                labels_model.append(model['mqtt__model'])
-                data_model.append(model['mcount'])
+            if model["mcount"] != 0:
+                labels_model.append(model["mqtt__model"])
+                data_model.append(model["mcount"])
 
         for version in self.version:
-            if version['mcount'] != 0:
-                labels_version.append(version['mqtt__release_version'])
-                data_version.append(version['mcount'])
+            if version["mcount"] != 0:
+                labels_version.append(version["mqtt__release_version"])
+                data_version.append(version["mcount"])
 
-        context['labels_model'] = labels_model
-        context['labels_version'] = labels_version
-        context['data_model'] = data_model
-        context['data_version'] = data_version
-        context['chart_title_model'] = 'Model Distribution'
-        context['chart_title_version'] = 'Platform Distribution'
-        context['is_data_model'] = True if len(data_model)>1 else False
-        context['is_data_model_version'] = True if len(data_version)>1 else False
+        context["labels_model"] = labels_model
+        context["labels_version"] = labels_version
+        context["data_model"] = data_model
+        context["data_version"] = data_version
+        context["chart_title_model"] = "Model Distribution"
+        context["chart_title_version"] = "Platform Distribution"
+        context["is_data_model"] = True if len(data_model) > 1 else False
+        context["is_data_model_version"] = True if len(data_version) > 1 else False
 
         return context
-
