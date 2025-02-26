@@ -351,7 +351,7 @@ class MemberChartsPanel(Component):
 
         for version in member_version:
             labels_version.append(version)
-            data_version.append(self.member_version[version])
+            data_version.append(member_version[version])
 
         is_data_status = False
         is_data_version = False
