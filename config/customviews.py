@@ -1,43 +1,8 @@
 from django.db.models import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
-from django.forms import Media
-from wagtail import hooks
-from wagtail.admin.views import account, home
+from wagtail.admin.views import account
 from wagtail.models import Site
-from wagtail.admin.site_summary import SiteSummaryPanel
-from wagtail.admin.forms.search import SearchForm
-from wagtail.admin.navigation import get_site_for_user
 from accounts.models import Organizations
-
-
-class CustomHomeView(home.HomeView):
-    template_name = "wagtailadmin/home.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        panels = self.get_panels()
-        site_details = self.get_site_details()
-
-        context["media"] = self.get_media(panels)
-        context["panels"] = sorted(panels, key=lambda p: p.order)
-        context["user"] = self.request.user
-
-        try:
-            site = Site.objects.get(hostname__icontains=context["site_name"])
-            # print(site)
-
-            try:
-                organization = Organizations.objects.get(site=site)
-                context["organization"] = organization
-
-            except ObjectDoesNotExist:
-                pass
-                # print("NO Organization")
-
-        except ObjectDoesNotExist:
-            pass
-
-        return {**context, **site_details}
 
 
 class CustomLoginView(account.LoginView):

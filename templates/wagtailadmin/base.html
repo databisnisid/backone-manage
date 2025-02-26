@@ -6,10 +6,10 @@
         {% block branding_logo %}
     {% if 'backone.cloud' in request.build_absolute_uri %}
         <img src="{% versioned_static 'dashboard/images/backone-logo.svg' %}" alt="BackOne"  width="512" />
-    {% elif organization.logo_dashboard.file.url %}
-        <img src="{{ organization.logo_dashboard.file.url }}" alt="BackOne"  width="512" />
-    {% elif organization.logo.file.url %}
-        <img src="{{ organization.logo.file.url }}" alt="BackOne"  width="512" />
+    {% elif request.user.organization.logo_dashboard.file.url %}
+        <img src="{{ request.user.organization.logo_dashboard.file.url }}" alt="BackOne"  width="512" />
+    {% elif request.user.organization.logo.file.url %}
+        <img src="{{ request.user.organization.logo.file.url }}" alt="BackOne"  width="512" />
     {% else %}
         <img src="{% versioned_static 'dashboard/images/dashboard-logo.png' %}" alt="Home"  width="512" />
     {% endif %}
