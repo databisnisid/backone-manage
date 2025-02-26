@@ -6,7 +6,7 @@ RUN echo "Asia/Jakarta" > /etc/timezone
 
 RUN apk add --no-cache nodejs
 
-RUN apk add --no-cache mariadb-dev build-base
+RUN apk add --no-cache mariadb-dev build-base libffi
 
 RUN mkdir /app
 WORKDIR /app
