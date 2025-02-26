@@ -11,10 +11,12 @@ from .customviews import CustomLoginView, CustomHomeView
 
 # from search import views as search_views
 
+"""
 custom_wagtailadmin_urls = wagtailadmin_urls
 custom_wagtailadmin_urls.urlpatterns[0] = path(
     "", CustomHomeView.as_view(), name="wagtailadmin_home"
 )
+"""
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),
