@@ -11,7 +11,11 @@
 {% endblock %}
 
 {% block branding_favicon %}
-<link rel="icon" type="image/svg+xml" href="{% versioned_static 'dashboard/images/backone-logo.svg' %}">
+{% if request.user.organization.favicon.file.url %}
+  <link rel="icon" type="image/x-icon" href="{{ request.user.organization.favicon.file.url }}">
+{% else %}
+  <link rel="icon" type="image/svg+xml" href="{% versioned_static 'dashboard/images/backone-logo.svg' %}">
+{% endif %}
 {% endblock %}
 
 {% block js %}
