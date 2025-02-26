@@ -410,6 +410,7 @@ class ModelChartsPanel(Component):
     order = 80
     template_name = "dashboard/models_charts.html"
 
+    """
     def __init__(self):
         user = get_current_user()
 
@@ -453,21 +454,61 @@ class ModelChartsPanel(Component):
                 )
         # self.model = (Mqtt.objects.values('model').annotate(mcount=Count('model')).order_by())
         # self.version = (Mqtt.objects.values('release_version').annotate(mcount=Count('release_version')).order_by())
+        """
 
     def get_context_data(self, parent_context):
+        request = parent_context["request"]
         context = super().get_context_data(parent_context)
+
+        if request.user.is_superuser:
+            models = (
+                Members.objects.values("mqtt__model")
+                .annotate(mcount=Count("mqtt__model"))
+                .order_by()
+            )
+            versions = (
+                Members.objects.values("mqtt__release_version")
+                .annotate(mcount=Count("mqtt__release_version"))
+                .order_by()
+            )
+        elif user.organization.is_no_org:
+            models = (
+                Members.objects.values("mqtt__model")
+                .annotate(mcount=Count("mqtt__model"))
+                .filter(user=request.user)
+                .order_by()
+            )
+            versions = (
+                Members.objects.values("mqtt__release_version")
+                .annotate(mcount=Count("mqtt__release_version"))
+                .filter(user=request.user)
+                .order_by()
+            )
+        else:
+            models = (
+                Members.objects.values("mqtt__model")
+                .annotate(mcount=Count("mqtt__model"))
+                .filter(organization=request.user.organization)
+                .order_by()
+            )
+            versions = (
+                Members.objects.values("mqtt__release_version")
+                .annotate(mcount=Count("mqtt__release_version"))
+                .filter(organization=request.user.organization)
+                .order_by()
+            )
 
         labels_model = []
         data_model = []
         labels_version = []
         data_version = []
 
-        for model in self.model:
+        for model in self.models:
             if model["mcount"] != 0:
                 labels_model.append(model["mqtt__model"])
                 data_model.append(model["mcount"])
 
-        for version in self.version:
+        for version in self.versions:
             if version["mcount"] != 0:
                 labels_version.append(version["mqtt__release_version"])
                 data_version.append(version["mcount"])
