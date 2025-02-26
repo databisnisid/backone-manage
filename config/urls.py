@@ -11,6 +11,11 @@ from .customviews import CustomLoginView, CustomHomeView
 
 # from search import views as search_views
 
+custom_wagtailadmin_urls = wagtailadmin_urls
+custom_wagtailadmin_urls.urlpatterns[0] = path(
+    "", CustomHomeView.as_view(), name="custom_home_view"
+)
+
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     # path('networks/qr_code/<str:network_id>/', views.qr_code),
@@ -23,8 +28,8 @@ urlpatterns = [
     path("api/webfilters/", include("webfilters.urls")),
     path("api/licenses/", include("licenses.urls")),
     path("login/", CustomLoginView.as_view(), name="custom_login_view"),
-    # path("", CustomHomeView.as_view(), name="custom_home_view"),
-    path("", include(wagtailadmin_urls)),
+    # path("", include(wagtailadmin_urls)),
+    path("", include(custom_wagtailadmin_urls)),
     # path("login/", CustomLoginView.as_view(), name="custom_login_view"),
     path("documents/", include(wagtaildocs_urls)),
     # path("search/", search_views.search, name="search"),
