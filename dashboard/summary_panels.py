@@ -507,7 +507,7 @@ class ModelChartsPanel(Component):
                 .annotate(mcount=Count("mqtt__release_version"))
                 .order_by()
             )
-        elif user.organization.is_no_org:
+        elif request.user.organization.is_no_org:
             models = (
                 Members.objects.values("mqtt__model")
                 .annotate(mcount=Count("mqtt__model"))
