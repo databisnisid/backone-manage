@@ -1,5 +1,6 @@
 {% extends "wagtailadmin/skeleton.html" %}
 {% load i18n wagtailadmin_tags %}
+{% load random_wallpaper %}
 
 {% block css %}
     <link rel="stylesheet" href="{% versioned_static 'wagtailadmin/css/core.css' %}">
@@ -7,7 +8,16 @@
     {% hook_output 'insert_global_admin_css' %}
     {% hook_output 'insert_editor_css' %}
 
-    {% block extra_css %}{% endblock %}
+    {% block extra_css %}
+<style>
+.login {
+  background-image: url("{% random_wallpaper %}");
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+</style>
+    {% endblock %}
 {% endblock %}
 
 {% block branding_favicon %}

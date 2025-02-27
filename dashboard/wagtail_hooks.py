@@ -1,11 +1,14 @@
-from django.http import HttpRequest
-from django.utils.safestring import mark_safe
-from wagtail.admin.ui.components import Component
+# from django.http import HttpRequest
+# from django.utils.safestring import mark_safe
+# from django.templatetags.static import static
+
+# from wagtail.admin.ui.components import Component
 from wagtail import hooks
-from networks.models import Networks, NetworkRoutes
-from members.models import Members
-from crum import get_current_user
-from wagtail.contrib.modeladmin.views import CreateView, EditView
+
+# from networks.models import Networks, NetworkRoutes
+# from members.models import Members
+# from crum import get_current_user
+# from wagtail.contrib.modeladmin.views import CreateView, EditView
 from .summary_panels import *
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
@@ -22,6 +25,15 @@ from licenses.utils import is_license_valid
 #    https://github.com/wagtail/wagtail/issues/7210
 #    """
 #    return "<style>textarea {resize:vertical !important}</style>"
+
+
+"""
+@hooks.register("insert_global_admin_css")
+def global_admin_css():
+    return format_html(
+        '<link rel="stylesheet" href="{}">', static("dashboard/css/custom.css")
+    )
+"""
 
 
 @hooks.register("construct_reports_menu", order=1)

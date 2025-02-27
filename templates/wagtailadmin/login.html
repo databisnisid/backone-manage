@@ -9,6 +9,7 @@
         <h1>{% block branding_login %}{% trans "Manage" %}{% endblock %}</h1>
         -->
 
+        {% block branding_logo %}
         {% if 'backone.cloud' in request.build_absolute_uri %}
             <div id="login-logo" class="login-logo" style="width: 20rem;">
               <!--
@@ -24,6 +25,7 @@
               <img src="{% versioned_static 'dashboard/images/dashboard-logo.png' %}" alt=""/>
             </div>
         {% endif %}
+        {% endblock %}
 
         <div class="messages" role="status">
             {# Always show messages div so it can be appended to by JS #}
@@ -84,13 +86,6 @@
 
         {% block below_login %}{% endblock %}
 
-        {% block branding_logo %}
-        <!--
-            <div class="login-logo">
-                {% include "wagtailadmin/logo.html" with wordmark="True" %}
-            </div>
-        -->
-        {% endblock %}
     </main>
 <script>
 let eDiv = document.getElementById("login-logo");
