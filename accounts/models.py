@@ -100,8 +100,16 @@ class Organizations(models.Model):
     # uuid = models.UUIDField(_('UUID'), default=uuid.uuid4(), editable=False)
     uuid = models.UUIDField(_("UUID"), default=uuid.uuid4, unique=True, editable=False)
 
-    site = models.ForeignKey(
-        Site, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Site")
+    # site = models.ForeignKey(
+    site = models.OneToOneField(
+        Site,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Site"),
+        help_text=_(
+            "If this organization refer to same site with other organization, leave it empty."
+        ),
     )
 
     logo = models.ForeignKey(
