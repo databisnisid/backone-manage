@@ -95,7 +95,15 @@ class Networks(models.Model):
     def delete(self, using=None, keep_parents=False):
         zt = Zerotier(self.controller.uri, self.controller.token)
         zt.delete_network(self.network_id)
-        return super(Networks, self).delete()
+
+        """
+        Exception Handle 
+        Check for WebFiltersOrg
+        """
+        try:
+            return super(Networks, self).delete()
+        except models.RestrictedError as e:
+            raise ValidationError(_(str(e)))
 
     def save(self):
         """
