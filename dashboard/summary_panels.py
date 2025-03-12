@@ -99,8 +99,10 @@ class LicenseSummaryPanel(Component):
             # license_status['name'] = license.organization.name
 
             license_uuid = ""
+            license_name = ""
             if license.organization is not None:
                 license_uuid = str(license.organization.uuid)
+                license_name = license.organization.name
 
             if license_time:
                 # license_status = license.get_license_status()
@@ -118,7 +120,8 @@ class LicenseSummaryPanel(Component):
                         "node_id": license.node_id,
                         # "uuid": str(license.organization.uuid),
                         "uuid": license_uuid,
-                        "name": license.organization.name,
+                        # "name": license.organization.name,
+                        "name": license_name,
                         "msg": _("License Expired"),
                         "status": 2,
                     }
@@ -131,7 +134,8 @@ class LicenseSummaryPanel(Component):
                         "node_id": license.node_id,
                         # "uuid": str(license.organization.uuid),
                         "uuid": license_uuid,
-                        "name": license.organization.name,
+                        # "name": license.organization.name,
+                        "name": license_name,
                         "msg": _(
                             "License will expired in " + str(delta_time.days) + " days"
                         ),
@@ -146,7 +150,8 @@ class LicenseSummaryPanel(Component):
                     "node_id": license.node_id,
                     # "uuid": str(license.organization.uuid),
                     "uuid": license_uuid,
-                    "name": license.organization.name,
+                    # "name": license.organization.name,
+                    "name": license_name,
                     "msg": _("License is Empty"),
                     "status": 0,
                 }
