@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin,
     modeladmin_register,
@@ -8,6 +9,7 @@ from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
 
+from accounts.models import GroupOrganizations
 from licenses.utils import is_license_valid
 from .models import Members, MemberPeers
 from crum import get_current_user
@@ -212,6 +214,13 @@ class MembersPermissionHelper(PermissionHelper):
         if user.is_superuser:
             result = False
 
+        """ Check Group Organization """
+        try:
+            GroupOrganizations.objects.get(main_org=user.organization)
+            result = False
+        except ObjectDoesNotExist:
+            pass
+
         """ Check License """
         if not is_license_valid(user):
             result = False
@@ -222,6 +231,13 @@ class MembersPermissionHelper(PermissionHelper):
         result = True
         if not user.has_perm("members.delete_members"):
             result = False
+
+        """ Check Group Organization """
+        try:
+            GroupOrganizations.objects.get(main_org=user.organization)
+            result = False
+        except ObjectDoesNotExist:
+            pass
 
         """ Check License """
         if not is_license_valid(user):
@@ -236,6 +252,13 @@ class MembersPermissionHelper(PermissionHelper):
 
         if user.is_superuser:
             result = False
+
+        """ Check Group Organization """
+        try:
+            GroupOrganizations.objects.get(main_org=user.organization)
+            result = False
+        except ObjectDoesNotExist:
+            pass
 
         """ Check License """
         if not is_license_valid(user):
@@ -508,7 +531,18 @@ class MembersAdmin(ModelAdmin):
             if current_user.organization.is_no_org:
                 return Members.objects.filter(user=current_user)
             else:
-                return Members.objects.filter(organization=current_user.organization)
+                try:
+                    """Check Group Organization"""
+                    g_org = GroupOrganizations.objects.get(
+                        main_org=current_user.organization
+                    )
+                    return Members.objects.filter(
+                        organization__in=g_org.member_org.all()
+                    )
+                except ObjectDoesNotExist:
+                    return Members.objects.filter(
+                        organization=current_user.organization
+                    )
         else:
             return Members.objects.all()
 
