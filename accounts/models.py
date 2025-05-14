@@ -9,6 +9,8 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 import uuid
 from wagtail.models import Site
 from wagtail.images import get_image_model_string
+from modelcluster.models import ClusterableModel
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
 
 
 class Features(models.Model):
@@ -173,3 +175,32 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
+
+
+class GroupOrganizations(ClusterableModel):
+    def limit_choice_no_org():
+        return {"is_no_org": False}
+
+    name = models.CharField(_("Name"), max_length=50, unique=True)
+    main_org = models.ForeignKey(
+        Organizations,
+        on_delete=models.CASCADE,
+        verbose_name=_("Main Organization"),
+        limit_choices_to=limit_choice_no_org,
+    )
+    member_org = ParentalManyToManyField(
+        "Organizations", related_name="member_org", limit_choices_to=limit_choice_no_org
+    )
+
+    class Meta:
+        db_table = "group_organizations"
+        verbose_name = _("Group Organization")
+        verbose_name_plural = _("Group Organizations")
+
+    def __str__(self):
+        return f"{self.name}"
+
+    def member_org_list(self):
+        return ", ".join([x.name for x in self.member_org.all()])
+
+    member_org_list.short_description = _("Member Organizations List")
