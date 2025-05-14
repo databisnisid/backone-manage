@@ -7,7 +7,7 @@ from wagtail.contrib.modeladmin.options import (
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
 from .models import Features
 from django.utils.translation import gettext_lazy as _
-from .models import Organizations
+from .models import Organizations, GroupOrganizations
 
 
 class AccountsPermissionHelper(PermissionHelper):
@@ -71,6 +71,26 @@ class OrganizationsAdmin(ModelAdmin):
         # print('User ', self.current_user)
         # self.inspect_view_enabled = True
         super().__init__(*args, **kwargs)
+
+
+class GroupOrganizationsAdmin(ModelAdmin):
+    model = GroupOrganizations
+    # button_helper_class = ControllerButtonHelper   # Uncomment this to enable button
+    # inspect_view_enabled = True
+    menu_label = (
+        "Group Organizations"  # ditch this to use verbose_name_plural from model
+    )
+    menu_icon = "group"  # change as required
+    add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
+    exclude_from_explorer = (
+        False  # or True to exclude pages of this type from Wagtail's explorer view
+    )
+    list_display = ("name", "main_org", "member_org_list")
+    panels = [
+        FieldPanel("name"),
+        FieldPanel("main_org"),
+        FieldPanel("member_org"),
+    ]
 
 
 class FeaturesAdmin(ModelAdmin):
@@ -147,10 +167,11 @@ class AccountsGroup(ModelAdminGroup):
     menu_label = "Accounts"
     menu_icon = "folder-open-inverse"  # change as required
     menu_order = 200  # will put in 3rd place (000 being 1st, 100 2nd)
-    items = (OrganizationsAdmin, FeaturesAdmin)
+    items = (OrganizationsAdmin, GroupOrganizationsAdmin, FeaturesAdmin)
 
 
 # Now you just need to register your customised ModelAdmin class with Wagtail
 # modeladmin_register(AccountsGroup)
 modeladmin_register(FeaturesAdmin)
 modeladmin_register(OrganizationsAdmin)
+modeladmin_register(GroupOrganizationsAdmin)
