@@ -24,6 +24,7 @@ from crum import get_current_user
 # from wagtail.snippets.models import register_snippet
 # from wagtail.snippets.views.snippets import SnippetViewSet
 from licenses.utils import is_license_valid
+from accounts.models import GroupOrganizations
 
 
 """
