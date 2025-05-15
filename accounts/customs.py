@@ -7,7 +7,7 @@ from accounts.models import GroupOrganizations, Organizations
 
 class GroupOrganizationFilter(SimpleListFilter):
     title = _("Organization")
-    parameter_item = "organization"
+    parameter_name = "organization"
 
     def lookups(self, request, model_admin):
         member_org_list = []
