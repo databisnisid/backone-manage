@@ -288,7 +288,7 @@ class NetworksAdmin(ModelAdmin):
                         main_org=current_user.organization
                     )
                     return Networks.objects.filter(
-                        organization_in=g_org.member_org.all()
+                        organization__in=g_org.member_org.all()
                     )
                 except ObjectDoesNotExist:
                     return Networks.objects.filter(
