@@ -9,6 +9,7 @@ from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
 
+from accounts.customs import GroupOrganizationFilter
 from accounts.models import GroupOrganizations
 from licenses.utils import is_license_valid
 from .models import Members, MemberPeers
@@ -304,7 +305,7 @@ class MembersAdmin(ModelAdmin):
         "is_dpi",
         "is_authorized",
         "network",
-        # "organization",
+        GroupOrganizationFilter,
     )
     search_fields = (
         "name",

@@ -5,6 +5,8 @@ from wagtail.contrib.modeladmin.options import (
     modeladmin_register,
 )
 
+from accounts.customs import GroupOrganizationFilter
+
 # from wagtail import hooks
 # from wagtail.snippets.models import register_snippet
 # from wagtail.snippets.views.snippets import SnippetViewSet
@@ -221,6 +223,7 @@ class NetworksAdmin(ModelAdmin):
     # list_filter = ('name',)
     search_fields = ("name",)
     # list_filter = ('controller',)
+    list_filter = [GroupOrganizationFilter]
     # base_form_class = NetworksForm
     permission_helper_class = NetworksPermissionHelper
 
