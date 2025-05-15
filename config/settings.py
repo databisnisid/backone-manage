@@ -136,6 +136,14 @@ DATABASES = {
         "HOST": str(os.getenv("DB_HOST", "localhost")),
         "PORT": str(os.getenv("DB_PORT", "3306")),
     },
+    # "default_ramdisk": {
+    #    "ENGINE": str(os.getenv("DB_ENGINE_2", "django.db.backends.sqlite3")),
+    #    "NAME": str(os.getenv("DB_NAME_2", "db.sqlite3-2")),
+    #    "USER": str(os.getenv("DB_USER_2")),
+    #    "PASSWORD": str(os.getenv("DB_PASSWORD_2")),
+    #    "HOST": str(os.getenv("DB_HOST_2", "localhost")),
+    #    "PORT": str(os.getenv("DB_PORT_2", "3306")),
+    # },
     #    'headscale': {
     #        'ENGINE': str(os.getenv('HS_DB_ENGINE', 'django.db.backends.sqlite3')),
     #        'NAME': str(os.getenv('HS_DB_NAME', 'db.sqlite3.hs')),
@@ -146,7 +154,7 @@ DATABASES = {
     #    }
 }
 
-# DATABASE_ROUTERS = ['config.db_routers.HeadscaleRouter']
+# DATABASE_ROUTERS = ["config.db_routers.MqttRouter"]
 
 
 # Password validation
