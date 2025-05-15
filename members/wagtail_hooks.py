@@ -304,7 +304,7 @@ class MembersAdmin(ModelAdmin):
         "is_dpi",
         "is_authorized",
         "network",
-        "organization",
+        # "organization",
     )
     search_fields = (
         "name",
