@@ -13,7 +13,7 @@ class GroupOrganizationFilter(SimpleListFilter):
         member_org_list = []
         try:
             g_org = GroupOrganizations.objects.get(main_org=request.user.organization)
-            member_orgs = g_org.member_orgs.all()
+            member_orgs = g_org.member_org.all()
             for c in member_orgs:
                 member_org_dict = {
                     "id": c.id,
