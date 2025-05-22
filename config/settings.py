@@ -353,3 +353,34 @@ CORS_ALLOW_ALL_ORIGINS = True
 # CORS_ALLOWED_ORIGIN_REGEXES = [
 #    r"^https://\w+\.example\.com$",
 # ]
+
+# PROMETHEUS
+MIDDLEWARE = (
+    ["django_prometheus.middleware.PrometheusBeforeMiddleware"]
+    + MIDDLEWARE
+    + ["django_prometheus.middleware.PrometheusAfterMiddleware"]
+)
+
+INSTALLED_APPS += ["django_prometheus"]
+
+PROMETHEUS_LATENCY_BUCKETS = (
+    0.01,
+    0.025,
+    0.05,
+    0.075,
+    0.1,
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    2.5,
+    5.0,
+    7.5,
+    10.0,
+    25.0,
+    50.0,
+    75.0,
+    float("inf"),
+)
+
+PROMETHEUS_METRIC_NAMESPACE = os.getenv("PROMETHEUS_METRIC_NAMESPACE", "backone_manage")
