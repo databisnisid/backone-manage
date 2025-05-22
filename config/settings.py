@@ -327,10 +327,14 @@ MEMBER_DELETE_PERIOD = int(os.getenv("MEMBER_DELETE_PERIOD", 60))
 # REDIS CACHE
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "BACKEND": str(
+            os.getenv("REDIS_BACKEND", "django.core.cache.backends.redis.RedisCache")
+        ),
         "LOCATION": str(os.getenv("REDIS_URL", "redis://localhost:6379/")),
-        "KEY_PREFIX": "backone",
-        "TIMEOUT": 60 * 15,  # in seconds: 60 * 15 (15 minutes)
+        "KEY_PREFIX": str(os.getenv("REDIS_KEY_PREFIX", "backone")),
+        "TIMEOUT": int(
+            os.getenv("REDIS_TIMEOUT", 60 * 15)
+        ),  # in seconds: 60 * 15 (15 minutes)
     }
 }
 
