@@ -34,6 +34,8 @@ urlpatterns = [
     # path("login/", CustomLoginView.as_view(), name="custom_login_view"),
     path("documents/", include(wagtaildocs_urls)),
     # path("search/", search_views.search, name="search"),
+    # Prometheus
+    path("", include("django_prometheus.urls")),
 ]
 
 
