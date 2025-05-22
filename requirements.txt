@@ -17,6 +17,7 @@ django-filter==23.3
 django-ipware==5.0.0
 django-modelcluster==6.1
 django-permissionedforms==0.1
+django-prometheus==2.3.1
 django-qr-code==4.1.0
 django-taggit==3.1.0
 django-treebeard==4.5.1
@@ -35,6 +36,7 @@ paho-mqtt==1.6.1
 paramiko==2.11.0
 Pillow==9.2.0
 pillow-heif==0.13.0
+prometheus_client==0.22.0
 pyasn1==0.5.1
 pycparser==2.21
 pydantic==2.8.2
