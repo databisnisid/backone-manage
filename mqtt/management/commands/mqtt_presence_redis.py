@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from config.settings import MQTT_REDIS_DB
 from mqtt.models import Mqtt
 from members.models import Members
 
@@ -11,15 +12,16 @@ from members.models import Members
 MQTT_REDIS_HOST
 MQTT_REDIS_PORT
 MQTT_REDIS_DB -> int default 0
-MQTT_REDIS_SETEXPIRE -> int default 1800 = 30minutes -> for r.setex()
+MQTT_REDIS_SETEX -> int default 1800 = 30minutes -> for r.setex()
 """
-r = redis.Redis()
+r = redis.Redis(
+    host=settings.MQTT_REDIS_HOST, port=settings.MQTT_REDIS_PORT, db=MQTT_REDIS_DB
+)
 
 
 def on_connect(client, userdata, keepalive, bind_address):
     # print(client, userdata, flags, rc)
     client.subscribe(settings.MQTT_TOPIC_PRESENCE)
-    # userdata["redis"] = redis.Redis()
 
 
 def on_message(client, userdata, message):
@@ -30,7 +32,7 @@ def on_message(client, userdata, message):
     mqtt_msg = msg.split(";")
     member_id = mqtt_msg[0][:50]  # max_length=50
     # r = redis.Redis()
-    r.setex(member_id, 3600, msg)
+    r.setex(member_id, settings.MQTT_REDIS_SETEX, msg)
 
     """
     try:
