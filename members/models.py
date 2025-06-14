@@ -1,11 +1,13 @@
-# import re
+from django.db.transaction import Atomic
+import redis
+
 # from datetime import datetime
 # from os import walk
 from crum import get_current_user
 from django.db import models
 from django.utils import timezone
 
-# from django.conf import settings
+from django.conf import settings
 from accounts.models import User, Organizations
 from networks.models import Networks, NetworkRoutes
 from monitor.utils import check_members_vs_rules
@@ -513,10 +515,28 @@ class Members(models.Model):
 
     get_routes_plain.short_description = _("Local Routes")
 
+    def get_mqtt_redis_msg(self) -> str:
+        r = redis.Redis(host=settings.MQTT_REDIS_HOST)
+        msg = r.get(str(self.member_id))
+        try:
+            msg_decode = msg.decode()
+        except AttributeError:
+            msg_decode = ""
+
+        return msg_decode
+
     def is_mqtt_online(self):
         online_status = False
+
+        """ Redis Part Start """
+        msg = self.get_mqtt_redis_msg()
+        if msg:
+            online_status = True
+
+        """ 
         if self.mqtt:
             online_status = self.mqtt.is_online()
+        """
         return online_status
 
     is_mqtt_online.short_description = _("Internet Online")
