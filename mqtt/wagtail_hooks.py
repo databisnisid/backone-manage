@@ -59,6 +59,9 @@ def remove_snippet_edit_button_mqtt(buttons, snippet, user, context=None):
             if "mqtt/mqtt/" in button.url:
                 buttons.pop(index)
                 break
+            if "mqtt/mqttredis/" in button.url:
+                buttons.pop(index)
+                break
 
 
 # class MqttAdmin(ModelAdmin):
