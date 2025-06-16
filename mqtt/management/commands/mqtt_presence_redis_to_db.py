@@ -30,11 +30,13 @@ class Command(BaseCommand):
 
                 try:
                     MqttRedis.objects.update_or_create(
-                        member_id=key, message=msg_json["msg"]
+                        member_id=key.decode(), message=msg_json["msg"]
                     )
 
                 except IntegrityError:
-                    MqttRedis.objects.update(member_id=key, message=msg_json["msg"])
+                    MqttRedis.objects.update(
+                        member_id=key.decode(), message=msg_json["msg"]
+                    )
 
             except AttributeError:
                 pass

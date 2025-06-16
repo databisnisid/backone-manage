@@ -97,7 +97,7 @@ class MqttRedisAdmin(SnippetViewSet):
     exclude_from_explorer = (
         False  # or True to exclude pages of this type from Wagtail's explorer view
     )
-    list_display = ("member_id", "message")
+    list_display = ("member_id", "message", "updated_at")
     search_fields = ("member_id",)
     add_to_admin_menu = True
     menu_order = 999
