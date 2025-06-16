@@ -38,7 +38,7 @@ def on_message(client, userdata, message):
     msg_json = {}
     msg_json["msg"] = msg
     msg_json["ts"] = timestamp
-    msg_json_string = msg_json.replace("'", '"')
+    msg_json_string = str(msg_json).replace("'", '"')
     # r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg)
     r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg_json_string)
 
