@@ -651,7 +651,7 @@ class Members(models.Model):
                 third_line += "</small>"
 
             # if self.mqtt.port_status:
-            if port_status_status:
+            if port_status_string:
                 third_line += "<br /><small>"
                 third_line += "<span>PortStat: {}</span>".format(port_status_string)
                 third_line += "</small>"
