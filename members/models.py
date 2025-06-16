@@ -22,6 +22,7 @@ from config.utils import to_dictionary, readable_timedelta, calculate_bandwidth_
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
+from mqtt.mqtt_redis import get_msg_by_index
 
 
 """
@@ -559,7 +560,8 @@ class Members(models.Model):
 
     def get_hostname(self):
         # hostname = None
-        hostname = self.get_mqtt_redis_msg_by_index(19)  # Index 19 -> Hostname
+        # hostname = self.get_mqtt_redis_msg_by_index(19)  # Index 19 -> Hostname
+        hostname = get_msg_by_index(19)  # Index 19 -> Hostname
         """
         if self.mqtt:
             hostname = self.mqtt.hostname
@@ -577,9 +579,14 @@ class Members(models.Model):
         return result
 
     def memory_usage(self):
-        result = 0.0
+        # parameter = self.get_mqtt_redis_msg_by_index(10)  # Index 10 -> Memory Usage
+        parameter = get_msg_by_index(10)  # Index 10 -> Memory Usage
+        result = float(parameter) if parameter else 0.0
+
+        """
         if self.mqtt:
             result = round(self.mqtt.memory_usage, 1)
+        """
         return result
 
     def cpu_usage(self):
@@ -607,34 +614,64 @@ class Members(models.Model):
             result = self.mqtt.ipaddress_ts
         return result
 
-    def serialnumber(self):
-        result = None
+    def uptime(self):
+        # result = None
+        # result = self.get_mqtt_redis_msg_by_index(7)  # Index 7 -> Uptime
+        result = get_msg_by_index(7)  # Index 7 -> Uptime
+        """
         if self.mqtt:
             result = self.mqtt.serialnumber
+        """
+        return result
+
+    def serialnumber(self):
+        # result = None
+        # result = self.get_mqtt_redis_msg_by_index(8)  # Index 8 -> Serial Number
+        result = get_msg_by_index(8)  # Index 8 -> Serial Number
+        """
+        if self.mqtt:
+            result = self.mqtt.serialnumber
+        """
         return result
 
     def model(self):
-        result = None
+        # result = None
+        # result = self.get_mqtt_redis_msg_by_index(1)  # Index 1 -> model
+        result = get_msg_by_index(1)  # Index 1 -> model
+        """
         if self.mqtt:
             result = self.mqtt.model
+        """
         return result
 
     def board_name(self):
-        result = None
+        # result = None
+        # result = self.get_mqtt_redis_msg_by_index(2)  # Index 2 -> board_name
+        result = get_msg_by_index(2)  # Index 2 -> board_name
+        """
         if self.mqtt:
             result = self.mqtt.board_name
-        return result
-
-    def release_target(self):
-        result = None
-        if self.mqtt:
-            result = self.mqtt.release_target
+        """
         return result
 
     def release_version(self):
-        result = None
+        # result = None
+        # result = self.get_mqtt_redis_msg_by_index(3)  # Index 3 -> release_version
+        result = get_msg_by_index(3)  # Index 3 -> release_version
+        """
         if self.mqtt:
             result = self.mqtt.release_version
+        """
+        return result
+
+    def release_target(self):
+        # result = None
+        # result = self.get_mqtt_redis_msg_by_index(4)  # Index 4 -> release_target
+        result = get_msg_by_index(4)  # Index 4 -> release_target
+        """
+        if self.mqtt:
+            result = self.mqtt.release_target
+        """
         return result
 
     def netify_uuid(self):
@@ -849,12 +886,17 @@ class Members(models.Model):
     member_name_with_address.admin_order_field = "name"
 
     def switchport_up(self):
-        text = ""
+        # result = ""
+        # result = self.get_mqtt_redis_msg_by_index(13)  # Index 13 -> Switch Port
+        result = get_msg_by_index(13)  # Index 13 -> Switch Port
+
+        """
         if self.mqtt:
             if self.mqtt.switchport_up:
                 text = self.mqtt.switchport_up
+        """
 
-        return text
+        return result
 
     switchport_up.short_description = _("Switch Port UP")
 
