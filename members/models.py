@@ -552,6 +552,12 @@ class Members(models.Model):
                     result.append(rule.item.item_id)
         return result
 
+    def num_core(self):
+        parameter = get_msg_by_index(self.member_id, 9)  # Index 9 -> Number of Core
+        result = int(parameter) if parameter else 1
+
+        return result
+
     def memory_usage(self):
         parameter = get_msg_by_index(self.member_id, 10)  # Index 10 -> Memory Usage
         result = float(parameter) if parameter else 0.0
@@ -559,11 +565,15 @@ class Members(models.Model):
         return result
 
     def cpu_usage(self):
-        result = 0.0
-        if self.mqtt:
-            load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
-            result = round(load_5, 1)
-        return result
+        if self.uptime_string():
+            # load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
+            load_1, load_5, load_15 = get_cpu_usage(
+                self.uptime_string(), self.num_core()
+            )
+        else:
+            load_1 = load_5 = load_15 = 0.0
+
+        return round(load_5, 1)
 
     def packet_loss(self):
         result = -1.0
@@ -591,6 +601,11 @@ class Members(models.Model):
             result = uptime_split[0][:-3:]
 
         return result.strip()
+
+    def uptime_string(self):
+        result = get_msg_by_index(self.member_id, 7)  # Index 7 -> Uptime
+
+        return result
 
     def serialnumber(self):
         result = get_msg_by_index(self.member_id, 8)  # Index 8 -> Serial Number
