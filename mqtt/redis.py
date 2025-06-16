@@ -32,8 +32,7 @@ def get_msg_ts(member_id: str) -> int:
     return msg_ts
 
 
-def get_msg_by_index(member_id: str, index: int = 0) -> str:
-    msg = get_msg(member_id)
+def get_parameter_by_index(msg: str, index: int = 0) -> str:
     msg_split = msg.split(";")
 
     try:
@@ -42,3 +41,9 @@ def get_msg_by_index(member_id: str, index: int = 0) -> str:
         parameter = ""
 
     return parameter
+
+
+def get_msg_by_index(member_id: str, index: int = 0) -> str:
+    msg = get_msg(member_id)
+
+    return get_parameter_by_index(msg, index)

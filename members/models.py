@@ -22,7 +22,12 @@ from config.utils import to_dictionary, readable_timedelta, calculate_bandwidth_
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
-from mqtt.mqtt_redis import get_msg, get_msg_ts, get_msg_by_index
+from mqtt.redis import (
+    get_msg,
+    get_msg_ts,
+    get_msg_by_index,
+    get_parameter_by_index,
+)
 
 
 """
@@ -609,7 +614,8 @@ class Members(models.Model):
     def model_release(self):
         text = None
         # if self.mqtt:
-        if get_msg(self.member_id):
+        msg = get_msg(self.member_id)
+        if msg:
             mqtt = self.mqtt
             alarms = self.get_alarms()
             updated_at = timezone.localtime(mqtt.updated_at).strftime(

@@ -8,6 +8,22 @@ from django.core.exceptions import ObjectDoesNotExist
 from wagtail import permissions
 
 
+class MqttRedis(models.Model):
+    member_id = models.CharField(_("Member ID"), max_length=50, unique=True)
+    message = models.TextField(_("Message"))
+
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    class Meta:
+        db_table = "mqtt_redis"
+        verbose_name = "MQTT Redis"
+        verbose_name_plural = "MQTT Redis"
+
+    def __str__(self):
+        return "{}".format(self.member_id)
+
+
 class Mqtt(models.Model):
     member_id = models.CharField(_("Member ID"), max_length=50)
     hostname = models.CharField(_("Hostname"), max_length=50, blank=True, null=True)
