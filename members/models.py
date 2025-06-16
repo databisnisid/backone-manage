@@ -519,7 +519,7 @@ class Members(models.Model):
     def is_mqtt_online(self):
         online_status = False
 
-        msg = self.get_mqtt_redis_msg()
+        msg = get_msg()
         if msg:
             online_status = True
 
