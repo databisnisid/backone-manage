@@ -271,7 +271,8 @@ MQTT_TOPIC_RCALL = str(os.getenv("MQTT_TOPIC_RCALL", "backone/rcall"))
 MQTT_REDIS_HOST = str(os.getenv("MQTT_REDIS_HOST", "localhost"))
 MQTT_REDIS_PORT = int(os.getenv("MQTT_REDIS_PORT", 6379))
 MQTT_REDIS_DB = int(os.getenv("MQTT_REDIS_DB", 0))
-MQTT_REDIS_SETEX = int(os.getenv("MQTT_REDIS_SETEX", 1800))
+MQTT_REDIS_SETEX = int(os.getenv("MQTT_REDIS_SETEX", 86400))
+MQTT_REDIS_PREFIX = str(os.getenv("MQTT_REDIS_PREFIX", "backone"))
 
 # Monitor
 # MONITOR_DELAY = 720 # 12 minutes
