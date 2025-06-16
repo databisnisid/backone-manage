@@ -2,9 +2,13 @@ import redis
 from django.conf import settings
 
 
-def get_msg() -> str:
-    r = redis.Redis(host=settings.MQTT_REDIS_HOST)
-    msg = r.get(str(self.member_id))
+def get_msg(member_id: str) -> str:
+    r = redis.Redis(
+        host=settings.MQTT_REDIS_HOST,
+        port=settings.MQTT_REDIS_PORT,
+        db=settings.MQTT_REDIS_DB,
+    )
+    msg = r.get(str(member_id))
     try:
         msg_decode = msg.decode()
     except AttributeError:
@@ -13,8 +17,8 @@ def get_msg() -> str:
     return msg_decode
 
 
-def get_msg_by_index(index: int = 0) -> str:
-    msg = get_msg()
+def get_msg_by_index(member_id: str, index: int = 0) -> str:
+    msg = get_msg(member_id)
     msg_split = msg.split(";")
 
     try:
