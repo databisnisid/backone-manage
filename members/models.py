@@ -22,7 +22,7 @@ from config.utils import to_dictionary, readable_timedelta, calculate_bandwidth_
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
-from mqtt.mqtt_redis import get_msg_by_index
+from mqtt.mqtt_redis import get_msg, get_msg_by_index
 
 
 """
@@ -516,56 +516,20 @@ class Members(models.Model):
 
     get_routes_plain.short_description = _("Local Routes")
 
-    """ MQTT REDIS - START """
-    """ Internal Function """
-
-    def get_mqtt_redis_msg(self) -> str:
-        r = redis.Redis(host=settings.MQTT_REDIS_HOST)
-        msg = r.get(str(self.member_id))
-        try:
-            msg_decode = msg.decode()
-        except AttributeError:
-            msg_decode = ""
-
-        return msg_decode
-
-    def get_mqtt_redis_msg_by_index(self, index=0) -> str:
-        msg = self.get_mqtt_redis_msg()
-        msg_split = msg.split(";")
-
-        try:
-            parameter = msg_split[index][0:50]
-        except IndexError:
-            parameter = ""
-
-        return parameter
-
-    """ MQTT REDIS - END """
-
     def is_mqtt_online(self):
         online_status = False
 
-        """ Redis Part Start """
         msg = self.get_mqtt_redis_msg()
         if msg:
             online_status = True
 
-        """ 
-        if self.mqtt:
-            online_status = self.mqtt.is_online()
-        """
         return online_status
 
     is_mqtt_online.short_description = _("Internet Online")
 
     def get_hostname(self):
-        # hostname = None
-        # hostname = self.get_mqtt_redis_msg_by_index(19)  # Index 19 -> Hostname
         hostname = get_msg_by_index(self.member_id, 19)  # Index 19 -> Hostname
-        """
-        if self.mqtt:
-            hostname = self.mqtt.hostname
-        """
+
         return hostname
 
     def get_alarms(self):
@@ -579,14 +543,9 @@ class Members(models.Model):
         return result
 
     def memory_usage(self):
-        # parameter = self.get_mqtt_redis_msg_by_index(10)  # Index 10 -> Memory Usage
         parameter = get_msg_by_index(self.member_id, 10)  # Index 10 -> Memory Usage
         result = float(parameter) if parameter else 0.0
 
-        """
-        if self.mqtt:
-            result = round(self.mqtt.memory_usage, 1)
-        """
         return result
 
     def cpu_usage(self):
@@ -615,74 +574,37 @@ class Members(models.Model):
         return result
 
     def uptime(self):
-        # result = None
-        # result = self.get_mqtt_redis_msg_by_index(7)  # Index 7 -> Uptime
         result = get_msg_by_index(self.member_id, 7)  # Index 7 -> Uptime
-        """
-        if self.mqtt:
-            result = self.mqtt.serialnumber
-        """
         return result
 
     def serialnumber(self):
-        # result = None
-        # result = self.get_mqtt_redis_msg_by_index(8)  # Index 8 -> Serial Number
         result = get_msg_by_index(self.member_id, 8)  # Index 8 -> Serial Number
-        """
-        if self.mqtt:
-            result = self.mqtt.serialnumber
-        """
         return result
 
     def model(self):
-        # result = None
-        # result = self.get_mqtt_redis_msg_by_index(1)  # Index 1 -> model
         result = get_msg_by_index(self.member_id, 1)  # Index 1 -> model
-        """
-        if self.mqtt:
-            result = self.mqtt.model
-        """
         return result
 
     def board_name(self):
-        # result = None
-        # result = self.get_mqtt_redis_msg_by_index(2)  # Index 2 -> board_name
         result = get_msg_by_index(self.member_id, 2)  # Index 2 -> board_name
-        """
-        if self.mqtt:
-            result = self.mqtt.board_name
-        """
         return result
 
     def release_version(self):
-        # result = None
-        # result = self.get_mqtt_redis_msg_by_index(3)  # Index 3 -> release_version
         result = get_msg_by_index(self.member_id, 3)  # Index 3 -> release_version
-        """
-        if self.mqtt:
-            result = self.mqtt.release_version
-        """
         return result
 
     def release_target(self):
-        # result = None
-        # result = self.get_mqtt_redis_msg_by_index(4)  # Index 4 -> release_target
         result = get_msg_by_index(self.member_id, 4)  # Index 4 -> release_target
-        """
-        if self.mqtt:
-            result = self.mqtt.release_target
-        """
         return result
 
     def netify_uuid(self):
-        result = None
-        if self.mqtt:
-            result = self.mqtt.netify_uuid
+        result = get_msg_by_index(self.member_id, 20)  # Index 20 -> netify_uuid
         return result
 
     def model_release(self):
         text = None
-        if self.mqtt:
+        # if self.mqtt:
+        if get_msg(self.member_id):
             mqtt = self.mqtt
             alarms = self.get_alarms()
             updated_at = timezone.localtime(mqtt.updated_at).strftime(
@@ -692,17 +614,24 @@ class Members(models.Model):
 
             """ First Line: Model and CPU Core"""
             first_line = ""
-            if mqtt.model:
-                first_line = "<small>{} ({})</small>".format(mqtt.model, mqtt.num_core)
+            # if mqtt.model:
+            model_string = self.model()
+            if model_string:
+                first_line = "<small>{} ({})</small>".format(
+                    model_string, mqtt.num_core
+                )
 
             """ Second Line: SerialNumber and Release Version"""
             second_line = ""
             second_line_var = ""
-            if mqtt.serialnumber or mqtt.release_version:
+            serialnumber_string = self.serialnumber()
+            release_version_string = self.release_version()
+            # if mqtt.serialnumber or mqtt.release_version:
+            if serialnumber_string or release_version_string:
                 second_line_var = (
-                    mqtt.serialnumber + " - " + mqtt.release_version
-                    if mqtt.serialnumber
-                    else mqtt.release_version
+                    serialnumber_string + " - " + release_version_string
+                    if serialnumber_string
+                    else release_version_string
                 )
 
                 if second_line_var:
@@ -713,16 +642,18 @@ class Members(models.Model):
 
             """ Third Line: SwitchPortUp and PortStatus"""
             third_line = ""
-            if self.mqtt.switchport_up:
+            switchport_up_string = self.switchport_up()
+            port_status_string = self.port_status()
+            # if self.mqtt.switchport_up:
+            if switchport_up_string:
                 third_line += "<br /><small>"
-                third_line += "<span>SwPortUP: {}</span>".format(
-                    self.mqtt.switchport_up
-                )
+                third_line += "<span>SwPortUP: {}</span>".format(switchport_up_string)
                 third_line += "</small>"
 
-            if self.mqtt.port_status:
+            # if self.mqtt.port_status:
+            if port_status_status:
                 third_line += "<br /><small>"
-                third_line += "<span>PortStat: {}</span>".format(self.mqtt.port_status)
+                third_line += "<span>PortStat: {}</span>".format(port_status_string)
                 third_line += "</small>"
 
             """ Fourth Line: Uptime, CPU and Memory """
@@ -887,7 +818,6 @@ class Members(models.Model):
 
     def switchport_up(self):
         # result = ""
-        # result = self.get_mqtt_redis_msg_by_index(13)  # Index 13 -> Switch Port
         result = get_msg_by_index(self.member_id, 13)  # Index 13 -> Switch Port
 
         """
@@ -899,6 +829,12 @@ class Members(models.Model):
         return result
 
     switchport_up.short_description = _("Switch Port UP")
+
+    def port_status(self):
+        result = get_msg_by_index(self.member_id, 14)  # Index 14 -> Port Status
+        return result
+
+    port_status.short_description = _("Port Status")
 
     def quota_vnstat(self):
         text = ""
