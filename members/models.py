@@ -6,7 +6,7 @@ import redis
 from crum import get_current_user
 from django.db import models
 from django.utils import timezone
-
+from config.utils import get_uptime_string, get_cpu_usage
 from django.conf import settings
 from accounts.models import User, Organizations
 from networks.models import Networks, NetworkRoutes
@@ -585,7 +585,12 @@ class Members(models.Model):
 
     def uptime(self):
         result = get_msg_by_index(self.member_id, 7)  # Index 7 -> Uptime
-        return result
+        if result:
+            uptime_load = get_uptime_string(result)
+            uptime_split = uptime_load.split("load average")
+            result = uptime_split[0][:-3:]
+
+        return result.strip()
 
     def serialnumber(self):
         result = get_msg_by_index(self.member_id, 8)  # Index 8 -> Serial Number
@@ -673,7 +678,8 @@ class Members(models.Model):
                 fourth_line = "<br /><small>"
 
                 """ UPTIME """
-                uptime_string = self.mqtt.get_uptime_string()
+                # uptime_string = self.mqtt.get_uptime_string()
+                uptime_string = self.uptime()
                 fourth_line += "<span>UP: {}</span>".format(uptime_string)
 
                 """ CPU """
