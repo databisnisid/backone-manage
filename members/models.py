@@ -22,7 +22,7 @@ from config.utils import to_dictionary, readable_timedelta, calculate_bandwidth_
 from ipaddress import ip_address, ip_network
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
-from mqtt.mqtt_redis import get_msg, get_msg_by_index
+from mqtt.mqtt_redis import get_msg, get_msg_ts, get_msg_by_index
 
 
 """
@@ -519,9 +519,14 @@ class Members(models.Model):
     def is_mqtt_online(self):
         online_status = False
 
-        msg = get_msg(self.member_id)
-        if msg:
-            online_status = True
+        # msg = get_msg(self.member_id)
+        msg_ts = get_msg_ts(self.member_id)
+        if msg_ts:
+            delta_time = int(timezone.now().timestamp()) - (
+                msg_ts + settings.ONLINE_STATUS_DELAY
+            )
+            if delta_time < 0:
+                online_status = True
 
         return online_status
 
