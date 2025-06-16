@@ -29,7 +29,6 @@ class Command(BaseCommand):
                 msg_json = json.loads(msg_string)
 
                 try:
-                    member_id = key.split(":")
                     MqttRedis.objects.update_or_create(
                         member_id=key, message=msg_json["msg"]
                     )
