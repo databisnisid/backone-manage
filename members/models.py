@@ -561,7 +561,7 @@ class Members(models.Model):
     def get_hostname(self):
         # hostname = None
         # hostname = self.get_mqtt_redis_msg_by_index(19)  # Index 19 -> Hostname
-        hostname = get_msg_by_index(19)  # Index 19 -> Hostname
+        hostname = get_msg_by_index(self.member_id, 19)  # Index 19 -> Hostname
         """
         if self.mqtt:
             hostname = self.mqtt.hostname
@@ -580,7 +580,7 @@ class Members(models.Model):
 
     def memory_usage(self):
         # parameter = self.get_mqtt_redis_msg_by_index(10)  # Index 10 -> Memory Usage
-        parameter = get_msg_by_index(10)  # Index 10 -> Memory Usage
+        parameter = get_msg_by_index(self.member_id, 10)  # Index 10 -> Memory Usage
         result = float(parameter) if parameter else 0.0
 
         """
@@ -617,7 +617,7 @@ class Members(models.Model):
     def uptime(self):
         # result = None
         # result = self.get_mqtt_redis_msg_by_index(7)  # Index 7 -> Uptime
-        result = get_msg_by_index(7)  # Index 7 -> Uptime
+        result = get_msg_by_index(self.member_id, 7)  # Index 7 -> Uptime
         """
         if self.mqtt:
             result = self.mqtt.serialnumber
@@ -627,7 +627,7 @@ class Members(models.Model):
     def serialnumber(self):
         # result = None
         # result = self.get_mqtt_redis_msg_by_index(8)  # Index 8 -> Serial Number
-        result = get_msg_by_index(8)  # Index 8 -> Serial Number
+        result = get_msg_by_index(self.member_id, 8)  # Index 8 -> Serial Number
         """
         if self.mqtt:
             result = self.mqtt.serialnumber
@@ -637,7 +637,7 @@ class Members(models.Model):
     def model(self):
         # result = None
         # result = self.get_mqtt_redis_msg_by_index(1)  # Index 1 -> model
-        result = get_msg_by_index(1)  # Index 1 -> model
+        result = get_msg_by_index(self.member_id, 1)  # Index 1 -> model
         """
         if self.mqtt:
             result = self.mqtt.model
@@ -647,7 +647,7 @@ class Members(models.Model):
     def board_name(self):
         # result = None
         # result = self.get_mqtt_redis_msg_by_index(2)  # Index 2 -> board_name
-        result = get_msg_by_index(2)  # Index 2 -> board_name
+        result = get_msg_by_index(self.member_id, 2)  # Index 2 -> board_name
         """
         if self.mqtt:
             result = self.mqtt.board_name
@@ -657,7 +657,7 @@ class Members(models.Model):
     def release_version(self):
         # result = None
         # result = self.get_mqtt_redis_msg_by_index(3)  # Index 3 -> release_version
-        result = get_msg_by_index(3)  # Index 3 -> release_version
+        result = get_msg_by_index(self.member_id, 3)  # Index 3 -> release_version
         """
         if self.mqtt:
             result = self.mqtt.release_version
@@ -667,7 +667,7 @@ class Members(models.Model):
     def release_target(self):
         # result = None
         # result = self.get_mqtt_redis_msg_by_index(4)  # Index 4 -> release_target
-        result = get_msg_by_index(4)  # Index 4 -> release_target
+        result = get_msg_by_index(self.member_id, 4)  # Index 4 -> release_target
         """
         if self.mqtt:
             result = self.mqtt.release_target
@@ -888,7 +888,7 @@ class Members(models.Model):
     def switchport_up(self):
         # result = ""
         # result = self.get_mqtt_redis_msg_by_index(13)  # Index 13 -> Switch Port
-        result = get_msg_by_index(13)  # Index 13 -> Switch Port
+        result = get_msg_by_index(self.member_id, 13)  # Index 13 -> Switch Port
 
         """
         if self.mqtt:
