@@ -515,6 +515,9 @@ class Members(models.Model):
 
     get_routes_plain.short_description = _("Local Routes")
 
+    """ MQTT REDIS - START """
+    """ Internal Function """
+
     def get_mqtt_redis_msg(self) -> str:
         r = redis.Redis(host=settings.MQTT_REDIS_HOST)
         msg = r.get(str(self.member_id))
@@ -524,6 +527,19 @@ class Members(models.Model):
             msg_decode = ""
 
         return msg_decode
+
+    def get_mqtt_redis_msg_by_index(self, index=0) -> str:
+        msg = self.get_mqtt_redis_msg()
+        msg_split = msg.split(";")
+
+        try:
+            parameter = msg_split[index][0:50]
+        except IndexError:
+            parameter = ""
+
+        return parameter
+
+    """ MQTT REDIS - END """
 
     def is_mqtt_online(self):
         online_status = False
@@ -542,9 +558,12 @@ class Members(models.Model):
     is_mqtt_online.short_description = _("Internet Online")
 
     def get_hostname(self):
-        hostname = None
+        # hostname = None
+        hostname = self.get_mqtt_redis_msg_by_index(19)  # Index 19 -> Hostname
+        """
         if self.mqtt:
             hostname = self.mqtt.hostname
+        """
         return hostname
 
     def get_alarms(self):
