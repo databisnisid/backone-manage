@@ -12,7 +12,7 @@ from members.models import Members
 MQTT_REDIS_HOST
 MQTT_REDIS_PORT
 MQTT_REDIS_DB -> int default 0
-MQTT_REDIS_SETEX -> int default 1800 = 30minutes -> for r.setex()
+MQTT_REDIS_SETEX -> int default 86400 = 24hour -> for r.setex()
 """
 r = redis.Redis(
     host=settings.MQTT_REDIS_HOST, port=settings.MQTT_REDIS_PORT, db=MQTT_REDIS_DB
@@ -32,7 +32,15 @@ def on_message(client, userdata, message):
     mqtt_msg = msg.split(";")
     member_id = mqtt_msg[0][:50]  # max_length=50
     # r = redis.Redis()
-    r.setex(member_id, settings.MQTT_REDIS_SETEX, msg)
+    member_id_with_prefix = f"{settings.MQTT_REDIS_PREFIX}:{member_id}"
+    timestamp = int(current_time.timestamp())
+    # r.setex(member_id, settings.MQTT_REDIS_SETEX, msg)
+    msg_json = {}
+    msg_json["msg"] = msg
+    msg_json["ts"] = timestamp
+    msg_json_string = msg_json.replace("'", '"')
+    # r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg)
+    r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg_json_string)
 
     """
     try:
