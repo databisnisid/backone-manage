@@ -26,6 +26,7 @@ class MqttRedis(models.Model):
 
 class Mqtt(models.Model):
     member_id = models.CharField(_("Member ID"), max_length=50)
+    message = models.TextField(_("Message"), blank=True, null=True)
     hostname = models.CharField(_("Hostname"), max_length=50, blank=True, null=True)
     model = models.CharField(_("Model"), max_length=50, blank=True, null=True)
     board_name = models.CharField(_("Board Name"), max_length=50, blank=True, null=True)
