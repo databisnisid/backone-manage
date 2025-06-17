@@ -703,8 +703,9 @@ class Members(models.Model):
         return result
 
     def get_quota_first(self):
-        a, b, c = get_quota(self.quota_first)
-        return a, b, c
+        # a, b, c = get_quota(self.quota_first)
+        # return a, b, c
+        return get_quota(self.quota_first)
 
     def get_quota_first_prev(self):
         a, b, c = get_quota(self.quota_first_prev)
