@@ -20,6 +20,7 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from config.utils import to_dictionary, readable_timedelta, calculate_bandwidth_unit
 from ipaddress import ip_address, ip_network
+from datetime import datetime
 from django.core.exceptions import ValidationError
 from mqtt.models import Mqtt
 from mqtt.redis import (
@@ -566,7 +567,6 @@ class Members(models.Model):
 
     def cpu_usage(self):
         if self.uptime_string():
-            # load_1, load_5, load_15 = self.mqtt.get_cpu_usage()
             load_1, load_5, load_15 = get_cpu_usage(
                 self.uptime_string(), self.num_core()
             )
@@ -592,10 +592,6 @@ class Members(models.Model):
 
             result = packet_loss
 
-        """
-        if self.mqtt:
-            result = round(self.mqtt.get_packet_loss(), 1)
-        """
         return result
 
     def round_trip(self):
@@ -614,16 +610,13 @@ class Members(models.Model):
                 round_trip = -1
 
             result = round_trip
-        """
-        if self.mqtt:
-            result = round(self.mqtt.get_round_trip(), 1)
-        """
+
         return result
 
     def ipaddress_ts(self):
-        result = None
-        if self.mqtt:
-            result = self.mqtt.ipaddress_ts
+        result = get_msg_by_index(
+            self.member_id, 16
+        )  # Index 16 -> IP Address TailScale
         return result
 
     def uptime(self):
@@ -665,21 +658,25 @@ class Members(models.Model):
 
     def model_release(self):
         text = None
-        # if self.mqtt:
+
         msg = get_msg(self.member_id)
         if msg:
             mqtt = self.mqtt
             alarms = self.get_alarms()
+            """
             updated_at = timezone.localtime(mqtt.updated_at).strftime(
                 "%d-%m-%Y, %H:%M:%S"
             )
+            """
+            ts_unix = get_msg_ts(self.member_id)
+            updated_at = timezone.make_aware(datetime.fromtimestamp(ts_unix))
             # is_authorized = "icon-yes.svg" if self.is_authorized else "icon-no.svg"
 
             """ First Line: Model and CPU Core"""
             first_line = ""
-            # if mqtt.model:
             model_string = self.model()
             num_core = self.num_core()
+
             if model_string:
                 first_line = "<small>{} ({})</small>".format(model_string, num_core)
 
@@ -688,7 +685,7 @@ class Members(models.Model):
             second_line_var = ""
             serialnumber_string = self.serialnumber()
             release_version_string = self.release_version()
-            # if mqtt.serialnumber or mqtt.release_version:
+
             if serialnumber_string or release_version_string:
                 second_line_var = (
                     serialnumber_string + " - " + release_version_string
@@ -706,13 +703,12 @@ class Members(models.Model):
             third_line = ""
             switchport_up_string = self.switchport_up()
             port_status_string = self.port_status()
-            # if self.mqtt.switchport_up:
+
             if switchport_up_string:
                 third_line += "<br /><small>"
                 third_line += "<span>SwPortUP: {}</span>".format(switchport_up_string)
                 third_line += "</small>"
 
-            # if self.mqtt.port_status:
             if port_status_string:
                 third_line += "<br /><small>"
                 third_line += "<span>PortStat: {}</span>".format(port_status_string)
@@ -725,8 +721,6 @@ class Members(models.Model):
                 fourth_line = "<br /><small>"
 
                 """ UPTIME """
-                # uptime_string = self.mqtt.get_uptime_string()
-                # uptime_string = self.uptime()
                 fourth_line += "<span>UP: {}</span>".format(uptime)
 
                 """ CPU """
@@ -852,10 +846,12 @@ class Members(models.Model):
                     + fifth_line
                     + sixth_line
                     + "<br /><small style='color: red;'>LU: {} ago</span></small>",
-                    readable_timedelta(mqtt.updated_at),
+                    # readable_timedelta(mqtt.updated_at),
+                    readable_timedelta(updated_at),
                 )
 
-            if not mqtt.uptime:
+            # if not mqtt.uptime:
+            if not uptime:
                 text = format_html(
                     first_line
                     + second_line
@@ -881,15 +877,7 @@ class Members(models.Model):
     member_name_with_address.admin_order_field = "name"
 
     def switchport_up(self):
-        # result = ""
         result = get_msg_by_index(self.member_id, 13)  # Index 13 -> Switch Port
-
-        """
-        if self.mqtt:
-            if self.mqtt.switchport_up:
-                text = self.mqtt.switchport_up
-        """
-
         return result
 
     switchport_up.short_description = _("Switch Port UP")
@@ -899,20 +887,6 @@ class Members(models.Model):
         return result
 
     port_status.short_description = _("Port Status")
-
-    """
-    def quota_vnstat(self):
-        text = ""
-        if self.mqtt:
-            rx_usage_value, tx_usage_value, total_usage_value = (
-                self.mqtt.get_quota_vnstat()
-            )
-            total_unit, total_value = calculate_bandwidth_unit(total_usage_value)
-            if total_value:  # Only show if not 0
-                text = str(round(total_value, 2)) + total_unit
-
-        return text
-    """
 
     def quota_vnstat(self):
         rx_usage = 0
