@@ -4,5 +4,6 @@
 0 * * * *  python /app/manage.py shell --command "from members.utils import deauthorize_member_offline_at; deauthorize_member_offline_at()"
 0 0 * * *  python /app/manage.py shell --command "from zabbix.utils import sync_zabbix_networks; sync_zabbix_networks()"
 0 */4 * * * python /app/manage.py shell --command "from mqtt.cron import get_quota; get_quota()"
+*/10 * * * * python /app/manage.py mqtt_presence_redis_to_db
 #*/3 * * * *  python /app/manage.py shell --command "from controllers.custom import import_members_for_network; import_members_for_network('3cc1a2690fed6ab4')"
 #*/3 * * * *  python /app/manage.py shell --command "from controllers.custom import import_members_for_network; import_members_for_network('3cc1a2690f6ac319')"
