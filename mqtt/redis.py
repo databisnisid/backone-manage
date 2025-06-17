@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import redis
 import json
 from django.conf import settings
-from .models import MqttRedis
+from .models import Mqtt, MqttRedis
 
 
 def get_msg_redis(member_id: str):
@@ -21,7 +21,8 @@ def get_msg_redis(member_id: str):
         msg_ts = msg_json["ts"]
     except AttributeError:
         try:
-            mqtt = MqttRedis.objects.get(member_id=member_id_prefix)
+            # mqtt = MqttRedis.objects.get(member_id=member_id_prefix)
+            mqtt = Mqtt.objects.get(member_id=member_id)
             msg_string = mqtt.message
             msg_ts = int(mqtt.updated_at.timestamp())
         except ObjectDoesNotExist:
