@@ -993,7 +993,7 @@ class Members(models.Model):
     def quota_first_simple(self):
         quota_string = None
         if self.quota_first:
-            quota_string_split = str(self.mqtt.quota_first).split("/")
+            quota_string_split = str(self.quota_first).split("/")
             quota_string = quota_string_split[0]
         """
         if self.mqtt:
