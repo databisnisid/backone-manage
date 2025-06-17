@@ -929,7 +929,7 @@ class Members(models.Model):
         return text
 
     model_release.short_description = _("Parameters")
-    model_release.admin_order_field = "mqtt__model"
+    # model_release.admin_order_field = "mqtt__model"
 
     def member_name_with_address(self):
         text = self.name
