@@ -24,6 +24,7 @@ class Command(BaseCommand):
 
         for key in r.scan_iter(f"{settings.MQTT_REDIS_PREFIX}:*"):
             key_string = key.decode()
+            print(key_string)
             key_split = key_string.split(":")
             member_id = key_split[1]
             msg = r.get(key_string)
