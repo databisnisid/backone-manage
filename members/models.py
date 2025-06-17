@@ -1,5 +1,6 @@
 from django.db.transaction import Atomic
 import redis
+import re
 
 # from datetime import datetime
 # from os import walk
