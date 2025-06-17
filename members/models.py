@@ -703,10 +703,12 @@ class Members(models.Model):
         return result
 
     def get_quota_first(self):
-        return get_quota(self.quota_first)
+        a, b, c = get_quota(self.quota_first)
+        return a, b, c
 
     def get_quota_first_prev(self):
-        return get_quota(self.quota_first_prev)
+        a, b, c = get_quota(self.quota_first_prev)
+        return a, b, c
 
     def model_release(self):
         text = None
@@ -985,7 +987,7 @@ class Members(models.Model):
 
     quota_vnstat.short_description = _("Quota Usage")
 
-    def quota_first(self):
+    def quota_first_simple(self):
         quota_string = None
         # quota_current = 0
         # quota_total = 0
