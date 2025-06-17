@@ -155,6 +155,7 @@ def save_to_mqtt(msg):
         mqtt_member = Mqtt()
         mqtt_member.member_id = member_id
 
+    mqtt_member.message = msg
     mqtt_member.netify_uuid = netify_uuid
     mqtt_member.hostname = hostname
     mqtt_member.model = model
