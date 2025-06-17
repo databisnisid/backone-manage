@@ -2,7 +2,8 @@ import requests
 from members.models import Members
 from django.conf import settings
 from members.models import Members
-#from mqtt.models import Mqtt
+
+# from mqtt.models import Mqtt
 from .models import Mqtt
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from connectors.drivers import mqtt, ping
@@ -10,9 +11,9 @@ from controllers.workers import zt_check_member_peers
 
 
 def delete_non_member():
-    '''
+    """
     Delete All MQTT Record which doesn't have member record
-    '''
+    """
     mqtts = Mqtt.objects.all()
 
     for mqtt in mqtts:
@@ -20,7 +21,7 @@ def delete_non_member():
             Members.objects.get(member_id=mqtt.member_id)
 
         except ObjectDoesNotExist:
-            print('Delete MQTT member_id=' + mqtt.member_id)
+            print("Delete MQTT member_id=" + mqtt.member_id)
             mqtt.delete()
 
         except MultipleObjectsReturned:
@@ -28,12 +29,12 @@ def delete_non_member():
 
 
 def fix_inconsistent_online():
-    '''
+    """
     To fix status Online in BackOne
     But not online in Mqtt
-    '''
+    """
     members = Members.objects.all()
-    command = '/usr/bin/mqtt_presence'
+    command = "/usr/bin/mqtt_presence"
 
     for member in members:
         if member.is_online() and not member.is_mqtt_online():
@@ -51,14 +52,15 @@ def get_quota():
     members = Members.objects.exclude(mobile_number_first__isnull=True)
 
     for member in members:
-        #msisdn = member.mobile_number_first.replace
+        # msisdn = member.mobile_number_first.replace
         response = requests.get(
-                settings.DATA_URI_QUOTA + member.mobile_number_first[2:])
+            settings.DATA_URI_QUOTA + member.mobile_number_first[2:]
+        )
         response_json = response.json()
 
         print(response_json)
 
-        quota_record = '{}'
+        quota_record = "{}"
         try:
             quota_record = response_json[0]
 
@@ -67,31 +69,38 @@ def get_quota():
 
         try:
             try:
-                quota_total = quota_record['quota_total'].replace(' ', '')
+                quota_total = quota_record["quota_total"].replace(" ", "")
             except AttributeError:
-                quota_total = ''
+                quota_total = ""
 
             try:
-                quota_current = quota_record['quota_current'].replace(' ', '')
+                quota_current = quota_record["quota_current"].replace(" ", "")
             except AttributeError:
-                quota_current = ''
-            
-            try:
-                quota_day = quota_record['quota_day'].replace(' ', '')
-            except AttributeError:
-                quota_day = ''
+                quota_current = ""
 
             try:
-                mqtt_quota_first_prev = quota_record['quota_prev'].replace(' ', '')
+                quota_day = quota_record["quota_day"].replace(" ", "")
             except AttributeError:
-                mqtt_quota_first_prev = ''
+                quota_day = ""
 
             try:
-                quota_type = quota_record['quota_type'].replace(' ', '')
+                mqtt_quota_first_prev = quota_record["quota_prev"].replace(" ", "")
             except AttributeError:
-                quota_type = ''
+                mqtt_quota_first_prev = ""
 
-            mqtt_quota_first = '{}/{}/{}/{}'.format(quota_current, quota_total, quota_day, quota_type)
+            try:
+                quota_type = quota_record["quota_type"].replace(" ", "")
+            except AttributeError:
+                quota_type = ""
+
+            mqtt_quota_first = "{}/{}/{}/{}".format(
+                quota_current, quota_total, quota_day, quota_type
+            )
+
+            member.quota_first = mqtt_quota_first
+            member.quota_first_prev = mqtt_quota_first_prev
+            member.save()
+            """
             try:
                 mqtt = Mqtt.objects.get(member_id=member.member_id)
                 mqtt.quota_first = mqtt_quota_first
@@ -121,7 +130,7 @@ def get_quota():
                 member.mqtt = mqtt
                 member.save()
                 print("Member link to MQTT")
+            """
 
         except TypeError or KeyError:
             pass
-
