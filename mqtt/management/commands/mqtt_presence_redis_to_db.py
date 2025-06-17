@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from mqtt.models import MqttRedis
+from mqtt.redis_to_db import save_to_mqtt, delete_from_mqtt
 from members.models import Members
 
 
@@ -27,7 +28,8 @@ class Command(BaseCommand):
             member_id = key_split[1]
             msg = r.get(key_string)
 
-            member_count = Members.objects.filter(member_id=member_id).count()
+            members = Members.objects.filter(member_id=member_id)
+            members_count = members.count()
             if member_count:
                 try:
                     msg_string = msg.decode()
@@ -48,5 +50,23 @@ class Command(BaseCommand):
 
                 except AttributeError:
                     pass
+
+                mqtt_member = save_to_mqtt(msg_json["msg"])
+
+                for member in members:
+                    if member.mqtt:
+                        if member.mqtt.member_id != mqtt_member.member_id:
+                            member.mqtt = mqtt_member
+                            member.is_waf = mqtt_member.is_waf
+                            member.save()
+                        else:
+                            member.is_waf = mqtt_member.is_waf
+                            member.save()
+                    else:
+                        member.mqtt = mqtt_member
+                        member.is_waf = mqtt_member.is_waf
+                        member.save()
+
             else:
                 MqttRedis.objects.filter(member_id=key_string).delete()
+                delete_from_mqtt(member_id)
