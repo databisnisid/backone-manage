@@ -24,14 +24,13 @@ class Command(BaseCommand):
 
         for key in r.scan_iter(f"{settings.MQTT_REDIS_PREFIX}:*"):
             key_string = key.decode()
-            print(key_string)
             key_split = key_string.split(":")
             member_id = key_split[1]
             msg = r.get(key_string)
 
             members = Members.objects.filter(member_id=member_id)
             members_count = members.count()
-            if member_count:
+            if members_count:
                 try:
                     msg_string = msg.decode()
                     print(f"{key_string}-> {msg_string}")
