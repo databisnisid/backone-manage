@@ -577,7 +577,7 @@ class MemberPeersAdmin(SnippetViewSet):
     # search_fields = ('name', 'member_id', 'ipaddress')
     # menu_icon = 'grip'
     # ordering = ['name']
-    list_per_page = 50
+    list_per_page = 25
 
     # Wagtail 5.1.1
     add_to_admin_menu = True
