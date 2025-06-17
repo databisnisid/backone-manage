@@ -74,15 +74,7 @@ class MqttAdmin(SnippetViewSet):
     exclude_from_explorer = (
         False  # or True to exclude pages of this type from Wagtail's explorer view
     )
-    list_display = (
-        "member_id",
-        "model",
-        "board_name",
-        "release_version",
-        "release_target",
-        "updated_at",
-        "ipaddress",
-    )
+    list_display = ("member_id", "message", "updated_at")
     search_fields = ("member_id",)
 
     # Wagtail 5.1.1
