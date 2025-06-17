@@ -583,6 +583,7 @@ class MemberPeersAdmin(SnippetViewSet):
 
     # Wagtail 5.1.1
     add_to_admin_menu = True
+    search_fields = ("member_id",)
     menu_order = 999
     # list_per_page = 50
     # menu_icon = 'grip'  # change as required

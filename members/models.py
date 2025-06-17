@@ -966,19 +966,24 @@ class Members(models.Model):
         return quota_string
 
     def rssi(self):
+        parameter = get_msg_by_index(self.member_id, 18)  # Index 18 -> RSSI
+
+        if parameter:
+            rssi_signal = int(parameter)
+        else:
+            rssi_signal = 99999
+
         text = "N/A"
         color = "black"
-        if self.mqtt:
-            rssi_signal = self.mqtt.rssi()
-            if rssi_signal <= 65:
-                text = "EXCELLENT"
-                color = "blue"
-            elif rssi_signal > 65 and rssi_signal <= 80:
-                text = "GOOD"
-                color = "green"
-            elif rssi_signal != 99999:
-                text = "NOT GOOD"
-                color = "red"
+        if rssi_signal <= 65:
+            text = "EXCELLENT"
+            color = "blue"
+        elif rssi_signal > 65 and rssi_signal <= 80:
+            text = "GOOD"
+            color = "green"
+        elif rssi_signal != 99999:
+            text = "NOT GOOD"
+            color = "red"
 
         # return text
         return format_html("<span style='color: {};'>{}</span>", color, text)
