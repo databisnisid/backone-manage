@@ -39,7 +39,8 @@ class Command(BaseCommand):
                             member_id=key_string, message=msg_json["msg"]
                         )
 
-                    except IntegrityError:
+                    # except IntegrityError:
+                    except Exception:
                         MqttRedis.objects.update(
                             member_id=key_string, message=msg_json["msg"]
                         )
