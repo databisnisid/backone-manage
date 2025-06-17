@@ -280,6 +280,8 @@ class MembersAdmin(ModelAdmin):
         False  # or True to exclude pages of this type from Wagtail's explorer view
     )
 
+    list_per_page = 25
+
     list_export = (
         "name",
         "member_id",
@@ -577,7 +579,7 @@ class MemberPeersAdmin(SnippetViewSet):
     # search_fields = ('name', 'member_id', 'ipaddress')
     # menu_icon = 'grip'
     # ordering = ['name']
-    list_per_page = 25
+    list_per_page = 50
 
     # Wagtail 5.1.1
     add_to_admin_menu = True
