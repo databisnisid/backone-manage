@@ -38,7 +38,7 @@ def get_quota(text: str = None):
     quota_type = ""
 
     if text:
-        quota_split = str(self.quota_first).split("/")
+        quota_split = text.split("/")
         try:
             quota_split[0]
             # quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
