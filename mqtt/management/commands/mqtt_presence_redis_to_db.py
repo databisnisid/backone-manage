@@ -47,4 +47,4 @@ class Command(BaseCommand):
                 except AttributeError:
                     pass
             else:
-                MqttRedis.objects.filter(member_id=member_id).delete()
+                MqttRedis.objects.filter(member_id=key_string).delete()
