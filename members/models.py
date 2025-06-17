@@ -576,15 +576,48 @@ class Members(models.Model):
         return round(load_5, 1)
 
     def packet_loss(self):
+        parameter = get_msg_by_index(
+            self.member_id, 11
+        )  # Index 11 -> Packet Loss String
         result = -1.0
+        if parameter:
+            packet_loss_split = str(parameter).split(",")
+            packet_loss_digit_string = packet_loss_split[2].split("%")
+
+            try:
+                packet_loss = float(packet_loss_digit_string[0])
+            except ValueError:
+                packet_loss = -1
+                # packet_loss = 0
+
+            result = packet_loss
+
+        """
         if self.mqtt:
             result = round(self.mqtt.get_packet_loss(), 1)
+        """
         return result
 
     def round_trip(self):
+        parameter = get_msg_by_index(
+            self.member_id, 12
+        )  # Index 12 -> Round Trip String
         result = -1.0
+
+        if parameter:
+            round_trip_string = str(parameter).split("=")
+            round_trip_digit = round_trip_string[1].split("/")
+
+            try:
+                round_trip = float(round_trip_digit[1])
+            except ValueError:
+                round_trip = -1
+
+            result = round_trip
+        """
         if self.mqtt:
             result = round(self.mqtt.get_round_trip(), 1)
+        """
         return result
 
     def ipaddress_ts(self):
@@ -604,7 +637,6 @@ class Members(models.Model):
 
     def uptime_string(self):
         result = get_msg_by_index(self.member_id, 7)  # Index 7 -> Uptime
-
         return result
 
     def serialnumber(self):
@@ -647,10 +679,9 @@ class Members(models.Model):
             first_line = ""
             # if mqtt.model:
             model_string = self.model()
+            num_core = self.num_core()
             if model_string:
-                first_line = "<small>{} ({})</small>".format(
-                    model_string, mqtt.num_core
-                )
+                first_line = "<small>{} ({})</small>".format(model_string, num_core)
 
             """ Second Line: SerialNumber and Release Version"""
             second_line = ""
@@ -689,13 +720,14 @@ class Members(models.Model):
 
             """ Fourth Line: Uptime, CPU and Memory """
             fourth_line = ""
-            if mqtt.uptime:
+            uptime = self.uptime()
+            if uptime:
                 fourth_line = "<br /><small>"
 
                 """ UPTIME """
                 # uptime_string = self.mqtt.get_uptime_string()
-                uptime_string = self.uptime()
-                fourth_line += "<span>UP: {}</span>".format(uptime_string)
+                # uptime_string = self.uptime()
+                fourth_line += "<span>UP: {}</span>".format(uptime)
 
                 """ CPU """
                 item_id = "cpu_usage"
@@ -868,6 +900,7 @@ class Members(models.Model):
 
     port_status.short_description = _("Port Status")
 
+    """
     def quota_vnstat(self):
         text = ""
         if self.mqtt:
@@ -879,6 +912,42 @@ class Members(models.Model):
                 text = str(round(total_value, 2)) + total_unit
 
         return text
+    """
+
+    def quota_vnstat(self):
+        rx_usage = 0
+        tx_usage = 0
+        total_usage = 0
+        split_text = []
+
+        parameter = get_msg_by_index(self.member_id, 15)  # Index 15 -> Quota VNSTAT
+        result = ""
+        if parameter:
+            split_text = str(parameter).split(",")
+
+            """ RX Usage """
+            try:
+                rx_usage = int(split_text[2])
+            except (IndexError, ValueError):
+                pass
+
+            """ TX Usage """
+            try:
+                tx_usage = int(split_text[3])
+            except (IndexError, ValueError):
+                pass
+
+            """ Total Usage """
+            try:
+                total_usage = int(split_text[4])
+            except (IndexError, ValueError):
+                pass
+
+            total_unit, total_value = calculate_bandwidth_unit(total_usage_value)
+            if total_value:  # Only show if not 0
+                result = str(round(total_value, 2)) + total_unit
+
+        return result
 
     quota_vnstat.short_description = _("Quota Usage")
 
