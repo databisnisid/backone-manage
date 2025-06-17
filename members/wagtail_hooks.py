@@ -344,7 +344,7 @@ class MembersAdmin(ModelAdmin):
             "ipaddress",
             # "switchport_up",
             "online_status",
-            "quota_first",
+            "quota_first_simple",
         ]
         list_display_telkomsel = [
             "name",
