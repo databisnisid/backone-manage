@@ -31,6 +31,47 @@ from mqtt.redis import (
 )
 
 
+def get_quota(text: str = None):
+    quota_current = 0
+    quota_total = 0
+    quota_day = 0
+    quota_type = ""
+
+    if text:
+        quota_split = str(self.quota_first).split("/")
+        try:
+            quota_split[0]
+            # quota_current = float(re.sub("[^0-9].", "", quota_split[0]))
+            if "GB" in quota_split[0]:
+                quota_current = float(quota_split[0].replace("GB", ""))
+                quota_current = quota_current * 1024
+            else:
+                quota_current = float(quota_split[0].replace("MB", ""))
+
+        except (ValueError, IndexError):
+            quota_current = 0
+
+        try:
+            quota_split[1]
+            quota_total = float(re.sub("[^0-9].", "", quota_split[1]))
+        except (ValueError, IndexError):
+            quota_total = 0
+
+        try:
+            quota_split[2]
+            quota_day = float(re.sub("[^0-9].", "", quota_split[2]))
+        except (ValueError, IndexError):
+            quota_day = 0
+
+        try:
+            quota_split[3]
+            quota_type = quota_split[3]
+        except (ValueError, IndexError):
+            quota_type = ""
+
+    return quota_current, quota_total, quota_day, quota_type
+
+
 """
 MemberPeers Model
 """
@@ -661,6 +702,12 @@ class Members(models.Model):
         result = get_msg_by_index(self.member_id, 20)  # Index 20 -> netify_uuid
         return result
 
+    def get_quota_first(self):
+        return get_quota(self.quota_first)
+
+    def get_quota_first_prev(self):
+        return get_quota(self.quota_first_prev)
+
     def model_release(self):
         text = None
 
@@ -772,9 +819,12 @@ class Members(models.Model):
             """ Fifth line QUOTA FIRST """
             fifth_line = ""
 
+            """
             quota_current, quota_total, quota_day, quota_type = (
-                self.mqtt.get_quota_first()
+               self.mqtt.get_quota_first()
             )
+            """
+            quota_current, quota_total, quota_day, quota_type = self.get_quota_first()
 
             # if not quota_current==0 and not quota_total==0 and not quota_day==0:
             quota_current = quota_current / 1024
@@ -801,8 +851,13 @@ class Members(models.Model):
 
                 fifth_line = "<br /><small>QUO: {}</small>".format(quota_text)
 
+            """
             quota_current_prev, quota_total_prev, quota_day_prev, quota_type_prev = (
                 self.mqtt.get_quota_first_prev()
+            )
+            """
+            quota_current_prev, quota_total_prev, quota_day_prev, quota_type_prev = (
+                self.get_quota_first_prev()
             )
             quota_current_prev = quota_current_prev / 1024
 
