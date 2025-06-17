@@ -708,8 +708,9 @@ class Members(models.Model):
         return get_quota(self.quota_first)
 
     def get_quota_first_prev(self):
-        a, b, c = get_quota(self.quota_first_prev)
-        return a, b, c
+        # a, b, c = get_quota(self.quota_first_prev)
+        # return a, b, c
+        return get_quota(self.quota_first_prev)
 
     def model_release(self):
         text = None
