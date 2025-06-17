@@ -22,21 +22,29 @@ class Command(BaseCommand):
         )
 
         for key in r.scan_iter(f"{settings.MQTT_REDIS_PREFIX}:*"):
-            msg = r.get(key.decode())
-            try:
-                msg_string = msg.decode()
-                print(f"{key.decode()}-> {msg_string}")
-                msg_json = json.loads(msg_string)
+            key_string = key.decode()
+            key_split = key_string.split(":")
+            member_id = key_split[1]
+            msg = r.get(key_string)
 
+            member_count = Members.objects.filter(member_id=member_id).count()
+            if member_count:
                 try:
-                    MqttRedis.objects.update_or_create(
-                        member_id=key.decode(), message=msg_json["msg"]
-                    )
+                    msg_string = msg.decode()
+                    print(f"{key_string}-> {msg_string}")
+                    msg_json = json.loads(msg_string)
 
-                except IntegrityError:
-                    MqttRedis.objects.update(
-                        member_id=key.decode(), message=msg_json["msg"]
-                    )
+                    try:
+                        MqttRedis.objects.update_or_create(
+                            member_id=key_string, message=msg_json["msg"]
+                        )
 
-            except AttributeError:
-                pass
+                    except IntegrityError:
+                        MqttRedis.objects.update(
+                            member_id=key_string, message=msg_json["msg"]
+                        )
+
+                except AttributeError:
+                    pass
+            else:
+                MqttRedis.objects.filter(member_id=member_id).delete()
