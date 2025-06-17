@@ -102,4 +102,4 @@ class MqttRedisAdmin(SnippetViewSet):
 
 # modeladmin_register(MqttAdmin)
 register_snippet(MqttAdmin)
-register_snippet(MqttRedisAdmin)
+# register_snippet(MqttRedisAdmin)
