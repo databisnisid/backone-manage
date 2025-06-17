@@ -35,15 +35,16 @@ class Command(BaseCommand):
                     msg_json = json.loads(msg_string)
 
                     try:
-                        MqttRedis.objects.update_or_create(
-                            member_id=key_string, message=msg_json["msg"]
-                        )
+                        mr = MqttRedis.objects.get(member_id=key_string)
+                        mr.message = msg_json["msg"]
 
                     # except IntegrityError:
-                    except Exception:
-                        MqttRedis.objects.update(
-                            member_id=key_string, message=msg_json["msg"]
-                        )
+                    except ObjectDoesNotExist:
+                        mr = MqttRedis()
+                        mr.member_id = key_string
+                        mr.message = msg_json["msg"]
+
+                    mr.save()
 
                 except AttributeError:
                     pass
