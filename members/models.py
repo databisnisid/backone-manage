@@ -133,6 +133,11 @@ class Members(models.Model):
         null=True,
     )
 
+    quota_first = models.CharField(_("Quota"), max_length=200, blank=True, null=True)
+    quota_first_prev = models.CharField(
+        _("Quota Prev Day"), max_length=200, blank=True, null=True
+    )
+
     configuration = models.TextField(_("Configuration"), blank=True)
 
     peers = models.ForeignKey(
