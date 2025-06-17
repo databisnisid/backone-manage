@@ -1,4 +1,4 @@
-from django.db import IntegrityError
+from django.db.utils import IntegrityError
 import redis
 import json
 from paho.mqtt import client as mqtt
