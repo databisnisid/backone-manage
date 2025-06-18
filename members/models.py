@@ -450,7 +450,7 @@ class Members(models.Model):
 
         return result
 
-    list_peers.short_description = _("Peers          ")
+    list_peers.short_description = _("Peers (Providers)")
 
     def member_status(self):
         peers = to_dictionary("{}")
