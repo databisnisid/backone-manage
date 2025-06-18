@@ -10,6 +10,7 @@ from wagtail import hooks
 # from crum import get_current_user
 # from wagtail.contrib.modeladmin.views import CreateView, EditView
 from .summary_panels import *
+from .statistic_panels import ProvidersChart
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 from axes.models import AccessAttempt, AccessLog, AccessFailureLog
@@ -157,6 +158,10 @@ def add_another_welcome_panel(request, panels):
     # Testing Ping Summary Panel
     if request.user.is_superuser:
         panels.append(PingSummaryPanel())
+
+    # Testing Providers Distribution Panel
+    if request.user.is_superuser:
+        panels.append(ProvidersChart())
 
 
 @hooks.register("insert_global_admin_js", order=100)

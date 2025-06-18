@@ -1,0 +1,45 @@
+{% load i18n wagtailadmin_tags %}
+
+    <section class="panel summary nice-padding" style="margin-bottom: 2em;">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 80%; text-align: center;">
+                    <h1>{{ chart_title_providers }}</h1>
+                        <div>
+                            <canvas id="chart_providers_1"></canvas>
+                        </div>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+{% block extra_js %}
+<script>
+
+const ctx1 = document.getElementById('chart_providers_1').getContext('2d');
+const myChart1 = new Chart(ctx1, {
+    type: 'polarArea',
+    data: {
+        labels: [{% for label in labels_providers %}'{{ label | escape }}',{% endfor %}],
+        datasets: [{
+            label: '# ',
+            data: {{ data_providers }},
+            borderWidth: 1
+        }]
+    },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: false,
+        text: '{{ chart_title_providers }}'
+      }
+    }
+  },
+});
+
+</script>
+{% endblock extra_js %}
