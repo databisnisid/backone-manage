@@ -1,4 +1,5 @@
 import redis
+from redis.exceptions import TimeoutError
 import json
 from connectors.drivers.ipinfo_lite import lookup_ipaddress
 from django.core.management.base import BaseCommand
@@ -26,7 +27,10 @@ class Command(BaseCommand):
             if list_peers:
                 for list_peer in list_peers:
                     msg = lookup_ipaddress(list_peer)
-                    r.set(
-                        f"{settings.IPINFO_LITE_PREFIX}:{list_peer}",
-                        str(msg).replace("'", '"'),
-                    )
+                    try:
+                        r.set(
+                            f"{settings.IPINFO_LITE_PREFIX}:{list_peer}",
+                            str(msg).replace("'", '"'),
+                        )
+                    except TimeoutError:
+                        pass
