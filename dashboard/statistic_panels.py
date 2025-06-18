@@ -2,6 +2,7 @@ from wagtail.admin.ui.components import Component
 from django.utils.translation import gettext_lazy as _
 import redis
 from redis.exceptions import TimeoutError
+from django.conf import settings
 
 
 class ProvidersChart(Component):
