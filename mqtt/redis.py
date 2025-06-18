@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 import redis
+from redis.exceptions import TimeoutError
 import json
 from django.conf import settings
 from .models import Mqtt, MqttRedis
@@ -10,10 +11,15 @@ def get_msg_redis(member_id: str):
         host=settings.MQTT_REDIS_HOST,
         port=settings.MQTT_REDIS_PORT,
         db=settings.MQTT_REDIS_DB,
+        socket_timeout=1,
     )
     member_id_prefix = f"{settings.MQTT_REDIS_PREFIX}:{member_id}"
     # msg = r.get(str(f"{settings.MQTT_REDIS_PREFIX}:{member_id}"))
-    msg = r.get(member_id_prefix)
+    try:
+        msg = r.get(member_id_prefix)
+    except TimeoutError:
+        msg = None
+
     try:
         msg_decode = msg.decode()
         msg_json = json.loads(msg_decode)

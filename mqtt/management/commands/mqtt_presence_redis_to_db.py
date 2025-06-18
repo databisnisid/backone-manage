@@ -20,6 +20,7 @@ class Command(BaseCommand):
             host=settings.MQTT_REDIS_HOST,
             port=settings.MQTT_REDIS_PORT,
             db=settings.MQTT_REDIS_DB,
+            socket_timeout=1,
         )
 
         for key in r.scan_iter(f"{settings.MQTT_REDIS_PREFIX}:*"):

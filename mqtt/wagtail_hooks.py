@@ -59,9 +59,6 @@ def remove_snippet_edit_button_mqtt(buttons, snippet, user, context=None):
             if "mqtt/mqtt/" in button.url:
                 buttons.pop(index)
                 break
-            if "mqtt/mqttredis/" in button.url:
-                buttons.pop(index)
-                break
 
 
 # class MqttAdmin(ModelAdmin):
@@ -85,6 +82,7 @@ class MqttAdmin(SnippetViewSet):
     # menu_icon = 'doc-full'  # change as required
 
 
+"""
 class MqttRedisAdmin(SnippetViewSet):
     model = MqttRedis
     inspect_view_enabled = True
@@ -99,6 +97,7 @@ class MqttRedisAdmin(SnippetViewSet):
     list_per_page = 50
     icon = "doc-full"  # change as required
 
+"""
 
 # modeladmin_register(MqttAdmin)
 register_snippet(MqttAdmin)

@@ -1,4 +1,5 @@
 import redis
+from redis.exceptions import TimeoutError
 from paho.mqtt import client as mqtt
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
@@ -15,7 +16,10 @@ MQTT_REDIS_DB -> int default 0
 MQTT_REDIS_SETEX -> int default 86400 = 24hour -> for r.setex()
 """
 r = redis.Redis(
-    host=settings.MQTT_REDIS_HOST, port=settings.MQTT_REDIS_PORT, db=MQTT_REDIS_DB
+    host=settings.MQTT_REDIS_HOST,
+    port=settings.MQTT_REDIS_PORT,
+    db=MQTT_REDIS_DB,
+    socket_timeout=1,
 )
 
 
@@ -40,7 +44,10 @@ def on_message(client, userdata, message):
     msg_json["ts"] = timestamp
     msg_json_string = str(msg_json).replace("'", '"')
     # r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg)
-    r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg_json_string)
+    try:
+        r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg_json_string)
+    except TimeoutError:
+        pass
 
 
 class Command(BaseCommand):
