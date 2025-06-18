@@ -1,12 +1,13 @@
-from django.db.utils import IntegrityError
+# from django.db.utils import IntegrityError
+# from paho.mqtt import client as mqtt
+# from django.core.management.base import BaseCommand, CommandError
+# from django.utils import timezone
+# from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+# from mqtt.models import MqttRedis
 import redis
 import json
-from paho.mqtt import client as mqtt
-from django.core.management.base import BaseCommand, CommandError
-from django.utils import timezone
+from django.core.management.base import BaseCommand
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from mqtt.models import MqttRedis
 from mqtt.redis_to_db import save_to_mqtt, delete_from_mqtt
 from members.models import Members
 
@@ -37,6 +38,9 @@ class Command(BaseCommand):
                     print(f"{key_string}-> {msg_string}")
                     msg_json = json.loads(msg_string)
 
+                    mqtt_member = save_to_mqtt(msg_json["msg"])
+
+                    """
                     try:
                         mr = MqttRedis.objects.get(member_id=key_string)
                         mr.message = msg_json["msg"]
@@ -48,11 +52,10 @@ class Command(BaseCommand):
                         mr.message = msg_json["msg"]
 
                     mr.save()
+                    """
 
                 except AttributeError:
                     pass
-
-                mqtt_member = save_to_mqtt(msg_json["msg"])
 
                 for member in members:
                     if member.mqtt:
@@ -69,5 +72,5 @@ class Command(BaseCommand):
                         member.save()
 
             else:
-                MqttRedis.objects.filter(member_id=key_string).delete()
+                # MqttRedis.objects.filter(member_id=key_string).delete()
                 delete_from_mqtt(member_id)
