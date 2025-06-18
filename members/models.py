@@ -982,7 +982,7 @@ class Members(models.Model):
             except (IndexError, ValueError):
                 pass
 
-            total_unit, total_value = calculate_bandwidth_unit(total_usage_value)
+            total_unit, total_value = calculate_bandwidth_unit(total_usage)
             if total_value:  # Only show if not 0
                 result = str(round(total_value, 2)) + total_unit
 
