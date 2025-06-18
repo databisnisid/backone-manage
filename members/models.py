@@ -403,14 +403,15 @@ class Members(models.Model):
 
     list_ipaddress.short_description = _("ID, IP and Network")
 
-    def list_peers(self):
+    def list_ip_peers(self):
         peers = to_dictionary("{}")
+        ip_peers = []
         if self.peers:
             peers = to_dictionary(self.peers.peers)
         if "paths" in peers and len(peers["paths"]) != 0:
             paths = peers["paths"]
-            ip_peers = []
-            ip_peers_html = []
+            # ip_peers = []
+            # ip_peers_html = []
             for path in paths:
                 ip_path = path["address"].split("/")
                 if ip_path[0] not in ip_peers:
@@ -418,12 +419,30 @@ class Members(models.Model):
                         ip_path[0], ip_path[0]
                     )
                     ip_peers.append(ip_path[0])
-                    ip_peers_html.append(ip_info)
+                    # ip_peers_html.append(ip_info)
+
+            # result = "<br />".join([str(p) for p in ip_peers_html])
+            # return format_html("<small>" + result + "</small>")
+        # else:
+        #    return ""
+        return ip_peers
+
+    def list_peers(self):
+        ip_peers = self.list_ip_peers()
+        result = ""
+        if ip_peers:
+            ip_peers_html = []
+            for ip_peer in ip_peers:
+                ip_info = "<a href='https://ipinfo.io/{}' target='_blank' rel='noopener noreferrer'>{}</a>".format(
+                    ip_peer, ip_peer
+                )
+                ip_peers_html.append(ip_info)
 
             result = "<br />".join([str(p) for p in ip_peers_html])
-            return format_html("<small>" + result + "</small>")
-        else:
-            return ""
+            result = format_html("<small>" + result + "</small>")
+        # return format_html("<small>" + result + "</small>")
+
+        return result
 
     list_peers.short_description = _("Peers          ")
 
