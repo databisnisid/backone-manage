@@ -1,6 +1,7 @@
 from django.db.transaction import Atomic
 import redis
 import re
+from connectors import redis_ipinfo
 
 # from datetime import datetime
 # from os import walk
@@ -433,14 +434,19 @@ class Members(models.Model):
         if ip_peers:
             ip_peers_html = []
             for ip_peer in ip_peers:
-                ip_info = "<a href='https://ipinfo.io/{}' target='_blank' rel='noopener noreferrer'>{}</a>".format(
-                    ip_peer, ip_peer
-                )
+                as_name = redis_ipinfo.get_as_name(ip_peer)
+                if as_name:
+                    ip_info = "<a href='https://ipinfo.io/{}' target='_blank' rel='noopener noreferrer'>{}({})</a>".format(
+                        ip_peer, ip_peer, as_name
+                    )
+                else:
+                    ip_info = "<a href='https://ipinfo.io/{}' target='_blank' rel='noopener noreferrer'>{}</a>".format(
+                        ip_peer, ip_peer
+                    )
                 ip_peers_html.append(ip_info)
 
             result = "<br />".join([str(p) for p in ip_peers_html])
             result = format_html("<small>" + result + "</small>")
-        # return format_html("<small>" + result + "</small>")
 
         return result
 
