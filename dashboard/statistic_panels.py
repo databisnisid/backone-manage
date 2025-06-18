@@ -42,7 +42,7 @@ class ProvidersChart(Component):
 
                 try:
                     providers_counter[as_name] += 1
-                except IndexError or KeyError:
+                except KeyError:
                     providers_counter[as_name] = 1
 
         except TimeoutError:
