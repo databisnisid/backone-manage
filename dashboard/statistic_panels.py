@@ -52,6 +52,8 @@ class ProvidersChart(Component):
         data = []
         chart_title = _("Providers Distribution")
 
+        print(providers_counter)
+
         if providers_counter:
             for key, value in providers_counter.items():
                 labels.append(key)
