@@ -6,7 +6,7 @@ from wagtail.contrib.modeladmin.options import (
 from wagtail import hooks
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
-from .models import Mqtt, MqttRedis
+from .models import Mqtt
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList
 from django.utils.translation import gettext as _
 from crum import get_current_user

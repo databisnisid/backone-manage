@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from wagtail import permissions
 
 
+"""
 class MqttRedis(models.Model):
     member_id = models.CharField(_("Member ID"), max_length=50, unique=True)
     message = models.TextField(_("Message"))
@@ -22,6 +23,7 @@ class MqttRedis(models.Model):
 
     def __str__(self):
         return "{}".format(self.member_id)
+"""
 
 
 class Mqtt(models.Model):

@@ -3,7 +3,7 @@ import redis
 from redis.exceptions import TimeoutError
 import json
 from django.conf import settings
-from .models import Mqtt, MqttRedis
+from .models import Mqtt
 
 
 def get_msg_redis(member_id: str):
