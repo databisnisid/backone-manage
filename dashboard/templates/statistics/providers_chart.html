@@ -18,7 +18,7 @@
 
 const provider_ctx1 = document.getElementById('chart_providers_1').getContext('2d');
 const provider_myChart1 = new Chart(provider_ctx1, {
-    type: 'polarArea',
+    type: 'doughnut',
     data: {
         labels: [{% for label in labels_providers %}'{{ label | escape }}',{% endfor %}],
         datasets: [{
