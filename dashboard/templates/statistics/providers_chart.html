@@ -16,8 +16,8 @@
 {% block extra_js %}
 <script>
 
-const ctx1 = document.getElementById('chart_providers_1').getContext('2d');
-const myChart1 = new Chart(ctx1, {
+const provider_ctx1 = document.getElementById('chart_providers_1').getContext('2d');
+const provider_myChart1 = new Chart(provider_ctx1, {
     type: 'polarArea',
     data: {
         labels: [{% for label in labels_providers %}'{{ label | escape }}',{% endfor %}],
