@@ -21,5 +21,7 @@ class MembersSerializers(serializers.ModelSerializer):
             "offline_at",
             "mobile_number_first",
             "mqtt",
+            "quota_first",
+            "quota_first_prev",
         ]
         read_only_fields = ["__all__"]
