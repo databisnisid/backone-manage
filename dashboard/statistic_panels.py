@@ -31,7 +31,7 @@ class ProvidersChart(Component):
                         msg_json = json.loads(msg_string)
                         try:
                             as_name = msg_json["as_name"]
-                        except IndexError or KeyError:
+                        except KeyError:
                             pass
 
                     except AttributeError:
