@@ -25,7 +25,7 @@ def get_as_name(ipaddress: str) -> str:
             msg_json = json.loads(msg_string)
             try:
                 result = msg_json["as_name"]
-            except IndexError or KeyError:
+            except KeyError:
                 pass
 
         except AttributeError:
