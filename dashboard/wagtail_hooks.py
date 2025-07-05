@@ -160,8 +160,8 @@ def add_another_welcome_panel(request, panels):
         panels.append(PingSummaryPanel())
 
     # Testing Providers Distribution Panel
-    if request.user.is_superuser:
-        panels.append(ProvidersChart())
+    # if request.user.is_superuser:
+    #    panels.append(ProvidersChart())
 
 
 @hooks.register("insert_global_admin_js", order=100)
