@@ -328,12 +328,14 @@ class MembersAdmin(ModelAdmin):
     edit_template_name = "modeladmin/edit.html"
 
     def get_list_display(self, request):
-        current_user = get_current_user()
+        # current_user = get_current_user()
+        current_user = request.user
+
         list_display = []
         list_display_default = [
             "member_name_with_address",
             "member_status",
-            # "model_release",
+            "model_release",
             "get_routes",
             # "list_peers",
         ]
