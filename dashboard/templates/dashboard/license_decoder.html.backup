@@ -19,6 +19,7 @@
 
 <div id="msg"></div>
 <form id="snipForm" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
     <div class="row">
         <div class="column" style="width: 70%">
                 <input type="file" id="licenseFile" name="files"/>
