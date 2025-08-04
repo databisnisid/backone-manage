@@ -58,7 +58,7 @@ telepath==0.3.1
 typing_extensions==4.12.2
 urllib3==1.26.11
 wagtail==5.2.8
-wagtail-modeladmin==2.1.0
+wagtail-modeladmin==2.2.0
 wagtailgeowidget==8.0.0
 webencodings==0.5.1
 Willow==1.6.2
