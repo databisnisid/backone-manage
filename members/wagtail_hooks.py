@@ -339,6 +339,13 @@ class MembersAdmin(ModelAdmin):
             "get_routes",
             "list_peers",
         ]
+        list_display_superuser = [
+            "member_name_with_address",
+            "member_status",
+            "model_release",
+            "get_routes",
+            "list_peers",
+        ]
         list_display_simple = [
             "name",
             # "member_code",
@@ -361,6 +368,8 @@ class MembersAdmin(ModelAdmin):
             list_display = list_display_telkomsel
         elif current_user.organization.features.is_simple_list:
             list_display = list_display_simple
+        elif current_user.is_superuser:
+            list_display = list_display_superuser
         else:
             list_display = list_display_default
 

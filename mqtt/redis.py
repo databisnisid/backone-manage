@@ -15,25 +15,30 @@ def get_msg_redis(member_id: str):
     )
     member_id_prefix = f"{settings.MQTT_REDIS_PREFIX}:{member_id}"
     # msg = r.get(str(f"{settings.MQTT_REDIS_PREFIX}:{member_id}"))
-    try:
-        msg = r.get(member_id_prefix)
-    except TimeoutError:
-        msg = None
+    msg_string = ""
+    msg_ts = 0
 
     try:
-        msg_decode = msg.decode()
-        msg_json = json.loads(msg_decode)
-        msg_string = msg_json["msg"]
-        msg_ts = msg_json["ts"]
-    except AttributeError:
+        msg = r.get(member_id_prefix)
+
         try:
-            # mqtt = MqttRedis.objects.get(member_id=member_id_prefix)
-            mqtt = Mqtt.objects.get(member_id=member_id)
-            msg_string = mqtt.message
-            msg_ts = int(mqtt.updated_at.timestamp())
-        except ObjectDoesNotExist:
-            msg_string = ""
-            msg_ts = 0
+            msg_decode = msg.decode()
+            msg_json = json.loads(msg_decode)
+            msg_string = msg_json["msg"]
+            msg_ts = msg_json["ts"]
+
+        except AttributeError:
+            """If not respond from REDIS, try to get from DB"""
+            try:
+                # mqtt = MqttRedis.objects.get(member_id=member_id_prefix)
+                mqtt = Mqtt.objects.get(member_id=member_id)
+                msg_string = mqtt.message
+                msg_ts = int(mqtt.updated_at.timestamp())
+            except ObjectDoesNotExist:
+                pass
+
+    except TimeoutError:
+        msg = None
 
     return msg_string, msg_ts
 
