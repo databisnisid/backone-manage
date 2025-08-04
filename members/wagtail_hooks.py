@@ -280,7 +280,7 @@ class MembersAdmin(ModelAdmin):
         False  # or True to exclude pages of this type from Wagtail's explorer view
     )
 
-    list_per_page = 25
+    list_per_page = 10
 
     list_export = (
         "name",
