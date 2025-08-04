@@ -1,4 +1,5 @@
 import os
+import redis
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -273,6 +274,13 @@ MQTT_REDIS_PORT = int(os.getenv("MQTT_REDIS_PORT", 6379))
 MQTT_REDIS_DB = int(os.getenv("MQTT_REDIS_DB", 0))
 MQTT_REDIS_SETEX = int(os.getenv("MQTT_REDIS_SETEX", 1800))
 MQTT_REDIS_PREFIX = str(os.getenv("MQTT_REDIS_PREFIX", "backone"))
+
+MQTT_REDIS_CONN = redis.Redis(
+    host=MQTT_REDIS_HOST,
+    port=MQTT_REDIS_PORT,
+    db=MQTT_REDIS_DB,
+    socket_timeout=1,
+)
 
 # Monitor
 # MONITOR_DELAY = 720 # 12 minutes
