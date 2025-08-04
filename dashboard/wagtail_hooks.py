@@ -156,8 +156,8 @@ def add_another_welcome_panel(request, panels):
         panels.append(LicenseDecoderPanel())
 
     # Testing Ping Summary Panel
-    if request.user.is_superuser:
-        panels.append(PingSummaryPanel())
+    # if request.user.is_superuser:
+    #   panels.append(PingSummaryPanel())
 
     # Testing Providers Distribution Panel
     # if request.user.is_superuser:
