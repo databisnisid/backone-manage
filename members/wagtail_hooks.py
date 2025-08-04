@@ -332,8 +332,8 @@ class MembersAdmin(ModelAdmin):
         list_display = []
         list_display_default = [
             "member_name_with_address",
-            "member_status",
-            "model_release",
+            # "member_status",
+            # "model_release",
             "get_routes",
             # "list_peers",
         ]
