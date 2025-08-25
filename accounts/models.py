@@ -50,6 +50,9 @@ class Features(models.Model):
     # Project Related
     is_telkomsel = models.BooleanField(_("Telkomsel Project"), default=False)
 
+    # Nexus Fitur
+    is_deauth_timer = models.BooleanField(_("Deauthorize Timer"), default=False)
+
     # Custom List
     is_simple_list = models.BooleanField(_("Simple List"), default=False)
     is_lte_signal = models.BooleanField(_("LTE Signal"), default=False)
