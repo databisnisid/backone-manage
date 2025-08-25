@@ -200,15 +200,13 @@ class Members(models.Model):
         default=0,
         validators=[MaxValueValidator(settings.DEAUTH_TIMER_MAX)],
     )
-    """
     deauth_timer_start = models.DateTimeField(
         _("De-Authorize Timer Start"),
-        auto_now_add=True,
+        # auto_now_add=True,
         null=True,
         blank=True,
         editable=False,
     )
-    """
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -389,11 +387,13 @@ class Members(models.Model):
                     _("First, please setup IP Network in " + self.network.name)
                 )
 
-        # De-Authorize Fitur. Use offline_at Field
+        # De-Authorize Fitur.
         if self.is_authorized:
             if self.deauth_timer != 0:
-                self.offline_at = timezone.now() + timedelta(hours=self.deauth_timer)
-                # self.deauth_timer_start = timezone.now()
+                # self.offline_at = timezone.now() + timedelta(hours=self.deauth_timer)
+                self.deauth_timer_start = timezone.now()
+            else:
+                self.deauth_timer_start = None
 
     def list_ipaddress(self):
         text = ""

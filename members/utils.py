@@ -57,7 +57,6 @@ def deauthorize_member_offline_at():
     print(timezone.localtime(), "DONE - deauthorize_member_offline_at() function")
 
 
-"""
 def deauthorize_member_by_timer():
     print(timezone.localtime(), "START - deauthorize_member_by_timer() function")
     members = Members.objects.filter(is_authorized=True).exclude(deauth_timer=0)
@@ -69,4 +68,3 @@ def deauthorize_member_by_timer():
             member.save()
             print("Deauthorize member {} - {}".format(member.name, member.member_id))
     print(timezone.localtime(), "END - deauthorize_member_by_timer() function")
-"""

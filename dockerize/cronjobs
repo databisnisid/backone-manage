@@ -3,6 +3,8 @@
 */5 * * * *  python /app/manage.py shell --command "from monitor import cron; cron.cron_monitor_members()"
 # Deauthorizer member by offline_at
 0 * * * *  python /app/manage.py shell --command "from members.utils import deauthorize_member_offline_at; deauthorize_member_offline_at()"
+# Deauthorizer member by timer
+1 * * * *  python /app/manage.py shell --command "from members.utils import deauthorize_member_by_timer; deauthorize_member_by_timer()"
 # Zabbix Functions
 0 0 * * *  python /app/manage.py shell --command "from zabbix.utils import sync_zabbix_networks; sync_zabbix_networks()"
 0 */4 * * * python /app/manage.py shell --command "from mqtt.cron import get_quota; get_quota()"
