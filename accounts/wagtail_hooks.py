@@ -154,6 +154,7 @@ class FeaturesAdmin(ModelAdmin):
                 FieldRowPanel(
                     [FieldPanel("is_simple_list"), FieldPanel("is_lte_signal")]
                 ),
+                FieldRowPanel([FieldPanel("is_deauth_timer")]),
             ],
             heading=_("Additional Features"),
         ),

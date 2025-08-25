@@ -51,7 +51,7 @@ class Features(models.Model):
     is_telkomsel = models.BooleanField(_("Telkomsel Project"), default=False)
 
     # Nexus Fitur
-    is_deauth_timer = models.BooleanField(_("Deauthorize Timer"), default=False)
+    is_deauth_timer = models.BooleanField(_("De-Authorize Timer"), default=False)
 
     # Custom List
     is_simple_list = models.BooleanField(_("Simple List"), default=False)
