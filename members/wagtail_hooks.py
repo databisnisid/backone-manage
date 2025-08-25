@@ -494,6 +494,16 @@ class MembersAdmin(ModelAdmin):
             heading=_("Authorization and IP Address"),
             classname="collapsed",
         )
+        deauthorize_timer_panels = MultiFieldPanel(
+            [
+                FieldRowPanel(
+                    [FieldPanel("is_authorized"), FieldPanel("deauth_timer")]
+                ),
+                FieldPanel("ipaddress"),
+            ],
+            heading=_("Authorization and IP Address"),
+            classname="collapsed",
+        )
         ipaddress_panels = FieldPanel("ipaddress")
 
         tags_panels = MultiFieldPanel(
@@ -525,7 +535,10 @@ class MembersAdmin(ModelAdmin):
             if current_user.organization.features.geolocation:
                 custom_panels.append(geolocation_panels)
             if current_user.organization.features.authorize:
-                custom_panels.append(authorize_panels)
+                if current_user.organization.features.is_deauth_timer:
+                    custom_panels.append(deauthorize_timer_panels)
+                else:
+                    custom_panels.append(authorize_panels)
             else:
                 custom_panels.append(ipaddress_panels)
             if current_user.organization.features.mobile_connect:

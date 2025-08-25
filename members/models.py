@@ -1,3 +1,4 @@
+from warnings import warn
 from django.db.transaction import Atomic
 import redis
 import re
@@ -191,6 +192,18 @@ class Members(models.Model):
         Mqtt, on_delete=models.SET_NULL, verbose_name=_("Mqtt"), null=True
     )
 
+    # Nexus Fitur
+    deauth_timer = models.IntegerField(
+        _("De-Authorize Timer"), help_text=_("In Hour"), default=0
+    )
+    deauth_timer_start = models.DateTimeField(
+        _("De-Authorize Timer Start"),
+        auto_now_add=True,
+        null=True,
+        blank=True,
+        editable=False,
+    )
+
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
@@ -369,6 +382,10 @@ class Members(models.Model):
                 raise ValidationError(
                     _("First, please setup IP Network in " + self.network.name)
                 )
+
+        if self.is_authorized:
+            if self.deauth_timer != 0:
+                self.deauth_timer_start = timezone.now()
 
     def list_ipaddress(self):
         text = ""
