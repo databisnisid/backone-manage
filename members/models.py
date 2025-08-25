@@ -193,9 +193,7 @@ class Members(models.Model):
     )
 
     # Nexus Fitur
-    deauth_timer = models.IntegerField(
-        _("De-Authorize Timer"), help_text=_("In Hour"), default=0
-    )
+    deauth_timer = models.IntegerField(_("De-Authorize Timer (Hour)"), default=0)
     deauth_timer_start = models.DateTimeField(
         _("De-Authorize Timer Start"),
         auto_now_add=True,

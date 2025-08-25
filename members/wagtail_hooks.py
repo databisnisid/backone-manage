@@ -496,10 +496,8 @@ class MembersAdmin(ModelAdmin):
         )
         deauthorize_timer_panels = MultiFieldPanel(
             [
-                FieldRowPanel(
-                    [FieldPanel("is_authorized"), FieldPanel("deauth_timer")]
-                ),
-                FieldPanel("ipaddress"),
+                FieldPanel("is_authorized"),
+                FieldRowPanel([FieldPanel("ipaddress"), FieldPanel("deauth_timer")]),
             ],
             heading=_("Authorization and IP Address"),
             classname="collapsed",
