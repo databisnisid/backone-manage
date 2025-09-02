@@ -34,7 +34,7 @@ class Licenses(models.Model):
 
     license_features = models.OneToOneField(
         LicenseFeatures,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         blank=True,
         null=True,
         verbose_name=("LicenseFeatures"),

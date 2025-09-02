@@ -133,11 +133,13 @@ class LicensesAdmin(ModelAdmin):
     def get_edit_handler(self):
         superuser_panels = [
             FieldPanel("node_id", read_only=True),
+            FieldPanel("license_features", read_only=True),
             FieldPanel("organization"),
         ]
 
         admin_panels = [
             FieldPanel("node_id", read_only=True),
+            FieldPanel("license_features", read_only=True),
             FieldPanel("organization", read_only=True),
         ]
 
