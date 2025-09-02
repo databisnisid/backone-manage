@@ -306,6 +306,7 @@ class AccountsGroup(ModelAdminGroup):
 
 # Now you just need to register your customised ModelAdmin class with Wagtail
 # modeladmin_register(AccountsGroup)
+modeladmin_register(LicenseFeaturesAdmin)
 modeladmin_register(FeaturesAdmin)
 modeladmin_register(OrganizationsAdmin)
 modeladmin_register(GroupOrganizationsAdmin)
