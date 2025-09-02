@@ -180,7 +180,7 @@ class FeaturesAdmin(ModelAdmin):
 
 class LicenseFeaturesAdmin(ModelAdmin):
     model = LicenseFeatures
-    menu_label = "Features"  # ditch this to use verbose_name_plural from model
+    menu_label = "License Features"  # ditch this to use verbose_name_plural from model
     menu_icon = "snippet"  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
     inspect_view_enabled = True
