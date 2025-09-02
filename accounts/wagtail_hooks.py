@@ -191,7 +191,7 @@ class LicenseFeaturesAdmin(ModelAdmin):
     list_filter = ("name",)
     search_fields = ("name",)
     # ordering = ['name']
-    permission_helper_class = AccountsPermissionHelper
+    permission_helper_class = LicenseFeaturesPermissionHelper
 
     panels = [
         MultiFieldPanel(
