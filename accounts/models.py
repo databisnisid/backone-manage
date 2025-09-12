@@ -86,6 +86,7 @@ class Features(models.Model):
                 )
 
 
+"""
 class LicenseFeatures(models.Model):
     name = models.CharField(_("Name"), max_length=50, unique=True)
     description = models.TextField(_("Description"))
@@ -144,6 +145,7 @@ class LicenseFeatures(models.Model):
 
     def __str__(self):
         return "%s" % self.name
+"""
 
 
 class Organizations(models.Model):
@@ -159,6 +161,7 @@ class Organizations(models.Model):
         null=True,
     )
 
+    """
     license_features = models.ForeignKey(
         LicenseFeatures,
         on_delete=models.SET_NULL,
@@ -166,6 +169,7 @@ class Organizations(models.Model):
         blank=True,
         null=True,
     )
+    """
 
     is_no_org = models.BooleanField(default=False)
 

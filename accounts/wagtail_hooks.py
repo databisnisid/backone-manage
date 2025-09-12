@@ -5,7 +5,7 @@ from wagtail.contrib.modeladmin.options import (
     modeladmin_register,
 )
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
-from .models import Features, LicenseFeatures
+from .models import Features  # LicenseFeatures
 from django.utils.translation import gettext_lazy as _
 from .models import Organizations, GroupOrganizations
 
@@ -33,6 +33,17 @@ class AccountsPermissionHelper(PermissionHelper):
     def user_can_edit_obj(self, user, obj):
         return False
     """
+
+
+class FeaturesPermissionHelper(PermissionHelper):
+    def user_can_create(self, user):
+        return False
+
+    def user_can_delete_obj(self, user, obj):
+        if obj.id == 1:
+            return False
+        else:
+            return True
 
 
 class LicenseFeaturesPermissionHelper(PermissionHelper):
@@ -65,7 +76,8 @@ class OrganizationsAdmin(ModelAdmin):
 
     panels = [
         MultiFieldPanel(
-            [FieldPanel("name"), FieldPanel("features")], heading=_("Name and Features")
+            [FieldPanel("name"), FieldPanel("features", read_only=True)],
+            heading=_("Name and Features"),
         ),
         FieldPanel("controller"),
         FieldPanel("is_no_org"),
@@ -119,41 +131,69 @@ class FeaturesAdmin(ModelAdmin):
     list_filter = ("name",)
     search_fields = ("name",)
     # ordering = ['name']
-    permission_helper_class = AccountsPermissionHelper
+    permission_helper_class = FeaturesPermissionHelper
 
     panels = [
         MultiFieldPanel(
-            [FieldPanel("name"), FieldPanel("description")],
+            [
+                FieldPanel("name", read_only=True),
+                FieldPanel("description", read_only=True),
+            ],
             heading=_("Name and Description"),
         ),
         MultiFieldPanel(
             [
                 FieldRowPanel(
-                    [FieldPanel("network_multi_ip"), FieldPanel("network_rules")],
+                    [
+                        FieldPanel("network_multi_ip", read_only=True),
+                        FieldPanel("network_rules", read_only=True),
+                    ],
                     classname="collapsible collapsed",
                 ),
-                FieldPanel("number_of_network"),
+                FieldPanel("number_of_network", read_only=True),
             ],
             heading=_("Network Features"),
         ),
         MultiFieldPanel(
             [
-                FieldRowPanel([FieldPanel("authorize"), FieldPanel("member_multi_ip")]),
-                FieldRowPanel([FieldPanel("bridge"), FieldPanel("tags")]),
-                FieldPanel("number_of_member"),
+                FieldRowPanel(
+                    [
+                        FieldPanel("authorize", read_only=True),
+                        FieldPanel("member_multi_ip", read_only=True),
+                    ]
+                ),
+                FieldRowPanel(
+                    [
+                        FieldPanel("bridge", read_only=True),
+                        FieldPanel("tags", read_only=True),
+                    ]
+                ),
+                FieldPanel("number_of_member", read_only=True),
             ],
             # FieldRowPanel([FieldPanel('synchronize')])],
             heading=_("Member Features"),
         ),
         MultiFieldPanel(
-            [FieldRowPanel([FieldPanel("web"), FieldPanel("ssh")])],
+            [
+                FieldRowPanel(
+                    [
+                        FieldPanel("web", read_only=True),
+                        FieldPanel("ssh", read_only=True),
+                    ]
+                )
+            ],
             heading=_("Remote Access Features"),
         ),
-        MultiFieldPanel([FieldRowPanel([FieldPanel("is_dpi")])], heading=_("DPI")),
+        MultiFieldPanel(
+            [FieldRowPanel([FieldPanel("is_dpi", read_only=True)])], heading=_("DPI")
+        ),
         MultiFieldPanel(
             [
                 FieldRowPanel(
-                    [FieldPanel("is_webfilter"), FieldPanel("is_webfilter_multinet")]
+                    [
+                        FieldPanel("is_webfilter", read_only=True),
+                        FieldPanel("is_webfilter_multinet", read_only=True),
+                    ]
                 )
             ],
             heading=_("Web Filters"),
@@ -161,23 +201,41 @@ class FeaturesAdmin(ModelAdmin):
         MultiFieldPanel(
             [
                 FieldRowPanel(
-                    [FieldPanel("geolocation"), FieldPanel("online_offline")]
+                    [
+                        FieldPanel("geolocation", read_only=True),
+                        FieldPanel("online_offline", read_only=True),
+                    ]
                 ),
-                FieldRowPanel([FieldPanel("is_export"), FieldPanel("mobile_connect")]),
-                FieldRowPanel([FieldPanel("map_dashboard"), FieldPanel("is_nms")]),
                 FieldRowPanel(
-                    [FieldPanel("is_simple_list"), FieldPanel("is_lte_signal")]
+                    [
+                        FieldPanel("is_export", read_only=True),
+                        FieldPanel("mobile_connect", read_only=True),
+                    ]
                 ),
-                FieldRowPanel([FieldPanel("is_deauth_timer")]),
+                FieldRowPanel(
+                    [
+                        FieldPanel("map_dashboard", read_only=True),
+                        FieldPanel("is_nms", read_only=True),
+                    ]
+                ),
+                FieldRowPanel(
+                    [
+                        FieldPanel("is_simple_list", read_only=True),
+                        FieldPanel("is_lte_signal", read_only=True),
+                    ]
+                ),
+                FieldRowPanel([FieldPanel("is_deauth_timer", read_only=True)]),
             ],
             heading=_("Additional Features"),
         ),
         MultiFieldPanel(
-            [FieldRowPanel([FieldPanel("is_telkomsel")])], heading=_("Project Related")
+            [FieldRowPanel([FieldPanel("is_telkomsel", read_only=True)])],
+            heading=_("Project Related"),
         ),
     ]
 
 
+"""
 class LicenseFeaturesAdmin(ModelAdmin):
     model = LicenseFeatures
     menu_label = "License Features"  # ditch this to use verbose_name_plural from model
@@ -290,6 +348,7 @@ class LicenseFeaturesAdmin(ModelAdmin):
             heading=_("Project Related"),
         ),
     ]
+"""
 
 
 class AccountsGroup(ModelAdminGroup):
@@ -300,13 +359,13 @@ class AccountsGroup(ModelAdminGroup):
         OrganizationsAdmin,
         GroupOrganizationsAdmin,
         FeaturesAdmin,
-        LicenseFeaturesAdmin,
+        # LicenseFeaturesAdmin,
     )
 
 
 # Now you just need to register your customised ModelAdmin class with Wagtail
 # modeladmin_register(AccountsGroup)
-modeladmin_register(LicenseFeaturesAdmin)
+# modeladmin_register(LicenseFeaturesAdmin)
 modeladmin_register(FeaturesAdmin)
 modeladmin_register(OrganizationsAdmin)
 modeladmin_register(GroupOrganizationsAdmin)
