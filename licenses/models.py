@@ -10,7 +10,7 @@ from base64 import b64decode
 from rsa import PrivateKey, decrypt
 from config.utils import to_json, to_dictionary
 import json
-from accounts.models import Organizations, LicenseFeatures
+from accounts.models import Organizations  # , LicenseFeatures
 from crum import get_current_user
 
 
@@ -32,12 +32,17 @@ class Licenses(models.Model):
         limit_choices_to=limit_choices_to_org,
     )
 
+    """
     license_features = models.OneToOneField(
         LicenseFeatures,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
         verbose_name=("LicenseFeatures"),
+    )
+    """
+    license_features = models.TextField(
+        _("License Features"), blank=True, default="{}", editable=False
     )
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)

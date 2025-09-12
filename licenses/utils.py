@@ -1,3 +1,4 @@
+import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.timezone import datetime
@@ -6,21 +7,25 @@ from rsa import PublicKey, encrypt
 from uuid import getnode
 from base64 import b64decode, b64encode
 
-from accounts.models import Organizations
+from accounts.models import Organizations, Features
 from controllers.models import Controllers
 from networks.models import NetworkRules
 from .models import Licenses
 
 
-''' Not Used '''
+""" Not Used """
+
+
 def encrypt_node_id(key):
     node_id = hex(getnode())
-    node_id_encrypted = encrypt(node_id(),encode(), publick_key)
+    node_id_encrypted = encrypt(node_id(), encode(), publick_key)
     node_id_b64 = b64encode(node_id_encrypted).decode()
     return node_id_b64
 
 
-''' Check License Validity True/False'''
+""" Check License Validity True/False"""
+
+
 def is_license_valid(user):
 
     result = False
@@ -39,45 +44,64 @@ def is_license_valid(user):
     return result
 
 
-def check_license(lic_json):
-    node_id = lic_json['node_id']
-    uuid = lic_json['uuid']
-    token = b64decode(lic_json['token']).decode()
-    license_code = lic_json['license_code']
-    is_block_rule = lic_json['is_block_rule']
+def update_features(features: dict) -> Features:
+    try:
+        del features["id"]
+    except KeyError:
+        pass
+
+    uuid = features["uuid"]
 
     try:
-        valid_until = lic_json['valid_until']
+        obj = Features.objects.get(uuid=uuid)
+        # Update fields using dictionary values
+        for key, value in features.items():
+            setattr(obj, key, value)
+
+        obj.save()
+
+    except ObjectDoesNotExist:
+        obj = Features.objects.create(**features)
+
+    return obj
+
+
+def check_license(lic_json):
+    node_id = lic_json["node_id"]
+    uuid = lic_json["uuid"]
+    token = b64decode(lic_json["token"]).decode()
+    license_code = lic_json["license_code"]
+    is_block_rule = lic_json["is_block_rule"]
+    features = lic_json["features"]
+
+    try:
+        valid_until = lic_json["valid_until"]
     except KeyError:
         valid_until = str(timezone.now())
 
-    lic_result = {
-            'status': 0,
-            'msg': 'License is NOT VALID'
-            }
+    lic_result = {"status": 0, "msg": "License is NOT VALID"}
     try:
         controller = Controllers.objects.get(token=token)
     except ObjectDoesNotExist:
         controller = None
 
     lic = None
-        
+
+    organization = None
     if controller:
         try:
-            organization = Organizations.objects.get(uuid=uuid,
-                                                    controller=controller)
+            organization = Organizations.objects.get(uuid=uuid, controller=controller)
+            features["description"] = organization.name
         except ObjectDoesNotExist:
             organization = None
 
         if organization:
             try:
-                lic = Licenses.objects.get(node_id=node_id,
-                                   organization=organization)
+                lic = Licenses.objects.get(node_id=node_id, organization=organization)
             except ObjectDoesNotExist:
-                lic_result['msg'] = 'License is NOT FOUND! Check Node ID'
+                lic_result["msg"] = "License is NOT FOUND! Check Node ID"
 
-
-    datetime_format = '%Y-%m-%d %H:%M:%S%z'
+    datetime_format = "%Y-%m-%d %H:%M:%S%z"
     try:
         new_license_valid_until = datetime.strptime(valid_until, datetime_format)
     except:
@@ -92,39 +116,58 @@ def check_license(lic_json):
                     if new_license_valid_until > lic_valid_until:
                         lic.license_string = license_code
                         lic.is_block_rule = is_block_rule
+                        print("UPDATE")
+                        print(features)
+                        lic.license_features = json.dumps(features)
                         lic.save()
-                        lic_result['status'] = 1
-                        lic_result['msg'] = 'License Update is succeed'
+                        lic_result["status"] = 1
+                        lic_result["msg"] = "License Update is succeed"
                     else:
-                        lic_result['msg'] = 'New license validity is older than installed license'
+                        lic_result["msg"] = (
+                            "New license validity is older than installed license"
+                        )
                 else:
                     try:
-                        license_key = lic_json['license_key']
+                        license_key = lic_json["license_key"]
                         lic.license_key = license_key
                         lic.license_string = license_code
                         lic.is_block_rule = is_block_rule
+                        print("INIT")
+                        print(features)
+                        lic.license_features = json.dumps(features)
                         lic.save()
-                        lic_result['status'] = 1
-                        lic_result['msg'] = 'License Init is succeed'
+                        lic_result["status"] = 1
+                        lic_result["msg"] = "License Init is succeed"
                     except:
-                        lic_result['msg'] = 'Init License is required' 
+                        lic_result["msg"] = "Init License is required"
+
+                """ START - Update Features """
+                features_obj = update_features(features)
+
+                """ This is for migration to License Features """
+                """ Update Organization Feature to License Features """
+                if organization and settings.USE_LICENSE_FEATURES != 0:
+                    organization.features = features_obj
+                    organization.save()
+                """ END - Update Features """
 
             else:
-                lic_result['msg'] = 'License validity must be in the future'
+                lic_result["msg"] = "License validity must be in the future"
 
         else:
-            lic_result['msg'] = 'License is NOT Match'
+            lic_result["msg"] = "License is NOT Match"
 
     else:
-        ''' if new_license_valid_until: '''
-        lic_result['msg'] = 'License Validity is INVALID'
-        
+        """if new_license_valid_until:"""
+        lic_result["msg"] = "License Validity is INVALID"
 
     return lic_result
 
 
-''' Preparation for Block Rule base on License '''
-''' Running every midnite in cronjob '''
+""" Preparation for Block Rule base on License """
+""" Running every midnite in cronjob """
+
+
 def check_license_status():
     licenses = Licenses.objects.all()
 
@@ -132,15 +175,15 @@ def check_license_status():
         if license.is_block_rule:
 
             is_block_rule = True
-            ''' License status True - VALID '''
+            """ License status True - VALID """
             if license.get_license_status():
                 is_block_rule = False
 
             network_rules = NetworkRules.objects.filter(
-                            organization=license.organization)
+                organization=license.organization
+            )
 
             for network_rule in network_rules:
                 if network_rule.is_block_rule != is_block_rule:
                     network_rule.is_block_rule = is_block_rule
                     network_rule.save()
-
