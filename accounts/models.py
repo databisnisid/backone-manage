@@ -14,7 +14,7 @@ from modelcluster.fields import ParentalKey, ParentalManyToManyField
 
 
 class Features(models.Model):
-    name = models.CharField(_("Name"), max_length=50, unique=True)
+    name = models.CharField(_("Name"), max_length=250, unique=True)
     description = models.TextField(_("Description"))
 
     # Network
