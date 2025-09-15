@@ -64,7 +64,7 @@ class OrganizationsAdmin(ModelAdmin):
     model = Organizations
     # button_helper_class = ControllerButtonHelper   # Uncomment this to enable button
     # inspect_view_enabled = True
-    menu_label = "Organizations"  # ditch this to use verbose_name_plural from model
+    menu_label = _("Organizations")  # ditch this to use verbose_name_plural from model
     menu_icon = "group"  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = (
@@ -103,9 +103,9 @@ class GroupOrganizationsAdmin(ModelAdmin):
     model = GroupOrganizations
     # button_helper_class = ControllerButtonHelper   # Uncomment this to enable button
     # inspect_view_enabled = True
-    menu_label = (
-        "Group Organizations"  # ditch this to use verbose_name_plural from model
-    )
+    menu_label = _(
+        "Group Organizations"
+    )  # ditch this to use verbose_name_plural from model
     menu_icon = "group"  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = (
@@ -121,7 +121,7 @@ class GroupOrganizationsAdmin(ModelAdmin):
 
 class FeaturesAdmin(ModelAdmin):
     model = Features
-    menu_label = "Features"  # ditch this to use verbose_name_plural from model
+    menu_label = _("Features")  # ditch this to use verbose_name_plural from model
     menu_icon = "snippet"  # change as required
     add_to_settings_menu = True  # or True to add your model to the Settings sub-menu
     exclude_from_explorer = (
