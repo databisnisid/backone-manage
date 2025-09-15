@@ -44,13 +44,17 @@ def is_license_valid(user):
     return result
 
 
-def update_features(features: dict) -> Features:
+def update_features(features: dict, organization) -> Features:
     try:
         del features["id"]
     except KeyError:
         pass
 
-    uuid = features["uuid"]
+    # uuid = features["uuid"]
+    features["uuid"] = uuid = organization.uuid
+    features["name"] = f"{features['name']}/{organization.uuid}"
+    # features["description"] = f"{organization.name}/{organization.uuid}"
+    features["description"] = f"{organization.name}"
 
     try:
         obj = Features.objects.get(uuid=uuid)
@@ -62,6 +66,13 @@ def update_features(features: dict) -> Features:
 
     except ObjectDoesNotExist:
         obj = Features.objects.create(**features)
+
+    """ This is for migration to License Features """
+    """ Update Organization Feature to License Features """
+    if organization and settings.USE_LICENSE_FEATURES != 0:
+        organization.features = obj
+        organization.save()
+    """ END - Update Features """
 
     return obj
 
@@ -91,7 +102,7 @@ def check_license(lic_json):
     if controller:
         try:
             organization = Organizations.objects.get(uuid=uuid, controller=controller)
-            features["description"] = f"{organization.name}/{organization.uuid}"
+            # features["description"] = f"{organization.name}/{organization.uuid}"
         except ObjectDoesNotExist:
             organization = None
 
@@ -142,13 +153,13 @@ def check_license(lic_json):
                         lic_result["msg"] = "Init License is required"
 
                 """ START - Update Features """
-                features_obj = update_features(features)
+                features_obj = update_features(features, organization)
 
                 """ This is for migration to License Features """
                 """ Update Organization Feature to License Features """
-                if organization and settings.USE_LICENSE_FEATURES != 0:
-                    organization.features = features_obj
-                    organization.save()
+                # if organization and settings.USE_LICENSE_FEATURES != 0:
+                #    organization.features = features_obj
+                #    organization.save()
                 """ END - Update Features """
 
             else:
