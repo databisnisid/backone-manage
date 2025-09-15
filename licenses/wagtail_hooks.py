@@ -88,6 +88,7 @@ class LicensesAdmin(ModelAdmin):
         "get_organization_uuid",
         "get_controller_token",
         "organization",
+        "features_name",
         "get_license_time",
         "get_license_msg",
     )
@@ -117,6 +118,7 @@ class LicensesAdmin(ModelAdmin):
                 "node_id",
                 "get_organization_uuid",
                 "organization",
+                "features_name",
                 "get_license_time",
                 "get_license_msg",
             )
@@ -124,6 +126,7 @@ class LicensesAdmin(ModelAdmin):
             list_display = (
                 "node_id",
                 "organization",
+                "features_name",
                 "get_license_time",
                 "get_license_msg",
             )

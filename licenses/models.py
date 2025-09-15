@@ -69,6 +69,16 @@ class Licenses(models.Model):
 
         return super(Licenses, self).save()
 
+    def features_name(self):
+        result = ""
+        if self.license_features:
+            lf = json.loads(self.license_features)
+            result = lf["name"]
+
+        return result
+
+    features_name.short_description = _("Features")
+
     def get_organization_uuid(self):
         if self.organization:
             return self.organization.uuid
