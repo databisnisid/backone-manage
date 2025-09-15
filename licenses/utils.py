@@ -51,13 +51,13 @@ def update_features(features: dict, organization) -> Features:
         pass
 
     # uuid = features["uuid"]
-    features["uuid"] = uuid = organization.uuid
+    features["description"] = f"{organization.name}/{features['uuid']}"
+    features["uuid"] = organization.uuid
     features["name"] = f"{features['name']}/{organization.uuid}"
     # features["description"] = f"{organization.name}/{organization.uuid}"
-    features["description"] = f"{organization.name}"
 
     try:
-        obj = Features.objects.get(uuid=uuid)
+        obj = Features.objects.get(uuid=organization.uuid)
         # Update fields using dictionary values
         for key, value in features.items():
             setattr(obj, key, value)
