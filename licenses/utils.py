@@ -91,7 +91,7 @@ def check_license(lic_json):
     if controller:
         try:
             organization = Organizations.objects.get(uuid=uuid, controller=controller)
-            features["description"] = f"{organization.name}/{organization.uuid}
+            features["description"] = f"{organization.name}/{organization.uuid}"
         except ObjectDoesNotExist:
             organization = None
 
