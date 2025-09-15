@@ -71,9 +71,11 @@ class Licenses(models.Model):
 
     def features_name(self):
         result = ""
-        if self.license_features:
-            lf = json.loads(self.license_features)
+        lf = json.loads(self.license_features)
+        try:
             result = lf["name"]
+        except KeyError:
+            pass
 
         return result
 
