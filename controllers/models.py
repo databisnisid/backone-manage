@@ -6,27 +6,30 @@ from django.utils.html import format_html
 
 
 def to_dictionary(data):
-    return ast.literal_eval(data.replace("\'", "\""))
+    return ast.literal_eval(data.replace("'", '"'))
 
 
 class Controllers(models.Model):
-    name = models.CharField(_('Name'), max_length=50, default='Default Controller')
-    description = models.TextField(_('Description'), blank=True)
-    uri = models.URLField(_('URL'), max_length=100, default='http://localhost:9993', unique=True)
-    token = models.CharField(_('Token'), max_length=50, unique=True)
+    name = models.CharField(_("Name"), max_length=50, default="Default Controller")
+    description = models.TextField(_("Description"), blank=True)
+    # uri = models.URLField(_('URL'), max_length=100, default='http://localhost:9993', unique=True)
+    uri = models.CharField(
+        _("URL"), max_length=100, default="http://localhost:9993", unique=True
+    )
+    token = models.CharField(_("Token"), max_length=50, unique=True)
 
-    configuration = models.TextField(_('Configuration'), blank=True)
+    configuration = models.TextField(_("Configuration"), blank=True)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
-        db_table = 'controllers'
-        verbose_name = 'controller'
-        verbose_name_plural = 'controllers'
+        db_table = "controllers"
+        verbose_name = "controller"
+        verbose_name_plural = "controllers"
 
     def __str__(self):
-        return '%s' % self.name
+        return "%s" % self.name
 
     def save(self):
         zt = Zerotier(self.uri, self.token)
@@ -37,31 +40,34 @@ class Controllers(models.Model):
     def status(self):
         config = to_dictionary(self.configuration)
         text = format_html("<span style='color: red;'>OFFLINE</span>")
-        if 'online' in config:
-            if config['online']:
+        if "online" in config:
+            if config["online"]:
                 text = format_html("<span style='color: green;'>ONLINE</span>")
 
         return text
 
-    status.short_description = _('Status')
+    status.short_description = _("Status")
 
     def node_id(self):
         config = to_dictionary(self.configuration)
-        if 'address' in config:
-            return config['address']
+        if "address" in config:
+            return config["address"]
         else:
-            return ''
-    node_id.short_description = _('Node ID')
+            return ""
+
+    node_id.short_description = _("Node ID")
 
     def version(self):
         config = to_dictionary(self.configuration)
-        if 'version' in config:
-            return config['version']
+        if "version" in config:
+            return config["version"]
         else:
-            return ''
-    version.short_description = _('Version')
+            return ""
 
-'''
+    version.short_description = _("Version")
+
+
+"""
 class UserControllers(models.Model):
     user = models.ForeignKey(
         User,
@@ -80,4 +86,4 @@ class UserControllers(models.Model):
 
     def __str__(self):
         return '%s' % self.user
-'''
+"""
