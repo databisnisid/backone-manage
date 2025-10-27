@@ -12,10 +12,10 @@ def to_dictionary(data):
 class Controllers(models.Model):
     name = models.CharField(_("Name"), max_length=50, default="Default Controller")
     description = models.TextField(_("Description"), blank=True)
-    uri = models.URLField(_('URL'), max_length=100, default='http://localhost:9993', unique=True)
-    #uri = models.CharField(
-    #    _("URL"), max_length=100, default="http://localhost:9993", unique=True
-    #)
+    #uri = models.URLField(_('URL'), max_length=100, default='http://localhost:9993', unique=True)
+    uri = models.CharField(
+        _("URL"), max_length=100, default="http://localhost:9993", unique=True
+    )
     token = models.CharField(_("Token"), max_length=50, unique=True)
 
     configuration = models.TextField(_("Configuration"), blank=True)
