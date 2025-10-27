@@ -6,7 +6,7 @@ from django.utils.html import format_html
 
 
 def to_dictionary(data):
-    return ast.literal_eval(data.replace("'", '"'))
+    return ast.literal_eval(data.replace("\'", '\"'))
 
 
 class Controllers(models.Model):
