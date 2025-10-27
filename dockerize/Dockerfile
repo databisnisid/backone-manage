@@ -7,6 +7,7 @@ RUN echo "Asia/Jakarta" > /etc/timezone
 RUN apk add --no-cache nodejs
 
 RUN apk add --no-cache mariadb-dev build-base
+RUN apk add --no-cache libjpeg-turbo-dev zlib-dev freetype-dev lcms2-dev tiff-dev openjpeg-dev harfbuzz-dev fribidi-dev
 
 RUN mkdir /app
 WORKDIR /app
@@ -22,7 +23,7 @@ COPY requirements.txt /app
 RUN pip install --no-cache-dir  -r requirements.txt
 
 # copy project
-COPY . /app
+#COPY . /app
 
 # copy cronjobs
 COPY dockerize/cronjobs /etc/crontabs/root
