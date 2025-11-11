@@ -439,7 +439,7 @@ class MembersAdmin(ModelAdmin):
             MultiFieldPanel(
                 [
                     FieldPanel("name"),
-                    FieldPanel("member_code"),
+                    # FieldPanel("member_code"),
                     FieldPanel("description"),
                 ],
                 heading=_("Member Name, Code and Description"),
@@ -481,7 +481,7 @@ class MembersAdmin(ModelAdmin):
                 GeoAddressPanel("address", geocoder=geocoders.GOOGLE_MAPS),
                 GoogleMapsPanel("location", address_field="address"),
             ],
-            heading=_("Geo Location"),
+            heading=_("Static Geo Location"),
             classname="collapsed",
         )
 
