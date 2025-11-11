@@ -272,7 +272,7 @@ class MembersAdmin(ModelAdmin):
     model = Members
     button_helper_class = MembersButtonHelper
     permission_helper_class = MembersPermissionHelper
-    inspect_view_enabled = True
+    inspect_view_enabled = settings.IS_INSPECT_ENABLED
     menu_label = "Members"  # ditch this to use verbose_name_plural from model
     menu_icon = "list-ul"  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
@@ -588,7 +588,7 @@ class MemberPeersAdmin(SnippetViewSet):
     # class MemberPeersAdmin(ModelAdmin):
 
     model = MemberPeers
-    inspect_view_enabled = True
+    inspect_view_enabled = settings.IS_INSPECT_ENABLED
     # index_template_name = 'mqtt/snippets/index.html'
     menu_label = "MemberPeers"  # ditch this to use verbose_name_plural from model
     # add_to_settings_menu = False  # or True to add your model to the Settings sub-menu

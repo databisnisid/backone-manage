@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin,
     PermissionHelper,
@@ -206,7 +207,7 @@ class RestrictedFieldPanel(FieldPanel):
 
 class NetworksAdmin(ModelAdmin):
     model = Networks
-    inspect_view_enabled = True
+    inspect_view_enabled = settings.IS_INSPECT_ENABLED
     menu_label = "Networks"  # ditch this to use verbose_name_plural from model
     menu_icon = "link"  # change as required
     add_to_settings_menu = False  # or True to add your model to the Settings sub-menu
