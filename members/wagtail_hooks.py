@@ -364,12 +364,11 @@ class MembersAdmin(ModelAdmin):
         ]
         list_display_telkomsel = [
             "name",
-            "member_code",
+            # "member_code",
             "address",
             "ipaddress",
-            "switchport_up",
-            "online_status",
-            "quota_vnstat",
+            "member_id",
+            "is_authorized",
         ]
         if current_user.organization.features.is_telkomsel:
             list_display = list_display_telkomsel
