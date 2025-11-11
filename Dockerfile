@@ -39,7 +39,19 @@ COPY . /app
 COPY dockerize/cronjobs /etc/crontabs/root
 
 # Remove Package
-RUN apk del build-base
+#RUN apk del build-base
+RUN apk del mariadb-dev build-base \
+  libffi-dev \
+  jpeg-dev \
+  zlib-dev \
+  freetype-dev \
+  lcms2-dev \
+  openjpeg-dev \
+  tiff-dev \
+  tk-dev \
+  tcl-dev \
+  harfbuzz-dev \
+  fribidi-dev
 
 EXPOSE 8008
 
