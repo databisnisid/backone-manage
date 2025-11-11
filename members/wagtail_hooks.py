@@ -302,13 +302,7 @@ class MembersAdmin(ModelAdmin):
         "online_at",
         "offline_at",
     )
-    list_filter = (
-        "is_waf",
-        "is_dpi",
-        "is_authorized",
-        "network",
-        GroupOrganizationFilter,
-    )
+
     search_fields = (
         "name",
         "member_id",
@@ -326,6 +320,19 @@ class MembersAdmin(ModelAdmin):
 
     create_template_name = "modeladmin/create.html"
     edit_template_name = "modeladmin/edit.html"
+
+    def get_list_filter(self, request):
+        list_filter = ()
+        if request.user.is_superuser:
+            list_filter = (
+                "is_waf",
+                "is_dpi",
+                "is_authorized",
+                "network",
+                GroupOrganizationFilter,
+            )
+
+        return list_filter
 
     def get_list_display(self, request):
         # current_user = get_current_user()
