@@ -40,10 +40,13 @@ class FeaturesPermissionHelper(PermissionHelper):
         return False
 
     def user_can_delete_obj(self, user, obj):
-        if obj.id == 1:
+        """
+        if obj.id == 1 and not user.is_superuser:
             return False
         else:
             return True
+        """
+        return False
 
 
 class LicenseFeaturesPermissionHelper(PermissionHelper):
