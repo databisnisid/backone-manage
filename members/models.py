@@ -438,7 +438,7 @@ class Members(models.Model):
 
         thumbnail_static = static(f"dashboard/images/{thumbnail}")
 
-        return mark_safe(f'<img src="{thumbnail_static}" width="50" height="50" />')
+        return mark_safe(f'<img src="{thumbnail_static}" width="30" height="30" />')
 
     is_authorized_thumbnail.short_description = _("Authorized")
 
