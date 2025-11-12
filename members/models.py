@@ -1,5 +1,6 @@
 from warnings import warn
 from django.db.transaction import Atomic
+from django.utils.safestring import mark_safe
 import redis
 import re
 from connectors import redis_ipinfo
@@ -34,6 +35,7 @@ from mqtt.redis import (
     get_msg_by_index,
     get_parameter_by_index,
 )
+from django.templatetags.static import static
 
 
 def get_quota(text: str = None):
@@ -428,6 +430,15 @@ class Members(models.Model):
         )
 
     list_ipaddress.short_description = _("ID, IP and Network")
+
+    def is_authorized_thumbnail(self):
+        thumbnail = "no.png"
+        if self.is_authorized:
+            thumbnail = "yes.png"
+
+        thumbnail_static = static(f"dashboard/images/{thumgbnail}")
+
+        return mark_safe(f'<img src="{thumbnail_static}" />')
 
     def list_ip_peers(self):
         peers = to_dictionary("{}")

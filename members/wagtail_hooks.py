@@ -372,7 +372,7 @@ class MembersAdmin(ModelAdmin):
             "address",
             "ipaddress",
             "member_id",
-            "is_authorized",
+            "is_authorized_thumbnail",
         ]
         if current_user.organization.features.is_telkomsel:
             list_display = list_display_telkomsel
