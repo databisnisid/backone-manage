@@ -373,6 +373,7 @@ class MembersAdmin(ModelAdmin):
             "ipaddress",
             "member_id",
             "is_authorized_thumbnail",
+            "online_status",
         ]
         if current_user.organization.features.is_telkomsel:
             list_display = list_display_telkomsel
