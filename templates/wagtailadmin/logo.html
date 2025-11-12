@@ -1,0 +1,32 @@
+{% load wagtailadmin_tags %}
+  {% if 'backone.cloud' in request.build_absolute_uri %}
+        <div id="login-logo">
+              <!--
+                <img src="{% versioned_static 'dashboard/images/backone-manage-logo.svg' %}" alt=""/>
+              -->
+        </div>
+  {% elif organization.logo.file.url %}
+        <div>
+            <img src="{{ organization.logo.file.url }}" />
+        </div>
+  {% else %}
+        <div>
+            <img src="{% versioned_static 'dashboard/images/dashboard-logo.png' %}" alt=""/>
+        </div>
+  {% endif %}
+<script>
+let eDiv = document.getElementById("login-logo");
+let eImg = document.createElement("img");
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    if (eDiv) {
+        eImg.src = "{% versioned_static 'dashboard/images/backone-logotext-dark.svg' %}";
+        eDiv.appendChild(eImg);
+    }
+}
+else {
+    if (eDiv) {
+        eImg.src = "{% versioned_static 'dashboard/images/backone-logotext-light.svg' %}";
+        eDiv.appendChild(eImg);
+    }
+}
+</script>

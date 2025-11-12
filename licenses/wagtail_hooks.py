@@ -1,5 +1,8 @@
-from wagtail.contrib.modeladmin.helpers import ButtonHelper
-from wagtail.contrib.modeladmin.options import (
+from wagtail_modeladmin.helpers import ButtonHelper
+
+# from wagtail.contrib.modeladmin.helpers import ButtonHelper
+# from wagtail.contrib.modeladmin.options import (
+from wagtail_modeladmin.options import (
     ModelAdmin,
     ModelAdminGroup,
     ObjectList,

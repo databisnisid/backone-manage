@@ -1,6 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from wagtail.contrib.modeladmin.options import (
+
+# from wagtail.contrib.modeladmin.options import (
+from wagtail_modeladmin.options import (
     ModelAdmin,
     PermissionHelper,
     modeladmin_register,

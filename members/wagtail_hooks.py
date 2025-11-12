@@ -1,11 +1,15 @@
 from django.core.exceptions import ObjectDoesNotExist
-from wagtail.contrib.modeladmin.options import (
+
+# from wagtail.contrib.modeladmin.options import (
+from wagtail_modeladmin.options import (
     ModelAdmin,
     modeladmin_register,
     ButtonHelper,
     PermissionHelper,
 )
-from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
+from wagtail_modeladmin.views import ModelFormView, InstanceSpecificView
+
+# from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
 

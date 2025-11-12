@@ -1,5 +1,7 @@
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from wagtail.contrib.modeladmin.options import (
+
+# from wagtail.contrib.modeladmin.options import (
+from wagtail_modeladmin.options import (
     ModelAdmin,
     ModelAdminGroup,
     PermissionHelper,

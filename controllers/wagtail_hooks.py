@@ -1,11 +1,14 @@
-from wagtail.contrib.modeladmin.options import (
+# from wagtail.contrib.modeladmin.options import (
+from wagtail_modeladmin.options import (
     ModelAdmin,
     PermissionHelper,
     modeladmin_register,
 )
+from wagtail_modeladmin.helpers import ButtonHelper
+
+# from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from .models import Controllers
-from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from django.utils.translation import gettext as _
 from controllers.workers import zt_import_all_controllers
 from django.conf import settings

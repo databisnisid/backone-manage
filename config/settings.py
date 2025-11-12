@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "licenses",
     "webfilters",
     "accounts",
+    "config.apps.CustomUsersAppConfig",
     "dashboard",
     "controllers",
     "networks",
@@ -46,7 +47,8 @@ INSTALLED_APPS = [
     "wagtail.contrib.redirects",
     "wagtail.embeds",
     "wagtail.sites",
-    "wagtail.users",
+    # "wagtail.users",
+    # "accounts",
     "wagtail.snippets",
     "wagtail.documents",
     "wagtail.images",
@@ -252,9 +254,9 @@ CLIJS = str(BASE_DIR) + "/controllers/rule-compiler/cli.js"
 AUTH_USER_MODEL = "accounts.User"
 
 # Custom Form
-WAGTAIL_USER_EDIT_FORM = "accounts.forms.CustomUserEditForm"
-WAGTAIL_USER_CREATION_FORM = "accounts.forms.CustomUserCreationForm"
-WAGTAIL_USER_CUSTOM_FIELDS = ["organization"]
+# WAGTAIL_USER_EDIT_FORM = "accounts.forms.CustomUserEditForm"
+# WAGTAIL_USER_CREATION_FORM = "accounts.forms.CustomUserCreationForm"
+# WAGTAIL_USER_CUSTOM_FIELDS = ["organization"]
 
 # WAGTAIL 4.2
 WAGTAIL_ENABLE_WHATS_NEW_BANNER = False
