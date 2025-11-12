@@ -374,6 +374,7 @@ class MembersAdmin(ModelAdmin):
             "member_id",
             "is_authorized_thumbnail",
             "online_status",
+            "serialnumber",
         ]
         if current_user.organization.features.is_telkomsel:
             list_display = list_display_telkomsel
