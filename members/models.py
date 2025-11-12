@@ -746,6 +746,8 @@ class Members(models.Model):
         result = get_msg_by_index(self.member_id, 8)  # Index 8 -> Serial Number
         return result
 
+    serialnumber.short_description = _("Serial Number")
+
     def model(self):
         result = get_msg_by_index(self.member_id, 1)  # Index 1 -> model
         return result
