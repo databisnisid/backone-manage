@@ -436,7 +436,7 @@ class Members(models.Model):
         if self.is_authorized:
             thumbnail = "yes.png"
 
-        thumbnail_static = static(f"dashboard/images/{thumgbnail}")
+        thumbnail_static = static(f"dashboard/images/{thumbnail}")
 
         return mark_safe(f'<img src="{thumbnail_static}" />')
 
