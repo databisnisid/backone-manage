@@ -85,7 +85,7 @@ class NetworksPermissionHelper(PermissionHelper):
         result = True
 
         if not user.has_perm("networks.delete_networks"):
-            result = True
+            result = False
 
         """ Check License """
         if not is_license_valid(user):
