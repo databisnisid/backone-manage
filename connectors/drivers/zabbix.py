@@ -46,11 +46,11 @@ class Zabbix:
 
         return result
 
-    def hostgroup_create(self, groupname : str ="Zabbix servers") -> int:
+    def hostgroup_create(self, groupname: str = "Zabbix servers") -> int:
         params = {"name": groupname}
         try:
             result = self.api.hostgroup.create(params)
-            result = int(result['groupids'][0])
+            result = int(result["groupids"][0])
         except APIRequestError as e:
             result = 0
             print(f"An error occurred: {e}")
@@ -96,10 +96,11 @@ class Zabbix:
             groupid = self.hostgroup_create(groupname)
 
         groups = [{"groupid": groupid}]
-        result = self.api.host.create(host=hostname, name=hostname, interfaces=[], groups)
+        result = self.api.host.create(
+            host=hostname, name=hostname, interfaces=[], groups=groups
+        )
 
         return result
-
 
     """ Not Working """
     """
