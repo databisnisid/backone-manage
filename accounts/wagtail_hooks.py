@@ -123,6 +123,13 @@ class OrganizationsAdmin(ModelAdmin):
         # self.inspect_view_enabled = True
         super().__init__(*args, **kwargs)
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        if not request.user.is_superuser:
+            queryset = queryset.exclude(id=1)
+
+        return queryset
+
 
 class GroupOrganizationsAdmin(ModelAdmin):
     model = GroupOrganizations
@@ -258,6 +265,13 @@ class FeaturesAdmin(ModelAdmin):
             heading=_("Project Related"),
         ),
     ]
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        if not request.user.is_superuser:
+            queryset = queryset.exclude(id=1)
+
+        return queryset
 
 
 """
