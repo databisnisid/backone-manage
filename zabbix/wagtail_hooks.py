@@ -39,7 +39,7 @@ class ZabbixNetworksAdmin(ModelAdmin):
     )
     list_display = ["name"]
     permission_helper_class = ZabbixNetworksPermissionHelper
-    edit_view_extra_js = ["static/zabbix/js/disable_name.js"]
+    form_view_extra_js = ["static/zabbix/js/disable_name.js"]
 
 
 modeladmin_register(ZabbixConfigsAdmin)
