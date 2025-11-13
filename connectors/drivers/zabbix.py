@@ -2,6 +2,14 @@ from django.db.models import NullBooleanField
 from zabbix_utils import ZabbixAPI
 from django.conf import settings
 
+"""
+Create:
+zapi.api.host.create(host="test-zabbix",name="Test Zabbix",interfaces=[],groups=[{"groupid": 29}])
+
+Search Group:
+zapi.api.hostgroup.get(search={'name': 'Nexus'}, output=['name', 'groupid'])
+"""
+
 
 class Zabbix:
     def __init__(self, zabbix_url=None, zabbix_token=None):
@@ -34,6 +42,19 @@ class Zabbix:
             if host["host"] == hostname:
                 result = host["hostid"]
                 break
+
+        return result
+
+    def hostgroup_get_groupid(self, groupname: str = "Zabbix servers") -> int:
+        """
+        zapi.api.hostgroup.get(search={"name": "Nexus"}, output=["name", "groupid"])
+        """
+        search = {"name": groupname}
+        output = ["name", "groupid"]
+        result = self.api.hostgroup.get(search, output)
+
+        if result:
+            result = result[0]["groupid"]
 
         return result
 
