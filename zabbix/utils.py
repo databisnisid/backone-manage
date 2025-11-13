@@ -60,7 +60,11 @@ def sync_member_inventory(network, zabbix):
                 },
             }
             result = zabbix.host_update_inventory(hostname, params)
-            print(result)
+
+            if not result:
+                print(f"Host: {hostname} NOT found! Try to create it.")
+                result = zabbix.host_create(hostname, params)
+                print(f"Host '{hostname}' created with ID: {result['hostids'][0]}")
 
 
 def sync_zabbix_networks():
