@@ -4,6 +4,14 @@
 {% block header %}
     {% include "modeladmin/includes/header_with_history.html" with title=view.get_page_title subtitle=view.get_page_subtitle icon=view.header_icon merged=1 latest_log_entry=latest_log_entry history_url=history_url %}
 {% endblock %}
+{% block extra_css %}
+<style>
+.readonly-field {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+</style>
+{% endblock %}
 
 {% block form_action %}{{ view.edit_url }}{% endblock %}
 
