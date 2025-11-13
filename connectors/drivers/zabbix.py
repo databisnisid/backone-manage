@@ -16,11 +16,12 @@ class Zabbix:
         else:
             self.token = settings.ZABBIX_TOKEN
 
-        self.api = ZabbixAPI(url=self.url)
+        # self.api = ZabbixAPI(url=self.url)
+        self.api = ZabbixAPI(url=self.url, skip_version_check=True)
         self.api.login(token=self.token)
         self.hosts = []
 
-    def host_get(self, output=['hostid', 'host']):
+    def host_get(self, output=["hostid", "host"]):
         self.hosts = self.api.host.get(output)
         return self.hosts
 
@@ -30,8 +31,8 @@ class Zabbix:
 
         result = None
         for host in self.hosts:
-            if host['host'] == hostname:
-                result = host['hostid']
+            if host["host"] == hostname:
+                result = host["hostid"]
                 break
 
         return result
@@ -44,7 +45,7 @@ class Zabbix:
 
         result = None
         if hostid:
-            #print(hostid)
+            # print(hostid)
             params = {"hostid": hostid} | params
             result = self.api.host.update(params)
 
