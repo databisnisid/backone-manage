@@ -51,6 +51,7 @@ class Zabbix:
 
         return result
 
+    """ Not Working """ 
     def host_create(self, hostname="Zabbix server", params={}):
         result = self.api.host.create(host=hostname, params)
         return result
@@ -58,5 +59,5 @@ class Zabbix:
     def host_search(self):
         pass
 
-    defte host_search_by_severity(self):
+    def host_search_by_severity(self):
         pass
