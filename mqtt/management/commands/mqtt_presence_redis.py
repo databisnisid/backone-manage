@@ -26,6 +26,9 @@ r = redis.Redis(
 def on_connect(client, userdata, keepalive, bind_address):
     # print(client, userdata, flags, rc)
     client.subscribe(settings.MQTT_TOPIC_PRESENCE)
+    print(
+        f"Connect to redis://{settings.MQTT_REDIS_HOST}:{settings.MQTT_REDIS_PORT}/{MQTT_REDIS_DB} and subscribe to topic {settings.MQTT_TOPIC_PRESENCE}"
+    )
 
 
 def on_message(client, userdata, message):
