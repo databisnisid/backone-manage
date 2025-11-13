@@ -1,5 +1,6 @@
 from django import forms
 from wagtail.users.forms import UserEditForm, UserCreationForm
+from django.contrib.auth.models import Group
 from .models import Organizations
 from django.utils.translation import gettext_lazy as _
 
@@ -14,7 +15,7 @@ class CustomUserEditForm(UserEditForm):
 
     class Meta(UserEditForm.Meta):
         fields = UserEditForm.Meta.fields | {"organization"}
-        exclude = ["is_superuser"]
+        # exclude = ["is_superuser"]
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -24,5 +25,5 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         fields = UserCreationForm.Meta.fields | {"organization"}
-        exclude = ["is_superuser"]
+        # exclude = ["is_superuser"]
 

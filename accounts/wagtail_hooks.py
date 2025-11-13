@@ -10,6 +10,7 @@ from .models import Features  # LicenseFeatures
 from django.utils.translation import gettext_lazy as _
 from .models import Organizations, GroupOrganizations
 
+
 """ Hide Superuser """
 """
 from wagtail.users.views.users import UserEditForm
