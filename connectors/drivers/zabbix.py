@@ -51,7 +51,7 @@ class Zabbix:
         """
         search = {"name": groupname}
         output = ["name", "groupid"]
-        result = self.api.hostgroup.get(search, output)
+        result = self.api.hostgroup.get(search=search, output=output)
 
         if result:
             result = result[0]["groupid"]
