@@ -1,0 +1,49 @@
+{% load i18n wagtailadmin_tags %}
+
+    <section class="panel summary nice-padding" style="margin-bottom: 2em;">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 20%; text-align: center;">
+                </td>
+                <td style="width: 60%; text-align: center;">
+                    <h1>{{ chart_title_providers }}</h1>
+                        <div>
+                            <canvas id="chart_providers_1"></canvas>
+                        </div>
+                </td>
+                <td style="width: 20%; text-align: center;">
+                </td>
+            </tr>
+        </table>
+    </section>
+
+{% block extra_js %}
+<script>
+
+const provider_ctx1 = document.getElementById('chart_providers_1').getContext('2d');
+const provider_myChart1 = new Chart(provider_ctx1, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for label in labels_providers %}'{{ label | escape }}',{% endfor %}],
+        datasets: [{
+            label: '# ',
+            data: {{ data_providers }},
+            borderWidth: 1
+        }]
+    },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: false,
+        text: '{{ chart_title_providers }}'
+      }
+    }
+  },
+});
+
+</script>
+{% endblock extra_js %}

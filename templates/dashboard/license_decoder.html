@@ -1,0 +1,97 @@
+{% load i18n wagtailadmin_tags %}
+<style>
+.column {
+  float: left;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+
+<section class="panel summary nice-padding">
+<br />
+<hr />
+<h1>License Uploader</h1>
+
+<div id="msg"></div>
+<form id="snipForm" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+    <div class="row">
+        <div class="column" style="width: 70%">
+                <input type="file" id="licenseFile" name="files"/>
+        </div>
+        <div class="column" style="width: 30%; padding-left: 10px;">
+                <button id="upload_license" class="button button-longrunning">Upload</button>
+        </div>
+    </div>
+</form>
+</section>
+
+<script>
+$(document).ready(function (e) {
+  $('#upload_license').on('click', function (event) {
+    //Prevent page from reloading
+    event.preventDefault()
+
+    // check if there is any file selected
+    const licenseFile = document.getElementById('licenseFile');
+
+    if(licenseFile.files.lenght == 0) {
+      $('#msg').html('<span style="color:red">Select at least one file</span>');
+      return;
+    }
+
+    let licenseContent;
+    let licenseJSON;
+    var file = licenseFile.files[0];
+    var fr = new FileReader();
+   	fr.onload = function () {
+
+        licenseContent = fr.result;
+
+        // obtain CSFR token
+        csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        console.log(csrf_token);
+
+        // set the headers
+        headers = {'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest', 'X-CSRFToken': csrf_token};
+
+        //url: '/api/licenses/handler/', // point to server-side URL
+        $.ajax({
+            type: 'POST',
+            url: '{{ license_handler }}', // point to server-side URL
+            dataType: "json",
+            ContentType: false,
+            cache: false,
+            processData: false,
+            headers: headers,
+            data: licenseContent,
+            success: function (response) { // display success response
+                if (response.status)
+                    $('#msg').html('<span style="color:green">' + response.msg + '</span>');
+                else 
+                    $('#msg').html('<span style="color:red">' + response.msg + '</span>');
+                console.log(response)
+            },
+            error: function (response) {
+                console.log(response);
+                console.log(response.responseJSON);
+                //let resp_json = $.parseJSON(response);
+                if ('error' in response.responseJSON) {
+                    $('#msg').html('<span style="color:red">' + response.responseJSON.error + '</span>');
+                } else {
+                    $('#msg').html('<span style="color:red">CSRF Error</span>');
+                }
+            }
+        });
+	};
+	fr.readAsText( file );
+  });
+});
+
+</script>
+

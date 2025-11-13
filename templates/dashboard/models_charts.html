@@ -1,0 +1,81 @@
+{% load i18n wagtailadmin_tags %}
+
+    <section class="panel summary nice-padding" style="margin-bottom: 2em;">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 45%; text-align: center;">
+                    {% if is_data_model %}
+                    <h1>{{ chart_title_model }}</h1>
+                        <div>
+                            <canvas id="chart_models_1"></canvas>
+                        </div>
+                    {% endif %}
+                </td>
+                <td style="width: 10%; text-align: center;"></td>
+                <td style="width: 45%; text-align: center;">
+                    {% if is_data_model_version %}
+                    <h1>{{ chart_title_version }}</h1>
+                        <div>
+                            <canvas id="chart_models_2"></canvas>
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </section>
+
+{% block extra_js %}
+<script>
+
+const model_ctx1 = document.getElementById('chart_models_1').getContext('2d');
+const model_myChart1 = new Chart(model_ctx1, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for label in labels_model %}'{{ label | escape }}',{% endfor %}],
+        datasets: [{
+            label: '# ',
+            data: {{ data_model }},
+            borderWidth: 1
+        }]
+    },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: false,
+        text: '{{ chart_title_model }}'
+      }
+    }
+  },
+});
+
+const model_ctx2 = document.getElementById('chart_models_2').getContext('2d');
+const model_myChart2 = new Chart(model_ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for label in labels_version %}'{{ label | escape }}',{% endfor %}],
+        datasets: [{
+            label: '# ',
+            data: {{ data_version }},
+            borderWidth: 1
+        }]
+    },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: false,
+        text: '{{ chart_title_version }}'
+      }
+    }
+  },
+});
+
+</script>
+{% endblock extra_js %}
