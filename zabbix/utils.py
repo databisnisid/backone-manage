@@ -10,19 +10,25 @@ def sync_member_inventory(network, zabbix):
 
     members = Members.objects.filter(network=network)
 
-    #zabbix = Zabbix()
+    # zabbix = Zabbix()
 
     for member in members:
+        print(f"Member: {member.name}")
         hostname = member.get_hostname()
         if hostname:
+            print(f"Hostname: {hostname}")
             try:
-                point = member.location.split(';')
-                result = point[1].split(' ')
-                lng = result[0].replace('POINT(', '')
-                lat = result[1].replace(')', '')
+                point = member.location.split(";")
+                result = point[1].split(" ")
+                lng = result[0].replace("POINT(", "")
+                lat = result[1].replace(")", "")
             except AttributeError:
-                lat = settings.GEO_WIDGET_DEFAULT_LOCATION['lat'] + random.uniform(-0.0025, 0.0025)
-                lng = settings.GEO_WIDGET_DEFAULT_LOCATION['lng'] + random.uniform(-0.0025, 0.0025)
+                lat = settings.GEO_WIDGET_DEFAULT_LOCATION["lat"] + random.uniform(
+                    -0.0025, 0.0025
+                )
+                lng = settings.GEO_WIDGET_DEFAULT_LOCATION["lng"] + random.uniform(
+                    -0.0025, 0.0025
+                )
 
             if type(lat) != str:
                 lat = str(lat)
@@ -30,25 +36,29 @@ def sync_member_inventory(network, zabbix):
                 lng = str(lng)
 
             params = {
-                    'name': member.name,
-                    'description': member.description,
-                    'inventory_mode': 1,
-                    'inventory': {
-                        'alias': member.name[:128],
-                        'location': member.address if member.address else '',
-                        'location_lat': lat[:16],
-                        'location_lon': lng[:16],
-                        'model': member.model()[:64],
-                        'hardware': member.board_name(),
-                        'hw_arch': member.release_target()[:32],
-                        'software': member.release_version(),
-                        'serialno_a': member.serialnumber()[:64],
-                        'serialno_b': member.serialnumber()[:64],
-                        'poc_1_cell': member.mobile_number_first[:64] if member.mobile_number_first else '',
-                        'host_router': member.member_id,
-                        'host_networks': member.network.name,
-                        }
-                    }
+                "name": member.name,
+                "description": member.description,
+                "inventory_mode": 1,
+                "inventory": {
+                    "alias": member.name[:128],
+                    "location": member.address if member.address else "",
+                    "location_lat": lat[:16],
+                    "location_lon": lng[:16],
+                    "model": member.model()[:64],
+                    "hardware": member.board_name(),
+                    "hw_arch": member.release_target()[:32],
+                    "software": member.release_version(),
+                    "serialno_a": member.serialnumber()[:64],
+                    "serialno_b": member.serialnumber()[:64],
+                    "poc_1_cell": (
+                        member.mobile_number_first[:64]
+                        if member.mobile_number_first
+                        else ""
+                    ),
+                    "host_router": member.member_id,
+                    "host_networks": member.network.name,
+                },
+            }
             result = zabbix.host_update_inventory(hostname, params)
             print(result)
 
@@ -69,5 +79,3 @@ def sync_zabbix_networks():
 
         for network in networks:
             sync_member_inventory(network, zabbix)
-
-
