@@ -16,8 +16,8 @@ class Zabbix:
         else:
             self.token = settings.ZABBIX_TOKEN
 
-        # self.api = ZabbixAPI(url=self.url)
-        self.api = ZabbixAPI(url=self.url, skip_version_check=True)
+        self.api = ZabbixAPI(url=self.url)
+        # self.api = ZabbixAPI(url=self.url, skip_version_check=True)
         self.api.login(token=self.token)
         self.hosts = []
 
