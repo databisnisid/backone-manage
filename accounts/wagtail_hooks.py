@@ -39,28 +39,22 @@ def register_custom_user_viewset():
 
 
 class AccountsPermissionHelper(PermissionHelper):
-    """
-
-    def user_can_list(self, user):
-        return True
-
-    def user_can_create(self, user):
-        if user.is_superuser:
-            return True
-        else:
-            return False
-    """
-
     def user_can_delete_obj(self, user, obj):
         if obj.id == 1:
             return False
         else:
             return True
 
-    """
-    def user_can_edit_obj(self, user, obj):
-        return False
-    """
+
+class OrganizationsPermissionHelper(PermissionHelper):
+    def user_can_delete_obj(self, user, obj):
+        if obj.id == 1:
+            return False
+        else:
+            if user.is_superuser:
+                return True
+            else:
+                return False
 
 
 class FeaturesPermissionHelper(PermissionHelper):
@@ -103,7 +97,7 @@ class OrganizationsAdmin(ModelAdmin):
     )
     list_display = ("name", "features", "controller", "uuid", "site")
     search_fields = ("name", "features")
-    permission_helper_class = AccountsPermissionHelper
+    permission_helper_class = OrganizationsPermissionHelper
 
     panels = [
         MultiFieldPanel(
