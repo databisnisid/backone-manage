@@ -51,10 +51,15 @@ class Zabbix:
 
         return result
 
-    """ Not Working """ 
+    def host_create(self):
+        pass
+
+    """ Not Working """
+    """
     def host_create(self, hostname="Zabbix server", params={}):
         result = self.api.host.create(host=hostname, params)
         return result
+    """
 
     def host_search(self):
         pass
