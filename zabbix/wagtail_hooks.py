@@ -39,6 +39,7 @@ class ZabbixNetworksAdmin(ModelAdmin):
     )
     list_display = ["name"]
     permission_helper_class = ZabbixNetworksPermissionHelper
+    readonly_fields = ("name",)
 
 
 modeladmin_register(ZabbixConfigsAdmin)
