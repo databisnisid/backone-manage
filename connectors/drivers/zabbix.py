@@ -1,5 +1,6 @@
 from django.db.models import NullBooleanField
 from zabbix_utils import ZabbixAPI
+from zabbix_utils.exceptions import APIRequestError
 from django.conf import settings
 
 """
@@ -45,6 +46,17 @@ class Zabbix:
 
         return result
 
+    def hostgroup_create(self, groupname : str ="Zabbix servers") -> int:
+        params = {"name": groupname}
+        try:
+            result = self.api.hostgroup.create(params)
+            result = int(result['groupids'][0])
+        except APIRequestError as e:
+            result = 0
+            print(f"An error occurred: {e}")
+
+        return result
+
     def hostgroup_get_groupid(self, groupname: str = "Zabbix servers") -> int:
         """
         zapi.api.hostgroup.get(search={"name": "Nexus"}, output=["name", "groupid"])
@@ -54,7 +66,9 @@ class Zabbix:
         result = self.api.hostgroup.get(search=search, output=output)
 
         if result:
-            result = result[0]["groupid"]
+            result = int(result[0]["groupid"])
+        else:
+            result = 0
 
         return result
 
@@ -72,8 +86,20 @@ class Zabbix:
 
         return result
 
-    def host_create(self):
-        pass
+    def host_create(self, hostname="Zabbix server", groupname="Zabbix servers"):
+        """
+        zapi.api.host.create(host="test-zabbix",name="Test Zabbix",interfaces=[],groups=[{"groupid": 29}])
+        """
+        groupid = self.hostgroup_get_groupid(groupname)
+
+        if not groupid:
+            groupid = self.hostgroup_create(groupname)
+
+        groups = [{"groupid": groupid}]
+        result = self.api.host.create(host=hostname, name=hostname, interfaces=[], groups)
+
+        return result
+
 
     """ Not Working """
     """

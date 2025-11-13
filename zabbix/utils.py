@@ -6,7 +6,7 @@ from connectors.drivers.zabbix import Zabbix
 from django.conf import settings
 
 
-def sync_member_inventory(network, zabbix):
+def sync_member_inventory(network, zabbix, zabbix_group_name):
 
     members = Members.objects.filter(network=network)
 
@@ -63,6 +63,11 @@ def sync_member_inventory(network, zabbix):
 
             if not result:
                 print(f"Host: {hostname} NOT found! Try to create it.")
+                # Create
+                result = zabbix.host_create(hostname, zabbix_group_name)
+                # Then Update
+                print(f"Host: {hostname} Updated! {result}")
+                result = zabbix.host_update_inventory(hostname, params)
             else:
                 print(f"Host: {hostname} Updated! {result}")
             #    result = zabbix.host_create(hostname, params)
@@ -84,4 +89,4 @@ def sync_zabbix_networks():
             zabbix = Zabbix()
 
         for network in networks:
-            sync_member_inventory(network, zabbix)
+            sync_member_inventory(network, zabbix, zabbix_network.name)
