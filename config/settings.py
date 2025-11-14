@@ -418,3 +418,11 @@ USE_LICENSE_FEATURES = int(os.getenv("USE_LICENSE_FEATURES", 0))
 
 # DEVELOPMENT
 IS_INSPECT_ENABLED = int(os.getenv("IS_INSPECT_ENABLED", 0))
+
+# EMAIL SETTING
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 25))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "t")
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").lower() in ("true", "1", "t")
