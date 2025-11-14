@@ -1,0 +1,28 @@
+{% extends "mailauth_wagtail/login_base.html" %}
+{% load i18n static wagtailadmin_tags%}
+
+{% block content %}
+<div id="content-main">
+<p>
+{% blocktrans trimmed %}
+    We sent you an email with instructions to log into your account.
+{% endblocktrans %}
+</p>
+<p>
+{% blocktrans trimmed %}
+    Should you not receive an email soon, you can request a new login email below.
+{% endblocktrans %}
+</p>
+<button
+    type="submit"
+    class="button button-longrunning"
+    data-controller="w-progress"
+    data-action="w-progress#activate"
+    data-w-progress-active-value="{% trans 'Signing in…' %}"
+    onclick="window.history.back()"
+>
+    {% icon name="spinner" %}
+    <em data-w-progress-target="label">{% trans 'Resend login in email' %}</em>
+</button>
+</div>
+{% endblock %}

@@ -19,7 +19,7 @@ custom_wagtailadmin_urls.urlpatterns[0] = path(
 """
 
 urlpatterns = [
-    path("django-admin/", admin.site.urls),
+    path("custom/", admin.site.urls),
     # path('networks/qr_code/<str:network_id>/', views.qr_code),
     path("networks/", include("networks.urls")),
     path("api/networks/", include("networks.urls")),
@@ -29,9 +29,15 @@ urlpatterns = [
     # path('api/members/get_by_org/<int:organization>/', get_members_org, name='get_members_by_org'),
     path("api/webfilters/", include("webfilters.urls")),
     path("api/licenses/", include("licenses.urls")),
+    # Start - Mail Authentication
+    path("accounts/", include("mailauth.urls")),
+    # optional, must be before "wagtail.admin.urls"
+    # path("", include("mailauth.contrib.wagtail.urls")),
+    # End - Mail Authentication
+    # This Custom Login for custom logo
     path("login/", CustomLoginView.as_view(), name="custom_login_view"),
     path("", include(wagtailadmin_urls)),
-    # path("login/", CustomLoginView.as_view(), name="custom_login_view"),
+    path("login/", CustomLoginView.as_view(), name="custom_login_view"),
     path("documents/", include(wagtaildocs_urls)),
     # path("search/", search_views.search, name="search"),
     # Prometheus
