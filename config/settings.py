@@ -490,6 +490,11 @@ LOGGING = {
         "level": "INFO",
     },
     "loggers": {
+        "auth_event": {
+            "handlers": ["console", "syslog"],
+            "level": "INFO",
+            "propagate": False,
+        },
         "django": {
             "handlers": ["console", "syslog"],
             "level": "INFO",
