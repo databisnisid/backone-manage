@@ -6,6 +6,7 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from .customviews import CustomLoginView
+from two_factor.urls import urlpatterns as tf_urls
 
 # from members.views import get_members_all, get_members_user, get_members_org
 
@@ -34,10 +35,12 @@ urlpatterns = [
     # optional, must be before "wagtail.admin.urls"
     # path("", include("mailauth.contrib.wagtail.urls")),
     # End - Mail Authentication
+    # OTP
+    path("", include(tf_urls)),
     # This Custom Login for custom logo
     path("login/", CustomLoginView.as_view(), name="custom_login_view"),
     path("", include(wagtailadmin_urls)),
-    path("login/", CustomLoginView.as_view(), name="custom_login_view"),
+    # path("login/", CustomLoginView.as_view(), name="custom_login_view"),
     path("documents/", include(wagtaildocs_urls)),
     # path("search/", search_views.search, name="search"),
     # Prometheus

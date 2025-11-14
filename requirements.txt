@@ -15,9 +15,12 @@ django-axes==8.0.0
 django-cors-headers==4.5.0
 django-crum==0.7.9
 django-filter==23.3
+django-formtools==2.5.1
 django-ipware==5.0.0
 django-modelcluster==6.4
+django-otp==1.6.3
 django-permissionedforms==0.1
+django-phonenumber-field==8.3.0
 django-prometheus==2.3.1
 django-qr-code==4.1.0
 django-redis==5.4.0
@@ -25,6 +28,7 @@ django-stubs-ext==5.2.7
 django-taggit==6.1.0
 django-tasks==0.7.0
 django-treebeard==4.5.1
+django-two-factor-auth==1.18.1
 djangorestframework==3.16.1
 draftjs-exporter==2.1.7
 et-xmlfile==1.1.0
@@ -55,6 +59,7 @@ pydantic_core==2.20.1
 PyNaCl==1.5.0
 python-dotenv==0.20.0
 pytz==2023.3.post1
+qrcode==8.2
 redis==5.0.1
 requests==2.28.1
 rsa==4.9

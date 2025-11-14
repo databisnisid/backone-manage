@@ -72,6 +72,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "axes",
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_email",  # <- for email capability.
+    "two_factor",
+    "two_factor.plugins.email",  # <- for email capability.
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -98,6 +104,7 @@ MIDDLEWARE = [
 MIDDLEWARE += ("wagtail.contrib.redirects.middleware.RedirectMiddleware",)
 MIDDLEWARE += ("crum.CurrentRequestUserMiddleware",)
 MIDDLEWARE += ("axes.middleware.AxesMiddleware",)
+MIDDLEWARE += ("django_otp.middleware.OTPMiddleware",)
 
 MIDDLEWARE += [
     "django.middleware.cache.UpdateCacheMiddleware",
@@ -507,3 +514,13 @@ LOGGING = {
         },
     },
 }
+
+# Two Factor
+LOGIN_URL = "two_factor:login"
+
+# this one is optional
+LOGIN_REDIRECT_URL = "two_factor:profile"
+
+# Get IP from Traefik
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
