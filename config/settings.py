@@ -2,6 +2,7 @@ import os
 import redis
 from pathlib import Path
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 load_dotenv()
 
@@ -438,3 +439,66 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@proit.id")
 
 
 # WAGTAILUSERS_PASSWORD_ENABLED = False
+
+# Logging
+parsed_url = urlparse(WAGTAILADMIN_BASE_URL)
+
+SYSLOG_HOSTNAME = os.getenv("SYSLOG_HOSTNAME", parsed_url.hostname)
+SYSLOG_ADDRESS = os.getenv("SYSLOG_ADDRESS", "/dev/log")
+SYSLOG_PORT = int(os.getenv("SYSLOG_PORT", 514))
+
+if SYSLOG_ADDRESS != "/dev/log":
+    SYSLOG_ADDRESS = (SYSLOG_ADDRESS, SYSLOG_PORT)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "add_hostname": {
+            "()": "config.logging.HostnameFilter",  # Reference the custom filter class
+        },
+    },
+    "formatters": {
+        "verbose": {
+            # "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+        "syslog_formatter": {
+            # Format string to include the custom 'hostname' attribute
+            "format": "%(asctime)s %(hostname)s %(name)s: %(message)s",
+            "datefmt": "%b %d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "syslog": {
+            "level": "INFO",
+            "class": "logging.handlers.SysLogHandler",
+            "filters": ["add_hostname"],  # Apply the filter
+            "facility": "local7",  # Or another appropriate facility
+            "formatter": "syslog_formatter",
+            "address": SYSLOG_ADDRESS,
+            # Or 'udp://localhost:514' for a remote server
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console", "syslog"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "syslog"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "wagtail": {
+            "handlers": ["console", "syslog"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
