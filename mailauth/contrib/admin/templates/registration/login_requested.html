@@ -1,4 +1,4 @@
-{% extends "mailauth_wagtail/login_base.html" %}
+{% extends "mailauth_wagtail/login_base_nologo.html" %}
 {% load i18n static wagtailadmin_tags%}
 
 {% block content %}
@@ -13,6 +13,7 @@
     Should you not receive an email soon, you can request a new login email below.
 {% endblocktrans %}
 </p>
+<br />
 <button
     type="submit"
     class="button button-longrunning"

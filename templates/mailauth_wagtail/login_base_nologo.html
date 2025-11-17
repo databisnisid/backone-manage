@@ -1,0 +1,40 @@
+{% extends "wagtailadmin/admin_base.html" %}
+{% load i18n wagtailadmin_tags %}
+{% block titletag %}{% trans "Login Process" %}{% endblock %}
+{% block bodyclass %}login{% endblock %}
+
+{% block furniture %}
+    <main class="content-wrapper" id="main">
+      <!--
+        <h1>{% block branding_login %}{% trans "Manage" %}{% endblock %}</h1>
+        {% block branding_logo %}
+            <div class="login-logo" style="width: 20rem; margin: 0 auto 0;">
+                {% include "wagtailadmin/logo.html" with wordmark="False" %}
+            </div>
+        {% endblock %}
+
+        <div class="messages" role="status">
+            {# Always show messages div so it can be appended to by JS #}
+            {% if messages or form.errors %}
+                <ul>
+                    {% if form.errors %}
+                        {% for error in form.non_field_errors %}
+                            <li class="error">{{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+      -->
+
+        {% block above_login %}{% endblock %}
+
+        {% block content %}{% endblock %}
+
+        {% block below_login %}{% endblock %}
+
+    </main>
+{% endblock %}

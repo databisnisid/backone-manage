@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.db.models import ObjectDoesNotExist
 from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate, login
 from django.contrib.auth.views import LoginView as DjangoLoginView
 from django.core.exceptions import PermissionDenied
@@ -7,7 +8,8 @@ from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
 from django.views import generic
 from django.views.decorators.cache import never_cache
-
+from wagtail.models import Site
+from accounts.models import Organizations
 from mailauth import forms
 
 __all__ = (
@@ -81,4 +83,27 @@ class LoginRequestedView(generic.TemplateView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        print(self.template_name)
+        # print(self.template_name)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print(context)
+
+        """
+        try:
+            site = Site.objects.get(hostname__icontains=context["site_name"])
+            # print(site)
+
+            try:
+                organization = Organizations.objects.get(site=site)
+                context["organization"] = organization
+
+            except ObjectDoesNotExist:
+                pass
+                # print("NO Organization")
+
+        except ObjectDoesNotExist:
+            pass
+        """
+
+        return context

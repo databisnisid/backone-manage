@@ -357,19 +357,24 @@ RTTY_URI = str(os.getenv("RTTY_URI", "https://remote.manage.backone.cloud"))
 # DELETE MEMBER PERIOD
 MEMBER_DELETE_PERIOD = int(os.getenv("MEMBER_DELETE_PERIOD", 60))
 
+IS_CACHE = False
+CACHE = {}
 # REDIS CACHE
-CACHES = {
-    "default": {
-        "BACKEND": str(
-            os.getenv("REDIS_BACKEND", "django.core.cache.backends.redis.RedisCache")
-        ),
-        "LOCATION": str(os.getenv("REDIS_URL", "redis://localhost:6379/")),
-        "KEY_PREFIX": str(os.getenv("REDIS_KEY_PREFIX", "backone")),
-        "TIMEOUT": int(
-            os.getenv("REDIS_TIMEOUT", 60 * 15)
-        ),  # in seconds: 60 * 15 (15 minutes)
+if IS_CACHE:
+    CACHES = {
+        "default": {
+            "BACKEND": str(
+                os.getenv(
+                    "REDIS_BACKEND", "django.core.cache.backends.redis.RedisCache"
+                )
+            ),
+            "LOCATION": str(os.getenv("REDIS_URL", "redis://localhost:6379/")),
+            "KEY_PREFIX": str(os.getenv("REDIS_KEY_PREFIX", "backone")),
+            "TIMEOUT": int(
+                os.getenv("REDIS_TIMEOUT", 60 * 15)
+            ),  # in seconds: 60 * 15 (15 minutes)
+        }
     }
-}
 
 # SESSION TIMEOUT
 SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", 86400))
@@ -443,6 +448,13 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "t")
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").lower() in ("true", "1", "t")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@proit.id")
+
+# LOGIN WITH EMAIL ONLY (NO PASSWORD IS REQUIRED)
+IS_MAILAUTH_NO_PASSWORD = os.getenv("IS_MAILAUTH_NO_PASSWORD", "False").lower() in (
+    "true",
+    "1",
+    "t",
+)
 
 
 # WAGTAILUSERS_PASSWORD_ENABLED = False
