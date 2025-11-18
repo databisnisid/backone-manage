@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "problems",
     "qr_code",
     "zabbix",
+    #
     "corsheaders",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
@@ -78,6 +79,7 @@ INSTALLED_APPS = [
     "django_otp.plugins.otp_email",  # <- for email capability.
     "two_factor",
     "two_factor.plugins.email",  # <- for email capability.
+    "two_factor_custom",
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -456,6 +458,8 @@ IS_MAILAUTH_NO_PASSWORD = os.getenv("IS_MAILAUTH_NO_PASSWORD", "False").lower() 
     "t",
 )
 
+# LOGIN 2MFA EMAIL
+IS_2FA_ENABLE = os.getenv("IS_2FA_ENABLE", "False").lower() in ("true", "1", "t")
 
 # WAGTAILUSERS_PASSWORD_ENABLED = False
 

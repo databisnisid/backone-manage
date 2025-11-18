@@ -7,8 +7,11 @@
 {% if wizard.steps.prev %}
   <button name="wizard_goto_step" type="submit"
           value="{{ wizard.steps.prev }}"
-          class="button button-secondary">{% trans "Back" %}</button>
+          class="button button-secondary button-longrunning" style="margin-top: 1rem;">{% trans "Back" %}</button>
 {% else %}
-<button disabled name="" type="button button-longrunning" class="button">{% trans "Back" %}</button>
+<!--
+<button disabled name="" type="button button-longrunning" class="button" style="margin-top: 1rem">{% trans "Back" %}</button>
+-->
 {% endif %}
-<button type="submit" class="button button-longrunning">{% trans "Next" %}</button>
+<br />
+<button type="submit" class="button button-longrunning" style="margin-top: 1rem;">{% trans "Next" %}</button>

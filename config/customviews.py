@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from wagtail.admin.views import account
 from wagtail.models import Site
 from accounts.models import Organizations
-from config.settings import IS_MAILAUTH_NO_PASSWORD
+from config.settings import IS_MAILAUTH_NO_PASSWORD, IS_2FA_ENABLE
 
 
 class CustomLoginView(account.LoginView):
@@ -18,6 +18,9 @@ class CustomLoginView(account.LoginView):
         ):
             print("LOGIN:", self.get_success_url())
             return redirect(self.get_success_url())
+        elif IS_2FA_ENABLE:
+            url = "/two/account/login/"
+            return redirect(url)
 
         elif IS_MAILAUTH_NO_PASSWORD:
             url = "/custom/login/"
