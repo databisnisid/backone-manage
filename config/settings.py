@@ -359,7 +359,7 @@ RTTY_URI = str(os.getenv("RTTY_URI", "https://remote.manage.backone.cloud"))
 # DELETE MEMBER PERIOD
 MEMBER_DELETE_PERIOD = int(os.getenv("MEMBER_DELETE_PERIOD", 60))
 
-IS_CACHE = False
+IS_CACHE = True
 CACHE = {}
 # REDIS CACHE
 if IS_CACHE:
