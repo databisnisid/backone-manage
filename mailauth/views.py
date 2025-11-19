@@ -58,10 +58,6 @@ class LoginTokenView(DjangoLoginView):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        print(self)
-        print(request)
-        print(args)
-        print(kwargs)
 
         token = kwargs["token"]
 
@@ -87,11 +83,10 @@ class LoginRequestedView(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(context)
 
-        """
+        hostname = self.request.get_host()
         try:
-            site = Site.objects.get(hostname__icontains=context["site_name"])
+            site = Site.objects.get(hostname__icontains=hostname)
             # print(site)
 
             try:
@@ -104,6 +99,5 @@ class LoginRequestedView(generic.TemplateView):
 
         except ObjectDoesNotExist:
             pass
-        """
 
         return context
