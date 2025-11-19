@@ -79,6 +79,8 @@ class CustomTFLoginView(TFLoginView):
         Adds user's default and backup OTP devices to the context.
         """
         context = super().get_context_data(form, **kwargs)
+        print("CONTEXT", context)
+        print("SELF", self.request.get_host())
         if self.steps.current == self.TOKEN_STEP:
             device = self.get_device()
             context["device"] = device
@@ -100,11 +102,10 @@ class CustomTFLoginView(TFLoginView):
             )
             context["cancel_url"] = resolve_url(settings.LOGOUT_URL)
 
-        print("CONTEXT", context)
         """ For Custom Logo in Login """
-        """
+        hostname = self.request.get_host()
         try:
-            site = Site.objects.get(hostname__icontains=context["site_name"])
+            site = Site.objects.get(hostname__icontains=hostname)
             # print(site)
 
             try:
@@ -117,7 +118,6 @@ class CustomTFLoginView(TFLoginView):
 
         except ObjectDoesNotExist:
             pass
-        """
         return context
 
     def done(self, form_list, **kwargs):
