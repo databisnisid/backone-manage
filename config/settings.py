@@ -460,6 +460,8 @@ IS_MAILAUTH_NO_PASSWORD = os.getenv("IS_MAILAUTH_NO_PASSWORD", "False").lower() 
 
 # LOGIN 2MFA EMAIL
 IS_2FA_ENABLE = os.getenv("IS_2FA_ENABLE", "False").lower() in ("true", "1", "t")
+# How long profile page display before login to home (in milliseconds)
+IS_2FA_PROFILE_TIMEOUT = int(os.getenv("IS_2FA_PROFILE_TIMEOUT", "500"))
 
 # WAGTAILUSERS_PASSWORD_ENABLED = False
 
