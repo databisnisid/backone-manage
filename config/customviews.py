@@ -1,6 +1,6 @@
 from django.db.models import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from wagtail.admin.views import account
 from wagtail.models import Site
 from accounts.models import Organizations
@@ -84,3 +84,22 @@ class CustomLoginView(account.LoginView):
         """
 
         return context
+
+
+def custom_404(request, exception):
+    context = {"exception": exception}
+    return render(request, "error_pages/404.html", status=404, context=context)
+
+
+def custom_500(request):
+    return render(request, "error_pages/500.html", status=500)
+
+
+def custom_403(request, exception):
+    context = {"exception": exception}
+    return render(request, "error_pages/403.html", status=403, context=context)
+
+
+def custom_400(request, exception):
+    context = {"exception": exception}
+    return render(request, "error_pages/400.html", status=400, context=context)

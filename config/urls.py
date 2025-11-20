@@ -19,6 +19,10 @@ custom_wagtailadmin_urls.urlpatterns[0] = path(
     "", CustomHomeView.as_view(), name="wagtailadmin_home"
 )
 """
+handler404 = "config.customviews.custom_404"
+handler500 = "config.customviews.custom_500"  # Note: adjust path if views are not directly in myapp
+handler403 = "config.customviews.custom_403"
+handler400 = "config.customviews.custom_400"
 
 urlpatterns = [
     path("custom/", admin.site.urls),
