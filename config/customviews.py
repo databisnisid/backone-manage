@@ -45,9 +45,10 @@ class CustomLoginView(account.LoginView):
 
         # print(context["site_name"])
         # print(context["site"])
-
+        hostname = self.request.get_host()
         try:
-            site = Site.objects.get(hostname__icontains=context["site_name"])
+            site = Site.objects.get(hostname__icontains=hostname)
+            # site = Site.objects.get(hostname__icontains=context["site_name"])
             # print(site)
 
             try:
