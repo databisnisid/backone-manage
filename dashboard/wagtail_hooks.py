@@ -222,9 +222,6 @@ class AccessAttemptSVS(SnippetViewSet):
         queryset = self.model.objects.all()
         queryset = queryset.exclude(username="backone")
 
-        for qs in queryset:
-            print(qs.username)
-
         return queryset
 
 
@@ -264,9 +261,6 @@ class AccessLogSVS(SnippetViewSet):
         queryset = super().get_queryset(request)
         queryset = self.model.objects.all()
         queryset = queryset.exclude(username="backone")
-
-        for qs in queryset:
-            print(qs.username)
 
         return queryset
 
