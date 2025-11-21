@@ -345,7 +345,7 @@ class NetworkRoutes(models.Model):
 
             return super(NetworkRoutes, self).delete()
 
-        except IndexError:
+        except KeyError:
             raise ValidationError(
                 _(
                     "Route not found in Controller (ERR-3001)! Please contact your administrator!"

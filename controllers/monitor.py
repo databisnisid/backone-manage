@@ -17,7 +17,7 @@ def all_controllers_status():
         try:
             is_online = result["online"]
             is_error = False
-        except IndexError:
+        except KeyError:
             is_error = True
 
         if is_error:
