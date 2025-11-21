@@ -217,6 +217,12 @@ class AccessAttemptSVS(SnippetViewSet):
         "failures_since_start",
     ]
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.exclude(username="backone")
+
+        return queryset
+
 
 class AccessLogSVS(SnippetViewSet):
     model = AccessLog
@@ -250,6 +256,12 @@ class AccessLogSVS(SnippetViewSet):
         "logout_time",
     ]
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.exclude(username="backone")
+
+        return queryset
+
 
 class AccessFailureLogSVS(SnippetViewSet):
     model = AccessFailureLog
@@ -282,6 +294,12 @@ class AccessFailureLogSVS(SnippetViewSet):
         "attempt_time",
         "locked_out",
     ]
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.exclude(username="backone")
+
+        return queryset
 
 
 class AccessSnippetGroup(SnippetViewSetGroup):
