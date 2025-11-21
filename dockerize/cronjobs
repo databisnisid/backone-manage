@@ -11,5 +11,7 @@
 # REDIS
 0 * * * * python /app/manage.py mqtt_presence_redis_to_db
 0 0 * * * python /app/manage.py ipinfo_list_peers
+# Check Controllers Status
+0 * * * * python /app/manage.py shell --command "from controllers.monitor import all_controllers_status; all_controllers_status()"
 #*/3 * * * *  python /app/manage.py shell --command "from controllers.custom import import_members_for_network; import_members_for_network('3cc1a2690fed6ab4')"
 #*/3 * * * *  python /app/manage.py shell --command "from controllers.custom import import_members_for_network; import_members_for_network('3cc1a2690f6ac319')"
