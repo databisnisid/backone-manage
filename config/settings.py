@@ -233,15 +233,6 @@ WAGTAILADMIN_BASE_URL = str(
     os.getenv("WAGTAILADMIN_BASE_URL", "https://manage.backone.cloud")
 )
 
-"""
-ADDITIONAL_DOMAIN_1 = str(
-    os.getenv("ADDITIONAL_DOMAIN_1", "https://mn.mysmartrouter.net")
-)
-ADDITIONAL_DOMAIN_2 = str(
-    os.getenv("ADDITIONAL_DOMAIN_2", "https://mn.guanghao-sdwan.id")
-)
-"""
-
 # CSRF
 # CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL, ADDITIONAL_DOMAINS]
 # CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL, ADDITIONAL_DOMAIN_1, ADDITIONAL_DOMAIN_2]
@@ -255,13 +246,6 @@ domains_list = ADDITIONAL_DOMAINS.split(",")
 
 for domain_list in domains_list:
     CSRF_TRUSTED_ORIGINS.append(domain_list.replace(" ", ""))
-# print(CSRF_TRUSTED_ORIGINS)
-
-# CSRF_TRUSTED_ORIGINS += ADDITIONAL_DOMAINS
-# for DOMAIN in ADDITIONAL_DOMAINS:
-#    print(DOMAIN)
-#    CSRF_TRUSTED_ORIGINS += DOMAIN
-
 
 # Controller Rule Compiler
 NODEJS = str(os.getenv("NODEJS", "/usr/bin/node"))
@@ -462,6 +446,7 @@ IS_MAILAUTH_NO_PASSWORD = os.getenv("IS_MAILAUTH_NO_PASSWORD", "False").lower() 
 IS_2FA_ENABLE = os.getenv("IS_2FA_ENABLE", "False").lower() in ("true", "1", "t")
 # How long profile page display before login to home (in milliseconds)
 IS_2FA_PROFILE_TIMEOUT = int(os.getenv("IS_2FA_PROFILE_TIMEOUT", "500"))
+LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL", "two_factor:profile")
 
 # WAGTAILUSERS_PASSWORD_ENABLED = False
 
@@ -469,7 +454,7 @@ IS_2FA_PROFILE_TIMEOUT = int(os.getenv("IS_2FA_PROFILE_TIMEOUT", "500"))
 parsed_url = urlparse(WAGTAILADMIN_BASE_URL)
 
 SYSLOG_HOSTNAME = os.getenv("SYSLOG_HOSTNAME", parsed_url.hostname)
-SYSLOG_ADDRESS = os.getenv("SYSLOG_ADDRESS", "/dev/log")
+SYSLOG_ADDRESS = os.getenv("SYSLOG_ADDRESS", "/dev/null")  # Default to void
 SYSLOG_PORT = int(os.getenv("SYSLOG_PORT", 514))
 
 if SYSLOG_ADDRESS != "/dev/log":
@@ -534,10 +519,10 @@ LOGGING = {
 }
 
 # Two Factor
-LOGIN_URL = "two_factor:login"
+# LOGIN_URL = "two_factor:login"
 
 # this one is optional
-LOGIN_REDIRECT_URL = "two_factor:profile"
+# LOGIN_REDIRECT_URL = "two_factor:profile"
 
 # Get IP from Traefik
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
