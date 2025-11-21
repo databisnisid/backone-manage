@@ -326,23 +326,31 @@ class NetworkRoutes(models.Model):
     def delete(self, using=None, keep_parents=False):
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         result = zt.get_network_info(self.network.network_id)
-        routes = result["routes"]
+        try:
+            routes = result["routes"]
 
-        j = 0
-        for i in range(len(routes)):
-            if (
-                routes[i - j]["via"] == self.gateway
-                and routes[i - j]["target"] == self.ip_network
-            ):
-                routes.pop(i - j)
-                j += 1
+            j = 0
+            for i in range(len(routes)):
+                if (
+                    routes[i - j]["via"] == self.gateway
+                    and routes[i - j]["target"] == self.ip_network
+                ):
+                    routes.pop(i - j)
+                    j += 1
 
-        routes_new = {"routes": routes}
-        zt.set_network(self.network.network_id, routes_new)
-        network = Networks.objects.get(id=self.network.id)
-        network.save()
+            routes_new = {"routes": routes}
+            zt.set_network(self.network.network_id, routes_new)
+            network = Networks.objects.get(id=self.network.id)
+            network.save()
 
-        return super(NetworkRoutes, self).delete()
+            return super(NetworkRoutes, self).delete()
+
+        except IndexError:
+            raise ValidationError(
+                _(
+                    "Route not found in Controller (ERR-3001)! Please contact your administrator!"
+                )
+            )
 
     def clean(self):
         if self.ip_network is not None:
