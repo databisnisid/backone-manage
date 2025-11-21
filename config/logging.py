@@ -39,7 +39,7 @@ def log_user_login(sender, user, request, **kwargs):
     if request:
         # Get the IP address (basic implementation, might need refinement for production behind proxies)
         # ip_address = request.META.get("REMOTE_ADDR", "")
-        ip_address = request.META.get("X_FORWARDED_FOR", "")
+        ip_address = request.META.get("HTTP_X_FORWARDED_FOR", "")
         log_message = f'User logged in: username="{user.get_username()}", ip_address="{ip_address}"'
         logger.info(log_message)
     else:
@@ -66,7 +66,7 @@ def log_user_login_failed(sender, credentials, request, **kwargs):
     # Extract useful information like username and IP address
     username = credentials.get("username", "")
     # ip_address = request.META.get("REMOTE_ADDR", "Unknown IP")
-    ip_address = request.META.get("X_FORWARDED_FOR", "Unknown IP")
+    ip_address = request.META.get("HTTP_X_FORWARDED_FOR", "Unknown IP")
 
     # Log the error message using the custom logger
     logger.error(
