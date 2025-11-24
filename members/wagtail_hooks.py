@@ -59,7 +59,7 @@ class MembersForm(WagtailAdminModelForm):
 """
 
 
-def is_member(user, group_name="RemoteAccess"):
+def is_member(user, group_name=settings.REMOTE_ACCESS_GROUP_NAME):
     """
     Checks if a user is a member of a specific group.
     """
