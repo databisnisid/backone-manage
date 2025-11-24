@@ -296,6 +296,7 @@ ONLINE_STATUS_DELAY = int(os.getenv("ONLINE_STATUS_DELAY", "1250"))
 # SSH
 SSH_DEFAULT_USER = str(os.getenv("SSH_DEFAULT_USER"))
 SSH_DEFAULT_PASS = str(os.getenv("SSH_DEFAULT_PASS"))
+# GROUP NAME which User must be in that GROUP
 REMOTE_ACCESS_GROUP_NAME = os.getenv("REMOTE_ACCESS_GROUP_NAME", "RemoteAccess")
 
 # GOOGLE_MAPS

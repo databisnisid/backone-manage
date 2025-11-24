@@ -90,8 +90,8 @@ class MembersButtonHelper(ButtonHelper):
     # import_button_classnames = ["button-small", "icon", "icon-site"]
     # synchronize_classnames = ['button button-small button-primary']
     current_classnames = ["button button-small button-primary"]
-    ssh_uri = "https://remotessh.backone.cloud"
-    web_uri = "https://remoteweb.backone.cloud"
+    # ssh_uri = "https://remotessh.backone.cloud"
+    # web_uri = "https://remoteweb.backone.cloud"
     # rtty_uri = 'https://remote.manage.backone.cloud'
     rtty_uri = settings.RTTY_URI
 
