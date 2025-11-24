@@ -59,6 +59,13 @@ class MembersForm(WagtailAdminModelForm):
 """
 
 
+def is_member(user, group_name="RemoteAccess"):
+    """
+    Checks if a user is a member of a specific group.
+    """
+    return user.groups.filter(name=group_name).exists()
+
+
 class EditView(ModelFormView, InstanceSpecificView):
     pass
 
@@ -147,7 +154,8 @@ class MembersButtonHelper(ButtonHelper):
     def get_buttons_for_obj(
         self, obj, exclude=None, classnames_add=None, classnames_exclude=None
     ):
-        current_user = get_current_user()
+        # current_user = get_current_user()
+        current_user = self.request.user
 
         # is_ssh_web = True if obj.ipaddress else False
         is_ssh_web = True if obj.serialnumber() else False
@@ -172,14 +180,14 @@ class MembersButtonHelper(ButtonHelper):
             if current_user.is_superuser:
                 buttons.append(self.ssh_button(obj))
             else:
-                if current_user.organization.features.ssh:
+                if current_user.organization.features.ssh and is_member(current_user):
                     buttons.append(self.ssh_button(obj))
 
         if "web_button" not in (exclude or []) and obj.is_online() and is_ssh_web:
             if current_user.is_superuser:
                 buttons.append(self.web_button(obj))
             else:
-                if current_user.organization.features.web:
+                if current_user.organization.features.web and is_member(current_user):
                     buttons.append(self.web_button(obj))
 
         return buttons
