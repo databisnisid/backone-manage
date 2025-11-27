@@ -1,5 +1,6 @@
 import ast
 import json
+import re
 from crum import get_current_user
 
 # from django.contrib.auth.models import User
@@ -133,3 +134,8 @@ def readable_timedelta_seconds(seconds):
         return " ".join(time_parts)
     else:
         return "below 1 second"
+
+
+def convert_python_booleans_to_json(s: str) -> str:
+    """Converts Python-style boolean strings (True/False) to JSON-style (true/false)."""
+    return re.sub(r"\b(True|False)\b", lambda m: m.group(0).lower(), s)
