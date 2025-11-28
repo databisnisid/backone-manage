@@ -8,7 +8,6 @@ from config.utils import get_user
 from django.utils.timezone import localtime
 
 
-
 def zt_import_members_delete(network):
     """
     This is for first time when importing the controllers
@@ -18,7 +17,7 @@ def zt_import_members_delete(network):
     """
     zt = Zerotier(network.controller.uri, network.controller.token)
 
-    '''
+    """
     zt = Zerotier(network.controller.uri, network.controller.token)
     zt_members = zt.list_members(network.network_id)
     db_members = Members.objects.filter(network=network,
@@ -28,7 +27,7 @@ def zt_import_members_delete(network):
     # print('ZT: ', zt_members)
     # print('DB: ', db_members)
     new_members = set(zt_members) ^ set(db_members)
-    '''
+    """
 
     members = zt.list_members(network.network_id)
 
@@ -42,15 +41,15 @@ def zt_import_members_delete(network):
             mem = Members.objects.get(member_id=member, network=network)
         except ObjectDoesNotExist:
             mem = Members()
-            mem.name = 'NET-' + network.network_id + ' MEMBER-' +  member
+            mem.name = "NET-" + network.network_id + " MEMBER-" + member
 
-        ip_address_list = ','.join([str(ip) for ip in member_info['ipAssignments']])
+        ip_address_list = ",".join([str(ip) for ip in member_info["ipAssignments"]])
         mem.ipaddress = ip_address_list
-        mem.member_id = member_info['id']
-        mem.is_bridge = member_info['activeBridge']
-        mem.is_no_auto_ip = member_info['noAutoAssignIps']
+        mem.member_id = member_info["id"]
+        mem.is_bridge = member_info["activeBridge"]
+        mem.is_no_auto_ip = member_info["noAutoAssignIps"]
         mem.network = network
-        #print(mem.member_id)
+        # print(mem.member_id)
         mem.save()
 
 
@@ -63,7 +62,7 @@ def zt_import_members(network):
     """
     zt = Zerotier(network.controller.uri, network.controller.token)
 
-    '''
+    """
     zt = Zerotier(network.controller.uri, network.controller.token)
     zt_members = zt.list_members(network.network_id)
     db_members = Members.objects.filter(network=network,
@@ -73,13 +72,13 @@ def zt_import_members(network):
     # print('ZT: ', zt_members)
     # print('DB: ', db_members)
     new_members = set(zt_members) ^ set(db_members)
-    '''
+    """
 
     members = zt.list_members(network.network_id)
 
     for member in members:
         member_info = zt.get_member_info(network.network_id, member)
-        if member_info['authorized']:
+        if member_info["authorized"]:
             """
             Only authorized member is imported
             """
@@ -88,15 +87,15 @@ def zt_import_members(network):
                 mem = Members.objects.get(member_id=member, network=network)
             except ObjectDoesNotExist:
                 mem = Members()
-                mem.name = 'NET-' + network.network_id + ' MEMBER-' +  member
+                mem.name = "NET-" + network.network_id + " MEMBER-" + member
 
-            ip_address_list = ','.join([str(ip) for ip in member_info['ipAssignments']])
+            ip_address_list = ",".join([str(ip) for ip in member_info["ipAssignments"]])
             mem.ipaddress = ip_address_list
-            mem.member_id = member_info['id']
-            mem.is_bridge = member_info['activeBridge']
-            mem.is_no_auto_ip = member_info['noAutoAssignIps']
+            mem.member_id = member_info["id"]
+            mem.is_bridge = member_info["activeBridge"]
+            mem.is_no_auto_ip = member_info["noAutoAssignIps"]
             mem.network = network
-            #print(mem.member_id)
+            # print(mem.member_id)
             mem.save()
 
 
@@ -108,20 +107,20 @@ def zt_import_network_routes(network):
     """
     zt = Zerotier(network.controller.uri, network.controller.token)
     result = zt.get_network_info(network.network_id)
-    #print(net.route)
-    routes = result['routes']
+    # print(net.route)
+    routes = result["routes"]
     for route in routes:
         print(route)
-        ip_target = route['target']
-        via = route['via']
+        ip_target = route["target"]
+        via = route["via"]
         try:
-            NetworkRoutes.objects.get(network=network,
-                                      ip_network=ip_target,
-                                      gateway=via)
+            NetworkRoutes.objects.get(
+                network=network, ip_network=ip_target, gateway=via
+            )
         except ObjectDoesNotExist:
-            net_route = NetworkRoutes(network=network,
-                                      ip_network=ip_target,
-                                      gateway=via)
+            net_route = NetworkRoutes(
+                network=network, ip_network=ip_target, gateway=via
+            )
             net_route.save()
 
 
@@ -154,11 +153,11 @@ def zt_import_networks(controller):
             net_info = zt.get_network_info(network)
             print(net_info)
 
-            if 'routes' in net_info:
-                routes = net_info['routes']
+            if "routes" in net_info:
+                routes = net_info["routes"]
                 route_indexes = []
                 for i in range(len(routes)):
-                    if routes[i]['via'] is None:
+                    if routes[i]["via"] is None:
                         route_indexes.append(i)
 
                 """ If route is found """
@@ -166,18 +165,18 @@ def zt_import_networks(controller):
                 if route_indexes:
                     ip_networks = []
                     for route_index in route_indexes:
-                        ip_networks.append(routes[route_index]['target'])
+                        ip_networks.append(routes[route_index]["target"])
                     print(ip_networks)
                     net.ip_address_networks = ",".join([str(ip) for ip in ip_networks])
 
             if not is_network:
-                print('Network is NOT in database. Add network id into DB', network)
+                print("Network is NOT in database. Add network id into DB", network)
                 net_info = zt.get_network_info(network)
-                if not net_info['name']:
-                    net.name = network + ' Network'
+                if not net_info["name"]:
+                    net.name = network + " Network"
                 else:
-                    net.name = net_info['name']
-                net.network_id = net_info['nwid']
+                    net.name = net_info["name"]
+                net.network_id = net_info["nwid"]
                 try:
                     net.user
                     if net.user is None:
@@ -212,8 +211,9 @@ def zt_synchronize_network(network):
     """
     zt = Zerotier(network.controller.uri, network.controller.token)
     zt_members = zt.list_members(network.network_id)
-    db_members = Members.objects.filter(network=network,
-                                        configuration=None).values_list('member_id', flat=True)
+    db_members = Members.objects.filter(
+        network=network, configuration=None
+    ).values_list("member_id", flat=True)
     zt_members = to_list(zt_members)
     db_members = to_list(db_members)
     # print('ZT: ', zt_members)
@@ -225,13 +225,14 @@ def zt_synchronize_network(network):
             try:
                 zt_members.index(new_member)
                 try:
-                    member = Members.objects.get(member_id=new_member,
-                                                 is_authorized=True)
-                    #member = Members.objects.get(member_id=new_member,
-                                                 #is_authorized=True,
-                                                 #network=network)
+                    member = Members.objects.get(
+                        member_id=new_member, is_authorized=True
+                    )
+                    # member = Members.objects.get(member_id=new_member,
+                    # is_authorized=True,
+                    # network=network)
                     member.save()
-                    print('Adding New Members :', new_member)
+                    print("Adding New Members :", new_member)
                 except ObjectDoesNotExist:
                     pass
 
@@ -255,17 +256,19 @@ def zt_synchronize_member_peers(network=None):
     Scheduled cronjob every 5 minutes
     :return:
     """
-    print(localtime(), 'START - Synchronize Member Peers')
+    print(localtime(), "START - Synchronize Member Peers")
     if network is not None:
         member_peers = MemberPeers.objects.filter(network=network)
     else:
         member_peers = MemberPeers.objects.all()
 
     for member_peer in member_peers:
-        zt = Zerotier(member_peer.network.controller.uri, member_peer.network.controller.token)
+        zt = Zerotier(
+            member_peer.network.controller.uri, member_peer.network.controller.token
+        )
         member_peer.peers = zt.get_member_peers(member_peer.member_id)
         member_peer.save()
-    print(localtime(), 'DONE - Synchronize Member Peers')
+    print(localtime(), "DONE - Synchronize Member Peers")
 
 
 def zt_check_member_peers(member):
@@ -277,10 +280,11 @@ def zt_check_member_peers(member):
             member_peer = MemberPeers.objects.get(member_id=member.member_id)
         except ObjectDoesNotExist:
             member_peer = MemberPeers()
-            zt = Zerotier(member.network.controller.uri, member.network.controller.token)
-            member_peer.peers = zt.get_member_peers(member_peer.member_id)
-            member_peer.network = member.network
-            member_peer.save()
+
+        zt = Zerotier(member.network.controller.uri, member.network.controller.token)
+        member_peer.peers = zt.get_member_peers(member_peer.member_id)
+        member_peer.network = member.network
+        member_peer.save()
 
         member.peers = member_peer
         member.save()
@@ -291,9 +295,9 @@ def zt_check_all_member_peers():
     Update All Members Peers
     Running from crontab
     """
-    print(localtime(), 'START - Checking All Member Peers')
+    print(localtime(), "START - Checking All Member Peers")
     members = Members.objects.filter(peers=None)
-    #members = Members.objects.all()
+    # members = Members.objects.all()
     for member in members:
         zt_check_member_peers(member)
-    print(localtime(), 'END - Checking All Member Peers')
+    print(localtime(), "END - Checking All Member Peers")

@@ -4,15 +4,17 @@ from .backend import Zerotier
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 
+""" This is duplicate because circular import """
+
 
 def to_dictionary(data):
-    return ast.literal_eval(data.replace("\'", '\"'))
+    return ast.literal_eval(data.replace("'", '"'))
 
 
 class Controllers(models.Model):
     name = models.CharField(_("Name"), max_length=50, default="Default Controller")
     description = models.TextField(_("Description"), blank=True)
-    #uri = models.URLField(_('URL'), max_length=100, default='http://localhost:9993', unique=True)
+    # uri = models.URLField(_('URL'), max_length=100, default='http://localhost:9993', unique=True)
     uri = models.CharField(
         _("URL"), max_length=100, default="http://localhost:9993", unique=True
     )
