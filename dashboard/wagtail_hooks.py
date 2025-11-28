@@ -18,8 +18,7 @@ from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet, SnippetViewSetGroup
 from django.conf import settings
 from licenses.utils import is_license_valid
-
-# from django.templatetags.static import static
+from django.templatetags.static import static
 
 
 # @hooks.register("insert_global_admin_css", order=100)
@@ -29,13 +28,12 @@ from licenses.utils import is_license_valid
 #    """
 #    return "<style>textarea {resize:vertical !important}</style>"
 
-"""
+
 @hooks.register("insert_global_admin_css")
 def global_admin_css():
     return format_html(
         '<link rel="stylesheet" href="{}">', static("dashboard/css/custom.css")
     )
-"""
 
 
 @hooks.register("construct_reports_menu", order=1)
