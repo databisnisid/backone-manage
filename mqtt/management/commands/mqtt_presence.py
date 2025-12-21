@@ -1,3 +1,4 @@
+import logging
 from paho.mqtt import client as mqtt
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
@@ -5,6 +6,8 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from mqtt.models import Mqtt
 from members.models import Members
+
+logger = logging.getLogger(__name__)
 
 
 def on_connect(client, userdata, keepalive, bind_address):
@@ -17,6 +20,7 @@ def on_message(client, userdata, message):
     msg = str(message.payload.decode("utf-8"))
 
     print(str(current_time), msg)
+    logger.info(f"{msg}")
     mqtt_msg = msg.split(";")
     member_id = mqtt_msg[0][:50]  # max_length=50
 

@@ -1,4 +1,5 @@
 import redis
+import logging
 from redis.exceptions import TimeoutError
 from paho.mqtt import client as mqtt
 from django.core.management.base import BaseCommand, CommandError
@@ -8,6 +9,8 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from config.settings import MQTT_REDIS_DB
 from mqtt.models import Mqtt
 from members.models import Members
+
+logger = logging.getLogger(__name__)
 
 """
 MQTT_REDIS_HOST
@@ -35,7 +38,8 @@ def on_message(client, userdata, message):
     current_time = timezone.now()
     msg = str(message.payload.decode("utf-8"))
 
-    print(str(current_time), msg)
+    # print(str(current_time), msg)
+    logger.info(f"{msg}")
     mqtt_msg = msg.split(";")
     member_id = mqtt_msg[0][:50]  # max_length=50
     # r = redis.Redis()
