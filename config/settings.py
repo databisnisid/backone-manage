@@ -558,3 +558,6 @@ IPWARE_META_PRECEDENCE_ORDER = (
     "CLIENT-IP",  # Akamai and Cloudflare: True-Client-IP and Fastly: Fastly-Client-IP
     "REMOTE_ADDR",  # Default
 )
+
+# SYNC_MEMBER_PEERS_SLEEP
+SYNC_MEMBER_PEERS_SLEEP = int(os.getenv("SYNC_MEMBER_PEERS_SLEEP", 60))
