@@ -33,6 +33,7 @@ class Command(BaseCommand):
             # current_time = timezone.now()
             # timestamp = int(current_time.timestamp())
             # for member_peer in member_peers:
+            logger.info(f"Start - Syncronize")
             for member in members:
                 zt = Zerotier(
                     member.network.controller.uri,
@@ -42,7 +43,7 @@ class Command(BaseCommand):
                 )
                 # peers = zt.get_member_peers(member_peer.member_id)
                 peers = zt.get_member_peers(member.member_id)
-                logger.debug(f"{peers}")
+                logger.info(f"{peers}")
                 member_id_with_prefix = (
                     f"{settings.MQTT_REDIS_PREFIX}:{member_peer.member_id}"
                 )
@@ -60,5 +61,8 @@ class Command(BaseCommand):
                 except TimeoutError:
                     pass
 
+            logger.info(
+                f"End - Syncronize. Sleep for {settings.SYNC_MEMBER_PEERS_SLEEP} seconds"
+            )
             """ Sleep for x seconds """
             sleep(settings.SYNC_MEMBER_PEERS_SLEEP)
