@@ -166,7 +166,10 @@ def add_another_welcome_panel(request, panels):
 @hooks.register("insert_global_admin_js", order=100)
 def global_admin_js():
     """Add /static/css/custom.js to the admin."""
-    return format_html('<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>')
+    return format_html(
+        '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
+        static("dsahboard/js/function.js"),
+    )
 
 
 """
