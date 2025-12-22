@@ -464,8 +464,10 @@ SYSLOG_HOSTNAME = os.getenv("SYSLOG_HOSTNAME", parsed_url.hostname)
 SYSLOG_ADDRESS = os.getenv("SYSLOG_ADDRESS", "/dev/null")  # Default to void
 SYSLOG_PORT = int(os.getenv("SYSLOG_PORT", 514))
 
-# if SYSLOG_ADDRESS != "/dev/null":
-#    SYSLOG_ADDRESS = (SYSLOG_ADDRESS, SYSLOG_PORT)
+SYSLOG_HANDLER = "null"
+if SYSLOG_ADDRESS != "/dev/null":
+    SYSLOG_ADDRESS = (SYSLOG_ADDRESS, SYSLOG_PORT)
+    SYSLOG_HANDLER = "syslog"
 
 LOGGING = {
     "version": 1,
@@ -488,6 +490,10 @@ LOGGING = {
         },
     },
     "handlers": {
+        # Define a null handler
+        "null": {
+            "class": "logging.NullHandler",
+        },
         "syslog": {
             "level": "INFO",
             "class": "logging.handlers.SysLogHandler",
@@ -503,22 +509,26 @@ LOGGING = {
         },
     },
     "root": {
-        "handlers": ["console", "syslog"],
+        "handlers": ["console", SYSLOG_HANDLER],
+        # "handlers": ["console", "syslog"],
         "level": "INFO",
     },
     "loggers": {
         "auth_event": {
-            "handlers": ["console", "syslog"],
+            # "handlers": ["console", "syslog"],
+            "handlers": ["console", SYSLOG_HANDLER],
             "level": "INFO",
             "propagate": False,
         },
         "django": {
-            "handlers": ["console", "syslog"],
+            # "handlers": ["console", "syslog"],
+            "handlers": ["console", SYSLOG_HANDLER],
             "level": "INFO",
             "propagate": False,
         },
         "wagtail": {
-            "handlers": ["console", "syslog"],
+            # "handlers": ["console", "syslog"],
+            "handlers": ["console", SYSLOG_HANDLER],
             "level": "INFO",
             "propagate": False,
         },
