@@ -31,10 +31,17 @@ def get_msg_redis(member_id: str):
         msg_decode = msg.decode()
         msg_decode = msg_decode.replace("True", "true").replace("False", "false")
         msg_json = json.loads(msg_decode)
+        # try:
         msg_string = msg_json["mqtt"]
-        msg_ts = msg_json["ts"]
+        # except KeyError:
+        #    msg_string = ""
 
-    except AttributeError:
+        # try:
+        msg_ts = msg_json["ts"]
+        # except KeyError:
+        #    msg_ts = -1
+
+    except AttributeError or KeyError:
         """If not respond from REDIS, try to get from DB"""
         try:
             # mqtt = MqttRedis.objects.get(member_id=member_id_prefix)
