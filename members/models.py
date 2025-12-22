@@ -604,13 +604,15 @@ class Members(models.Model):
 
     def is_online(self):
         online_status = False
-        peers = to_dictionary("{}")
+        # peers = to_dictionary("{}")
+        peers = {}
         # if self.peers:
         try:
             self.peers
             try:
-                peers = to_dictionary(self.peers.peers)
                 peers = get_member_peers_from_redis(str(self.member_id))
+                if not peers:
+                    peers = to_dictionary(self.peers.peers)
                 if "paths" in peers and len(peers["paths"]) != 0 and self.ipaddress:
                     online_status = True
                 if (
