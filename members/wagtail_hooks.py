@@ -132,6 +132,7 @@ class MembersButtonHelper(ButtonHelper):
             "label": text,
             "classname": self.finalise_classname(self.current_classnames),
             "title": text,
+            **{"target": "_blank", "rel": "noreferrer"},
         }
 
     def web_button(self, obj):
@@ -149,6 +150,7 @@ class MembersButtonHelper(ButtonHelper):
             "label": text,
             "classname": self.finalise_classname(self.current_classnames),
             "title": text,
+            **{"target": "_blank", "rel": "noreferrer"},
         }
 
     def get_buttons_for_obj(
