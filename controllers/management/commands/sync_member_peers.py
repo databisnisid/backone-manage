@@ -45,7 +45,7 @@ class Command(BaseCommand):
                 peers = zt.get_member_peers(member.member_id)
                 logger.info(f"{peers}")
                 member_id_with_prefix = (
-                    f"{settings.MQTT_REDIS_PREFIX}:{memberr.member_id}"
+                    f"{settings.MQTT_REDIS_PREFIX}:{member.member_id}"
                 )
                 msg_json = {}
                 msg_json["peers"] = peers
