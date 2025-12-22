@@ -59,12 +59,15 @@ def get_member_peers_from_redis(member_id: str = "") -> dict:
                 msg_string = msg_string.replace("True", "true").replace(
                     "False", "false"
                 )
-                msg_json = json.loads(msg_string)
 
                 try:
-                    result = msg_json["peers"]
-                except KeyError:
-                    pass
+                    msg_json = json.loads(msg_string)
+                    try:
+                        result = msg_json["peers"]
+                    except KeyError:
+                        pass
+                except json.JSONDecodeError as e:
+                    print(f"Error: Unable to decode JSON. {e}")
 
         except ConnectionError or TimeoutError:
             pass

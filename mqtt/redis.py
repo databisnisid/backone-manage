@@ -29,8 +29,9 @@ def get_msg_redis(member_id: str):
 
     try:
         msg_decode = msg.decode()
+        msg_decode = msg_decode.replace("True", "true").replace("False", "false")
         msg_json = json.loads(msg_decode)
-        msg_string = msg_json["msg"]
+        msg_string = msg_json["mqtt"]
         msg_ts = msg_json["ts"]
 
     except AttributeError:
