@@ -464,8 +464,8 @@ SYSLOG_HOSTNAME = os.getenv("SYSLOG_HOSTNAME", parsed_url.hostname)
 SYSLOG_ADDRESS = os.getenv("SYSLOG_ADDRESS", "/dev/null")  # Default to void
 SYSLOG_PORT = int(os.getenv("SYSLOG_PORT", 514))
 
-if SYSLOG_ADDRESS != "/dev/null":
-    SYSLOG_ADDRESS = (SYSLOG_ADDRESS, SYSLOG_PORT)
+# if SYSLOG_ADDRESS != "/dev/null":
+#    SYSLOG_ADDRESS = (SYSLOG_ADDRESS, SYSLOG_PORT)
 
 LOGGING = {
     "version": 1,
