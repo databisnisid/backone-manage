@@ -58,7 +58,7 @@ class Command(BaseCommand):
                         settings.MQTT_REDIS_SETEX,
                         msg_json_string,
                     )
-                except TimeoutError or ConnectionError:
+                except (TimeoutError, ConnectionError):
                     pass
 
             logger.info(
