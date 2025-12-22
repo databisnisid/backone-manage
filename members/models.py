@@ -2,7 +2,9 @@ from warnings import warn
 from django.db.transaction import Atomic
 from django.utils.safestring import mark_safe
 import redis
+from redis.exceptions import ConnectionError, TimeoutError
 import re
+import json
 from connectors import redis_ipinfo
 from datetime import timedelta
 
@@ -36,6 +38,33 @@ from mqtt.redis import (
     get_parameter_by_index,
 )
 from django.templatetags.static import static
+
+r = redis.Redis(
+    host=settings.MQTT_REDIS_HOST,
+    port=settings.MQTT_REDIS_PORT,
+    db=settings.MQTT_REDIS_DB,
+    socket_timeout=1,
+)
+
+
+def get_member_peers_from_redis(member_id: str = "") -> dict:
+    result = {}
+    if member_id:
+        prefix = f"{settings.MQTT_REDIS_PREFIX}:{member_id}"
+
+        try:
+            msg = r.get(prefix)
+            if msg:
+                msg_string = msg.decode()
+                msg_string = msg_string.replace("True", "true").replace(
+                    "False", "false"
+                )
+                result = json.loads(msg_string)
+
+        except ConnectionError or TimeoutError:
+            pass
+
+    return result
 
 
 def get_quota(text: str = None):
@@ -581,6 +610,7 @@ class Members(models.Model):
             self.peers
             try:
                 peers = to_dictionary(self.peers.peers)
+                peers = get_member_peers_from_redis(str(self.member_id))
                 if "paths" in peers and len(peers["paths"]) != 0 and self.ipaddress:
                     online_status = True
                 if (
