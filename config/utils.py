@@ -4,7 +4,7 @@ import re
 from crum import get_current_user
 
 # from django.contrib.auth.models import User
-from accounts.models import User
+from accounts.models import User, Devices
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
@@ -139,3 +139,16 @@ def readable_timedelta_seconds(seconds):
 def convert_python_booleans_to_json(s: str) -> str:
     """Converts Python-style boolean strings (True/False) to JSON-style (true/false)."""
     return re.sub(r"\b(True|False)\b", lambda m: m.group(0).lower(), s)
+
+
+def check_device_id(device_id: str) -> bool:
+    result = False
+
+    try:
+        Devices.objects.get(device_id=device_id)
+        result = True
+
+    except ObjectDoesNotExist or MultipleObjectsReturned:
+        pass
+
+    return result

@@ -148,7 +148,8 @@ class LicenseFeatures(models.Model):
 """
 
 
-class Organizations(models.Model):
+# class Organizations(models.Model):
+class Organizations(ClusterableModel):
     name = models.CharField(_("Name"), max_length=50, unique=True)
     controller = models.ForeignKey(
         Controllers, on_delete=models.SET_NULL, verbose_name=_("Controller"), null=True
@@ -279,3 +280,43 @@ class GroupOrganizations(ClusterableModel):
         return ", ".join([x.name for x in self.member_org.all()])
 
     member_org_list.short_description = _("Member Organizations List")
+
+
+class Devices(models.Model):
+    organization = ParentalKey(
+        Organizations,
+        related_name="devices",
+        on_delete=models.CASCADE,
+        verbose_name=_("Organization"),
+    )
+
+    name = models.CharField(_("Device Name"), help_text=_(""), max_length=50)
+    device_id = models.CharField(
+        _("Device ID"), help_text=_(""), unique=True, max_length=200
+    )
+    username = models.CharField(
+        _("Last User Login"), blank=True, null=True, max_length=50
+    )
+
+    class Meta:
+        db_table = "devices"
+        verbose_name = _("Device")
+        verbose_name_plural = _("Devices")
+
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    def last_login(self):
+        result = None
+        if self.username:
+            try:
+                result = User.objects.get(username=self.username)
+            except ObjectDoesNotExist:
+                pass
+
+        return result
+
+    last_login.short_description = _("Last Login")

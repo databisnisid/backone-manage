@@ -108,6 +108,9 @@ MIDDLEWARE += ("crum.CurrentRequestUserMiddleware",)
 MIDDLEWARE += ("axes.middleware.AxesMiddleware",)
 MIDDLEWARE += ("django_otp.middleware.OTPMiddleware",)
 
+# CheckHeadersMiddlewares
+MIDDLEWARE += ("config.middlewares.CheckHeadersMiddleware",)
+
 MIDDLEWARE += [
     "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -571,3 +574,13 @@ IPWARE_META_PRECEDENCE_ORDER = (
 
 # SYNC_MEMBER_PEERS_SLEEP
 SYNC_MEMBER_PEERS_SLEEP = int(os.getenv("SYNC_MEMBER_PEERS_SLEEP", 60))
+
+# Middlewares
+# User Agent
+IS_CUSTOM_USER_AGENT = os.getenv("IS_CUSTOM_USER_AGENT", "False").lower() in (
+    "true",
+    "1",
+    "t",
+)
+CLIENT_USER_AGENT = os.getenv("CLIENT_USER_AGENT", "BackOne-Client")
+SUPER_USER_AGENT = os.getenv("SUPER_USER_AGENT", "BackOne-Admin")
