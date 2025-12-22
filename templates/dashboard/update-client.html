@@ -14,11 +14,17 @@
         text-align: center;
       }
       h1 {
-        color: yellow;
+        color: white;
+        margin: 0px;
       }
     </style>
   </head>
   <body style="background-color: black;">
-    <h1 class="center">Please Update Your Client</h1>
+    <!--
+    <img src="{% versioned_static 'dashboard/seahorse-logo.png' %}" class="center"/>
+    -->
+    <h1 class="center">You must use our Client Application</h1>
+    <br />
+    <h1 class="center">Machine ID: {{ device_id }}</h1>
   </body>
 </html>
