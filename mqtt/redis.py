@@ -41,7 +41,7 @@ def get_msg_redis(member_id: str):
         # except KeyError:
         #    msg_ts = -1
 
-    except AttributeError or KeyError:
+    except (AttributeError, KeyError):
         """If not respond from REDIS, try to get from DB"""
         try:
             # mqtt = MqttRedis.objects.get(member_id=member_id_prefix)

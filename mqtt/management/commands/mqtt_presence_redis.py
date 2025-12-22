@@ -54,7 +54,7 @@ def on_message(client, userdata, message):
     # r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg)
     try:
         r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg_json_string)
-    except TimeoutError or ConnectionError:
+    except (TimeoutError, ConnectionError):
         pass
 
 

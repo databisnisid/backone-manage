@@ -69,7 +69,7 @@ def get_member_peers_from_redis(member_id: str = "") -> dict:
                 except json.JSONDecodeError as e:
                     print(f"Error: Unable to decode JSON. {e}")
 
-        except ConnectionError or TimeoutError:
+        except (ConnectionError, TimeoutError):
             pass
 
     return result
