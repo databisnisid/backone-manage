@@ -1,0 +1,27 @@
+{% load wagtailadmin_tags %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Seahorse Project</title>
+    <style>
+      .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: auto;
+        text-align: center;
+      }
+      h1 {
+        color: yellow;
+        margin: 0px;
+      }
+    </style>
+  </head>
+  <body style="background-color: black;">
+    <img src="{% versioned_static 'dashboard/seahorse-logo.png' %}" class="center"/>
+    <h1 class="center">Your device is not Authorized</h1>
+    <h1 class="center">{{ device_id }}</h1>
+  </body>
+</html>
