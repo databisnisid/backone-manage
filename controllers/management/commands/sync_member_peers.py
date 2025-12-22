@@ -2,7 +2,7 @@ from time import sleep
 import redis
 import logging
 from django.utils import timezone
-from redis.exceptions import TimeoutError
+from redis.exceptions import TimeoutError, ConnectionError
 import json
 from controllers.backend import Zerotier
 from django.core.management.base import BaseCommand
@@ -58,7 +58,7 @@ class Command(BaseCommand):
                         settings.MQTT_REDIS_SETEX,
                         msg_json_string,
                     )
-                except TimeoutError:
+                except TimeoutError or ConnectionError:
                     pass
 
             logger.info(

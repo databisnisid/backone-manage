@@ -1,6 +1,6 @@
 import redis
 import logging
-from redis.exceptions import TimeoutError
+from redis.exceptions import TimeoutError, ConnectionError
 from paho.mqtt import client as mqtt
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
@@ -54,7 +54,7 @@ def on_message(client, userdata, message):
     # r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg)
     try:
         r.setex(member_id_with_prefix, settings.MQTT_REDIS_SETEX, msg_json_string)
-    except TimeoutError:
+    except TimeoutError or ConnectionError:
         pass
 
 
