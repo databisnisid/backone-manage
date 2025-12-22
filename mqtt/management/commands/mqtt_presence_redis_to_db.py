@@ -38,7 +38,7 @@ class Command(BaseCommand):
                     print(f"{key_string}-> {msg_string}")
                     msg_json = json.loads(msg_string)
 
-                    mqtt_member = save_to_mqtt(msg_json["msg"])
+                    mqtt_member = save_to_mqtt(msg_json["mqtt"])
 
                     """
                     try:
