@@ -1,9 +1,12 @@
 import random
+import logging
 from members.views import prepare_data
 from members.models import Members
 from .models import ZabbixNetworks
 from connectors.drivers.zabbix import Zabbix
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
 def sync_member_inventory(network, zabbix, zabbix_group_name):
@@ -13,10 +16,10 @@ def sync_member_inventory(network, zabbix, zabbix_group_name):
     # zabbix = Zabbix()
 
     for member in members:
-        print(f"Member: {member.name}")
+        logging.info(f"Member: {member.name}")
         hostname = member.get_hostname()
         if hostname:
-            print(f"Hostname: {hostname}")
+            logging.info(f"Hostname: {hostname}")
             try:
                 point = member.location.split(";")
                 result = point[1].split(" ")
@@ -62,14 +65,15 @@ def sync_member_inventory(network, zabbix, zabbix_group_name):
             result = zabbix.host_update_inventory(hostname, params)
 
             if not result:
-                print(f"Host: {hostname} NOT found! Try to create it.")
-                # Create
-                result = zabbix.host_create(hostname, zabbix_group_name)
-                # Then Update
-                print(f"Host: {hostname} Updated! {result}")
-                result = zabbix.host_update_inventory(hostname, params)
+                if settings.ZABBIX_HOSTNAME_AUTO_CREATE:
+                    logging.info(f"Host: {hostname} NOT found! Try to create it.")
+                    # Create
+                    result = zabbix.host_create(hostname, zabbix_group_name)
+                    # Then Update
+                    logging.info(f"Host: {hostname} Updated! {result}")
+                    result = zabbix.host_update_inventory(hostname, params)
             else:
-                print(f"Host: {hostname} Updated! {result}")
+                logging.info(f"Host: {hostname} Updated! {result}")
             #    result = zabbix.host_create(hostname, params)
             #    print(f"Host '{hostname}' created with ID: {result['hostids'][0]}")
 
@@ -82,10 +86,10 @@ def sync_zabbix_networks():
         networks = zabbix_network.networks.all()
 
         if zabbix_network.config:
-            print("Use Zabbix Config")
+            logging.info("Use Zabbix Config")
             zabbix = Zabbix(zabbix_network.config.url, zabbix_network.config.token)
         else:
-            print("Use Settings from settings.py")
+            logging.info("Use Settings from settings.py")
             zabbix = Zabbix()
 
         for network in networks:

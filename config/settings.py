@@ -379,6 +379,9 @@ SESSION_SAVE_EVERY_REQUEST = True
 # ZABBIX
 ZABBIX_URL = os.getenv("ZABBIX_URL", "localhost")
 ZABBIX_TOKEN = os.getenv("ZABBIX_TOKEN", "zabbixToken")
+ZABBIX_HOSTNAME_AUTO_CREATE = os.getenv(
+    "IS_ZABBIX_HOSTNAME_AUTO_CREATE", "False"
+).lower() in ("true", "1", "t")
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
