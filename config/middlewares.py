@@ -23,8 +23,13 @@ class CorsMiddleware(object):
 class CheckHeadersMiddleware(object):
     def __init__(self, get_response):
         self.get_response = get_response
+        self.excluded_paths = settings.EXCLUDE_PATH_USER_AGENT
 
     def __call__(self, request):
+        # Check if the request path starts with any excluded path
+        if any(request.path.startswith(path) for path in self.excluded_paths):
+            return self.get_response(request)
+
         logger = logging.getLogger(
             name="CheckHeaderMiddleware" + __name__ + ".__call__"
         )

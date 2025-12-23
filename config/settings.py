@@ -587,3 +587,11 @@ IS_CUSTOM_USER_AGENT = os.getenv("IS_CUSTOM_USER_AGENT", "False").lower() in (
 )
 CLIENT_USER_AGENT = os.getenv("CLIENT_USER_AGENT", "BackOne-Client")
 SUPER_USER_AGENT = os.getenv("SUPER_USER_AGENT", "BackOne-Admin")
+
+PATH_USER_AGENT = os.getenv("PATH_USER_AGENT", "/api/, /api-auth/")
+
+exclude_paths = PATH_USER_AGENT.split(",")
+
+EXCLUDE_PATH_USER_AGENT = []
+for exclude_path in exclude_paths:
+    EXCLUDE_PATH_USER_AGENT.append(exclude_path)
