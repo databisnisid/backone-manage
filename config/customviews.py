@@ -61,8 +61,7 @@ class CustomLoginView(account.LoginView):
                 logger.info(f"{context}")
 
             except ObjectDoesNotExist:
-                pass
-                # print("NO Organization")
+                logger.info("No Organization found for custom logo")
 
         except ObjectDoesNotExist:
             pass
