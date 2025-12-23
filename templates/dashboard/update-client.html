@@ -20,11 +20,11 @@
     </style>
   </head>
   <body style="background-color: black;">
-    <!--
-    <img src="{% versioned_static 'dashboard/seahorse-logo.png' %}" class="center"/>
-    -->
+    <img src="{% versioned_static 'dashboard/images/custom-app.png' %}" class="center"/>
     <h1 class="center">You must use our Client Application</h1>
+    {% if device_id %}
     <br />
     <h1 class="center">Machine ID: {{ device_id }}</h1>
+    {% endif %}
   </body>
 </html>
