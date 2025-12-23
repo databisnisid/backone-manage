@@ -1,3 +1,4 @@
+import logging
 from django.db.models import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import redirect, render
@@ -5,6 +6,8 @@ from wagtail.admin.views import account
 from wagtail.models import Site
 from accounts.models import Organizations
 from config.settings import IS_MAILAUTH_NO_PASSWORD, IS_2FA_ENABLE
+
+logger = logging.getLogger(__name__)
 
 
 class CustomLoginView(account.LoginView):
@@ -48,12 +51,14 @@ class CustomLoginView(account.LoginView):
         hostname = self.request.get_host()
         try:
             site = Site.objects.get(hostname__icontains=hostname)
+            logger.info(f"Site {site}")
             # site = Site.objects.get(hostname__icontains=context["site_name"])
             # print(site)
 
             try:
                 organization = Organizations.objects.get(site=site)
                 context["organization"] = organization
+                logger.info(f"{context}")
 
             except ObjectDoesNotExist:
                 pass
