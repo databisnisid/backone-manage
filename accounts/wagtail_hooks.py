@@ -2,12 +2,14 @@
 from wagtail_modeladmin.options import (
     ModelAdmin,
     ModelAdminGroup,
+    ObjectList,
     PermissionHelper,
     modeladmin_register,
 )
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, InlinePanel
 from .models import Features  # LicenseFeatures
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 from .models import Organizations, GroupOrganizations
 
 
@@ -129,6 +131,35 @@ class OrganizationsAdmin(ModelAdmin):
             queryset = queryset.exclude(id=1)
 
         return queryset
+
+    def get_edit_handler(self):
+        current_user = self.request.user
+        basic_panel = [
+            MultiFieldPanel(
+                [FieldPanel("name"), FieldPanel("features", read_only=True)],
+                heading=_("Name and Features"),
+            )
+        ]
+        device_panel = InlinePanel(
+            "devices",
+            heading=_("Devices"),
+            classname="collapsed",
+            panels=[FieldPanel("name"), FieldPanel("device_id")],
+        )
+        if current_user.is_superuser:
+            if settings.IS_CUSTOM_USER_AGENT:
+                custom_panel = self.panels
+                custom_panel.append(device_panel)
+                return ObjectList(custom_panel)
+            else:
+                return ObjectList(self.panels)
+        else:
+            if settings.IS_CUSTOM_USER_AGENT:
+                custom_panel = basic_panel
+                custom_panel.append(device_panel)
+                return ObjectList(custom_panel)
+            else:
+                return ObjectList(basic_panel)
 
 
 class GroupOrganizationsAdmin(ModelAdmin):
