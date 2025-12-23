@@ -1,4 +1,5 @@
 # from wagtail.contrib.modeladmin.options import (
+from crum import get_current_user
 from wagtail_modeladmin.options import (
     ModelAdmin,
     ModelAdminGroup,
@@ -133,7 +134,7 @@ class OrganizationsAdmin(ModelAdmin):
         return queryset
 
     def get_edit_handler(self):
-        current_user = self.request.user
+        current_user = get_current_user()
         basic_panel = [
             MultiFieldPanel(
                 [FieldPanel("name"), FieldPanel("features", read_only=True)],
