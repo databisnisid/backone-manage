@@ -1,13 +1,13 @@
 {% load wagtailadmin_tags %}
-  {% if 'backone.cloud' in request.build_absolute_uri %}
+  {% if organization.logo.file.url %}
+        <div>
+            <img src="{{ organization.logo.file.url }}" />
+        </div>
+  {% elif 'backone.cloud' in request.build_absolute_uri %}
         <div id="login-logo">
               <!--
                 <img src="{% versioned_static 'dashboard/images/backone-manage-logo.svg' %}" alt=""/>
               -->
-        </div>
-  {% elif organization.logo.file.url %}
-        <div>
-            <img src="{{ organization.logo.file.url }}" />
         </div>
   {% else %}
         <div>
