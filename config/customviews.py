@@ -46,19 +46,15 @@ class CustomLoginView(account.LoginView):
             User.USERNAME_FIELD
         ).verbose_name
 
-        # print(context["site_name"])
-        # print(context["site"])
         hostname = self.request.get_host()
         try:
             site = Site.objects.get(hostname__icontains=hostname)
-            logger.info(f"Site {site}")
-            # site = Site.objects.get(hostname__icontains=context["site_name"])
-            # print(site)
+            logger.info(f"Site: {site}")
 
             try:
                 organization = Organizations.objects.get(site=site)
                 context["organization"] = organization
-                logger.info(f"{context}")
+                logger.info(f"Organization: {organization}")
 
             except ObjectDoesNotExist:
                 logger.info("No Organization found for custom logo")
@@ -87,6 +83,7 @@ class CustomLoginView(account.LoginView):
                 )
         """
 
+        logger.debug(f"{context}")
         return context
 
 
