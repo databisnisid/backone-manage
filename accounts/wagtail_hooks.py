@@ -102,6 +102,7 @@ class OrganizationsAdmin(ModelAdmin):
     search_fields = ("name", "features")
     permission_helper_class = OrganizationsPermissionHelper
 
+    """
     panels = [
         MultiFieldPanel(
             [FieldPanel("name"), FieldPanel("features", read_only=True)],
@@ -119,12 +120,13 @@ class OrganizationsAdmin(ModelAdmin):
             heading=_("Site Customization"),
         ),
     ]
+    """
 
-    def __init__(self, *args, **kwargs):
-        # request = kwargs.get('request')
-        # print('User ', self.current_user)
-        # self.inspect_view_enabled = True
-        super().__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs):
+    # request = kwargs.get('request')
+    # print('User ', self.current_user)
+    # self.inspect_view_enabled = True
+    #    super().__init__(*args, **kwargs)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -135,6 +137,23 @@ class OrganizationsAdmin(ModelAdmin):
 
     def get_edit_handler(self):
         current_user = get_current_user()
+        superuser_panel = [
+            MultiFieldPanel(
+                [FieldPanel("name"), FieldPanel("features", read_only=True)],
+                heading=_("Name and Features"),
+            ),
+            FieldPanel("controller"),
+            FieldPanel("is_no_org"),
+            MultiFieldPanel(
+                [
+                    FieldPanel("site"),
+                    FieldPanel("logo"),
+                    FieldPanel("logo_dashboard"),
+                    FieldPanel("favicon"),
+                ],
+                heading=_("Site Customization"),
+            ),
+        ]
         basic_panel = [
             MultiFieldPanel(
                 [FieldPanel("name"), FieldPanel("features", read_only=True)],
@@ -149,11 +168,11 @@ class OrganizationsAdmin(ModelAdmin):
         )
         if current_user.is_superuser:
             if settings.IS_CUSTOM_USER_AGENT:
-                custom_panel = self.panels
+                custom_panel = superuser_panel
                 custom_panel.append(device_panel)
                 return ObjectList(custom_panel)
             else:
-                return ObjectList(self.panels)
+                return ObjectList(superuser_panel)
         else:
             if settings.IS_CUSTOM_USER_AGENT:
                 custom_panel = basic_panel
