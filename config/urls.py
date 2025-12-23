@@ -45,8 +45,7 @@ urlpatterns = [
     path("two/", include(tfcustom_urls)),
     # This Custom Login for custom logo
     path("login/", CustomLoginView.as_view(), name="custom_login_view"),
-    path("", CustomLoginView.as_view(), name="custom_login_view"),
-    # path("", include(wagtailadmin_urls)),
+    path("", include(wagtailadmin_urls)),
     # path("login/", CustomLoginView.as_view(), name="custom_login_view"),
     path("documents/", include(wagtaildocs_urls)),
     # path("search/", search_views.search, name="search"),
