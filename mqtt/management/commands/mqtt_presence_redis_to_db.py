@@ -6,10 +6,13 @@
 # from mqtt.models import MqttRedis
 import redis
 import json
+import logging
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from mqtt.redis_to_db import save_to_mqtt, delete_from_mqtt
 from members.models import Members
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -35,7 +38,10 @@ class Command(BaseCommand):
             if members_count:
                 try:
                     msg_string = msg.decode()
-                    print(f"{key_string}-> {msg_string}")
+                    msg_string = msg_string.replace("True", "true").replace(
+                        "False", "false"
+                    )
+                    logger.info(f"{key_string}-> {msg_string}")
                     msg_json = json.loads(msg_string)
 
                     mqtt_member = save_to_mqtt(msg_json["mqtt"])
