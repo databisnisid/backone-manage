@@ -46,6 +46,13 @@ r = redis.Redis(
     socket_timeout=1,
 )
 
+r_peers = redis.Redis(
+    host=settings.MQTT_REDIS_HOST,
+    port=settings.MQTT_REDIS_PORT,
+    db=int(settings.MQTT_REDIS_DB + 1),
+    socket_timeout=1,
+)
+
 
 def get_member_peers_from_redis(member_id: str = "") -> dict:
     result = {}
@@ -53,7 +60,7 @@ def get_member_peers_from_redis(member_id: str = "") -> dict:
         prefix = f"{settings.MQTT_REDIS_PREFIX}:{member_id}"
 
         try:
-            msg = r.get(prefix)
+            msg = r_peers.get(prefix)
             if msg:
                 msg_string = msg.decode()
                 msg_string = msg_string.replace("True", "true").replace(
