@@ -1,8 +1,11 @@
+import logging
 from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from mqtt.models import Mqtt
 
+
+logger = logging.getLogger(__name__)
 # from members.models import Members
 
 
@@ -14,7 +17,8 @@ def save_to_mqtt(msg):
     current_time = timezone.now()
     # msg = str(message.decode("utf-8"))
 
-    print(str(current_time), msg)
+    # print(str(current_time), msg)
+    logger.debug(f"{msg}")
     mqtt_msg = msg.split(";")
     member_id = mqtt_msg[0][:50]  # max_length=50
 
