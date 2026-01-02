@@ -21,7 +21,7 @@ class Command(BaseCommand):
         r = redis.Redis(
             host=settings.MQTT_REDIS_HOST,
             port=settings.MQTT_REDIS_PORT,
-            db=settings.MQTT_REDIS_DB,
+            db=int(settings.MQTT_REDIS_DB + 1),
             socket_timeout=1,
         )
 
@@ -53,14 +53,12 @@ class Command(BaseCommand):
                 msg_json_string = str(msg_json).replace("'", '"')
 
                 try:
-                    r.json().set(member_id_with_prefix, "$.peers", peers)
-                    """
+                    # r.json().set(member_id_with_prefix, "$.peers", peers)
                     r.setex(
                         member_id_with_prefix,
                         settings.MQTT_REDIS_SETEX,
                         msg_json_string,
                     )
-                    """
                 except (TimeoutError, ConnectionError):
                     pass
 
