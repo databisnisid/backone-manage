@@ -53,11 +53,14 @@ class Command(BaseCommand):
                 msg_json_string = str(msg_json).replace("'", '"')
 
                 try:
+                    r.json().set(member_id_with_prefix, "$.peers", peers)
+                    """
                     r.setex(
                         member_id_with_prefix,
                         settings.MQTT_REDIS_SETEX,
                         msg_json_string,
                     )
+                    """
                 except (TimeoutError, ConnectionError):
                     pass
 
