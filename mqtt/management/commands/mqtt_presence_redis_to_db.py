@@ -60,9 +60,8 @@ class Command(BaseCommand):
                     mr.save()
                     """
 
-                except AttributeError:
-                    continue
-                except KeyError:
+                except (AttributeError, KeyError) as e:
+                    logger.error(f"Error: {e}")
                     continue
 
                 for member in members:
