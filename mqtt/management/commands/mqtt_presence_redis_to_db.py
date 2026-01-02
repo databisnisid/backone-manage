@@ -61,9 +61,9 @@ class Command(BaseCommand):
                     """
 
                 except AttributeError:
-                    pass
-                except KeyError as e:
-                    logger.error(e)
+                    continue
+                except KeyError:
+                    continue
 
                 for member in members:
                     if member.mqtt:
