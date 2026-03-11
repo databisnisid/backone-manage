@@ -252,6 +252,8 @@ class User(AbstractUser):
         null=True,
     )
 
+    is_member_filter = models.BooleanField(_("Member Filter"), default=False)
+
 
 class GroupOrganizations(ClusterableModel):
     def limit_choice_no_org():
