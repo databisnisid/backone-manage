@@ -1,5 +1,6 @@
 {% extends "wagtailusers/users/edit.html" %}
 
 {% block extra_fields %}
+    {% include "wagtailadmin/shared/field.html" with field=form.is_member_filter %}
     {% include "wagtailadmin/shared/field.html" with field=form.organization %}
 {% endblock extra_fields %}

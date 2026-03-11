@@ -24,7 +24,7 @@ class CustomUserEditForm(UserEditForm):
             del self.fields["is_superuser"]
 
     class Meta(UserEditForm.Meta):
-        fields = UserEditForm.Meta.fields | {"organization"}
+        fields = UserEditForm.Meta.fields | {"organization", "is_member_filter"}
         # exclude = ["is_superuser"]
 
 
@@ -41,6 +41,5 @@ class CustomUserCreationForm(UserCreationForm):
             del self.fields["is_superuser"]
 
     class Meta(UserCreationForm.Meta):
-        fields = UserCreationForm.Meta.fields | {"organization"}
+        fields = UserCreationForm.Meta.fields | {"organization", "is_member_filter"}
         # exclude = ["is_superuser"]
-
