@@ -337,7 +337,7 @@ class MembersAdmin(ModelAdmin):
 
     def get_list_filter(self, request):
         list_filter = ()
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.is_member_filter:
             list_filter = (
                 "is_waf",
                 "is_dpi",
