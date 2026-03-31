@@ -78,4 +78,7 @@ def get_parameter_by_index(msg: str, index: int = 0) -> str:
 def get_msg_by_index(member_id: str, index: int = 0) -> str:
     msg = get_msg(member_id)
 
-    return get_parameter_by_index(msg, index)
+    if msg:
+        return get_parameter_by_index(msg, index)
+    else:
+        return ""
