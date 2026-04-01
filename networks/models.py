@@ -346,7 +346,8 @@ class NetworkRoutes(models.Model):
             return super(NetworkRoutes, self).delete()
 
         except KeyError:
-            pass
+            # pass
+            return super(NetworkRoutes, self).delete()
             """
             raise ValidationError(
                 _(
