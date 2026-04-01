@@ -346,11 +346,14 @@ class NetworkRoutes(models.Model):
             return super(NetworkRoutes, self).delete()
 
         except KeyError:
+            pass
+            """
             raise ValidationError(
                 _(
                     "Route not found in Controller (ERR-3001)! Please contact your administrator!"
                 )
             )
+            """
 
     def clean(self):
         if self.ip_network is not None:
