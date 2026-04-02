@@ -363,7 +363,7 @@ class MembersAdmin(ModelAdmin):
             "member_status",
             "model_release",
             "get_routes",
-            # "list_peers",
+            "list_peers",
         ]
         list_display_simple = [
             "name",
