@@ -9,7 +9,7 @@ IPINFO_LITE_URI = "https://api.ipinfo.io/lite/"
 def lookup_ipaddress(ipaddress: str = "8.8.8.8") -> dict:
     try:
         request_uri = f"{IPINFO_LITE_URI}{ipaddress}?token={settings.IPINFO_LITE_TOKEN}"
-        print(f"lookup_ipaddress -> {request_uri}")
+        # print(f"lookup_ipaddress -> {request_uri}")
         response = requests.get(request_uri)
         return response.json()
 
