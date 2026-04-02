@@ -71,7 +71,6 @@ class EditView(ModelFormView, InstanceSpecificView):
 
 
 class MembersView(EditView):
-
     panels = [
         MultiFieldPanel(
             [FieldPanel("name"), FieldPanel("description")],
@@ -85,7 +84,6 @@ class MembersView(EditView):
 
 
 class MembersButtonHelper(ButtonHelper):
-
     # Define classes for our button, here we can set an icon for example
     # import_button_classnames = ["button-small", "icon", "icon-site"]
     # synchronize_classnames = ['button button-small button-primary']
@@ -362,10 +360,10 @@ class MembersAdmin(ModelAdmin):
         ]
         list_display_superuser = [
             "member_name_with_address",
-            "member_status",
-            "model_release",
-            "get_routes",
-            "list_peers",
+            # "member_status",
+            # "model_release",
+            # "get_routes",
+            # "list_peers",
         ]
         list_display_simple = [
             "name",
