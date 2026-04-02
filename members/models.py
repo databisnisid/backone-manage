@@ -801,6 +801,8 @@ class Members(models.Model):
         result = get_msg_by_index(self.member_id, 1)  # Index 1 -> model
         return result
 
+    model.short_description = _("Model")
+
     def board_name(self):
         result = get_msg_by_index(self.member_id, 2)  # Index 2 -> board_name
         return result
