@@ -515,9 +515,9 @@ class Members(models.Model):
         if ip_peers:
             ip_peers_html = []
             for ip_peer in ip_peers:
-                print(f"IP Peer: {ip_peer}")
+                # print(f"IP Peer: {ip_peer}")
                 as_name = redis_ipinfo.get_as_name(ip_peer)
-                print(f"AS Name: {as_name}")
+                # print(f"AS Name: {as_name}")
                 if as_name:
                     ip_info = "<a href='https://ipinfo.io/{}' target='_blank' rel='noopener noreferrer'>{}({})</a>".format(
                         ip_peer, ip_peer, as_name
@@ -530,7 +530,7 @@ class Members(models.Model):
 
             result = "<br />".join([str(p) for p in ip_peers_html])
             result = format_html("<small>" + result + "</small>")
-            print(f"Result: {result}")
+            # print(f"Result: {result}")
 
         return result
 
