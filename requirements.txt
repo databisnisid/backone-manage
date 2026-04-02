@@ -10,7 +10,7 @@ cffi==1.15.1
 charset-normalizer==2.1.0
 cryptography==39.0.0
 defusedxml==0.7.1
-Django==5.2.8
+Django==5.2.12
 django-axes==8.0.0
 django-cors-headers==4.5.0
 django-crum==0.7.9
@@ -47,7 +47,7 @@ numpy==2.3.4
 openpyxl==3.0.10
 paho-mqtt==1.6.1
 paramiko==2.11.0
-Pillow==9.2.0
+pillow==12.1.1
 pillow-heif==0.13.0
 prometheus_client==0.22.0
 psycopg2-binary==2.9.11
@@ -74,7 +74,7 @@ telepath==0.3.1
 trunco==0.2.1
 typing_extensions==4.12.2
 urllib3==1.26.11
-wagtail==7.0.3
+wagtail==7.0.6
 wagtail-modeladmin==2.2.0
 wagtailgeowidget==9.1.0
 webencodings==0.5.1
