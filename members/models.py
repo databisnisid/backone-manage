@@ -797,11 +797,11 @@ class Members(models.Model):
 
     serialnumber.short_description = _("Serial Number")
 
-    def model(self):
+    def model_name(self):
         result = get_msg_by_index(self.member_id, 1)  # Index 1 -> model
         return result
 
-    model.short_description = _("Model")
+    model_name.short_description = _("Model")
 
     def board_name(self):
         result = get_msg_by_index(self.member_id, 2)  # Index 2 -> board_name
@@ -847,7 +847,7 @@ class Members(models.Model):
 
             """ First Line: Model and CPU Core"""
             first_line = ""
-            model_string = self.model()
+            model_string = self.model_name()
             num_core = self.num_core()
 
             if model_string:

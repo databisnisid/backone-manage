@@ -382,7 +382,7 @@ class MembersAdmin(ModelAdmin):
             "member_id",
             "is_authorized_thumbnail",
             "online_status",
-            "model",
+            "model_name",
             "serialnumber",
         ]
         if current_user.organization.features.is_telkomsel:
