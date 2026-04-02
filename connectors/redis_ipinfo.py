@@ -24,8 +24,8 @@ def get_as_name(ipaddress: str) -> str:
         try:
             msg_string = msg.decode()
             msg_string_clean = convert_python_booleans_to_json(msg_string)
-            print(f"redis_ipinfo -> {msg_string}")
-            print(f"redis_ipinfo -> {msg_string_clean}")
+            # print(f"redis_ipinfo -> {msg_string}")
+            # print(f"redis_ipinfo -> {msg_string_clean}")
 
             try:
                 msg_json = json.loads(msg_string_clean)
