@@ -62,13 +62,10 @@ def get_member_peers_from_redis(member_id: str = "") -> dict:
         try:
             msg = r_peers.get(prefix)
             if msg:
-                try:
-                    msg_string = msg.decode()
-                    msg_string = msg_string.replace("True", "true").replace(
-                        "False", "false"
-                    )
-                except json.JSONDecodeError as e:
-                    msg_string = "{}"
+                msg_string = msg.decode()
+                msg_string = msg_string.replace("True", "true").replace(
+                    "False", "false"
+                )
 
                 try:
                     msg_json = json.loads(msg_string)
