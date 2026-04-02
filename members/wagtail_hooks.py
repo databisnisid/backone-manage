@@ -361,7 +361,7 @@ class MembersAdmin(ModelAdmin):
         list_display_superuser = [
             "member_name_with_address",
             "member_status",
-            # "model_release",
+            "model_release",
             # "get_routes",
             # "list_peers",
         ]
