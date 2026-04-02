@@ -62,10 +62,13 @@ def get_member_peers_from_redis(member_id: str = "") -> dict:
         try:
             msg = r_peers.get(prefix)
             if msg:
-                msg_string = msg.decode()
-                msg_string = msg_string.replace("True", "true").replace(
-                    "False", "false"
-                )
+                try:
+                    msg_string = msg.decode()
+                    msg_string = msg_string.replace("True", "true").replace(
+                        "False", "false"
+                    )
+                except json.JSONDecodeError as e:
+                    msg_string = "{}"
 
                 try:
                     msg_json = json.loads(msg_string)
@@ -401,7 +404,6 @@ class Members(models.Model):
 
                 # Second Raise
                 for ip_address_list in ip_address_lists:
-
                     """Optimize this for different network"""
                     """adding: network=self.network"""
                     members = Members.objects.filter(
