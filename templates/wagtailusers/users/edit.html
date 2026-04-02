@@ -3,4 +3,21 @@
 {% block extra_fields %}
     {% include "wagtailadmin/shared/field.html" with field=form.is_member_filter %}
     {% include "wagtailadmin/shared/field.html" with field=form.organization %}
+    <div class="field">
+      <div class="field-content">
+        {# Display the current image if it exists #}
+        {% if form.instance.wagtail_userprofile.avatar %}
+          <div style="margin-bottom: 1em;">
+            <img src="{{ form.instance.wagtail_userprofile.avatar.url }}" 
+              alt="Avatar Preview" 
+              style="max-width: 150px; border-radius: 50%; border: 1px solid #ddd;">
+          </div>
+        {% else %}
+          <p>No avatar uploaded.</p>
+        {% endif %}
+                
+        {# Render the actual upload field #}
+        {% include "wagtailadmin/shared/field.html" with field=form.avatar %}
+      </div>
+    </div>
 {% endblock extra_fields %}
