@@ -179,6 +179,17 @@ class Organizations(ClusterableModel):
     uuid = models.UUIDField(_("UUID"), default=uuid.uuid4, unique=True, editable=False)
 
     # site = models.ForeignKey(
+    site = models.ManyToManyField(
+        Site,
+        # on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Site"),
+        help_text=_(
+            "If this organization refer to same site with other organization, leave it empty."
+        ),
+    )
+    """
     site = models.OneToOneField(
         Site,
         on_delete=models.SET_NULL,
@@ -189,6 +200,7 @@ class Organizations(ClusterableModel):
             "If this organization refer to same site with other organization, leave it empty."
         ),
     )
+    """
 
     logo = models.ForeignKey(
         get_image_model_string(),
