@@ -60,7 +60,7 @@ class CustomLoginView(account.LoginView):
                 logger.info("No Organization found for custom logo")
 
         except ObjectDoesNotExist:
-            pass
+            logger.info("No Site info")
 
         """
         if IS_MAILAUTH_NO_PASSWORD:
