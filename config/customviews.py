@@ -47,6 +47,7 @@ class CustomLoginView(account.LoginView):
         ).verbose_name
 
         hostname = self.request.get_host()
+        logger.info(f"Hostname: {hostname}")
         try:
             site = Site.objects.get(hostname__icontains=hostname)
             logger.info(f"Site: {site}")
