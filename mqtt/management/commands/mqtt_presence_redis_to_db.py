@@ -27,11 +27,11 @@ class Command(BaseCommand):
             socket_timeout=1,
         )
 
-        print(f"{settings.MQTT_REDIS_PREFIX} {r}")
+        logger.info(f"{settings.MQTT_REDIS_PREFIX} {r}")
 
         for key in r.scan_iter(f"{settings.MQTT_REDIS_PREFIX}:*"):
             key_string = key.decode()
-            logger.info(f"Key: {key_string}")
+            # logger.info(f"Key: {key_string}")
             key_split = key_string.split(":")
             member_id = key_split[1]
             msg = r.get(key_string)
