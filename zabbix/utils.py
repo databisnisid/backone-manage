@@ -62,8 +62,10 @@ def sync_member_inventory(network, zabbix, zabbix_group_name):
                     "host_networks": member.network.name,
                 },
             }
+            logging.info(params)
             result = zabbix.host_update_inventory(hostname, params)
 
+            logging.info(result)
             if not result:
                 if settings.ZABBIX_HOSTNAME_AUTO_CREATE:
                     logging.info(f"Host: {hostname} NOT found! Try to create it.")
