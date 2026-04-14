@@ -32,8 +32,10 @@ from django.templatetags.static import static
 
 @hooks.register("insert_global_admin_css")
 def global_admin_css():
+    # return format_html("<style>#search-form { display: none; }</style>")
     return format_html(
-        '<link rel="stylesheet" href="{}">', static("dashboard/css/custom.css")
+        '<link rel="stylesheet" href="{}">',
+        static("dashboard/css/custom.css"),
     )
 
 
@@ -168,8 +170,8 @@ def add_another_welcome_panel(request, panels):
 def global_admin_js():
     """Add /static/css/custom.js to the admin."""
     return format_html(
-        '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
-        static("dsahboard/js/function.js"),
+        '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="{}"></script>',
+        static("dashboard/js/function.js"),
     )
 
 

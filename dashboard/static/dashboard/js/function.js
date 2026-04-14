@@ -40,4 +40,11 @@ document.onreadystatechange = function () {
   if (document.readyState == "complete") {
     collapsedSidebar();
   }
+  // Find the form and remove it
+  const formToDelete = document.querySelector('form[action="/pages/search/"]');
+  if (formToDelete) {
+    formToDelete.remove();
+  }
 }
+
+
