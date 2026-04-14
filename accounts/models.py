@@ -12,6 +12,42 @@ from wagtail.images import get_image_model_string
 from modelcluster.models import ClusterableModel
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 
+from wagtail.admin.forms.models import WagtailAdminModelForm
+
+""" Start - Test ModelForm """
+
+
+# class OrganizationsModelForm(forms.ModelForm):
+class OrganizationsModelForm(WagtailAdminModelForm):
+    #    class Meta:
+    #    model = Organizations
+    #    # fields = "__all__"
+    #    fields = ["site"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            # Exclude items already related to this instance
+            # already_chosen = self.instance.site.all()
+            my_selected = self.instance.site.values_list("pk", flat=True)
+            already_selected = (
+                Site.objects.filter(site_organization__is_no_org=False)
+                .exclude(pk__in=my_selected)
+                .values_list("pk", flat=True)
+            )
+            # exclude_qs = already_selected.difference(my_selected)
+            self.fields["site"].queryset = Site.objects.exclude(pk__in=already_selected)
+        else:
+            # already_selected = self.instance.site.values_list("pk", flat=True)
+            # self.fields["site"].queryset = Site.objects.exclude(pk__in=already_selected)
+            already_selected = Site.objects.filter(
+                site_organization__is_no_org=False
+            ).values_list("pk", flat=True)
+            self.fields["site"].queryset = Site.objects.exclude(pk__in=already_selected)
+
+
+""" End - Test ModelForm """
+
 
 class Features(models.Model):
     name = models.CharField(_("Name"), max_length=250, unique=True)
@@ -182,6 +218,7 @@ class Organizations(ClusterableModel):
     site = models.ManyToManyField(
         Site,
         # on_delete=models.SET_NULL,
+        related_name="site_organization",
         null=True,
         blank=True,
         verbose_name=_("Site"),
@@ -233,6 +270,8 @@ class Organizations(ClusterableModel):
     )
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    base_form_class = OrganizationsModelForm
 
     class Meta:
         db_table = "organizations"
