@@ -66,7 +66,7 @@ def sync_member_inventory(network, zabbix, zabbix_group_name):
             result = zabbix.host_update_inventory(hostname, params)
 
             logging.info(f"Result: {result}")
-            if not result:
+            if result is None:
                 logging.info(
                     f"ZABBIX_HOSTNAME_AUTO_CREATE: {settings.ZABBIX_HOSTNAME_AUTO_CREATE}"
                 )
