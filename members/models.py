@@ -210,6 +210,8 @@ class Members(models.Model):
     # WAF
     is_waf = models.BooleanField(_("WebFilter Active"), default=False)
 
+    is_backone_online = models.BooleanField(_("BackOne Status"), default=False)
+
     # Mobile
     mobile_regex = RegexValidator(
         regex=r"^62\d{9,15}$",
@@ -644,9 +646,12 @@ class Members(models.Model):
         except ObjectDoesNotExist:
             pass
 
+        self.is_backone_online = online_status
+
         return online_status
 
     is_online.short_description = _("BackOne Online")
+    is_online.admin_order_field = "is_backone_online"
 
     def online_status(self):
         text = "OFFLINE"
