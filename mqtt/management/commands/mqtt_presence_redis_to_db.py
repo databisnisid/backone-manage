@@ -27,7 +27,7 @@ class Command(BaseCommand):
             socket_timeout=1,
         )
 
-        print(f"HAHAHA {r}")
+        print(f"{settings.MQTT_REDIS_PREFIX} {r}")
 
         for key in r.scan_iter(f"{settings.MQTT_REDIS_PREFIX}:*"):
             key_string = key.decode()
