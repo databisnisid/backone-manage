@@ -21,12 +21,26 @@ from licenses.utils import is_license_valid
 from django.templatetags.static import static
 
 
+# from wagtail.admin.views.reports.audit_logging import AuditLogView
 # @hooks.register("insert_global_admin_css", order=100)
 # def global_admin_css():
 #    """Workaround wagtail issue 7210
 #    https://github.com/wagtail/wagtail/issues/7210
 #    """
 #    return "<style>textarea {resize:vertical !important}</style>"
+
+
+@hooks.register("construct_reports_queryset")
+def filter_site_history_for_user(request, queryset):
+    # Specify the username(s) to hide
+    excluded_users = ["backone"]
+
+    if not request.user.is_superuser:
+        return queryset.exclude(user__username__in=excluded_users)
+
+    # Optional: If you want to hide them from other superusers too,
+    # remove the 'if' statement above.
+    return queryset
 
 
 @hooks.register("insert_global_admin_css")
