@@ -281,7 +281,7 @@ MQTT_REDIS_HOST = str(os.getenv("MQTT_REDIS_HOST", "localhost"))
 MQTT_REDIS_PORT = int(os.getenv("MQTT_REDIS_PORT", 6379))
 MQTT_REDIS_DB = int(os.getenv("MQTT_REDIS_DB", 0))
 MQTT_REDIS_SETEX = int(os.getenv("MQTT_REDIS_SETEX", 1800))
-MQTT_REDIS_PREFIX = str(os.getenv("MQTT_REDIS_PREFIX", "backone"))
+MQTT_REDIS_PREFIX = str(os.getenv("MQTT_REDIS_PREFIX", "presence"))
 
 MQTT_REDIS_CONN = redis.Redis(
     host=MQTT_REDIS_HOST,
