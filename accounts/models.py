@@ -220,7 +220,7 @@ class Organizations(ClusterableModel):
         # on_delete=models.SET_NULL,
         related_name="site_organization",
         # null=True,
-        # blank=True,
+        blank=True,
         verbose_name=_("Site"),
         help_text=_(
             "If this organization refer to same site with other organization, leave it empty."
