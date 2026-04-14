@@ -98,7 +98,7 @@ class OrganizationsAdmin(ModelAdmin):
     exclude_from_explorer = (
         False  # or True to exclude pages of this type from Wagtail's explorer view
     )
-    list_display = ("name", "features", "controller", "uuid", "site")
+    list_display = ("name", "features", "controller", "uuid")
     search_fields = ("name", "features")
     permission_helper_class = OrganizationsPermissionHelper
 
