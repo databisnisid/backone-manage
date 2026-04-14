@@ -47,7 +47,7 @@ def sync_member_inventory(network, zabbix, zabbix_group_name):
                     "location": member.address if member.address else "",
                     "location_lat": lat[:16],
                     "location_lon": lng[:16],
-                    "model": member.model()[:64],
+                    "model": member.model_release()[:64],
                     "hardware": member.board_name(),
                     "hw_arch": member.release_target()[:32],
                     "software": member.release_version(),
