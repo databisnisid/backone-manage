@@ -2,5 +2,7 @@
 
 {% block extra_fields %}
     {% include "wagtailadmin/shared/field.html" with field=form.is_member_filter %}
+    {% include "wagtailadmin/shared/field.html" with field=form.is_remote_ssh %}
+    {% include "wagtailadmin/shared/field.html" with field=form.is_remote_web %}
     {% include "wagtailadmin/shared/field.html" with field=form.organization %}
 {% endblock extra_fields %}

@@ -180,14 +180,22 @@ class MembersButtonHelper(ButtonHelper):
             if current_user.is_superuser:
                 buttons.append(self.ssh_button(obj))
             else:
-                if current_user.organization.features.ssh and is_member(current_user):
+                if (
+                    current_user.organization.features.ssh
+                    and is_member(current_user)
+                    and current_user.is_remote_ssh
+                ):
                     buttons.append(self.ssh_button(obj))
 
         if "web_button" not in (exclude or []) and obj.is_online() and is_ssh_web:
             if current_user.is_superuser:
                 buttons.append(self.web_button(obj))
             else:
-                if current_user.organization.features.web and is_member(current_user):
+                if (
+                    current_user.organization.features.web
+                    and is_member(current_user)
+                    and current_user.is_remote_web
+                ):
                     buttons.append(self.web_button(obj))
 
         return buttons
@@ -292,7 +300,7 @@ class MembersAdmin(ModelAdmin):
         False  # or True to exclude pages of this type from Wagtail's explorer view
     )
 
-    list_per_page = 10
+    list_per_page = settings.MEMBERS_LIST_PER_PAGE
 
     list_export = (
         "name",

@@ -53,6 +53,8 @@ class CustomUserEditForm(UserEditForm):
             "avatar",
             "organization",
             "is_member_filter",
+            "is_remote_ssh",
+            "is_remote_web",
         }
         # exclude = ["is_superuser"]
 
@@ -73,5 +75,7 @@ class CustomUserCreationForm(UserCreationForm):
         fields = UserCreationForm.Meta.fields | {
             "organization",
             "is_member_filter",
+            "is_remote_ssh",
+            "is_remote_web",
         }
         # exclude = ["is_superuser"]

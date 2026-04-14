@@ -304,6 +304,8 @@ class User(AbstractUser):
     )
 
     is_member_filter = models.BooleanField(_("Member Filter"), default=False)
+    is_remote_ssh = models.BooleanField(_("Remote SSH"), default=False)
+    is_remote_web = models.BooleanField(_("Remote WEB"), default=False)
 
 
 class GroupOrganizations(ClusterableModel):
