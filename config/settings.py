@@ -595,3 +595,7 @@ exclude_paths = PATH_USER_AGENT.split(",")
 EXCLUDE_PATH_USER_AGENT = []
 for exclude_path in exclude_paths:
     EXCLUDE_PATH_USER_AGENT.append(exclude_path)
+
+
+# list_per_page
+MEMBERS_LIST_PER_PAGE = int(os.getenv("MEMBERS_LIST_PER_PAGE", 10))
