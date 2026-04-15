@@ -7,6 +7,14 @@
   color: black;
 }
 
+#is_offline {
+  color: black;
+}
+
+#total_sites {
+  color: black;
+}
+
 #legend {
   font-family: Robot,Arial,sans-serif;
   background: #fff;
