@@ -656,6 +656,7 @@ class Members(models.Model):
     # is_online.short_description = _("BackOne Online")
     # is_online.admin_order_field = "is_backone_online"
 
+    @admin.display(description="Online Status", ordering="is_backone_online")
     def online_status(self):
         text = "OFFLINE"
         color = "red"
@@ -664,8 +665,6 @@ class Members(models.Model):
             color = "green"
 
         return format_html("<span style='color: " + color + ";'>" + text + "</span>")
-
-    online_status.short_description = _("Online Status")
 
     def get_routes(self):
         routes = []
