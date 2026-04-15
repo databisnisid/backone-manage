@@ -477,6 +477,7 @@ class Members(models.Model):
 
     list_ipaddress.short_description = _("ID, IP and Network")
 
+    @admin.display(description="Authorized", ordering="is_authorized")
     def is_authorized_thumbnail(self):
         thumbnail = "no.png"
         if self.is_authorized:
@@ -485,8 +486,6 @@ class Members(models.Model):
         thumbnail_static = static(f"dashboard/images/{thumbnail}")
 
         return mark_safe(f'<img src="{thumbnail_static}" width="30" height="30" />')
-
-    is_authorized_thumbnail.short_description = _("Authorized")
 
     def list_ip_peers(self):
         peers = to_dictionary("{}")
