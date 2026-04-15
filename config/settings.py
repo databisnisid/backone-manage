@@ -611,7 +611,7 @@ WAGTAILUSERS_PASSWORD_ENABLED = os.getenv(
 )
 # Disable user-facing password management
 WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = os.getenv(
-    "WAGTAILUSERS_PASSWORD_ENABLED", "False"
+    "WAGTAIL_PASSWORD_MANAGEMENT_ENABLED", "False"
 ).lower() in (
     "true",
     "1",
@@ -619,7 +619,7 @@ WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = os.getenv(
 )
 
 WAGTAIL_PASSWORD_RESET_ENABLED = os.getenv(
-    "WAGTAILUSERS_PASSWORD_ENABLED", "False"
+    "WAGTAIL_PASSWORD_RESET_ENABLED", "False"
 ).lower() in (
     "true",
     "1",
