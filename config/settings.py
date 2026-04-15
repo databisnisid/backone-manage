@@ -625,3 +625,5 @@ WAGTAIL_PASSWORD_RESET_ENABLED = os.getenv(
     "1",
     "t",
 )
+
+# WAGTAIL_EMAIL_MANAGEMENT_ENABLED = False

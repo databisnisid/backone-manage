@@ -6,7 +6,9 @@
         <div class="w-tabs__wrapper">
             <div role="tablist" class="w-tabs__list">
                 {% for tab in panels_by_tab.keys %}
+                  {% if tab.name == "profile" %}
                     {% include 'wagtailadmin/shared/tabs/tab_nav_link.html' with tab_id=tab.name title=tab.title %}
+                  {% endif %}
                 {% endfor %}
 
                 {% if menu_items %}
@@ -27,11 +29,13 @@
                     aria-labelledby="tab-label-{{ tab.name|cautious_slugify }}"
                 >
                     {% for panel in panels %}
+                      {% if panel.name == "profile" %}
                         {% panel id=panel.name heading=panel.title heading_size="label" %}
                             <div class="w-account-settings-panel w-mt-5">
                                 {{ panel.render }}
                             </div>
                         {% endpanel %}
+                      {% endif %}
                     {% endfor %}
                 </section>
             {% endfor %}

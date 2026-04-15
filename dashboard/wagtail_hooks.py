@@ -20,6 +20,9 @@ from django.conf import settings
 from licenses.utils import is_license_valid
 from django.templatetags.static import static
 
+from wagtail.admin.views.account import BaseSettingsPanel
+from .forms import ReadOnlyProfileForm
+
 
 # from wagtail.admin.views.reports.audit_logging import AuditLogView
 # @hooks.register("insert_global_admin_css", order=100)
@@ -28,6 +31,17 @@ from django.templatetags.static import static
 #    https://github.com/wagtail/wagtail/issues/7210
 #    """
 #    return "<style>textarea {resize:vertical !important}</style>"
+
+
+@hooks.register("register_account_settings_panel")
+class ReadOnlyProfilePanel(BaseSettingsPanel):
+    name = "profile"  # Overrides the default 'profile' panel
+    title = "Name and Email"
+    order = 100
+    form_class = ReadOnlyProfileForm
+    form_object = "profile"  # Targets the User model instead of UserProfile
+    # template_name = "wagtailadmin/account/account.html"
+    template_name = "wagtailadmin/account/custom_setting.html"
 
 
 @hooks.register("insert_global_admin_css")
