@@ -1,7 +1,6 @@
 from django import forms
 from accounts.models import User
 from django.contrib.auth import get_user_model
-from wagtail.users.models import UserProfile
 
 # from wagtail import forms
 from wagtail.admin.forms.models import WagtailAdminModelForm
@@ -10,8 +9,8 @@ from wagtail.admin.forms.models import WagtailAdminModelForm
 # User = get_user_model()
 
 
-class ReadOnlyProfileForm(forms.ModelForm):
-    # class ReadOnlyProfileForm(WagtailAdminModelForm):
+# class ReadOnlyProfileForm(forms.ModelForm):
+class ReadOnlyProfileForm(WagtailAdminModelForm):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email"]
