@@ -5,6 +5,7 @@ import redis
 from redis.exceptions import ConnectionError, TimeoutError
 import re
 import json
+from django.contrib import admin
 from connectors import redis_ipinfo
 from datetime import timedelta
 
@@ -622,6 +623,7 @@ class Members(models.Model):
     member_status.short_description = _("Member Status")
     member_status.admin_order_field = "is_backone_online"
 
+    @admin.display(description="BackOne Status", ordering="is_backone_online")
     def is_online(self):
         online_status = False
         # peers = to_dictionary("{}")
@@ -648,12 +650,12 @@ class Members(models.Model):
             pass
 
         self.is_backone_online = online_status
-        self.save()
+        # self.save()
 
         return online_status
 
-    is_online.short_description = _("BackOne Online")
-    is_online.admin_order_field = "is_backone_online"
+    # is_online.short_description = _("BackOne Online")
+    # is_online.admin_order_field = "is_backone_online"
 
     def online_status(self):
         text = "OFFLINE"
