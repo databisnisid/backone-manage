@@ -7,7 +7,8 @@ from wagtail import hooks
 
 # from networks.models import Networks, NetworkRoutes
 # from members.models import Members
-# from crum import get_current_user
+from crum import get_current_user
+
 # from wagtail.contrib.modeladmin.views import CreateView, EditView
 from .summary_panels import *
 from .statistic_panels import ProvidersChart
@@ -20,8 +21,8 @@ from django.conf import settings
 from licenses.utils import is_license_valid
 from django.templatetags.static import static
 
-from wagtail.admin.views.account import BaseSettingsPanel
-from .forms import ReadOnlyProfileForm
+# from wagtail.admin.views.account import BaseSettingsPanel
+# from .forms import ReadOnlyProfileForm
 
 
 # from wagtail.admin.views.reports.audit_logging import AuditLogView
@@ -33,6 +34,7 @@ from .forms import ReadOnlyProfileForm
 #    return "<style>textarea {resize:vertical !important}</style>"
 
 
+"""
 @hooks.register("register_account_settings_panel")
 class ReadOnlyProfilePanel(BaseSettingsPanel):
     name = "profile"  # Overrides the default 'profile' panel
@@ -42,6 +44,7 @@ class ReadOnlyProfilePanel(BaseSettingsPanel):
     form_object = "profile"  # Targets the User model instead of UserProfile
     # template_name = "wagtailadmin/account/account.html"
     template_name = "wagtailadmin/account/custom_setting.html"
+"""
 
 
 @hooks.register("insert_global_admin_css")
@@ -182,11 +185,30 @@ def add_another_welcome_panel(request, panels):
 
 @hooks.register("insert_global_admin_js", order=100)
 def global_admin_js():
+    current_user = get_current_user()
     """Add /static/css/custom.js to the admin."""
+
+    js_first = static("dashboard/js/function.js")
+
+    """ Nexus Specific Request """
+    js_second = static("dashboard/js/function_disable_account_setting.js")
+
+    script_text = f'<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="{js_first}"></script>'
+
+    final_script_text = script_text
+    # if current_user.is_superuser:
+    if settings.IS_DISABLE_ACCOUNT_SETTING:
+        script_text = f'<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="{js_second}"></script>'
+        # final_script_text = f'{script_text}<script src="{js_second}"></script>'
+
+    return format_html(script_text)
+    """
     return format_html(
-        '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="{}"></script>',
+        '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="{}"></script><script src="{}"></script>',
         static("dashboard/js/function.js"),
+        static("dashboard/js/disable_account_setting.js"),
     )
+    """
 
 
 """

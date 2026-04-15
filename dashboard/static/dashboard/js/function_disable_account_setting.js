@@ -41,11 +41,41 @@ function collapsedSidebar() {
 document.onreadystatechange = function () {
   if (document.readyState == "complete") {
     collapsedSidebar();
-  //}
     // Find the form and remove it
-    const formToDelete = document.querySelector('form[action="/pages/search/"]');
+    var formToDelete = document.querySelector('form[action="/pages/search/"]');
     if (formToDelete) {
       formToDelete.remove();
+    }
+
+    formToDelete = document.getElementById('tab-label-notifications');
+    if (formToDelete) {
+      formToDelete.remove();
+    }
+    formToDelete = document.getElementById('avatar-section');
+    if (formToDelete) {
+      formToDelete.remove();
+    }
+    formToDelete = document.getElementById('locale-section');
+    if (formToDelete) {
+      formToDelete.remove();
+    }
+
+    formToDelete = document.getElementById('theme-section');
+    if (formToDelete) {
+      formToDelete.remove();
+    }
+
+    var elementDisable = document.getElementById('id_name_email-first_name');
+    if (elementDisable) {
+      elementDisable.disabled = true;
+    }
+    elementDisable = document.getElementById('id_name_email-last_name');
+    if (elementDisable) {
+      elementDisable.disabled = true;
+    }
+    elementDisable = document.getElementById('id_name_email-email');
+    if (elementDisable) {
+      elementDisable.disabled = true;
     }
   }
 }
