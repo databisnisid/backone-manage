@@ -648,6 +648,7 @@ class Members(models.Model):
             pass
 
         self.is_backone_online = online_status
+        self.save()
 
         return online_status
 
