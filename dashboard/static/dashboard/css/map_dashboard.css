@@ -3,6 +3,10 @@
   width: 100%;
 }
 
+#is_online {
+  color: black;
+}
+
 #legend {
   font-family: Robot,Arial,sans-serif;
   background: #fff;
