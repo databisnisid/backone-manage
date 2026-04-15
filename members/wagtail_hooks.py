@@ -300,7 +300,7 @@ class MembersAdmin(ModelAdmin):
         False  # or True to exclude pages of this type from Wagtail's explorer view
     )
 
-    ordering = ("is_backone_online",)
+    ordering = ("-is_backone_online",)
 
     list_per_page = settings.MEMBERS_LIST_PER_PAGE
 
