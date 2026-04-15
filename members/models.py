@@ -654,8 +654,9 @@ class Members(models.Model):
         except ObjectDoesNotExist:
             pass
 
-        # self.is_backone_online = online_status
-        # self.save()
+        if self.is_backone_online != online_status:
+            self.is_backone_online = online_status
+            self.save(update_fields=["is_backone_online"])
 
         return online_status
 
