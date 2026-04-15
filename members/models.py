@@ -636,10 +636,16 @@ class Members(models.Model):
                     peers = to_dictionary(self.peers.peers)
                 if "paths" in peers and len(peers["paths"]) != 0 and self.ipaddress:
                     online_status = True
+
+                """
                 if (
                     "role" in self.peers.peers
                     and "latency" in self.peers.peers
                     and "version" in self.peers.peers
+                ):  # and int(self.peers.peers['latency']) == -1:
+                """
+                if (
+                    "role" in peers and "latency" in peers and "version" in peers
                 ):  # and int(self.peers.peers['latency']) == -1:
                     online_status = True
             except AttributeError:
@@ -648,7 +654,7 @@ class Members(models.Model):
         except ObjectDoesNotExist:
             pass
 
-        self.is_backone_online = online_status
+        # self.is_backone_online = online_status
         # self.save()
 
         return online_status
