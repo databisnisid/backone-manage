@@ -273,7 +273,7 @@ class Members(models.Model):
         zt.delete_member(self.network.network_id, self.member_id)
         return super(Members, self).delete()
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.user = self.network.user
         self.organization = self.network.organization
         if self.member_code:
@@ -321,7 +321,7 @@ class Members(models.Model):
             except ObjectDoesNotExist:
                 pass
 
-        return super(Members, self).save()
+        return super(Members, self).save(*args, **kwargs)
 
     def clean(self):
         try:
