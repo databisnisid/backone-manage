@@ -62,6 +62,13 @@ class Command(BaseCommand):
                 except (TimeoutError, ConnectionError):
                     pass
 
+                """
+                Update is_backone_online field by calling is_online
+                """
+                backone_online_status = member.is_online()
+                member.save()
+                logger.info(f"Online Status: {backone_online_status}")
+
             logger.info(
                 f"End - Syncronize. Sleep for {settings.SYNC_MEMBER_PEERS_SLEEP} seconds"
             )
