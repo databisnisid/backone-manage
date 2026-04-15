@@ -600,3 +600,12 @@ for exclude_path in exclude_paths:
 
 # list_per_page
 MEMBERS_LIST_PER_PAGE = int(os.getenv("MEMBERS_LIST_PER_PAGE", 10))
+
+# WAGTAILUSERS_PASSWORD_ENABLED = False
+WAGTAILUSERS_PASSWORD_ENABLED = os.getenv(
+    "WAGTAILUSERS_PASSWORD_ENABLED", "False"
+).lower() in (
+    "true",
+    "1",
+    "t",
+)
