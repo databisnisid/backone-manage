@@ -67,6 +67,7 @@ class Command(BaseCommand):
                 """
                 backone_online_status = member.is_online()
                 if backone_online_status != member.is_backone_online:
+                    member.is_backone_online = backone_online_status
                     member.save(update_fields=["is_backone_online"])
                     logger.info(
                         f"Member Name: {member.name}; Online Status Change: {backone_online_status}"
