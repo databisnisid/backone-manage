@@ -67,7 +67,7 @@ class Command(BaseCommand):
                 """
                 backone_online_status = member.is_online()
                 logger.info(f"Member Name: {member.name}")
-                member.save()
+                # member.save()
                 logger.info(
                     f"Member Name: {member.name}; Online Status: {backone_online_status}"
                 )
