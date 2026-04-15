@@ -539,6 +539,7 @@ class Members(models.Model):
     list_peers.short_description = _("Peers (Providers)")
 
     def member_status(self):
+        online_status = self.is_online()
         peers = to_dictionary("{}")
         if self.peers:
             peers = to_dictionary(self.peers.peers)
