@@ -65,6 +65,11 @@ document.onreadystatechange = function () {
       formToDelete.remove();
     }
 
+    var elementDisable = document.getElementById('id_username');
+    if (elementDisable) {
+      elementDisable.disabled = true;
+    }
+    /*
     var elementDisable = document.getElementById('id_name_email-first_name');
     if (elementDisable) {
       elementDisable.disabled = true;
@@ -77,6 +82,7 @@ document.onreadystatechange = function () {
     if (elementDisable) {
       elementDisable.disabled = true;
     }
+    */
   }
 }
 
