@@ -65,7 +65,24 @@ document.onreadystatechange = function () {
       formToDelete.remove();
     }
 
-    var elementDisable = document.getElementById('id_username');
+    // Remove Role Tab
+    formToDelete = document.getElementById('tab-label-roles');
+    if (formToDelete) {
+      formToDelete.remove();
+    }
+
+    // Remove Assign Role
+    formToDelete = document.querySelector('a[href*="/bulk/accounts/user/assign_role/"]');
+    if (formToDelete) {
+      formToDelete.remove();
+    }
+
+    // Remove Assign Role
+    formToDelete = document.querySelector('a[href*="/bulk/accounts/user/delete/"]');
+    if (formToDelete) {
+      formToDelete.remove();
+    }
+    var elementDisable = document.getElementById('id_username').querySelector('[aria-describedby="description-id"]');
     if (elementDisable) {
       elementDisable.disabled = true;
     }

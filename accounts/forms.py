@@ -31,6 +31,9 @@ class CustomUserEditForm(UserEditForm):
             del self.fields["is_active"]
             del self.fields["is_superuser"]
 
+        # if "groups" in self.fields:
+        #    del self.fields["groups"]
+
         if self.profile:
             self.fields["avatar"].initial = self.profile.avatar
 
