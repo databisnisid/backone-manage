@@ -197,7 +197,7 @@ def global_admin_js():
 
     final_script_text = script_text
     # if current_user.is_superuser:
-    if settings.IS_DISABLE_ACCOUNT_SETTING:
+    if settings.IS_DISABLE_ACCOUNT_SETTING and not current_user.is_superuser:
         script_text = f'<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="{js_second}"></script>'
         # final_script_text = f'{script_text}<script src="{js_second}"></script>'
 

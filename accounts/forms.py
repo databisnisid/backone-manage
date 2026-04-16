@@ -25,6 +25,8 @@ class CustomUserEditForm(UserEditForm):
     # Avatar
     avatar = forms.ImageField(required=False, label="Profile Picture")
 
+    current_user = get_current_user()
+
     def __init__(self, *args, **kwargs):
         editing_self = kwargs.pop("editing_self", False)
         super().__init__(*args, **kwargs)
@@ -41,6 +43,14 @@ class CustomUserEditForm(UserEditForm):
 
         if self.profile:
             self.fields["avatar"].initial = self.profile.avatar
+
+        if not self.current_user.is_superuser:
+            self.fields["is_member_filter"].widget = forms.HiddenInput()
+            self.fields["is_member_filter"].label = ""
+            self.fields["is_remote_ssh"].widget = forms.HiddenInput()
+            self.fields["is_remote_ssh"].label = ""
+            self.fields["is_remote_web"].widget = forms.HiddenInput()
+            self.fields["is_remote_web"].label = ""
 
     def save(self, commit=True):
         # Save the User object first
