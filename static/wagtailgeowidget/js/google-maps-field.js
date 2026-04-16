@@ -190,7 +190,7 @@ GoogleMapsField.prototype.genMessageId = function (field) {
     return "wagtailgeowdidget__" + field.attr("id") + "--warning";
 };
 
-GoogleMapsField.prototype.displayWarning = function (msg, options, delay=3000) {
+GoogleMapsField.prototype.displayWarning = function (msg, options) {
     var warningMsg;
     var field = options.field;
     var className = this.genMessageId(field);
@@ -205,8 +205,8 @@ GoogleMapsField.prototype.displayWarning = function (msg, options, delay=3000) {
 
     // 2. Set a timer to hide it after 3 seconds
     setTimeout(() => {
-      warningMsg.style.display = 'none';
-    }, delay);
+      warningMsg.remove();
+    }, 3000);
 };
 
 GoogleMapsField.prototype.displaySuccess = function (msg, options) {
