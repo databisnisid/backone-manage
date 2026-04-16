@@ -82,10 +82,7 @@ document.onreadystatechange = function () {
     if (formToDelete) {
       formToDelete.remove();
     }
-    var elementDisable = document.getElementById('id_username').querySelector('[aria-describedby="description-id"]');
-    if (elementDisable) {
-      elementDisable.disabled = true;
-    }
+
     /*
     var elementDisable = document.getElementById('id_name_email-first_name');
     if (elementDisable) {
