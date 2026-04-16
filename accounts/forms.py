@@ -25,7 +25,7 @@ class CustomUserEditForm(UserEditForm):
     # Avatar
     avatar = forms.ImageField(required=False, label="Profile Picture")
 
-    current_user = get_current_user()
+    current_user = None
 
     def __init__(self, *args, **kwargs):
         editing_self = kwargs.pop("editing_self", False)
@@ -34,6 +34,7 @@ class CustomUserEditForm(UserEditForm):
 
         self.profile = UserProfile.get_for_user(self.instance)
 
+        self.current_user = get_current_user()
         if editing_self or not current_user.is_superuser:
             del self.fields["is_active"]
             del self.fields["is_superuser"]
