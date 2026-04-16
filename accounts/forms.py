@@ -1,7 +1,8 @@
 from django import forms
+from django.db.models import query
 from wagtail.users.forms import UserEditForm, UserCreationForm
 from django.contrib.auth.models import Group
-from .models import Organizations
+from .models import Organizations, User
 from django.utils.translation import gettext_lazy as _
 from crum import get_current_user
 
@@ -17,6 +18,10 @@ class CustomUserEditForm(UserEditForm):
         label=_("Organization"),
     )
 
+    username = forms.CharField(
+        disabled=True,
+        label=_("Username"),
+    )
     # Avatar
     avatar = forms.ImageField(required=False, label="Profile Picture")
 
