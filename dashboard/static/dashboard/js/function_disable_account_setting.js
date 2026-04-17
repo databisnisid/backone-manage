@@ -47,11 +47,11 @@ document.onreadystatechange = function () {
       formToDelete.remove();
     }
 
-    /*
     formToDelete = document.getElementById('tab-label-notifications');
     if (formToDelete) {
       formToDelete.remove();
     }
+    /*
     formToDelete = document.getElementById('avatar-section');
     if (formToDelete) {
       formToDelete.remove();
