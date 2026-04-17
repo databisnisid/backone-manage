@@ -5,7 +5,11 @@ from django.shortcuts import redirect, render
 from wagtail.admin.views import account
 from wagtail.models import Site
 from accounts.models import Organizations
-from config.settings import IS_MAILAUTH_NO_PASSWORD, IS_2FA_ENABLE
+from config.settings import (
+    IS_MAILAUTH_NO_PASSWORD,
+    IS_2FA_ENABLE,
+    DEFAULT_ORGANIZATION_UUID,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +40,14 @@ class CustomLoginView(account.LoginView):
 
         context = super().get_context_data(**kwargs)
         # print(context)
+        #
+        """ Get Default Organization """
+        try:
+            context["default_organization"] = Organizations.objects.get(
+                uuid=DEFAULT_ORGANIZATION_UUID
+            )
+        except ObjectDoesNotExist:
+            pass
 
         context["show_password_reset"] = account.password_reset_enabled()
 
