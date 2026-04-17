@@ -47,7 +47,14 @@ document.onreadystatechange = function () {
       formToDelete.remove();
     }
 
+    // Remove Tab Notification
     formToDelete = document.getElementById('tab-label-notifications');
+    if (formToDelete) {
+      formToDelete.remove();
+    }
+
+    // Remove Tab Role
+    formToDelete = document.getElementById('tab-label-roles');
     if (formToDelete) {
       formToDelete.remove();
     }
