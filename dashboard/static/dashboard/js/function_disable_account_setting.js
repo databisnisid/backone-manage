@@ -73,6 +73,7 @@ document.onreadystatechange = function () {
       formToDelete.remove();
     }
 
+    */
     // Remove Assign Role
     formToDelete = document.querySelector('a[href*="/bulk/accounts/user/assign_role/"]');
     if (formToDelete) {
