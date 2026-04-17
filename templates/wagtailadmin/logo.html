@@ -1,5 +1,9 @@
 {% load wagtailadmin_tags %}
-  {% if organization.logo.file.url %}
+  {% if default_organization.logo.file.url %}
+        <div>
+            <img src="{{ default_organization.logo.file.url }}" />
+        </div>
+  {% elif organization.logo.file.url %}
         <div>
             <img src="{{ organization.logo.file.url }}" />
         </div>

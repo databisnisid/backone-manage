@@ -8,6 +8,10 @@
         <img src="{{ request.user.organization.logo_dashboard.file.url }}" alt="BackOne"  width="512" />
     {% elif request.user.organization.logo.file.url %}
         <img src="{{ request.user.organization.logo.file.url }}" alt="BackOne"  width="512" />
+    {% elif default_organization.logo_dashboard.file.url %}
+        <img src="{{ default_organization.logo_dashboard.file.url }}" alt="BackOne"  width="512" />
+    {% elif default_organization.logo.file.url %}
+        <img src="{{ default_organization.logo.file.url }}" alt="BackOne"  width="512" />
     {% elif 'backone.cloud' in request.build_absolute_uri %}
         <img src="{% versioned_static 'dashboard/images/backone-logo.svg' %}" alt="BackOne"  width="512" />
     {% else %}
