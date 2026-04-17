@@ -28,14 +28,14 @@ var hasClass = function(selector, _class) {
 
 function collapsedSidebar() {
   const sideBar = hasClass("button", "w-mr-4");
-  //if (sideBar) {
-  try {
-  // Your variable is undefined
-    sideBar.click();
-  } catch(err) {
+  if (sideBar) {
+   try {
+    // Your variable is undefined
+     sideBar.click();
+   } catch(err) {
     console.log(err)
+    }
   }
-  //}
 }
 
 document.onreadystatechange = function () {
@@ -52,12 +52,10 @@ document.onreadystatechange = function () {
     if (formToDelete) {
       formToDelete.remove();
     }
-    */
     formToDelete = document.getElementById('avatar-section');
     if (formToDelete) {
       formToDelete.remove();
     }
-    /*
     formToDelete = document.getElementById('locale-section');
     if (formToDelete) {
       formToDelete.remove();
