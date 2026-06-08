@@ -296,11 +296,11 @@ async function initMap(api_url) {
 }
 
 {% if user.is_superuser %}
-const api_url = "{{ request.scheme }}://{{ request.get_host }}/api/members/get_all";
+    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_all";
 {% elif user.organization.is_no_org %}
-const api_url = "{{ request.scheme}}://{{ request.get_host }}/api/members/get_by_user/{{ user.id }}";
+    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_user/{{ user.id }}";
 {% else %}
-const api_url = "{{ request.scheme }}://{{ request.get_host }}/api/members/get_by_org/{{ user.organization.id }}";
+    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}/api/members/get_by_org/{{ user.organization.id }}";
 {% endif %}
 
 initMap(api_url);
