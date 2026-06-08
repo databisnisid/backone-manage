@@ -27,7 +27,7 @@
 
 <script>
 
-    const api_url = "{{ settings.WAGTAILADMIN_BASE_URL }}";
+  const api_url = "{{ request.scheme }}{{ request.get_host }}";
 {% if user.is_superuser %}
     const is_all = true;
     const is_no_org = false;
