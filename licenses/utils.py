@@ -85,6 +85,8 @@ def check_license(lic_json):
     is_block_rule = lic_json["is_block_rule"]
     features = lic_json["features"]
 
+    print("Token", token)
+
     try:
         valid_until = lic_json["valid_until"]
     except KeyError:
