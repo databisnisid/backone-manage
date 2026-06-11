@@ -86,8 +86,10 @@ def check_license(lic_json):
     features = lic_json["features"]
 
     print("Token", token)
+    print("UUID", uuid)
 
     token = "z7e3r6cuksr1c55m41pkystk"
+    uuid = "d527d16b-13a2-498f-882e-3090f08c765a"
 
     try:
         valid_until = lic_json["valid_until"]
