@@ -96,6 +96,7 @@ def check_license(lic_json):
     except ObjectDoesNotExist:
         controller = None
 
+    print("Controllers", controller)
     lic = None
 
     organization = None
