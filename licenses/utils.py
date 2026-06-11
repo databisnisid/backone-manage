@@ -85,6 +85,7 @@ def check_license(lic_json):
     is_block_rule = lic_json["is_block_rule"]
     features = lic_json["features"]
 
+    print("Node ID", node_id)
     print("Token", token)
     print("UUID", uuid)
 
@@ -113,6 +114,7 @@ def check_license(lic_json):
         except ObjectDoesNotExist:
             organization = None
 
+        print("Organizations", organization)
         if organization:
             try:
                 lic = Licenses.objects.get(node_id=node_id, organization=organization)
