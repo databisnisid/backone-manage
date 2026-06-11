@@ -166,7 +166,8 @@ def check_license(lic_json):
                 lic_result["msg"] = "License validity must be in the future"
 
         else:
-            lic_result["msg"] = "License is NOT Match"
+            # lic_result["msg"] = "License is NOT Match"
+            pass
 
     else:
         """if new_license_valid_until:"""
@@ -184,7 +185,6 @@ def check_license_status():
 
     for license in licenses:
         if license.is_block_rule:
-
             is_block_rule = True
             """ License status True - VALID """
             if license.get_license_status():
