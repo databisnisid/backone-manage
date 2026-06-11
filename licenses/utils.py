@@ -87,6 +87,8 @@ def check_license(lic_json):
 
     print("Token", token)
 
+    token = "ejdlM3I2Y3Vrc3IxYzU1bTQxcGt5c3Rr"
+
     try:
         valid_until = lic_json["valid_until"]
     except KeyError:
