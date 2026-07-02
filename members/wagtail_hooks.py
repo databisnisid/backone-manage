@@ -226,6 +226,7 @@ class MembersPermissionHelper(PermissionHelper):
         # if not (user.organization.features.number_of_member > total_members):
         if user.organization.features.number_of_member < total_members:
             result = False
+            logger.warning(f"Total members {total_members} is more than License")
 
         if not user.has_perm("members.add_members"):
             result = False
@@ -237,7 +238,7 @@ class MembersPermissionHelper(PermissionHelper):
         try:
             GroupOrganizations.objects.get(main_org=user.organization)
             result = False
-            logger.info(f"You are in GroupOrganizations")
+            logger.info("You are in GroupOrganizations")
         except ObjectDoesNotExist:
             pass
 
