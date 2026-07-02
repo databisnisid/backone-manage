@@ -218,7 +218,8 @@ class MembersPermissionHelper(PermissionHelper):
     def user_can_create(self, user):
         result = True
         total_members = Members.objects.filter(organization=user.organization).count()
-        if not (user.organization.features.number_of_member > total_members):
+        # if not (user.organization.features.number_of_member > total_members):
+        if user.organization.features.number_of_member < total_members:
             result = False
 
         if not user.has_perm("members.add_members"):
