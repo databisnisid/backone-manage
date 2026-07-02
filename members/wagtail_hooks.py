@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 import logging
+
 # from wagtail.contrib.modeladmin.options import (
 from wagtail_modeladmin.options import (
     ModelAdmin,
@@ -220,7 +221,7 @@ class MembersPermissionHelper(PermissionHelper):
         result = True
         total_members = Members.objects.filter(organization=user.organization).count()
 
-        logger.info(f"Total members {total_members")
+        logger.info(f"Total members {total_members}")
 
         # if not (user.organization.features.number_of_member > total_members):
         if user.organization.features.number_of_member < total_members:
@@ -236,6 +237,7 @@ class MembersPermissionHelper(PermissionHelper):
         try:
             GroupOrganizations.objects.get(main_org=user.organization)
             result = False
+            logger.info(f"You are in GroupOrganizations")
         except ObjectDoesNotExist:
             pass
 
