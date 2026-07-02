@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-
+import logging
 # from wagtail.contrib.modeladmin.options import (
 from wagtail_modeladmin.options import (
     ModelAdmin,
@@ -32,6 +32,7 @@ from wagtailgeowidget.panels import GeoAddressPanel, GoogleMapsPanel
 # from networks.models import Networks
 from licenses.utils import is_license_valid
 
+logger = logging.getLogger(__name__)
 
 """
 class MembersForm(WagtailAdminModelForm):
@@ -218,6 +219,9 @@ class MembersPermissionHelper(PermissionHelper):
     def user_can_create(self, user):
         result = True
         total_members = Members.objects.filter(organization=user.organization).count()
+
+        logger.info(f"Total members {total_members")
+
         # if not (user.organization.features.number_of_member > total_members):
         if user.organization.features.number_of_member < total_members:
             result = False
