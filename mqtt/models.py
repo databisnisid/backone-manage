@@ -92,22 +92,21 @@ class Mqtt(models.Model):
 
     def save(self):
         if self.packet_loss_string:
-            packet_loss_split = str(self.packet_loss_string).split(",")
-            packet_loss_digit_string = packet_loss_split[2].split("%")
-
             try:
+                packet_loss_split = str(self.packet_loss_string).split(",")
+                packet_loss_digit_string = packet_loss_split[2].split("%")
                 self.packet_loss = float(packet_loss_digit_string[0])
-            except ValueError:
+            except (IndexError, ValueError):
                 self.packet_loss = 0
 
         if self.round_trip_string:
-            round_trip_string = str(self.round_trip_string).split("=")
-            round_trip_digit = round_trip_string[1].split("/")
-
             try:
+                round_trip_string = str(self.round_trip_string).split("=")
+                round_trip_digit = round_trip_string[1].split("/")
                 self.round_trip = float(round_trip_digit[1])
-            except ValueError:
+            except (IndexError, ValueError):
                 self.round_trip = 0
+
 
         if self.uptime:
             load_1, load_5, load_15 = get_cpu_usage(self.uptime, self.num_core)
