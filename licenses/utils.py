@@ -5,7 +5,7 @@ from django.utils.timezone import datetime
 from django.utils import timezone
 from rsa import PublicKey, encrypt
 from uuid import getnode
-from base64 import b64decode, b64encode
+from base64 import b64decode, b64encode, binascii
 
 from accounts.models import Organizations, Features
 from controllers.models import Controllers
@@ -78,12 +78,22 @@ def update_features(features: dict, organization) -> Features:
 
 
 def check_license(lic_json):
-    node_id = lic_json["node_id"]
-    uuid = lic_json["uuid"]
-    token = b64decode(lic_json["token"]).decode()
-    license_code = lic_json["license_code"]
-    is_block_rule = lic_json["is_block_rule"]
-    features = lic_json["features"]
+    # Input guards (V8): tolerate missing keys / malformed token; return invalid result, never raise.
+    try:
+        node_id = lic_json["node_id"]
+        uuid = lic_json["uuid"]
+        token = lic_json["token"]
+        license_code = lic_json["license_code"]
+        is_block_rule = lic_json["is_block_rule"]
+        features = lic_json["features"]
+    except (KeyError, TypeError):
+        return {"status": 0, "msg": "License is NOT VALID"}
+
+    try:
+        token = b64decode(token).decode()
+    except (binascii.Error, ValueError, TypeError):
+        return {"status": 0, "msg": "License is NOT VALID"}
+
 
     print("Node ID", node_id)
     print("Token", token)
