@@ -82,6 +82,16 @@ def get_member_peers_from_redis(member_id: str = "") -> dict:
     return result
 
 
+def _zt_failed(result) -> bool:
+    """Return True when a ZeroTier API result signals failure (V9)."""
+    if not isinstance(result, dict):
+        return True
+    # Zerotier.query() maps RequestException -> {'status': 0}
+    if result.get("status") == 0:
+        return True
+    return False
+
+
 def get_quota(text: str = None):
     quota_current = 0
     quota_total = 0
@@ -151,6 +161,8 @@ class MemberPeers(models.Model):
     def save(self):
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         self.peers = zt.get_member_peers(self.member_id)
+        if _zt_failed(self.peers):
+            raise ValidationError(_("ZeroTier: unable to fetch member peers"))
         return super(MemberPeers, self).save()
 
 
@@ -267,7 +279,9 @@ class Members(models.Model):
 
     def delete(self, using=None, keep_parents=False):
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
-        zt.delete_member(self.network.network_id, self.member_id)
+        result = zt.delete_member(self.network.network_id, self.member_id)
+        if _zt_failed(result):
+            raise ValidationError(_("ZeroTier: unable to delete member on controller"))
         return super(Members, self).delete()
 
     def save(self):
@@ -295,6 +309,8 @@ class Members(models.Model):
         # Apply Configuration to controller
         print("Member", self.member_id, data)
         member_info = zt.set_member(self.network.network_id, self.member_id, data)
+        if _zt_failed(member_info):
+            raise ValidationError(_("ZeroTier: unable to update member on controller"))
         self.configuration = member_info
 
         # Get MemberPeers
@@ -303,13 +319,15 @@ class Members(models.Model):
         except ObjectDoesNotExist:
             member_peers = MemberPeers(member_id=self.member_id)
         except MultipleObjectsReturned:
-            # member_peers = MemberPeers.objects.filter(member_id=self.member_id).first()
-            member_peers = MemberPeers.objects.filter(member_id=self.member_id).delete()
+            MemberPeers.objects.filter(member_id=self.member_id).delete()
             member_peers = MemberPeers(member_id=self.member_id)
-        member_peers.peers = zt.get_member_peers(self.member_id)
+        peers = zt.get_member_peers(self.member_id)
+        if _zt_failed(peers):
+            raise ValidationError(_("ZeroTier: unable to fetch member peers"))
+        member_peers.peers = peers
         member_peers.network = self.network
-        member_peers.save()
-        self.peers = member_peers
+        # Avoid MemberPeers.save() (which re-fetches peers via a 2nd API call)
+        member_peers.save_base(raw=False)
 
         if self.mqtt is None:
             try:
