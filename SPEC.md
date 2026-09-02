@@ -66,7 +66,7 @@ No research skill run — section omitted (right-size).
 | T3 | x | Write tests for monitor threshold logic (`monitor/utils.py`) | V4 |
 | T4 | x | Write tests for MQTT 21-field payload parser tolerant to malformed input | V4, V7 |
 | T5 | x | Make `Members.save`/`MemberPeers.save`/`Members.delete` ZeroTier-sync surface errors to user (mock): catch API failure, show user-facing error, abort save; then test | V1, V9 |
-| T6 | . | Remove dead broken `encrypt_node_id()` in `licenses/utils.py` (marked "Not Used", refs undefined) | |
+| T6 | x | Remove dead broken `encrypt_node_id()` in `licenses/utils.py` (marked "Not Used", refs undefined) | |
 | T7 | x | Guard index access in `Mqtt.save()` on `packet_loss_string`/`round_trip_string` | V7 |
 | T8 | x | Add input guards to module `licenses.utils.check_license(lic_json)` for missing `node_id`/`uuid`/`token` keys + `b64decode` | V8 |
 

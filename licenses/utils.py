@@ -3,24 +3,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.timezone import datetime
 from django.utils import timezone
-from rsa import PublicKey, encrypt
-from uuid import getnode
-from base64 import b64decode, b64encode, binascii
+from base64 import b64decode, binascii
 
 from accounts.models import Organizations, Features
 from controllers.models import Controllers
 from networks.models import NetworkRules
 from .models import Licenses
-
-
-""" Not Used """
-
-
-def encrypt_node_id(key):
-    node_id = hex(getnode())
-    node_id_encrypted = encrypt(node_id(), encode(), publick_key)
-    node_id_b64 = b64encode(node_id_encrypted).decode()
-    return node_id_b64
 
 
 """ Check License Validity True/False"""
