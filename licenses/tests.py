@@ -1,6 +1,8 @@
 from django.test import TestCase
 
-from licenses.utils import check_license
+from accounts.models import User
+from licenses.models import Licenses
+from licenses.utils import check_license, is_license_valid
 
 
 class ModuleCheckLicenseGuardTests(TestCase):
@@ -47,3 +49,28 @@ class ModuleCheckLicenseGuardTests(TestCase):
         result = check_license(lic_json)
         self.assertIsInstance(result, dict)
         self.assertIn("status", result)
+
+
+class ModelCheckLicenseTests(TestCase):
+    """V8: model method Licenses.check_license() returns (bool, valid_until, msg) tuple."""
+
+    def test_empty_license_string_returns_tuple(self):
+        lic = Licenses(license_string="")
+        status, valid_until, msg = lic.check_license()
+        self.assertIs(status, False)
+        self.assertIsNone(valid_until)
+        self.assertIn("EC1100", msg)
+
+    def test_bad_b64_license_string_does_not_raise(self):
+        lic = Licenses(license_string="!!!not-base64!!!")
+        status, valid_until, msg = lic.check_license()
+        self.assertIs(status, False)
+        self.assertIn("EC1105", msg)
+
+
+class IsLicenseValidTests(TestCase):
+    """V6: is_license_valid returns bool, never raises."""
+
+    def test_no_org_user_is_false(self):
+        user = User.objects.create_user(username="u", password="x")
+        self.assertIs(is_license_valid(user), False)
