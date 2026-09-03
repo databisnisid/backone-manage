@@ -6,7 +6,8 @@ SD-WAN / ZeroTier network management platform. Django+Wagtail. Manage orgs, Zero
 
 ## §C Constraints
 
-- Python 3.12, Django 5.2.12, Wagtail 7.0.6. pip pinned `requirements.txt`. venv.
+- Python 3.12, Django 5.2.17, Wagtail 7.4.3. pip pinned `requirements.txt`. venv.
+- External packages: `wagtail-modeladmin` (replaces removed wagtail core modeladmin), `modelsearch` (Wagtail 7.2+ search backend).
 - DB single default — SQLite dev, MySQL/MariaDB prod (`DB_ENGINE`). `mysqlclient`.
 - Redis cache/broker — db0 MQTT telemetry, db1 peer cache.
 - ZeroTier = primary controller (`controllers/backend.py` Zerotier). Headscale = alt.
@@ -48,7 +49,7 @@ No research skill run — section omitted (right-size).
 ## §V Invariants
 
 - V1. `Members.save()` surfaces ZeroTier API failure to the user — do not silently swallow; the DB write must not proceed with a stale/absent controller write. ? (policy set: surface to user)
-- V2. Admin surface always via Wagtail modeladmin (`wagtail_hooks.py`) — never Django admin.
+- V2. Admin surface always via external `wagtail_modeladmin` package (`wagtail_hooks.py`) — never Django admin, never `wagtail.contrib.modeladmin`.
 - V3. Multi-tenancy: member/network/problem queries scoped by org (`get_user()`, `org_uuid`); no cross-tenant leakage.
 - V4. MQTT telemetry: 21-field semicolon payload parse must be tolerant to malformed/missing fields — no daemon crash.
 - V5. Redis key namespace: db0 = MQTT telemetry, db1 = peer cache. No cross-collision.
@@ -56,6 +57,9 @@ No research skill run — section omitted (right-size).
 - V7. `Mqtt.save()` must guard index access on `packet_loss_string`/`round_trip_string` (`[2]`, `[1]`) — never IndexError on malformed telemetry. (guards V4 gap)
 - V8. `Licenses.check_license()` (model method) returns `(bool, datetime, msg)`; module-level `licenses.utils.check_license(lic_json)` returns `{status, msg}` — these are separate symbols, never assume either is "never-raise" without input guards. (fixes V6)
 - V9. ZeroTier API calls in `Members.save`/`MemberPeers.save`/`Members.delete` must validate controller success — `Zerotier.query()` swallows `RequestException` and returns `{'status': 0}` (`controllers/backend.py:37-38`); a failure result must surface a user-facing error and abort the save, so local DB row never diverges from controller state. JSON-decode failure on non-JSON response (`request.json()` at `backend.py:35`, not a RequestException) must also be caught. (policy: surface error to user, per user decision 2026-09-02)
+- V10. `§C` version strings must match `requirements.txt` pinned versions; version bump PRs must update both.
+- V11. `§C` must document that `wagtail-modeladmin` is an external package (not wagtail core) and `modelsearch` is a required search backend dependency.
+- V12. Module-level `wagtail.contrib.modeladmin` imports are prohibited — use `wagtail_modeladmin` (external package). Verified: all 10 apps comply.
 
 ## §T Tasks
 
