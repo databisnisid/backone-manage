@@ -1,11 +1,3 @@
-# from wagtail.contrib.modeladmin.options import (
-"""
-from wagtail_modeladmin.options import (
-    ModelAdmin,
-    PermissionHelper,
-    modeladmin_register,
-)
-"""
 from wagtail import hooks
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
@@ -13,44 +5,8 @@ from .models import Mqtt
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList
 from django.utils.translation import gettext as _
 from crum import get_current_user
-from wagtail.users.widgets import UserListingButton
-from wagtail.snippets import widgets as wagtailsnippets_widgets
 
 
-"""
-@hooks.register('register_snippet_listing_buttons')
-def snippet_listing_buttons(snippet, user, next_url=None):
-    yield wagtailsnippets_widgets.SnippetListingButton(
-        'Button 1 Check Me',
-        '/goes/to/a/url/',
-        priority=11
-    )
-    yield wagtailsnippets_widgets.SnippetListingButton(
-        'Button 2 Check Me',
-        '/goes/to/a/url/',
-        priority=11
-    )
-
-
-@hooks.register('construct_snippet_listing_buttons')
-def remove_snippet_edit_button_item(buttons, snippet, user, context=None):
-    for button in buttons:
-        index = buttons.index(button)
-
-        if 'edit' in button.label.lower():
-            buttons.pop(index)
-            break
-
-
-@hooks.register('construct_snippet_listing_buttons')
-def remove_snippet_delete_button_item(buttons, snippet, user, context=None):
-    for button in buttons:
-        index = buttons.index(button)
-
-        if 'delete' in button.label.lower():
-            buttons.pop(index)
-            break
-"""
 
 
 @hooks.register("construct_snippet_listing_buttons")

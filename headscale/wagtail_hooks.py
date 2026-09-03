@@ -1,5 +1,5 @@
 from requests import request
-from wagtail.contrib.modeladmin.options import (
+from wagtail_modeladmin.options import (
     ModelAdmin,
     ModelAdminGroup,
     modeladmin_register,
@@ -8,7 +8,7 @@ from wagtail.contrib.modeladmin.options import (
 )
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
-from wagtail.contrib.modeladmin.views import ModelFormView, InstanceSpecificView
+from wagtail_modeladmin.views import ModelFormView, InstanceSpecificView
 from .models import HS_Users, HS_Preauthkeys, HS_Nodes
 from crum import get_current_user
 from wagtail.admin.panels import (

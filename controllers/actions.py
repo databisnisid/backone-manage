@@ -3,8 +3,8 @@ from .models import Controllers, UserControllers
 from networks.models import Networks, Members
 
 from django.urls import reverse
-from wagtail.contrib.modeladmin.options import (ModelAdmin, modeladmin_register)
-from wagtail.contrib.modeladmin.helpers import (PageAdminURLHelper, PageButtonHelper)
+from wagtail_modeladmin.options import (ModelAdmin, modeladmin_register)
+from wagtail_modeladmin.helpers import (PageAdminURLHelper, PageButtonHelper)
 # MyPage model import not included but will be needed
 
 
