@@ -1,0 +1,28 @@
+{
+  "name": "backone-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
+    "postinstall": "npm install http-proxy --no-save"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.129",
+    "@nuxt/ui": "^4.11.0",
+    "@pinia/nuxt": "1.0.2",
+    "echarts": "6.1.0",
+    "nuxt": "4.5.2",
+    "pinia": "4.0.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "@types/google.maps": "^3.66.2",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vue-tsc": "3.1.4"
+  }
+}

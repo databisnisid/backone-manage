@@ -35,6 +35,7 @@ urlpatterns = [
     # path('api/members/get_by_org/<int:organization>/', get_members_org, name='get_members_by_org'),
     path("api/webfilters/", include("webfilters.urls")),
     path("api/licenses/", include("licenses.urls")),
+    path("api/app/", include("app.urls")),
     # Start - Mail Authentication
     path("accounts/", include("mailauth.urls")),
     # optional, must be before "wagtail.admin.urls"

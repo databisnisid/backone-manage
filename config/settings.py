@@ -249,6 +249,8 @@ domains_list = ADDITIONAL_DOMAINS.split(",")
 
 for domain_list in domains_list:
     CSRF_TRUSTED_ORIGINS.append(domain_list.replace(" ", ""))
+CSRF_TRUSTED_ORIGINS.append("http://127.0.0.1:3000")
+CSRF_TRUSTED_ORIGINS.append("http://localhost:3000")
 
 # Controller Rule Compiler
 NODEJS = str(os.getenv("NODEJS", "/usr/bin/node"))
@@ -384,7 +386,12 @@ ZABBIX_HOSTNAME_AUTO_CREATE = os.getenv(
 ).lower() in ("true", "1", "t")
 
 # CORS
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "true").lower() == "true"
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+]
 # CORS_ALLOWED_ORIGINS = [
 #    "https://example.com",
 #    "https://sub.example.com",
@@ -543,6 +550,7 @@ LOGGING = {
 
 # Two Factor
 # LOGIN_URL = "two_factor:login"
+LOGIN_URL = "/login/"
 
 # this one is optional
 # LOGIN_REDIRECT_URL = "two_factor:profile"
