@@ -81,13 +81,13 @@
           </div>
 
           <!-- Location map (right of Overview, compact) -->
-          <div class="flex h-full flex-col rounded-lg border border-default bg-(--ui-bg) p-5 shadow-sm">
+          <div class="flex flex-col rounded-lg border border-default bg-(--ui-bg) p-5 shadow-sm lg:h-full">
             <h2 class="text-sm font-medium text-(--ui-text-dimmed)">Location</h2>
-            <div v-if="data.member.lat != null && data.member.lng != null" class="mt-3 flex-1">
+            <div v-if="data.member.lat != null && data.member.lng != null" class="mt-3 lg:flex-1">
               <MapPanel
                 :lat="data.member.lat"
                 :lng="data.member.lng"
-                height="h-full"
+                height="h-[300px] lg:h-full"
                 :zoom="15"
                 single
               />
