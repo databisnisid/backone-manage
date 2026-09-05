@@ -58,16 +58,18 @@ def me(request):
     return JsonResponse(data)
 
 def _parse_lat_lng(location):
-    """Parse `name;POINT(lng lat)` (Wagtail GeoWidget) → (lat, lng) floats; (None, None) if absent."""
+    """Parse `name;POINT(lng lat)` (Wagtail GeoWidget) → (lat, lng) floats. Fallback to GEO_WIDGET_DEFAULT_LOCATION."""
     if not location:
-        return None, None
+        default = settings.GEO_WIDGET_DEFAULT_LOCATION
+        return default["lat"], default["lng"]
     try:
         point = location.split(";")
         result = point[1].split(" ")
         lng = float(result[0].replace("POINT(", ""))
         lat = float(result[1].replace(")", ""))
     except (IndexError, ValueError, AttributeError):
-        return None, None
+        default = settings.GEO_WIDGET_DEFAULT_LOCATION
+        return default["lat"], default["lng"]
     return lat, lng
 
 def _mqtt_summary(m):
@@ -101,9 +103,8 @@ def members(request):
             str(member.organization.uuid) if member.organization else None
         )
         real_lat, real_lng = _parse_lat_lng(member.location)
-        if real_lat is not None and real_lng is not None:
-            entry["lat"] = real_lat
-            entry["lng"] = real_lng
+        entry["lat"] = real_lat
+        entry["lng"] = real_lng
         m = mqtt_by_member_id.get(member.member_id)
         if m:
             entry["mqtt"] = _mqtt_summary(m)
