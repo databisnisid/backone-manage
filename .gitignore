@@ -142,3 +142,8 @@ GitHub.sublime-settings
 
 # Media
 /media
+
+# Node.js
+node_modules/
+.output/
+.nuxt/
