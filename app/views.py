@@ -1,13 +1,16 @@
+import json
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.conf import settings
 from django.views.decorators.cache import never_cache
+from django.core.exceptions import ValidationError
 
 from members.models import Members
 from members.views import prepare_data
-from networks.models import Networks
+from networks.models import Networks, NetworkRoutes
 from problems.models import MemberProblems
 from mqtt.models import Mqtt
+from connectors.redis_ipinfo import get_ip_loc
 
 
 def member_qs(request):
@@ -58,7 +61,7 @@ def me(request):
     return JsonResponse(data)
 
 def _parse_lat_lng(location):
-    """Parse `name;POINT(lng lat)` (Wagtail GeoWidget) → (lat, lng) floats. Fallback to GEO_WIDGET_DEFAULT_LOCATION."""
+    """Parse `name;POINT(lng lat)` (Wagtail GeoWidget) -> (lat, lng) floats. Fallback to GEO_WIDGET_DEFAULT_LOCATION."""
     if not location:
         default = settings.GEO_WIDGET_DEFAULT_LOCATION
         return default["lat"], default["lng"]
@@ -261,3 +264,219 @@ def problems(request):
             }
         )
     return JsonResponse(data, safe=False)
+
+
+# ── Network Routes CRUD ──────────────────────────────────────────────────────
+
+def _route_qs(request, network_id):
+    """Org-scoped routes queryset for a given network."""
+    net = network_qs(request).filter(network_id=network_id).first()
+    if not net:
+        return None, JsonResponse({"error": "network not found"}, status=404)
+    return NetworkRoutes.objects.filter(network=net), None
+
+
+@login_required
+@never_cache
+def network_routes_list_create(request, network_id):
+    routes_qs, err = _route_qs(request, network_id)
+    if err:
+        return err
+
+    if request.method == "GET":
+        data = []
+        for r in routes_qs.select_related("network"):
+            data.append({
+                "id": r.id,
+                "ip_network": r.ip_network,
+                "gateway": r.gateway,
+                "network_id": r.network.network_id,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+                "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+            })
+        return JsonResponse(data, safe=False)
+
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+
+        ip_network = body.get("ip_network", "").strip()
+        gateway = body.get("gateway", "").strip() or None
+
+        if not ip_network:
+            return JsonResponse({"error": {"ip_network": ["This field is required."]}}, status=400)
+
+        net = network_qs(request).filter(network_id=network_id).first()
+        if not net:
+            return JsonResponse({"error": "network not found"}, status=404)
+
+        route = NetworkRoutes(ip_network=ip_network, gateway=gateway, network=net)
+        try:
+            route.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+
+        route.save()
+        return JsonResponse({
+            "id": route.id,
+            "ip_network": route.ip_network,
+            "gateway": route.gateway,
+            "network_id": route.network.network_id,
+        }, status=201)
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+@login_required
+@never_cache
+def network_route_detail(request, network_id, ip_network):
+    routes_qs, err = _route_qs(request, network_id)
+    if err:
+        return err
+
+    route = routes_qs.filter(ip_network=ip_network).first()
+    if not route:
+        return JsonResponse({"error": "route not found"}, status=404)
+
+    if request.method == "GET":
+        return JsonResponse({
+            "id": route.id,
+            "ip_network": route.ip_network,
+            "gateway": route.gateway,
+            "network_id": route.network.network_id,
+            "created_at": route.created_at.isoformat() if route.created_at else None,
+            "updated_at": route.updated_at.isoformat() if route.updated_at else None,
+        })
+
+    if request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+
+        new_ip_network = body.get("ip_network", route.ip_network).strip()
+        new_gateway = body.get("gateway", route.gateway)
+        if new_gateway is not None:
+            new_gateway = new_gateway.strip() or None
+
+        route.ip_network = new_ip_network
+        route.gateway = new_gateway
+        try:
+            route.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+
+        route.save()
+        return JsonResponse({
+            "id": route.id,
+            "ip_network": route.ip_network,
+            "gateway": route.gateway,
+            "network_id": route.network.network_id,
+        })
+
+    if request.method == "DELETE":
+        route.delete()
+        return JsonResponse({"ok": True}, status=200)
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+@login_required
+def ip_loc(request):
+    """Return lat/lng for an IP from Redis IPInfo cache. Used by MapPanel polylines."""
+    ip = request.GET.get("ip", "").strip()
+    if not ip:
+        return JsonResponse({"error": "ip parameter required"}, status=400)
+    loc = get_ip_loc(ip)
+    if loc:
+        return JsonResponse({"lat": loc[0], "lng": loc[1]})
+    return JsonResponse({"lat": None, "lng": None})
+
+@login_required
+@never_cache
+def network_detail(request, network_id):
+    net = network_qs(request).filter(network_id=network_id).first()
+    if not net:
+        return JsonResponse({"error": "not found"}, status=404)
+    return JsonResponse({
+        "network_id": net.network_id,
+        "name": net.name,
+        "description": net.description,
+        "ip_allocation": net.ip_address_networks or "",
+        "member_count": Members.objects.filter(network=net).count(),
+        "controller_name": net.controller.name if net.controller else None,
+    })
+
+
+@login_required
+def network_create(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({"error": "invalid JSON"}, status=400)
+
+    name = body.get("name", "").strip()
+    description = body.get("description", "").strip()
+    ip_allocation = body.get("ip_allocation", "").strip()
+
+    if not name:
+        return JsonResponse({"error": {"name": ["This field is required."]}}, status=400)
+
+    net = Networks(name=name, description=description, ip_address_networks=ip_allocation or None)
+    try:
+        net.full_clean()
+    except ValidationError as e:
+        return JsonResponse({"error": e.message_dict}, status=400)
+
+    try:
+        net.save()
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({
+        "network_id": net.network_id,
+        "name": net.name,
+        "description": net.description,
+        "ip_allocation": net.ip_address_networks or "",
+    }, status=201)
+
+
+@login_required
+def network_update(request, network_id):
+    if request.method != "PUT":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    net = network_qs(request).filter(network_id=network_id).first()
+    if not net:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({"error": "invalid JSON"}, status=400)
+
+    if "name" in body:
+        net.name = body["name"].strip()
+    if "description" in body:
+        net.description = body["description"].strip()
+    if "ip_allocation" in body:
+        net.ip_address_networks = body["ip_allocation"].strip() or None
+
+    try:
+        net.full_clean()
+    except ValidationError as e:
+        return JsonResponse({"error": e.message_dict}, status=400)
+
+    try:
+        net.save()
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({
+        "network_id": net.network_id,
+        "name": net.name,
+        "description": net.description,
+        "ip_allocation": net.ip_address_networks or "",
+    })

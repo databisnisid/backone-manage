@@ -139,3 +139,21 @@ export interface Problem {
   is_done: boolean;
   network: string | null;
 }
+
+export interface Route {
+  id: number;
+  ip_network: string;
+  gateway: string | null;
+  network_id: string;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface NetworkDetail {
+  network_id: string;
+  name: string;
+  description: string;
+  ip_allocation: string;
+  member_count: number;
+  controller_name: string | null;
+}

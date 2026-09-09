@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import type { MeResponse } from "~/types/api";
+import { useBackendStore } from "~/stores/backend";
+import { api } from "~/utils/api";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -13,6 +15,13 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     async fetchMe() {
+      const backend = useBackendStore();
+      await backend.ensureInit();
+      if (!backend.selected) {
+        this.me = null;
+        this.loaded = true;
+        return;
+      }
       try {
         this.me = await api<MeResponse>("/api/app/me/");
       } catch {
@@ -28,7 +37,7 @@ export const useAuthStore = defineStore("auth", {
   },
 });
 
-/** Router guard — redirect unauthenticated users to Django login preserving next. */
+/** Router guard — redirect unauthenticated users to login preserving next. */
 export async function requireAuth(): Promise<boolean> {
   const auth = useAuthStore();
   if (!auth.loaded) {

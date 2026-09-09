@@ -25,7 +25,7 @@ export default defineNuxtConfig({
   ssr: false,
   devtools: false,
   app: {
-    baseURL: "/app/",
+    baseURL: "/",
   },
   css: ["~/assets/css/main.css"],
   modules: ["@pinia/nuxt", "@nuxt/ui"],
@@ -35,6 +35,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: "",
+      backendServers: "",
       googleMapsApiKey: "",
       mapCenter: "",
       mapZoom: "",

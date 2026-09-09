@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "problems",
     "qr_code",
     "zabbix",
+    "app",
     #
     "corsheaders",
     "wagtail.contrib.forms",
@@ -242,7 +243,7 @@ WAGTAILADMIN_BASE_URL = str(
 CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL]
 
 ADDITIONAL_DOMAINS = os.getenv(
-    "ADDITIONAL_DOMAINS", "https://mn.guanghao-sdwan.id, https://manage.nexusnetwork.id"
+    "ADDITIONAL_DOMAINS", "https://mn.guanghao-sdwan.id, https://manage.nexusnetwork.id, https://fe.nexus.manage.backone.cloud"
 )
 
 domains_list = ADDITIONAL_DOMAINS.split(",")
@@ -251,6 +252,8 @@ for domain_list in domains_list:
     CSRF_TRUSTED_ORIGINS.append(domain_list.replace(" ", ""))
 CSRF_TRUSTED_ORIGINS.append("http://127.0.0.1:3000")
 CSRF_TRUSTED_ORIGINS.append("http://localhost:3000")
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = True
 
 # Controller Rule Compiler
 NODEJS = str(os.getenv("NODEJS", "/usr/bin/node"))
@@ -376,7 +379,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = os.getenv(
     "SESSION_EXPIRE_AT_BROWSER_CLOSE", "False"
 ).lower() in ("true", "1", "t")
 SESSION_SAVE_EVERY_REQUEST = True
-
+# Cross-origin frontend (e.g. fe.nexus.manage.backone.cloud) needs Session=None; Secure
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = True
 
 # ZABBIX
 ZABBIX_URL = os.getenv("ZABBIX_URL", "localhost")
@@ -392,6 +397,7 @@ CORS_ALLOWED_ORIGINS = [
     for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
     if origin.strip()
 ]
+CORS_ALLOW_CREDENTIALS = True
 # CORS_ALLOWED_ORIGINS = [
 #    "https://example.com",
 #    "https://sub.example.com",

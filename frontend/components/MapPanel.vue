@@ -15,7 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Member } from "~/types/api";
+import type { Member, Route } from "~/types/api";
+import { useBackendStore } from "~/stores/backend";
 import logoSvgUrl from "~/assets/images/backone-logo.svg";
 
 const config = useRuntimeConfig();
@@ -27,6 +28,7 @@ const mapError = ref("");
 let map: google.maps.Map | null = null;
 let markers: google.maps.Marker[] = [];
 let flyers: google.maps.Circle[] = [];
+let polylines: google.maps.Polyline[] = [];
 
 const props = withDefaults(
   defineProps<{
@@ -35,6 +37,9 @@ const props = withDefaults(
     height?: string;
     zoom?: number;
     single?: boolean;
+    members?: Member[];
+    routes?: Route[];
+    center?: { lat: number; lng: number };
   }>(),
   { lat: null, lng: null, height: "h-[600px]", zoom: 15, single: false },
 );
@@ -106,7 +111,7 @@ async function addMemberMarker(m: {
   });
   if (m.member_id) {
     marker.addListener("click", () => {
-      window.location.assign(`/app/members/${encodeURIComponent(m.member_id)}`);
+      window.location.assign(`/members/${encodeURIComponent(m.member_id)}`);
     });
   }
   markers.push(marker);
@@ -114,7 +119,9 @@ async function addMemberMarker(m: {
 
 async function refreshMarkers() {
   if (!map) return;
-  const members = await api<Member[]>("/api/app/members/");
+  const members = props.members && props.members.length > 0
+    ? props.members
+    : await api<Member[]>("/api/app/members/");
   markers.forEach((m) => m.setMap(null));
   flyers.forEach((f) => f.setMap(null));
   markers = [];
@@ -129,6 +136,44 @@ async function refreshMarkers() {
         strokeColor: "#0ea5e9", fillColor: "#0ea5e9", fillOpacity: 0.15,
       }));
     }
+  }
+}
+
+/* ---- Route polylines ---- */
+
+async function drawPolylines() {
+  if (!map || !props.routes || props.routes.length === 0) return;
+  polylines.forEach((p) => p.setMap(null));
+  polylines = [];
+
+  for (const r of props.routes) {
+    const targetLoc = await fetchIpLoc(r.ip_network.split("/")[0]);
+    const gwLoc = r.gateway ? await fetchIpLoc(r.gateway) : null;
+    if (!targetLoc || !gwLoc) continue; // hide silently per §V.9
+
+    const polyline = new google.maps.Polyline({
+      path: [targetLoc, gwLoc],
+      geodesic: true,
+      strokeColor: "#f59e0b",
+      strokeOpacity: 0.8,
+      strokeWeight: 3,
+      map,
+    });
+    polylines.push(polyline);
+  }
+}
+
+/** Geolocate IP via backend cache (calls get_ip_loc on server). */
+async function fetchIpLoc(ip: string): Promise<google.maps.LatLngLiteral | null> {
+  const base = useBackendStore().apiBase.replace(/\/$/, "");
+  try {
+    const res = await fetch(`${base}/api/app/ip-loc/?ip=${encodeURIComponent(ip)}`, { credentials: "include" });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.lat != null && data.lng != null) return { lat: data.lat, lng: data.lng };
+    return null;
+  } catch {
+    return null;
   }
 }
 
@@ -156,9 +201,10 @@ async function loadMap() {
       document.head.appendChild(s);
     }),
   ]);
-  const center = props.lat != null && props.lng != null
-    ? { lat: props.lat, lng: props.lng }
-    : parseCenter(config.public.mapCenter);
+  const center = props.center
+    || (props.lat != null && props.lng != null
+      ? { lat: props.lat, lng: props.lng }
+      : parseCenter(config.public.mapCenter));
   map = new google.maps.Map(mapEl.value!, {
     center,
     zoom: props.single ? props.zoom : Number(config.public.mapZoom) || 13,
@@ -167,6 +213,9 @@ async function loadMap() {
     await addMemberMarker({ lat: props.lat!, lng: props.lng!, name: "", member_id: "", color: "#0ea5e9" });
   } else {
     await refreshMarkers();
+    if (props.routes && props.routes.length > 0) {
+      await drawPolylines();
+    }
   }
   ready.value = true;
 }
@@ -177,7 +226,10 @@ onMounted(async () => {
   await loadMap();
   if (props.single) return;
   const interval = Number(config.public.mapRefreshInterval || 300) * 1000;
-  const t = setInterval(refreshMarkers, Number.isFinite(interval) && interval > 0 ? interval : 300_000);
+  const t = setInterval(() => {
+    refreshMarkers();
+    if (props.routes && props.routes.length > 0) drawPolylines();
+  }, Number.isFinite(interval) && interval > 0 ? interval : 300_000);
   onUnmounted(() => clearInterval(t));
 });
 </script>

@@ -9,7 +9,9 @@ RUN npm run generate
 # Stage 2 — serve static + proxy auth/API to Django
 FROM nginx:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/.output/public /usr/share/nginx/html/app
+COPY --from=build /app/.output/public /usr/share/nginx/html
+COPY entrypoint-frontend.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 ENV DJANGO_UPSTREAM=http://django:8008
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
