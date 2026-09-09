@@ -51,7 +51,13 @@ export async function loginToBackend(
 
   // Step 1: GET login form, extract CSRF token (cross-origin: cookie invisible via document.cookie)
   const csrfToken = await loadCsrfToken(base);
-  if (!csrfToken) throw new Error("CSRF token not found on login page — reload and retry");
+  // If no token, /login/ was served without a form — Django redirects authenticated
+  // users away from /login/, so a session likely already exists. Verify directly.
+  if (!csrfToken) {
+    const meRes = await fetch(`${base}/api/app/me/`, { credentials: "include" });
+    if (meRes.ok) return { ok: true };
+    throw new Error("CSRF token not found on login page — reload and retry");
+  }
 
   // Step 3: POST credentials to /login/ (form-urlencoded, CSRF via header)
   const formData = new URLSearchParams();
