@@ -59,7 +59,7 @@ Existing API endpoints (already built):
 - `GET /api/app/networks/` — org-scoped networks + member_count
 - `GET /api/app/networks/<network_id>/` — single network detail
 - `POST /api/app/networks/` — create network (name, description, ip_allocation)
-- `PUT /api/app/networks/<network_id>/` — update network name/description/ip_allocation (triggers ZT sync via model save)
+- `PUT /api/app/networks/<network_id>/` — update network name/description (triggers ZT sync via model save); `ip_allocation` is immutable after create — changed value → 400 `{"error": {"ip_allocation": ["Cannot be changed after creation."]}}`
 - `GET /api/app/summary/` — counts (members/online/problems/networks)
 - `GET /api/app/problems/` — unsolved problems
 - `GET /api/app/networks/<network_id>/routes/` — org-scoped routes for a network; response includes `gateway_member_name` (member name if gateway IP matches a member in the same network, else raw IP string, null if gateway is null)
@@ -128,6 +128,7 @@ Auth handshake: Cross-domain session cookie via `credentials: "include"`. CSRF t
 - V31. Network routes inherit RBAC from Django `network_qs()` backend — no additional frontend guard needed. Non-superusers see org-scoped networks; superusers see all. Routes visible for any network user can access.
 
 - V32. Routes GET response includes `gateway_member_name`: backend resolves `Members.objects.filter(network=net, ip_address=gateway).first()`. Match → member.name. No match → raw gateway IP string as-is. Null gateway → null. Resolution scoped to same network only (no cross-network lookup).
+- V33. `ip_allocation` (Networks.ip_address_networks) immutable after create: `network_update` PUT rejects a value differing from DB with 400 field error before `full_clean()`; frontend edit modal disables the input. Rationale: CIDR change desyncs existing ZT routes/members.
 ## §T Tasks
 
 | id | status | task | cites |
@@ -189,6 +190,7 @@ Auth handshake: Cross-domain session cookie via `credentials: "include"`. CSRF t
 | T61 | x | Frontend: networks list — add "Routes" button per row navigating to `/networks/${network_id}` + route count column | V6 |
 | T64 | x | Frontend: route delete — row action button, `confirm()` dialog, `DELETE /routes/<ip_network>/`, remove row | V1,V3,V6 |
 | T65 | x | Backend + Frontend: show `gateway_member_name` in routes GET response — backend resolves gateway IP → member name in same network (match → name, no match → raw IP, null → null); frontend displays in Gateway column | V32 |
+| T66 | x | Backend + Frontend: `ip_allocation` immutability — PUT guard returns 400 field error when value differs from DB; edit modal disables input; regression tests in `app/tests.py` | V33 |
 
 ## §B Bugs
 

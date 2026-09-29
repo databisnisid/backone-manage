@@ -491,7 +491,12 @@ def network_update(request, network_id):
     if "description" in body:
         net.description = body["description"].strip()
     if "ip_allocation" in body:
-        net.ip_address_networks = body["ip_allocation"].strip() or None
+        new_ip = body["ip_allocation"].strip() or None
+        if new_ip != (net.ip_address_networks or None):
+            return JsonResponse(
+                {"error": {"ip_allocation": ["Cannot be changed after creation."]}},
+                status=400,
+            )
 
     try:
         net.full_clean()

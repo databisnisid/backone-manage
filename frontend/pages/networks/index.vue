@@ -82,7 +82,7 @@
               <UInput v-model="form.description" placeholder="Optional description" />
             </UFormField>
             <UFormField label="IP Allocation (CIDR)" name="ip_allocation">
-              <UInput v-model="form.ip_allocation" placeholder="e.g. 10.0.0.0/24" />
+              <UInput v-model="form.ip_allocation" placeholder="e.g. 10.0.0.0/24" :disabled="!!editing" />
             </UFormField>
             <div class="flex justify-end gap-2 pt-4">
               <UButton variant="outline" @click="modalOpen = false">Cancel</UButton>
@@ -147,7 +147,6 @@ async function submit() {
       await updateNetwork(editing.value.network_id, {
         name: form.name,
         description: form.description,
-        ip_allocation: form.ip_allocation,
       });
     } else {
       await createNetwork({

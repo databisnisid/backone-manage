@@ -1,3 +1,4 @@
+import json
 from unittest import mock
 
 from django.contrib.auth import get_user_model
@@ -190,3 +191,51 @@ class AppApiMultiTenancyTests(TestCase):
         self.client.force_login(self.u_b)
         r = self.client.get(reverse("app_problems"))
         self.assertEqual(r.json(), [])
+ 
+    def _put_net(self, net, payload):
+        url = reverse("app_network_update", args=[net.network_id])
+        return self.client.put(
+            url, data=json.dumps(payload), content_type="application/json"
+        )
+
+    def test_ip_allocation_change_rejected(self):
+        """PUT with a different ip_allocation -> 400, DB value untouched."""
+        net = self.make_net("C", self.org_a, self.u_a, 1)
+        Networks.objects.filter(pk=net.pk).update(
+            ip_address_networks="10.0.0.0/24"
+        )
+        self.client.force_login(self.admin)
+
+        r = self._put_net(
+            net, {"name": "C", "ip_allocation": "192.168.1.0/24"}
+        )
+        self.assertEqual(r.status_code, 400)
+        self.assertIn("ip_allocation", r.json()["error"])
+        net.refresh_from_db()
+        self.assertEqual(net.ip_address_networks, "10.0.0.0/24")
+
+    def test_ip_allocation_unchanged_accepted(self):
+        """PUT echoing the current ip_allocation passes the immutability guard."""
+        net = self.make_net("D", self.org_a, self.u_a, 1)
+        Networks.objects.filter(pk=net.pk).update(
+            ip_address_networks="10.0.0.0/24"
+        )
+        # mirror production data: org linked to controller, and
+        # Networks.clean() requires controller.configuration["address"]
+        # to equal network_id[:10]
+        Organizations.objects.filter(pk=self.org_a.pk).update(
+            controller=self.controller
+        )
+        Controllers.objects.filter(pk=self.controller.pk).update(
+            configuration='{"address": "%s"}' % net.network_id[:10]
+        )
+
+        self.client.force_login(self.admin)
+
+        with mock.patch("networks.models.Zerotier") as zt_cls:
+            zt_cls.return_value.list_networks.return_value = []
+            zt_cls.return_value.get_network_info.return_value = FAKE_NETWORK
+            zt_cls.return_value.set_network.return_value = FAKE_NETWORK
+            r = self._put_net(net, {"name": "D", "ip_allocation": "10.0.0.0/24"})
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json()["ip_allocation"], "10.0.0.0/24")
