@@ -267,3 +267,81 @@ export interface HSPreauthkey {
   expiration: string | null;
   created_at: string | null;
 }
+
+export interface OperationalTime {
+  id: number;
+  network_id: string;
+  network_name: string | null;
+  is_mon: boolean;
+  is_tue: boolean;
+  is_wed: boolean;
+  is_thu: boolean;
+  is_fri: boolean;
+  is_sat: boolean;
+  is_sun: boolean;
+  mon_start: number;
+  mon_end: number;
+  tue_start: number;
+  tue_end: number;
+  wed_start: number;
+  wed_end: number;
+  thu_start: number;
+  thu_end: number;
+  fri_start: number;
+  fri_end: number;
+  sat_start: number;
+  sat_end: number;
+  sun_start: number;
+  sun_end: number;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface Feature {
+  id: number;
+  name: string;
+  description: string;
+  uuid: string;
+  number_of_network: number;
+  number_of_member: number;
+  network_multi_ip: boolean;
+  network_rules: boolean;
+  member_multi_ip: boolean;
+  authorize: boolean;
+  bridge: boolean;
+  tags: boolean;
+  web: boolean;
+  ssh: boolean;
+  synchronize: boolean;
+  geolocation: boolean;
+  online_offline: boolean;
+  is_export: boolean;
+  mobile_connect: boolean;
+  map_dashboard: boolean;
+  is_nms: boolean;
+  is_webfilter: boolean;
+  is_webfilter_multinet: boolean;
+  is_dpi: boolean;
+  is_telkomsel: boolean;
+  is_deauth_timer: boolean;
+  is_simple_list: boolean;
+  is_lte_signal: boolean;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface DeviceItem {
+  id: number;
+  name: string;
+  device_id: string;
+  username: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface OrgWithDevices {
+  id: number;
+  name: string;
+  uuid: string;
+  devices: DeviceItem[];
+}

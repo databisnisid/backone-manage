@@ -43,10 +43,10 @@
           </UFormField>
           <div class="mt-3 flex gap-4">
             <UFormField label="Reusable">
-              <UToggle v-model="form.is_reusable" />
+              <USwitch v-model="form.is_reusable" />
             </UFormField>
             <UFormField label="Ephemeral">
-              <UToggle v-model="form.is_ephemeral" />
+              <USwitch v-model="form.is_ephemeral" />
             </UFormField>
           </div>
         </UForm>

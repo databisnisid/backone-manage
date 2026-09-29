@@ -14,7 +14,8 @@ from connectors.redis_ipinfo import get_ip_loc
 import subprocess
 from networks.models import NetworkRules
 from mqtt.models import Mqtt
-from monitor.models import MonitorRules, MonitorItems
+from monitor.models import MonitorRules, MonitorItems, OperationalTime
+from accounts.models import Features, Organizations, Devices
 from webfilters.models import WebFilters, WebFiltersOrg, WebFiltersMembers
 from zabbix.models import ZabbixConfigs
 from licenses.models import Licenses
@@ -1231,3 +1232,270 @@ def controllers_detail(request, controller_id):
             return JsonResponse({"error": str(e)}, status=400)
 
     return JsonResponse(_controller_json(c, mask_token=(request.method != "GET")))
+
+def _ot_qs(request):
+    """Org-scoped OperationalTime queryset."""
+    if request.user.is_superuser:
+        return OperationalTime.objects.all()
+    return OperationalTime.objects.filter(organization=request.user.organization)
+
+
+DAY_ENABLED_FIELDS = [
+    "is_mon", "is_tue", "is_wed", "is_thu", "is_fri", "is_sat", "is_sun",
+]
+DAY_TIME_FIELDS = [
+    "mon_start", "mon_end", "tue_start", "tue_end", "wed_start", "wed_end",
+    "thu_start", "thu_end", "fri_start", "fri_end", "sat_start", "sat_end",
+    "sun_start", "sun_end",
+]
+
+
+def _operational_time_json(ot):
+    data = {
+        "id": ot.id,
+        "network_id": ot.network_id,
+        "network_name": ot.network.name if ot.network else None,
+        "created_at": ot.created_at.isoformat() if ot.created_at else None,
+        "updated_at": ot.updated_at.isoformat() if ot.updated_at else None,
+    }
+    for f in DAY_ENABLED_FIELDS + DAY_TIME_FIELDS:
+        data[f] = getattr(ot, f)
+    return data
+
+
+def _apply_ot_body(ot, body):
+    """Set day fields from JSON body with type checks. Returns error dict or None."""
+    err = {}
+    for f in DAY_ENABLED_FIELDS:
+        if f in body:
+            if not isinstance(body[f], bool):
+                err[f] = ["Must be boolean."]
+            else:
+                setattr(ot, f, body[f])
+    for f in DAY_TIME_FIELDS:
+        if f in body:
+            v = body[f]
+            if isinstance(v, bool) or not isinstance(v, int):
+                err[f] = ["Must be an integer hour (1-24)."]
+            else:
+                setattr(ot, f, v)
+    return err or None
+
+
+def _resolve_ot_network(request, body):
+    """Resolve + org-scope network_id from body. Returns (network, error)."""
+    network_id = str(body.get("network_id", "")).strip()
+    if not network_id:
+        return None, {"network_id": ["Required."]}
+    net = network_qs(request).filter(network_id=network_id).first()
+    if net is None:
+        return None, {"network_id": ["Not found."]}
+    return net, None
+
+
+@login_required
+@never_cache
+def operational_times(request):
+    """Org-scoped OperationalTime list + create (spec §I /api/app/operational-times/)."""
+    if request.method == "GET":
+        rows = _ot_qs(request).select_related("network").order_by("id")
+        return JsonResponse([_operational_time_json(ot) for ot in rows], safe=False)
+
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        net, err = _resolve_ot_network(request, body)
+        if err:
+            return JsonResponse({"error": err}, status=400)
+        ot = OperationalTime(network=net)
+        err = _apply_ot_body(ot, body)
+        if err:
+            return JsonResponse({"error": err}, status=400)
+        try:
+            ot.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        ot.save()
+        return JsonResponse(_operational_time_json(ot), status=201)
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+@login_required
+@never_cache
+def operational_time_detail(request, ot_id):
+    """Org-scoped OperationalTime detail/update/delete."""
+    ot = _ot_qs(request).filter(id=ot_id).first()
+    if ot is None:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    if request.method == "GET":
+        return JsonResponse(_operational_time_json(ot))
+
+    if request.method == "DELETE":
+        ot.delete()
+        return JsonResponse({"ok": True})
+
+    if request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        if "network_id" in body:
+            net, err = _resolve_ot_network(request, body)
+            if err:
+                return JsonResponse({"error": err}, status=400)
+            ot.network = net
+        err = _apply_ot_body(ot, body)
+        if err:
+            return JsonResponse({"error": err}, status=400)
+        try:
+            ot.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        ot.save()
+        return JsonResponse(_operational_time_json(ot))
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+FEATURES_INT_FIELDS = ["number_of_network", "number_of_member"]
+FEATURES_BOOL_FIELDS = [
+    "network_multi_ip", "network_rules", "member_multi_ip", "authorize",
+    "bridge", "tags", "web", "ssh", "synchronize", "geolocation",
+    "online_offline", "is_export", "mobile_connect", "map_dashboard",
+    "is_nms", "is_webfilter", "is_webfilter_multinet", "is_dpi",
+    "is_telkomsel", "is_deauth_timer", "is_simple_list", "is_lte_signal",
+]
+
+
+def _features_json(f):
+    data = {
+        "id": f.id,
+        "name": f.name,
+        "description": f.description,
+        "uuid": str(f.uuid),
+        "created_at": f.created_at.isoformat() if f.created_at else None,
+        "updated_at": f.updated_at.isoformat() if f.updated_at else None,
+    }
+    for fld in FEATURES_INT_FIELDS + FEATURES_BOOL_FIELDS:
+        data[fld] = getattr(f, fld)
+    return data
+
+
+def _apply_features_body(f, body):
+    """Set Features fields from JSON body with type checks. Returns error dict or None."""
+    err = {}
+    for fld in ("name", "description"):
+        if fld in body:
+            if not isinstance(body[fld], str):
+                err[fld] = ["Must be a string."]
+            else:
+                setattr(f, fld, body[fld].strip())
+    for fld in FEATURES_INT_FIELDS:
+        if fld in body:
+            v = body[fld]
+            if isinstance(v, bool) or not isinstance(v, int):
+                err[fld] = ["Must be an integer."]
+            else:
+                setattr(f, fld, v)
+    for fld in FEATURES_BOOL_FIELDS:
+        if fld in body:
+            if not isinstance(body[fld], bool):
+                err[fld] = ["Must be boolean."]
+            else:
+                setattr(f, fld, body[fld])
+    return err or None
+
+
+@login_required
+@never_cache
+def features_list(request):
+    """Superuser-only Features list + create (global license-tier table)."""
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "forbidden"}, status=403)
+    if request.method == "GET":
+        rows = Features.objects.all().order_by("id")
+        return JsonResponse([_features_json(f) for f in rows], safe=False)
+
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        f = Features()
+        err = _apply_features_body(f, body)
+        if err:
+            return JsonResponse({"error": err}, status=400)
+        try:
+            f.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        f.save()
+        return JsonResponse(_features_json(f), status=201)
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+@login_required
+@never_cache
+def features_detail(request, feature_id):
+    """Superuser-only Features detail/update/delete."""
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "forbidden"}, status=403)
+    try:
+        f = Features.objects.get(id=feature_id)
+    except Features.DoesNotExist:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    if request.method == "GET":
+        return JsonResponse(_features_json(f))
+
+    if request.method == "DELETE":
+        f.delete()  # Organizations.features is SET_NULL — safe
+        return JsonResponse({"ok": True})
+
+    if request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        err = _apply_features_body(f, body)
+        if err:
+            return JsonResponse({"error": err}, status=400)
+        try:
+            f.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        f.save()
+        return JsonResponse(_features_json(f))
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+@login_required
+@never_cache
+def organizations_devices(request):
+    """Superuser-only organizations list with nested devices — spec line 34:
+    no separate /api/app/devices/ endpoint; devices accessed via organizations."""
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "forbidden"}, status=403)
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    orgs = Organizations.objects.all().order_by("name").prefetch_related("devices")
+    data = [{
+        "id": o.id,
+        "name": o.name,
+        "uuid": str(o.uuid),
+        "devices": [{
+            "id": d.id,
+            "name": d.name,
+            "device_id": d.device_id,
+            "username": d.username,
+            "created_at": d.created_at.isoformat() if d.created_at else None,
+            "updated_at": d.updated_at.isoformat() if d.updated_at else None,
+        } for d in o.devices.all()],
+    } for o in orgs]
+    return JsonResponse(data, safe=False)

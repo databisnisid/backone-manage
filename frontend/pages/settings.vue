@@ -41,6 +41,7 @@ const navItems = computed(() => {
   const items = [
     { label: "WebFilters", icon: "i-lucide-shield", to: "/settings/webfilters" },
     { label: "Monitor", icon: "i-lucide-activity", to: "/settings/monitor" },
+    { label: "Operational Time", icon: "i-lucide-clock", to: "/settings/operational-time" },
     { label: "Headscale Users", icon: "i-lucide-users", to: "/settings/headscale/users" },
     { label: "Headscale Nodes", icon: "i-lucide-server", to: "/settings/headscale/nodes" },
     { label: "Headscale Keys", icon: "i-lucide-key", to: "/settings/headscale/preauthkeys" },
@@ -49,6 +50,8 @@ const navItems = computed(() => {
     items.push(
       { label: "Zabbix", icon: "i-lucide-bar-chart", to: "/settings/zabbix" },
       { label: "Licenses", icon: "i-lucide-key", to: "/settings/licenses" },
+      { label: "Features", icon: "i-lucide-sliders", to: "/settings/features" },
+      { label: "Devices", icon: "i-lucide-smartphone", to: "/settings/devices" },
     );
   }
   return items;

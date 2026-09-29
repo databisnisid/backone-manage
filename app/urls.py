@@ -37,4 +37,9 @@ urlpatterns = [
     path("problems/", views.problems, name="app_problems"),
     path("controllers/", views.controllers_list, name="app_controllers"),
     path("controllers/<int:controller_id>/", views.controllers_detail, name="app_controller_detail"),
+    path("operational-times/", views.operational_times, name="app_operational_times"),
+    path("operational-times/<int:ot_id>/", views.operational_time_detail, name="app_operational_time_detail"),
+    path("features/", views.features_list, name="app_features"),
+    path("features/<int:feature_id>/", views.features_detail, name="app_features_detail"),
+    path("organizations/", views.organizations_devices, name="app_organizations_devices"),
 ]

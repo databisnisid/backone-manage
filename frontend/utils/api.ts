@@ -251,3 +251,36 @@ export function deleteHSPreauthkey(id: number): Promise<{ ok: boolean }> {
 export function fetchLicenses(): Promise<LicenseItem[]> {
   return api<LicenseItem[]>("/api/app/licenses/");
 }
+
+// -- OperationalTime --
+export function fetchOperationalTimes(): Promise<OperationalTime[]> {
+  return api<OperationalTime[]>("/api/app/operational-times/");
+}
+export function createOperationalTime(data: Partial<OperationalTime>): Promise<OperationalTime> {
+  return api<OperationalTime>("/api/app/operational-times/", { method: "POST", body: JSON.stringify(data) });
+}
+export function updateOperationalTime(id: number, data: Partial<OperationalTime>): Promise<OperationalTime> {
+  return api<OperationalTime>(`/api/app/operational-times/${id}/`, { method: "PUT", body: JSON.stringify(data) });
+}
+export function deleteOperationalTime(id: number): Promise<{ ok: boolean }> {
+  return api<{ ok: boolean }>(`/api/app/operational-times/${id}/`, { method: "DELETE" });
+}
+
+// -- Features (superuser) --
+export function fetchFeatures(): Promise<Feature[]> {
+  return api<Feature[]>("/api/app/features/");
+}
+export function createFeature(data: Partial<Feature>): Promise<Feature> {
+  return api<Feature>("/api/app/features/", { method: "POST", body: JSON.stringify(data) });
+}
+export function updateFeature(id: number, data: Partial<Feature>): Promise<Feature> {
+  return api<Feature>(`/api/app/features/${id}/`, { method: "PUT", body: JSON.stringify(data) });
+}
+export function deleteFeature(id: number): Promise<{ ok: boolean }> {
+  return api<{ ok: boolean }>(`/api/app/features/${id}/`, { method: "DELETE" });
+}
+
+// -- Organizations + Devices (superuser) --
+export function fetchOrganizationsDevices(): Promise<OrgWithDevices[]> {
+  return api<OrgWithDevices[]>("/api/app/organizations/");
+}

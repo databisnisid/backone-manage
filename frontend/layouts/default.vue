@@ -67,7 +67,7 @@ async function logout() {
       <template #default>
         <template v-for="(group, gi) in links" :key="gi">
           <UNavigationMenu :items="group" orientation="vertical" />
-          <UDivider v-if="gi < links.length - 1" class="my-2" />
+          <USeparator v-if="gi < links.length - 1" class="my-2" />
         </template>
       </template>
 

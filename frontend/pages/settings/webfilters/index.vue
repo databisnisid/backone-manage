@@ -39,7 +39,7 @@
             <UInput v-model="form.name" placeholder="Filter name" />
           </UFormField>
           <UFormField label="Default Block" class="mt-3">
-            <UToggle v-model="form.is_default_block" />
+            <USwitch v-model="form.is_default_block" />
           </UFormField>
         </UForm>
       </template>
