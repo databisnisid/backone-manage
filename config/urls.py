@@ -1,6 +1,8 @@
 from django.conf import settings
-from django.urls import include, path
 from django.contrib import admin
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+from django.urls import include, path
 from networks import views
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
@@ -21,11 +23,22 @@ custom_wagtailadmin_urls.urlpatterns[0] = path(
 """
 handler404 = "config.customviews.custom_404"
 handler500 = "config.customviews.custom_500"  # Note: adjust path if views are not directly in myapp
-handler403 = "config.customviews.custom_403"
 handler400 = "config.customviews.custom_400"
+
+
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_GET
+
+
+@require_GET
+@ensure_csrf_cookie
+def csrf_token_view(request):
+    """Return CSRF token for cross-origin SPA. Sets csrftoken cookie."""
+    return JsonResponse({"csrfToken": get_token(request)})
 
 urlpatterns = [
     path("custom/", admin.site.urls),
+    # path("api/csrf/", csrf_token_view, name="csrf_token"),  # CSRF handled by middleware
     # path('networks/qr_code/<str:network_id>/', views.qr_code),
     path("networks/", include("networks.urls")),
     path("api/networks/", include("networks.urls")),

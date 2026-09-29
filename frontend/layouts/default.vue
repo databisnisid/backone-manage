@@ -5,11 +5,24 @@ import backoneLogo from "~/assets/images/backone-logo.svg";
 const auth = useAuthStore();
 const open = ref(false);
 
-const links = [[
-  { label: "Dashboard", icon: "i-lucide-house", to: "/", onSelect: () => onSelect() },
-  { label: "Members", icon: "i-lucide-users", to: "/members", onSelect: () => onSelect() },
-  { label: "Networks", icon: "i-lucide-network", to: "/networks", onSelect: () => onSelect() },
-]] satisfies NavigationMenuItem[][];
+const links = computed(() => {
+  const items: NavigationMenuItem[][] = [
+    [
+      { label: "Dashboard", icon: "i-lucide-house", to: "/", onSelect: () => onSelect() },
+      { label: "Members", icon: "i-lucide-users", to: "/members", onSelect: () => onSelect() },
+      { label: "Networks", icon: "i-lucide-network", to: "/networks", onSelect: () => onSelect() },
+    ],
+  ];
+  if (auth.isSuperuser) {
+    items.push([
+      { label: "Controllers", icon: "i-lucide-server", to: "/controllers", onSelect: () => onSelect() },
+    ]);
+  }
+  items.push([
+    { label: "Settings", icon: "i-lucide-settings", to: "/settings", onSelect: () => onSelect() },
+  ]);
+  return items;
+});
 
 function onSelect() {
   open.value = false;
@@ -52,7 +65,10 @@ async function logout() {
       </template>
 
       <template #default>
-        <UNavigationMenu :items="links[0]" orientation="vertical" />
+        <template v-for="(group, gi) in links" :key="gi">
+          <UNavigationMenu :items="group" orientation="vertical" />
+          <UDivider v-if="gi < links.length - 1" class="my-2" />
+        </template>
       </template>
 
       <template #footer>

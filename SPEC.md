@@ -4,6 +4,8 @@
 
 SD-WAN / ZeroTier network management platform. Django+Wagtail. Manage orgs, ZeroTier controllers, networks, members(nodes). Ingest MQTT telemetry, threshold-monitor members, create/resolve problems. Webfilter, RSA licenses, Zabbix, Headscale alt-controller. Admin UI pure Wagtail modeladmin.
 
+White-label SPA login: frontend `fe.nexus` posts cross-origin to backend `nexus` `/login/`. Add "Remember me" checkbox — checked → session persists 30 days; unchecked → session cookie expires at browser close.
+
 ## §C Constraints
 
 - Python 3.12, Django 5.2.17, Wagtail 7.4.3. pip pinned `requirements.txt`. venv.
@@ -17,6 +19,7 @@ SD-WAN / ZeroTier network management platform. Django+Wagtail. Manage orgs, Zero
 - Multi-tenancy by `accounts.User.organization` FK, `org_uuid`, `DEFAULT_ORGANIZATION_UUID`.
 - Node.js required for rule compiler (`controllers/rule-compiler`).
 - Auth: axes + mailauth passwordless + 2FA (`two_factor_custom`, gated `IS_2FA_ENABLE`).
+- "Remember me" login: Wagtail `LoginForm.remember` BooleanField (`wagtail/admin/forms/auth.py:20`) + `LoginView.form_valid` reads it (`wagtail/admin/views/account.py:398`). SPA POSTs `remember`. CustomLoginView overrides `form_valid` to honor 30d (grill decision) instead of Wagtail default `SESSION_COOKIE_AGE` (1d).
 - No pytest — Django unittest only. 14 empty tests.py placeholders.
 - `save()` overrides push to external APIs in real time.
 
@@ -29,8 +32,7 @@ Public HTTP routes (`config/urls.py`):
 - `api/webfilters/` → webfilters.urls (network/<id>/, member/<id>/)
 - `api/licenses/` → licenses.urls (download/<id>/, handler/)
 - `accounts/` → mailauth.urls
-- `two/` → two_factor_custom.urls
-- `login/` → CustomLoginView
+- `login/` → CustomLoginView (`config/customviews.py:13`). POST body `[csrfmiddlewaretoken, username, password, remember]`. `remember` boolean — checked → 30d session, unchecked → browser-close. Cross-origin: `credentials:"include"`, `X-CSRFToken` header from HTML token.
 - `/` Wagtail admin + docs; prometheus at root
 - handler400/403/404/500 → config.customviews
 
@@ -60,6 +62,7 @@ No research skill run — section omitted (right-size).
 - V10. `§C` version strings must match `requirements.txt` pinned versions; version bump PRs must update both.
 - V11. `§C` must document that `wagtail-modeladmin` is an external package (not wagtail core) and `modelsearch` is a required search backend dependency.
 - V12. Module-level `wagtail.contrib.modeladmin` imports are prohibited — use `wagtail_modeladmin` (external package). Verified: all 10 apps comply.
+- V13. "Remember me" session: checked → `session.set_expiry(30*24*3600)` (30d); unchecked → `set_expiry(0)` (browser-close). Must override Wagtail `form_valid` (`account.py:398`) which uses `SESSION_COOKIE_AGE` (1d) — grill decided 30d.
 
 ## §T Tasks
 
@@ -73,6 +76,8 @@ No research skill run — section omitted (right-size).
 | T6 | x | Remove dead broken `encrypt_node_id()` in `licenses/utils.py` (marked "Not Used", refs undefined) | |
 | T7 | x | Guard index access in `Mqtt.save()` on `packet_loss_string`/`round_trip_string` | V7 |
 | T8 | x | Add input guards to module `licenses.utils.check_license(lic_json)` for missing `node_id`/`uuid`/`token` keys + `b64decode` | V8 |
+| T9 | x | Override `CustomLoginView.form_valid` (`config/customviews.py`) — read `form.cleaned_data["remember"]`, `set_expiry(30d)` when true else `set_expiry(0)`; keep `super().form_valid(form)`; verify SPA POST of `remember` sets expiry | V13, I.login |
+| T10 | x | SPA `login.vue` add "Remember me" checkbox (v-model `rememberMe`), `loginToBackend(username,password,rememberMe)` appends `remember` to POST body; verify click E2E persists session 30d vs browser-close | V13, I.login |
 
 ## §B Bugs
 

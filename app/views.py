@@ -5,12 +5,21 @@ from django.conf import settings
 from django.views.decorators.cache import never_cache
 from django.core.exceptions import ValidationError
 
-from members.models import Members
+from members.models import Members, MemberPeers
 from members.views import prepare_data
 from networks.models import Networks, NetworkRoutes
-from problems.models import MemberProblems
-from mqtt.models import Mqtt
+from controllers.models import Controllers
+from controllers.backend import Zerotier
 from connectors.redis_ipinfo import get_ip_loc
+import subprocess
+from networks.models import NetworkRules
+from mqtt.models import Mqtt
+from monitor.models import MonitorRules, MonitorItems
+from webfilters.models import WebFilters, WebFiltersOrg, WebFiltersMembers
+from zabbix.models import ZabbixConfigs
+from licenses.models import Licenses
+from headscale.models import HS_Users, HS_Nodes, HS_Preauthkeys
+from problems.models import MemberProblems
 
 
 def member_qs(request):
@@ -225,7 +234,9 @@ def networks(request):
                 "network_id": net.network_id,
                 "name": net.name,
                 "description": net.description,
+                "ip_allocation": net.ip_allocation(),
                 "member_count": Members.objects.filter(network=net).count(),
+                "route_count": NetworkRoutes.objects.filter(network=net).count(),
             }
         )
     return JsonResponse(data, safe=False)
@@ -284,12 +295,26 @@ def network_routes_list_create(request, network_id):
         return err
 
     if request.method == "GET":
+        # Pre-fetch members for gateway name resolution — scoped to network
+        net = network_qs(request).filter(network_id=network_id).first()
+        if not net:
+            return JsonResponse({"error": "network not found"}, status=404)
+        member_map = {
+            m.ipaddress: m.name
+            for m in Members.objects.filter(network=net, ipaddress__isnull=False)
+        }
         data = []
         for r in routes_qs.select_related("network"):
+            gw = r.gateway
+            if gw and gw in member_map:
+                gw_name = member_map[gw]
+            else:
+                gw_name = gw  # raw IP or None
             data.append({
                 "id": r.id,
                 "ip_network": r.ip_network,
-                "gateway": r.gateway,
+                "gateway": gw,
+                "gateway_member_name": gw_name,
                 "network_id": r.network.network_id,
                 "created_at": r.created_at.isoformat() if r.created_at else None,
                 "updated_at": r.updated_at.isoformat() if r.updated_at else None,
@@ -313,6 +338,9 @@ def network_routes_list_create(request, network_id):
             return JsonResponse({"error": "network not found"}, status=404)
 
         route = NetworkRoutes(ip_network=ip_network, gateway=gateway, network=net)
+        # user/organization are required by full_clean but auto-set by save()
+        route.user = request.user
+        route.organization = request.user.organization
         try:
             route.full_clean()
         except ValidationError as e:
@@ -480,3 +508,726 @@ def network_update(request, network_id):
         "description": net.description,
         "ip_allocation": net.ip_address_networks or "",
     })
+
+
+@login_required
+@never_cache
+def network_rules(request, network_id):
+    """GET/PUT NetworkRules for a network (OneToOne — single rule set per network)."""
+    net = network_qs(request).filter(network_id=network_id).first()
+    if not net:
+        return JsonResponse({"error": "network not found"}, status=404)
+
+    try:
+        nr = NetworkRules.objects.get(network=net)
+    except NetworkRules.DoesNotExist:
+        nr = None
+
+    if request.method == "GET":
+        if not nr:
+            return JsonResponse({"error": "no rules set"}, status=404)
+        return JsonResponse({
+            "id": nr.id,
+            "name": nr.name,
+            "rules_definition": nr.rules_definition,
+            "is_block_rule": nr.is_block_rule,
+            "network_id": nr.network.network_id,
+        })
+
+    if request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+
+        rules_definition = body.get("rules_definition", "").strip()
+        is_block_rule = body.get("is_block_rule", False)
+        name = body.get("name", "Default Rules").strip()
+
+        if not rules_definition and not is_block_rule:
+            return JsonResponse({"error": {"rules_definition": ["Required."]}}, status=400)
+
+        if nr:
+            nr.name = name
+            nr.rules_definition = rules_definition
+            nr.is_block_rule = is_block_rule
+        else:
+            nr = NetworkRules(name=name, network=net, rules_definition=rules_definition, is_block_rule=is_block_rule)
+
+        try:
+            nr.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+
+        try:
+            nr.save()
+        except FileNotFoundError:
+            return JsonResponse({"error": "Node.js not installed on server"}, status=400)
+        except subprocess.CalledProcessError as e:
+            return JsonResponse({"error": f"Rule compilation failed: {e.output}"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+        return JsonResponse({
+            "id": nr.id,
+            "name": nr.name,
+            "rules_definition": nr.rules_definition,
+            "is_block_rule": nr.is_block_rule,
+            "network_id": nr.network.network_id,
+        })
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+
+@login_required
+@never_cache
+def member_peers(request, member_id):
+    """Get peers for a member — org-scoped via Members join."""
+    member = member_qs(request).filter(member_id=member_id).first()
+    if not member:
+        return JsonResponse({"error": "member not found"}, status=404)
+    peer = MemberPeers.objects.filter(member_id=member_id, network=member.network).first()
+    if not peer:
+        return JsonResponse({"peers": []})
+    try:
+        peers_data = json.loads(peer.peers)
+    except (json.JSONDecodeError, ValueError):
+        peers_data = peer.peers
+    return JsonResponse({"peers": peers_data})
+
+
+@login_required
+@never_cache
+def monitor_rules(request):
+    """Org-scoped MonitorRules CRUD."""
+    if request.method == "GET":
+        rules = MonitorRules.objects.filter(organization=request.user.organization).select_related("item")
+        data = [{
+            "id": r.id,
+            "name": r.name,
+            "item_id": r.item.item_id if r.item else None,
+            "item_name": r.item.name if r.item else None,
+            "item_threshold": r.item_threshold,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+            "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+        } for r in rules]
+        return JsonResponse(data, safe=False)
+
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        name = body.get("name", "").strip()
+        item_id = body.get("item_id", "").strip()
+        threshold = body.get("item_threshold", 0)
+        if not name or not item_id:
+            return JsonResponse({"error": {"name": ["Required."], "item_id": ["Required."]}}, status=400)
+        item = MonitorItems.objects.filter(item_id=item_id).first()
+        if not item:
+            return JsonResponse({"error": {"item_id": ["Invalid item."]}}, status=400)
+        rule = MonitorRules(name=name, item=item, item_threshold=threshold)
+        try:
+            rule.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        rule.save()
+        return JsonResponse({
+            "id": rule.id,
+            "name": rule.name,
+            "item_id": rule.item.item_id if rule.item else None,
+            "item_name": rule.item.name if rule.item else None,
+            "item_threshold": rule.item_threshold,
+        }, status=201)
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+@login_required
+@never_cache
+def monitor_rules_detail(request, rule_id):
+    """Org-scoped MonitorRules detail/update/delete."""
+    rule = MonitorRules.objects.filter(id=rule_id, organization=request.user.organization).first()
+    if not rule:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    if request.method == "DELETE":
+        rule.delete()
+        return JsonResponse({"ok": True})
+
+    if request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        if "name" in body:
+            rule.name = body["name"].strip()
+        if "item_id" in body:
+            item = MonitorItems.objects.filter(item_id=body["item_id"].strip()).first()
+            if not item:
+                return JsonResponse({"error": {"item_id": ["Invalid item."]}}, status=400)
+            rule.item = item
+        if "item_threshold" in body:
+            rule.item_threshold = body["item_threshold"]
+        try:
+            rule.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        rule.save()
+        return JsonResponse({
+            "id": rule.id,
+            "name": rule.name,
+            "item_id": rule.item.item_id if rule.item else None,
+            "item_name": rule.item.name if rule.item else None,
+            "item_threshold": rule.item_threshold,
+        })
+
+    return JsonResponse({
+        "id": rule.id,
+        "name": rule.name,
+        "item_id": rule.item.item_id if rule.item else None,
+        "item_name": rule.item.name if rule.item else None,
+        "item_threshold": rule.item_threshold,
+    })
+
+
+@login_required
+@never_cache
+def monitor_items(request):
+    """Global MonitorItems — GET-only, no org filter."""
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    items = MonitorItems.objects.all()
+    data = [{"id": i.id, "name": i.name, "item_id": i.item_id} for i in items]
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+@never_cache
+def webfilters_list(request):
+    """Org-scoped WebFilters list."""
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    filters = WebFilters.objects.filter(organization=request.user.organization)
+    data = [{
+        "id": wf.id,
+        "name": wf.name,
+        "description": wf.description,
+        "uuid": str(wf.uuid),
+        "is_default_block": wf.is_default_block,
+        "network_id": wf.network.network_id if wf.network else None,
+    } for wf in filters]
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+@never_cache
+def webfilters_org(request):
+    """WebFiltersOrg — get org-to-network mapping, or create."""
+    if request.method == "GET":
+        org = WebFiltersOrg.objects.filter(organization=request.user.organization).first()
+        if not org:
+            return JsonResponse({"error": "no mapping set"}, status=404)
+        return JsonResponse({
+            "id": org.id,
+            "organization_id": org.organization.id,
+            "network_id": org.network.network_id,
+        })
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        network_id = body.get("network_id", "").strip()
+        if not network_id:
+            return JsonResponse({"error": {"network_id": ["Required."]}}, status=400)
+        net = network_qs(request).filter(network_id=network_id).first()
+        if not net:
+            return JsonResponse({"error": "network not found"}, status=404)
+        org_obj, _ = WebFiltersOrg.objects.update_or_create(
+            organization=request.user.organization,
+            defaults={"network": net},
+        )
+        return JsonResponse({
+            "id": org_obj.id,
+            "organization_id": org_obj.organization.id,
+            "network_id": org_obj.network.network_id,
+        }, status=201)
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+@login_required
+@never_cache
+def webfilters_detail(request, wf_id):
+    """WebFilters detail/update/delete — org-scoped."""
+    wf = WebFilters.objects.filter(id=wf_id, organization=request.user.organization).first()
+    if not wf:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    if request.method == "DELETE":
+        wf.delete()
+        return JsonResponse({"ok": True})
+
+    if request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        if "name" in body:
+            wf.name = body["name"].strip()
+        if "description" in body:
+            wf.description = body["description"].strip()
+        if "domains" in body:
+            wf.domains = body["domains"].strip()
+        if "domains_white" in body:
+            wf.domains_white = body["domains_white"].strip()
+        if "is_default_block" in body:
+            wf.is_default_block = body["is_default_block"]
+        try:
+            wf.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        try:
+            wf.save()
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+        return JsonResponse({
+            "id": wf.id,
+            "name": wf.name,
+            "description": wf.description,
+            "uuid": str(wf.uuid),
+            "domains": wf.domains,
+            "domains_white": wf.domains_white,
+            "is_default_block": wf.is_default_block,
+        })
+
+    return JsonResponse({
+        "id": wf.id,
+        "name": wf.name,
+        "description": wf.description,
+        "uuid": str(wf.uuid),
+        "domains": wf.domains,
+        "domains_white": wf.domains_white,
+        "is_default_block": wf.is_default_block,
+    })
+
+@login_required
+@never_cache
+def webfilters_members_list(request, wf_id):
+    """List members assigned to webfilter — org-scoped via webfilter FK."""
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    wf = WebFilters.objects.filter(id=wf_id, organization=request.user.organization).first()
+    if not wf:
+        return JsonResponse({"error": "not found"}, status=404)
+    wfm_qs = WebFiltersMembers.objects.filter(webfilter=wf).select_related("member")
+    data = [{
+        "id": wfm.id,
+        "webfilter_id": wf.id,
+        "member_id": wfm.member.id,
+        "member_name": wfm.member.name,
+        "member_member_id": wfm.member.member_id,
+    } for wfm in wfm_qs]
+    return JsonResponse(data, safe=False)
+
+@login_required
+@never_cache
+def webfilters_members_add(request, wf_id):
+    """Add member to webfilter — org-scoped via webfilter FK."""
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    wf = WebFilters.objects.filter(id=wf_id, organization=request.user.organization).first()
+    if not wf:
+        return JsonResponse({"error": "not found"}, status=404)
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({"error": "invalid JSON"}, status=400)
+    member_id = body.get("member_id")
+    if not member_id:
+        return JsonResponse({"error": {"member_id": ["Required."]}}, status=400)
+    from members.models import Members
+    member = Members.objects.filter(id=member_id, organization=request.user.organization).first()
+    if not member:
+        return JsonResponse({"error": "member not found"}, status=404)
+    if WebFiltersMembers.objects.filter(member=member).exists():
+        return JsonResponse({"error": "member already assigned to a webfilter"}, status=400)
+    wfm = WebFiltersMembers(member=member, webfilter=wf)
+    try:
+        wfm.save()
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"ok": True, "member_id": member.id, "webfilter_id": wf.id}, status=201)
+
+
+@login_required
+@never_cache
+def webfilters_members_remove(request, wf_id, member_id):
+    """Remove member from webfilter — org-scoped via webfilter FK."""
+    if request.method != "DELETE":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    wf = WebFilters.objects.filter(id=wf_id, organization=request.user.organization).first()
+    if not wf:
+        return JsonResponse({"error": "not found"}, status=404)
+    from members.models import Members
+    member = Members.objects.filter(id=member_id, organization=request.user.organization).first()
+    if not member:
+        return JsonResponse({"error": "member not found"}, status=404)
+    wfm = WebFiltersMembers.objects.filter(member=member, webfilter=wf).first()
+    if not wfm:
+        return JsonResponse({"error": "not found"}, status=404)
+    wfm.delete()
+    return JsonResponse({"ok": True})
+
+from zabbix.models import ZabbixConfigs
+
+
+@login_required
+@never_cache
+def zabbix_configs_list(request):
+    """Superuser-only ZabbixConfigs list + create."""
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "forbidden"}, status=403)
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        name = body.get("name", "").strip()
+        url = body.get("url", "").strip()
+        token = body.get("token", "").strip()
+        if not name or not url or not token:
+            return JsonResponse({"error": {"name": ["Required."], "url": ["Required."], "token": ["Required."]}}, status=400)
+        zc = ZabbixConfigs(name=name, url=url, token=token)
+        try:
+            zc.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        zc.save()
+        return JsonResponse({"id": zc.id, "name": zc.name, "url": zc.url, "token": "****"}, status=201)
+    data = [{"id": z.id, "name": z.name, "url": z.url, "token": "****"} for z in ZabbixConfigs.objects.all().order_by("-id")]
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+@never_cache
+def zabbix_configs_detail(request, zc_id):
+    """Superuser-only ZabbixConfigs detail/update/delete — token masked, full value on GET."""
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "forbidden"}, status=403)
+    try:
+        zc = ZabbixConfigs.objects.get(id=zc_id)
+    except ZabbixConfigs.DoesNotExist:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    if request.method == "DELETE":
+        zc.delete()
+        return JsonResponse({"ok": True})
+
+    if request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        if "name" in body:
+            zc.name = body["name"].strip()
+        if "url" in body:
+            zc.url = body["url"].strip()
+        if "token" in body:
+            new_token = body["token"].strip()
+            if new_token and new_token != "****":
+                zc.token = new_token
+        try:
+            zc.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        zc.save()
+        return JsonResponse({"id": zc.id, "name": zc.name, "url": zc.url, "token": "****"})
+
+    # GET — return full token on detail
+    return JsonResponse({"id": zc.id, "name": zc.name, "url": zc.url, "token": zc.token})
+from licenses.models import Licenses
+
+
+@login_required
+@never_cache
+def licenses_list(request):
+    """Superuser-only Licenses list — license_string masked."""
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "forbidden"}, status=403)
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    licenses = Licenses.objects.all().select_related("organization")
+    data = [{
+        "id": l.id,
+        "node_id": l.node_id,
+        "organization_uuid": str(l.organization.uuid) if l.organization else None,
+        "is_block_rule": l.is_block_rule,
+        "license_string": "****",
+        "license_features": l.license_features,
+        "created_at": l.created_at.isoformat() if l.created_at else None,
+    } for l in licenses]
+    return JsonResponse(data, safe=False)
+from headscale.models import HS_Users, HS_Nodes, HS_Preauthkeys
+
+
+@login_required
+@never_cache
+def headscale_users(request):
+    """Org-scoped HS_Users list + create."""
+    if request.method == "GET":
+        users = HS_Users.objects.filter(organization=request.user.organization)
+        data = [{
+            "id": u.id,
+            "name": u.name,
+            "description": u.description,
+            "created_at": u.created_at.isoformat() if u.created_at else None,
+        } for u in users]
+        return JsonResponse(data, safe=False)
+
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        name = body.get("name", "").strip()
+        org_id = body.get("organization")
+        if not name or not org_id:
+            return JsonResponse({"error": {"name": ["Required."], "organization": ["Required."]}}, status=400)
+        hs = HS_Users(name=name, description=body.get("description", "").strip(), organization_id=org_id)
+        try:
+            hs.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        try:
+            hs.save()
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+        return JsonResponse({"id": hs.id, "name": hs.name, "description": hs.description}, status=201)
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+@login_required
+@never_cache
+def headscale_users_detail(request, user_id):
+    """Org-scoped HS_Users detail/update/delete."""
+    hs = HS_Users.objects.filter(id=user_id, organization=request.user.organization).first()
+    if not hs:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    if request.method == "DELETE":
+        hs.delete()
+        return JsonResponse({"ok": True})
+
+    if request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        if "name" in body:
+            hs.name = body["name"].strip()
+        if "description" in body:
+            hs.description = body["description"].strip()
+        try:
+            hs.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        try:
+            hs.save()
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+        return JsonResponse({"id": hs.id, "name": hs.name, "description": hs.description})
+
+    return JsonResponse({"id": hs.id, "name": hs.name, "description": hs.description})
+
+
+@login_required
+@never_cache
+def headscale_nodes(request):
+    """Org-scoped HS_Nodes list — org auto-set in save()."""
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    nodes = HS_Nodes.objects.filter(organization=request.user.organization)
+    data = [{
+        "id": n.id,
+        "name": n.name,
+        "machine_key": n.machine_key,
+        "node_key": n.node_key,
+        "addresses": n.addresses,
+        "created_at": n.created_at.isoformat() if n.created_at else None,
+    } for n in nodes]
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+@never_cache
+def headscale_preauthkeys(request):
+    """Org-scoped HS_Preauthkeys list + create."""
+    if request.method == "GET":
+        keys = HS_Preauthkeys.objects.filter(organization=request.user.organization)
+        data = [{
+            "id": k.id,
+            "key": k.key,
+            "is_reusable": k.is_reusable,
+            "is_ephemeral": k.is_ephemeral,
+            "is_used": k.is_used,
+            "hs_user_id": k.hs_user_id,
+            "expiration": k.expiration.isoformat() if k.expiration else None,
+            "created_at": k.created_at.isoformat() if k.created_at else None,
+        } for k in keys]
+        return JsonResponse(data, safe=False)
+
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        hs_user_id = body.get("hs_user_id")
+        if not hs_user_id:
+            return JsonResponse({"error": {"hs_user_id": ["Required."]}}, status=400)
+        hs_user = HS_Users.objects.filter(id=hs_user_id, organization=request.user.organization).first()
+        if not hs_user:
+            return JsonResponse({"error": "HS user not found"}, status=404)
+        pk_obj = HS_Preauthkeys(
+            hs_user=hs_user,
+            is_reusable=body.get("is_reusable", False),
+            is_ephemeral=body.get("is_ephemeral", False),
+        )
+        try:
+            pk_obj.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        try:
+            pk_obj.save()
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+        return JsonResponse({
+            "id": pk_obj.id,
+            "key": pk_obj.key,
+            "is_reusable": pk_obj.is_reusable,
+            "is_ephemeral": pk_obj.is_ephemeral,
+            "expiration": pk_obj.expiration.isoformat() if pk_obj.expiration else None,
+        }, status=201)
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+@login_required
+@never_cache
+def headscale_preauthkeys_detail(request, key_id):
+    """Org-scoped HS_Preauthkeys detail/delete."""
+    pk_obj = HS_Preauthkeys.objects.filter(id=key_id, organization=request.user.organization).first()
+    if not pk_obj:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    if request.method == "DELETE":
+        pk_obj.delete()
+        return JsonResponse({"ok": True})
+
+    return JsonResponse({
+        "id": pk_obj.id,
+        "key": pk_obj.key,
+        "is_reusable": pk_obj.is_reusable,
+        "is_ephemeral": pk_obj.is_ephemeral,
+        "is_used": pk_obj.is_used,
+        "expiration": pk_obj.expiration.isoformat() if pk_obj.expiration else None,
+    })
+
+def _controller_json(c, mask_token=True):
+    """Serialize controller. mask_token=True for list, False for detail GET."""
+    return {
+        "id": c.id,
+        "name": c.name,
+        "description": c.description,
+        "uri": c.uri,
+        "token": "****" if mask_token else c.token,
+    }
+
+
+@login_required
+@never_cache
+def controllers_list(request):
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "forbidden"}, status=403)
+    if request.method == "POST":
+        return controllers_create(request)
+    data = [_controller_json(c) for c in Controllers.objects.all().order_by("-id")]
+    return JsonResponse(data, safe=False)
+
+
+def controllers_create(request):
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({"error": "invalid JSON"}, status=400)
+    name = body.get("name", "").strip()
+    uri = body.get("uri", "").strip()
+    token = body.get("token", "").strip()
+    if not name or not uri or not token:
+        return JsonResponse({"error": {"name": ["Required."], "uri": ["Required."], "token": ["Required."]}}, status=400)
+    # Validate ZT connection before save
+    try:
+        zt = Zerotier(uri, token)
+        zt.status()
+    except Exception as e:
+        return JsonResponse({"error": f"Cannot connect to ZeroTier controller: {e}"}, status=400)
+    c = Controllers(name=name, description=body.get("description", "").strip(), uri=uri, token=token)
+    try:
+        c.full_clean()
+    except ValidationError as e:
+        return JsonResponse({"error": e.message_dict}, status=400)
+    try:
+        c.save()
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse(_controller_json(c), status=201)
+
+
+@login_required
+@never_cache
+def controllers_detail(request, controller_id):
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "forbidden"}, status=403)
+    try:
+        c = Controllers.objects.get(id=controller_id)
+    except Controllers.DoesNotExist:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    if request.method == "DELETE":
+        c.delete()
+        return JsonResponse({"ok": True})
+
+    if request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        if "name" in body:
+            c.name = body["name"].strip()
+        if "description" in body:
+            c.description = body["description"].strip()
+        if "uri" in body:
+            c.uri = body["uri"].strip()
+        if "token" in body:
+            new_token = body["token"].strip()
+            if new_token and new_token != "****":
+                c.token = new_token
+        # Validate ZT if uri or token changed
+        if "uri" in body or ("token" in body and body.get("token", "").strip() != "****"):
+            try:
+                zt = Zerotier(c.uri, c.token)
+                zt.status()
+            except Exception as e:
+                return JsonResponse({"error": f"Cannot connect to ZeroTier controller: {e}"}, status=400)
+        try:
+            c.full_clean()
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+        try:
+            c.save()
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse(_controller_json(c, mask_token=(request.method != "GET")))

@@ -121,7 +121,9 @@ export interface Network {
   network_id: string;
   name: string;
   description: string;
+  ip_allocation: string;
   member_count: number;
+  route_count: number;
 }
 
 export interface Summary {
@@ -144,6 +146,7 @@ export interface Route {
   id: number;
   ip_network: string;
   gateway: string | null;
+  gateway_member_name: string | null;
   network_id: string;
   created_at: string | null;
   updated_at: string | null;
@@ -156,4 +159,111 @@ export interface NetworkDetail {
   ip_allocation: string;
   member_count: number;
   controller_name: string | null;
+}
+
+
+export interface Controller {
+  id: number;
+  name: string;
+  description: string;
+  uri: string;
+  token: string;
+}
+
+export interface Feature {
+  id: number;
+  name: string;
+  is_2fa: boolean;
+  is_mailauth_no_password: boolean;
+  is_webfilter: boolean;
+  is_webfilter_multinet: boolean;
+  is_headscale: boolean;
+  is_zabbix: boolean;
+}
+
+export interface LicenseItem {
+  id: number;
+  node_id: string;
+  organization_uuid: string | null;
+  is_block_rule: boolean;
+  license_string: string;
+  license_features: string;
+  created_at: string | null;
+}
+
+export interface WebFilter {
+  id: number;
+  name: string;
+  domains_black: string;
+  domains_white: string;
+  is_default_block: boolean;
+  organization_uuid: string | null;
+}
+
+export interface WebFilterOrg {
+  id: number;
+  webfilter_id: number;
+  webfilter_name: string;
+  network_id: string;
+  network_name: string;
+  organization_uuid: string | null;
+}
+
+export interface WebFilterMember {
+  id: number;
+  webfilter_id: number;
+  member_id: number;
+  member_name: string;
+  member_member_id: string;
+}
+
+export interface ZabbixConfig {
+  id: number;
+  name: string;
+  url: string;
+  token: string;
+}
+
+export interface MonitorRule {
+  id: number;
+  name: string;
+  item_id: number;
+  item_name: string;
+  threshold_min: number;
+  threshold_max: number;
+  duration: number;
+  organization_uuid: string | null;
+}
+
+export interface MonitorItem {
+  id: number;
+  name: string;
+  item_id: number;
+}
+
+export interface HSUser {
+  id: number;
+  name: string;
+  description: string;
+  created_at: string | null;
+}
+
+export interface HSNode {
+  id: number;
+  name: string;
+  machine_key: string;
+  node_key: string;
+  addresses: string;
+  created_at: string | null;
+}
+
+export interface HSPreauthkey {
+  id: number;
+  key: string;
+  is_reusable: boolean;
+  is_ephemeral: boolean;
+  is_used: boolean;
+  hs_user_id: number;
+  expiration: string | null;
+  created_at: string | null;
 }

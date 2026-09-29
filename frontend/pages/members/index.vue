@@ -16,6 +16,7 @@
           placeholder="Search by name, member ID, or IP…"
           class="max-w-sm"
         />
+        <p class="text-xs text-(--ui-text-dimmed)">Showing {{ members.length }} members</p>
         <div class="overflow-hidden rounded-lg border border-default bg-(--ui-bg) shadow-sm">
           <table class="w-full text-sm">
             <thead>

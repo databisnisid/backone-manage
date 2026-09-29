@@ -27,7 +27,7 @@ ALLOWED_HOSTS = [str(os.getenv("ALLOWED_HOSTS", "*"))]
 # Application definition
 
 INSTALLED_APPS = [
-    #'headscale',
+    "headscale",
     # "sites_custom",
     "mailauth",
     "mailauth.contrib.admin",
@@ -99,6 +99,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "config.middlewares.CsrfTokenHeaderMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -382,6 +383,9 @@ SESSION_SAVE_EVERY_REQUEST = True
 # Cross-origin frontend (e.g. fe.nexus.manage.backone.cloud) needs Session=None; Secure
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True
+# CSRF cookie SameSite=None for cross-origin SPA (matches session settings)
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = True
 
 # ZABBIX
 ZABBIX_URL = os.getenv("ZABBIX_URL", "localhost")
@@ -398,6 +402,7 @@ CORS_ALLOWED_ORIGINS = [
     if origin.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
+CORS_EXPOSE_HEADERS = ["X-CSRFToken"]
 # CORS_ALLOWED_ORIGINS = [
 #    "https://example.com",
 #    "https://sub.example.com",
