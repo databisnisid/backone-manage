@@ -1,3 +1,10 @@
 .pagination p {
   margin: 1.5rem;
 }
+
+/* Wagtail core pulls .listing.full-width up by 3em and compensates only for a
+   sibling .pagination; modeladmin wraps pagination in a div, so the gap
+   compensation never applies and the dashed separator cut through the last row. */
+.modeladmin .listing.full-width {
+  margin-bottom: 0;
+}
