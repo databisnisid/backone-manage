@@ -5,6 +5,7 @@ import redis
 from redis.exceptions import ConnectionError, TimeoutError
 import re
 import json
+import logging
 from connectors import redis_ipinfo
 from datetime import timedelta
 
@@ -38,6 +39,8 @@ from mqtt.redis import (
     get_parameter_by_index,
 )
 from django.templatetags.static import static
+
+logger = logging.getLogger(__name__)
 
 r = redis.Redis(
     host=settings.MQTT_REDIS_HOST,
@@ -74,7 +77,7 @@ def get_member_peers_from_redis(member_id: str = "") -> dict:
                     except KeyError:
                         pass
                 except json.JSONDecodeError as e:
-                    print(f"Error: Unable to decode JSON. {e}")
+                    logger.error(f"Error: Unable to decode JSON. {e}")
 
         except (ConnectionError, TimeoutError):
             pass
@@ -161,7 +164,7 @@ class MemberPeers(models.Model):
     def save(self):
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         self.peers = zt.get_member_peers(self.member_id)
-        print(f"Peers {self.member_id} -> {self.peers}")
+        logger.info(f"Peers {self.member_id} -> {self.peers}")
         if _zt_failed(self.peers):
             # if not self.peers:
             raise ValidationError(_("ZeroTier: unable to fetch member peers"))
@@ -309,7 +312,7 @@ class Members(models.Model):
             data["ipAssignments"] = ip_address_lists
 
         # Apply Configuration to controller
-        print("Member", self.member_id, data)
+        logger.info("Member", self.member_id, data)
         member_info = zt.set_member(self.network.network_id, self.member_id, data)
         if _zt_failed(member_info):
             raise ValidationError(_("ZeroTier: unable to update member on controller"))
@@ -397,9 +400,9 @@ class Members(models.Model):
                 ip_status = {}
                 for ip_address_list in ip_address_lists:
                     ip_status[ip_address_list] = False
-                    print(ip_address_list)
+                    logger.info(ip_address_list)
                     for ip_network_list in ip_network_lists:
-                        print(ip_network_list)
+                        logger.info(ip_network_list)
                         if ip_address(ip_address_list) in ip_network(ip_network_list):
                             is_ipaddress_in_network = True
                             ip_status[ip_address_list] = True
