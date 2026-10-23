@@ -161,8 +161,9 @@ class MemberPeers(models.Model):
     def save(self):
         zt = Zerotier(self.network.controller.uri, self.network.controller.token)
         self.peers = zt.get_member_peers(self.member_id)
-        # if _zt_failed(self.peers):
-        if not self.peers:
+        print(f"Peers {self.peers}")
+        if _zt_failed(self.peers):
+            # if not self.peers:
             raise ValidationError(_("ZeroTier: unable to fetch member peers"))
         return super(MemberPeers, self).save()
 
