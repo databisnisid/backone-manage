@@ -5,5 +5,4 @@ from .models import Mqtt
 class MqttSerializers(serializers.ModelSerializer):
     class Meta:
         model = Mqtt
-        fields = ('hostname', 'uptime', 'quota_first')
-
+        fields = ("hostname", "uptime", "serialnumber", "model", "quota_first")
