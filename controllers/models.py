@@ -2,7 +2,6 @@ from django.db import models
 import ast
 from .backend import Zerotier
 from django.utils import timezone
-from django.utils.timesince import timesince
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 
@@ -51,18 +50,9 @@ class Controllers(models.Model):
         return super(Controllers, self).save()
 
     def status(self):
-        checked = _("never checked")
-        if self.status_checked_at:
-            checked = _("checked {}").format(timesince(self.status_checked_at) + " ago")
-
         if self.is_online:
-            label = format_html("<span style='color: green;'>ONLINE</span>")
-        else:
-            label = format_html("<span style='color: red;'>OFFLINE</span>")
-
-        return format_html(
-            "{} <span style='color: #888; font-size: 11px;'>{}</span>", label, checked
-        )
+            return format_html("<span style='color: green;'>ONLINE</span>")
+        return format_html("<span style='color: red;'>OFFLINE</span>")
 
     status.short_description = _("Status")
 
