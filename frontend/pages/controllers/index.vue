@@ -32,6 +32,7 @@
                 <th class="px-4 py-3 font-medium">Description</th>
                 <th class="px-4 py-3 font-medium">URI</th>
                 <th class="px-4 py-3 font-medium">Token</th>
+                <th class="px-4 py-3 font-medium">Status</th>
                 <th class="px-4 py-3 font-medium">Actions</th>
               </tr>
             </thead>
@@ -45,6 +46,18 @@
                 <td class="px-4 py-3 text-(--ui-text-dimmed)">{{ c.description || "—" }}</td>
                 <td class="px-4 py-3 font-mono text-xs">{{ c.uri }}</td>
                 <td class="px-4 py-3 font-mono text-xs text-(--ui-text-dimmed)">{{ c.token }}</td>
+                <td class="px-4 py-3">
+                  <UBadge
+                    :color="c.is_online ? 'success' : 'neutral'"
+                    variant="subtle"
+                    size="sm"
+                  >
+                    <template #leading>
+                      <span :class="['size-1.5 rounded-full', c.is_online ? 'bg-emerald-500' : 'bg-gray-400']" />
+                    </template>
+                    {{ c.is_online ? "online" : "offline" }}
+                  </UBadge>
+                </td>
                 <td class="px-4 py-3 flex gap-1">
                   <UButton icon="i-lucide-pencil" variant="ghost" size="xs" @click="openEdit(c)" />
                   <UButton icon="i-lucide-trash-2" variant="ghost" color="error" size="xs" @click="remove(c)" />

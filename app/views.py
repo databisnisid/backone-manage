@@ -1149,6 +1149,7 @@ def _controller_json(c, mask_token=True):
         "description": c.description,
         "uri": c.uri,
         "token": "****" if mask_token else c.token,
+        "is_online": c.is_online,
     }
 
 

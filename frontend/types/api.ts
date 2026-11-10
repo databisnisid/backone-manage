@@ -168,6 +168,7 @@ export interface Controller {
   description: string;
   uri: string;
   token: string;
+  is_online: boolean;
 }
 
 export interface Feature {
