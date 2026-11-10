@@ -1,6 +1,8 @@
 from django.db import models
 import ast
 from .backend import Zerotier
+from django.utils import timezone
+from django.utils.timesince import timesince
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 
@@ -8,7 +10,12 @@ from django.utils.html import format_html
 
 
 def to_dictionary(data):
-    return ast.literal_eval(data.replace("'", '"'))
+    if isinstance(data, dict):
+        return data
+    try:
+        return ast.literal_eval(data.replace("'", '"'))
+    except (AttributeError, SyntaxError, ValueError):
+        return {}
 
 
 class Controllers(models.Model):
@@ -21,6 +28,8 @@ class Controllers(models.Model):
     token = models.CharField(_("Token"), max_length=50, unique=True)
 
     configuration = models.TextField(_("Configuration"), blank=True)
+    is_online = models.BooleanField(_("Online"), default=False)
+    status_checked_at = models.DateTimeField(_("Status checked at"), null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -36,17 +45,24 @@ class Controllers(models.Model):
     def save(self):
         zt = Zerotier(self.uri, self.token)
         self.configuration = zt.status()
+        self.is_online = bool(self.configuration.get("online"))
+        self.status_checked_at = timezone.now()
 
         return super(Controllers, self).save()
 
     def status(self):
-        config = to_dictionary(self.configuration)
-        text = format_html("<span style='color: red;'>OFFLINE</span>")
-        if "online" in config:
-            if config["online"]:
-                text = format_html("<span style='color: green;'>ONLINE</span>")
+        checked = _("never checked")
+        if self.status_checked_at:
+            checked = _("checked {}").format(timesince(self.status_checked_at) + " ago")
 
-        return text
+        if self.is_online:
+            label = format_html("<span style='color: green;'>ONLINE</span>")
+        else:
+            label = format_html("<span style='color: red;'>OFFLINE</span>")
+
+        return format_html(
+            "{} <span style='color: #888; font-size: 11px;'>{}</span>", label, checked
+        )
 
     status.short_description = _("Status")
 
