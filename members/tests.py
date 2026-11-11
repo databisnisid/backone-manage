@@ -49,3 +49,21 @@ class MembersZeroTierSaveTests(TestCase):
                     is_authorized=True)
         m.save()
         self.assertTrue(Members.objects.filter(member_id="abcdefghij").exists())
+
+    @mock.patch.object(members_models.Zerotier, "set_member", return_value={"id": "x"})
+    @mock.patch.object(members_models.Zerotier, "get_member_peers",
+                       return_value={"address": "abcdefghij", "paths": [{"address": "1.2.3.4"}]})
+    def test_save_links_peers_fk(self, mock_peers, mock_set):
+        """A saved member must point at its MemberPeers row; with a NULL FK
+        is_online() can only read offline."""
+        m = Members(name="m", member_id="abcdefghij", network=self.network,
+                    is_authorized=True, ipaddress="10.0.0.1")
+        m.save()
+        m.refresh_from_db()
+        self.assertIsNotNone(m.peers_id)
+        self.assertEqual(m.peers.member_id, "abcdefghij")
+
+    def test_is_online_without_peers_data(self):
+        """No redis entry and no FK must read offline, not raise."""
+        m = Members(member_id="nosuchmember")
+        self.assertFalse(m.is_online())

@@ -42,4 +42,5 @@ urlpatterns = [
     path("features/", views.features_list, name="app_features"),
     path("features/<int:feature_id>/", views.features_detail, name="app_features_detail"),
     path("organizations/", views.organizations_devices, name="app_organizations_devices"),
+    path("access-logs/", views.access_logs, name="app_access_logs"),
 ]

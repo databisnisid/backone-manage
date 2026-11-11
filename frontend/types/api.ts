@@ -346,3 +346,25 @@ export interface OrgWithDevices {
   uuid: string;
   devices: DeviceItem[];
 }
+export interface AccessLogItem {
+  id: number;
+  username: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  attempt_time: string | null;
+  logout_time: string | null;
+}
+
+export interface AccessFailureItem {
+  id: number;
+  username: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  attempt_time: string | null;
+  locked_out: boolean;
+}
+
+export interface AccessLogs {
+  logs: AccessLogItem[];
+  failures: AccessFailureItem[];
+}

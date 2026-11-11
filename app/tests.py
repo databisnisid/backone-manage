@@ -239,3 +239,109 @@ class AppApiMultiTenancyTests(TestCase):
             r = self._put_net(net, {"name": "D", "ip_allocation": "10.0.0.0/24"})
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.json()["ip_allocation"], "10.0.0.0/24")
+
+
+class AccessLogApiTests(TestCase):
+    """T16: axes access history endpoint — V26, V27, V29, V30, V31."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from axes.models import AccessLog, AccessFailureLog
+
+        cls.features = Features.objects.create(name="F", number_of_member=10)
+
+        def make_org(name, no_org=False):
+            org = Organizations(name=name, features=cls.features, is_no_org=no_org)
+            org.save()
+            return org
+
+        cls.org_a = make_org("A")
+        cls.org_b = make_org("B")
+        cls.org_no = make_org("NoOrgA", no_org=True)
+
+        # accounts/signals.py:9 assigns org id=1 to any user created without an org,
+        # so a NULL-org user cannot be fabricated here — the "no org" branch is
+        # covered by the is_no_org user instead.
+        cls.admin = User.objects.create_superuser("root", "r@t.co", "x")
+        cls.u_a = User.objects.create_user("ua", "a@t.co", "x", organization=cls.org_a)
+        cls.u_a2 = User.objects.create_user("ua2", "a2@t.co", "x", organization=cls.org_a)
+        cls.u_b = User.objects.create_user("ub", "b@t.co", "x", organization=cls.org_b)
+        cls.u_no = User.objects.create_user("uno", "n@t.co", "x", organization=cls.org_no)
+
+        # Out-of-order insert order: ordering must come from attempt_time, not PK.
+        for username in ("ub", "ua", "uno"):
+            AccessLog.objects.create(
+                username=username, ip_address="10.0.0.1", user_agent="ua",
+                http_accept="*", path_info="/accounts/login/1:abc:def:secret-token",
+            )
+        AccessFailureLog.objects.create(
+            username="ua", ip_address="10.0.0.2", user_agent="ua",
+            http_accept="*", path_info="/login/", locked_out=True,
+        )
+        AccessFailureLog.objects.create(
+            username="ghost", ip_address="10.0.0.3", user_agent="ua",
+            http_accept="*", path_info="/login/", locked_out=False,
+        )
+
+    def get(self, user):
+        # force_login fires axes user_logged_in, which writes an AccessLog row for
+        # the actor — snapshot after login so assertions see only fixture rows.
+        self.client.force_login(user)
+        return self.client.get(reverse("app_access_logs"))
+
+    def test_flag_enabled(self):
+        """V28: the failure log must actually be written."""
+        from django.conf import settings
+
+        self.assertTrue(settings.AXES_ENABLE_ACCESS_FAILURE_LOG)
+
+    def test_superuser_sees_all(self):
+        """V31: superuser → all rows, including unattributable ones."""
+        body = self.get(self.admin).json()
+        # root's own login row is legitimately in the history.
+        self.assertEqual({r["username"] for r in body["logs"]},
+                         {"root", "ua", "ub", "uno"})
+        self.assertEqual({r["username"] for r in body["failures"]}, {"ua", "ghost"})
+
+    def test_org_user_sees_own_org_only(self):
+        """V31: org admin → that org's usernames, never other tenants."""
+        body = self.get(self.u_a).json()
+        # ua2 has no fixture row; ua's own login row is legitimate.
+        self.assertEqual({r["username"] for r in body["logs"]}, {"ua"})
+        self.assertEqual({r["username"] for r in body["failures"]}, {"ua"})
+
+    def test_org_b_admin_isolated(self):
+        """V31: a second tenant sees only its own rows."""
+        body = self.get(self.u_b).json()
+        self.assertEqual({r["username"] for r in body["logs"]}, {"ub"})
+        self.assertEqual(body["failures"], [])
+
+    def test_no_org_user_sees_self_only(self):
+        """V31: is_no_org → own username only."""
+        body = self.get(self.u_no).json()
+        self.assertEqual({r["username"] for r in body["logs"]}, {"uno"})
+        self.assertEqual(body["failures"], [])
+
+    def test_newest_first(self):
+        """V29: explicit ordering — axes fields carry no Meta.ordering."""
+        logs = self.get(self.admin).json()["logs"]
+        times = [r["attempt_time"] for r in logs]
+        self.assertEqual(times, sorted(times, reverse=True))
+        self.assertGreater(len(times), 1)
+
+    def test_payload_excludes_credentials(self):
+        """V30: no path_info/session_hash/http_accept leaves the server."""
+        body = self.get(self.admin).json()
+        for row in body["logs"] + body["failures"]:
+            self.assertNotIn("path_info", row)
+            self.assertNotIn("session_hash", row)
+            self.assertNotIn("http_accept", row)
+        self.assertNotIn("secret-token", json.dumps(body))
+
+    def test_readonly_does_not_mutate_axes(self):
+        """V27: a read never resets or deletes axes state."""
+        from axes.models import AccessFailureLog
+
+        before = AccessFailureLog.objects.count()
+        self.get(self.admin)
+        self.assertEqual(AccessFailureLog.objects.count(), before)

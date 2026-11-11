@@ -8,7 +8,7 @@ export class ApiError extends Error {
 
 import { useBackendStore } from "~/stores/backend";
 import type { Controller, WebFilter, WebFilterOrg, WebFilterMember, ZabbixConfig, MonitorRule, MonitorItem, HSUser, HSNode, HSPreauthkey, LicenseItem } from "~/types/api";
-import type { Route, NetworkDetail } from "~/types/api";
+import type { Route, NetworkDetail, AccessLogs } from "~/types/api";
 
 // csrftoken cookie lives on the backend domain — invisible to this cross-origin
 // CSRF token: read from X-CSRFToken header on any backend response.
@@ -283,4 +283,9 @@ export function deleteFeature(id: number): Promise<{ ok: boolean }> {
 // -- Organizations + Devices (superuser) --
 export function fetchOrganizationsDevices(): Promise<OrgWithDevices[]> {
   return api<OrgWithDevices[]>("/api/app/organizations/");
+}
+
+// -- Access history --
+export function fetchAccessLogs(): Promise<AccessLogs> {
+  return api<AccessLogs>("/api/app/access-logs/");
 }

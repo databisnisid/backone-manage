@@ -1,5 +1,7 @@
 import hashlib
 import json
+
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.conf import settings
@@ -22,6 +24,9 @@ from zabbix.models import ZabbixConfigs
 from licenses.models import Licenses
 from headscale.models import HS_Users, HS_Nodes, HS_Preauthkeys
 from problems.models import MemberProblems
+from axes.models import AccessLog, AccessFailureLog
+
+User = get_user_model()
 
 
 def _jitter(member_id, scale):
@@ -1526,3 +1531,55 @@ def organizations_devices(request):
         } for d in o.devices.all()],
     } for o in orgs]
     return JsonResponse(data, safe=False)
+
+ACCESS_LOG_LIMIT = 200  # ponytail: no server pagination; add paging when >200 matters.
+
+# V30: path_info holds passwordless login tokens, session_hash/http_accept are
+# credentials-adjacent — never in the payload.
+ACCESS_LOG_FIELDS = ("id", "username", "ip_address", "user_agent", "attempt_time")
+
+
+def _access_log_usernames(request):
+    """V31: usernames whose access rows this caller may see, or None = all.
+
+    Never filter by organization=None — that would match every NULL-org user.
+    """
+    if request.user.is_superuser:
+        return None
+    org = request.user.organization
+    if org is None or org.is_no_org:
+        return [request.user.get_username()]
+    return list(
+        User.objects.filter(organization=org).values_list("username", flat=True)
+    )
+
+
+@login_required
+@never_cache
+def access_logs(request):
+    """Read-only axes login history (SPEC V26, V27, V29, V31)."""
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+
+    usernames = _access_log_usernames(request)
+
+    # V29: axes models declare no Meta.ordering, so state it explicitly.
+    def rows(qs, extra):
+        if usernames is not None:
+            qs = qs.filter(username__in=usernames)
+        return [
+            {
+                **{f: getattr(r, f) for f in ACCESS_LOG_FIELDS},
+                "attempt_time": r.attempt_time.isoformat() if r.attempt_time else None,
+                **extra(r),
+            }
+            for r in qs.order_by("-attempt_time", "-id")[:ACCESS_LOG_LIMIT]
+        ]
+
+    return JsonResponse({
+        "logs": rows(
+            AccessLog.objects.all(),
+            lambda r: {"logout_time": r.logout_time.isoformat() if r.logout_time else None},
+        ),
+        "failures": rows(AccessFailureLog.objects.all(), lambda r: {"locked_out": r.locked_out}),
+    })

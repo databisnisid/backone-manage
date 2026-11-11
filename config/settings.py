@@ -333,6 +333,10 @@ MEMBER_NEW_PERIOD = int(os.getenv("MEMBER_NEW_PERIOD", 84600))
 # AXES
 AXES_COOLOFF_TIME = float(os.getenv("AXES_COOLOFF_TIME", 2))
 AXES_RESET_ON_SUCCESS = True
+# axes 8.0.0 defaults this to False, which leaves AccessFailureLog empty (SPEC V28).
+AXES_ENABLE_ACCESS_FAILURE_LOG = os.getenv(
+    "AXES_ENABLE_ACCESS_FAILURE_LOG", "True"
+).lower() in ("true", "1", "t")
 # AXES_LOCKOUT_PARAMETERS = ['ip_address', 'username']
 AXES_LOCKOUT_PARAMETERS = ["username"]
 AXES_LOCKOUT_TEMPLATE = "axes/block.html"

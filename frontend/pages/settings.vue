@@ -45,6 +45,7 @@ const navItems = computed(() => {
     { label: "Headscale Users", icon: "i-lucide-users", to: "/settings/headscale/users" },
     { label: "Headscale Nodes", icon: "i-lucide-server", to: "/settings/headscale/nodes" },
     { label: "Headscale Keys", icon: "i-lucide-key", to: "/settings/headscale/preauthkeys" },
+    { label: "Access History", icon: "i-lucide-history", to: "/settings/access" },
   ];
   if (auth.isSuperuser) {
     items.push(

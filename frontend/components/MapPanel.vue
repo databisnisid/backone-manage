@@ -4,7 +4,52 @@
       v-if="!ready"
       class="absolute inset-x-4 top-4 z-10 rounded-lg border border-default bg-(--ui-bg) p-5 text-sm text-(--ui-text-dimmed) shadow-sm"
     >
-      {{ mapError || "Loading map\u2026" }}
+      {{ mapError || "Loading map…" }}
+    </div>
+    <!-- V26: top-center keeps clear of Google's map-type (top-left) and
+         fullscreen (top-right) controls, and of the banner above. -->
+    <div v-if="ready && !single" class="absolute left-1/2 top-3 z-10 -translate-x-1/2">
+      <UInput
+        v-model="query"
+        icon="i-lucide-search"
+        placeholder="Search name, member ID, IP"
+        size="sm"
+        class="w-72 shadow-sm"
+        :ui="{ base: 'bg-(--ui-bg)' }"
+        @keydown.enter="applyNow"
+        @keydown.esc="clearSearch"
+        @focus="listOpen = true"
+        @click="listOpen = true"
+      />
+    </div>
+    <!-- Search result list: an overlay anchored under the input so the layout
+         of the map never shifts. Capped height, scrolls past ~6 rows. Closed
+         once a row is picked so it stops covering the pin it just panned to. -->
+    <div
+      v-if="ready && !single && listOpen && query.trim() && visible.length > 0"
+      class="absolute left-1/2 top-16 z-10 max-h-64 w-72 -translate-x-1/2 overflow-y-auto rounded-lg border border-default bg-(--ui-bg) shadow-sm"
+    >
+      <button
+        v-for="m in visible"
+        :key="m.member_id"
+        type="button"
+        class="flex w-full items-center gap-2 border-b border-default px-3 py-2 text-left text-sm last:border-0 hover:bg-(--ui-bg-elevated)"
+        :class="{ 'bg-(--ui-bg-elevated)': focusId === m.member_id }"
+        @click="focusMember(m)"
+      >
+        <span
+          class="size-2 shrink-0 rounded-full"
+          :class="m.is_problem ? 'bg-red-500' : m.is_online ? 'bg-emerald-500' : 'bg-gray-400'"
+        />
+        <span class="min-w-0 flex-1 truncate">{{ m.name }}</span>
+        <span class="shrink-0 font-mono text-xs text-(--ui-text-dimmed)">{{ m.ipaddress || "—" }}</span>
+      </button>
+    </div>
+    <div
+      v-if="ready && !single && query.trim() && visible.length === 0"
+      class="absolute left-1/2 top-16 z-10 -translate-x-1/2 rounded-lg border border-default bg-(--ui-bg) px-3 py-2 text-sm text-(--ui-text-dimmed) shadow-sm"
+    >
+      No members match
     </div>
     <div
       ref="mapEl"
@@ -19,6 +64,7 @@ import type { Member, Route } from "~/types/api";
 import { useBackendStore } from "~/stores/backend";
 import logoSvgUrl from "~/assets/images/backone-logo.svg";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
+import { zoomToFit } from "~/utils/mapZoom";
 
 const config = useRuntimeConfig();
 const apiKey = config.public.googleMapsApiKey || "";
@@ -32,6 +78,60 @@ let flyers: google.maps.Circle[] = [];
 let polylines: google.maps.Polyline[] = [];
 let clusterer: MarkerClusterer | null = null;
 let fitted = false; // fit the viewport to members once, then keep the user's view
+
+/* ---- Search (V21/V22/V23/V25) ---- */
+
+const query = ref("");
+/** Whether the result list shows. Typing re-opens it; picking a row or Escape
+ *  closes it, so the overlay never sits on the pin it just panned to. */
+const listOpen = ref(true);
+/** Last fetched members with coords, unfiltered (V23): the filter is a
+ *  projection over this, never the source of truth, so clearing needs no refetch. */
+let allMembers: (Member & { lat: number; lng: number })[] = [];
+/** Members currently drawn — drives the "No members match" overlay (V22). */
+const visible = ref<(Member & { lat: number; lng: number })[]>([]);
+
+/** V25: null/undefined coerce to "" — `String(null)` is "null", which would
+ *  otherwise match the query "null" against every un-IP'd member. */
+function matches(m: Member, q: string): boolean {
+  const needle = q.trim().toLowerCase();
+  if (!needle) return true;
+  return [m.name, m.member_id, m.ipaddress].some((v) =>
+    String(v ?? "").toLowerCase().includes(needle),
+  );
+}
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+/** Draw the current match set and fit the view to it (T13). Refresh-driven
+ *  renders go through `renderMarkers()` alone so they keep the user's viewport. */
+function applySearch() {
+  renderMarkers();
+  if (visible.value.length > 0) fitTo(visible.value);
+}
+/** Enter jumps to the top result instead of only re-fitting: with a short
+ *  query the fit often covers the whole viewport, so name→pin needs a nudge. */
+function applyNow() {
+  if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
+  renderMarkers();
+  const first = visible.value[0];
+  if (first) focusMember(first);
+}
+function clearSearch() {
+  query.value = "";
+  focusId.value = "";
+  if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
+  renderMarkers();
+  if (visible.value.length > 0) fitTo(visible.value);
+}
+watch(query, () => {
+  // A pick writes the member's name into the box itself and has already
+  // rendered and moved the camera; a debounced fit here would undo its zoom,
+  // and reopening the list would cover the pin it just framed.
+  if (fromPick) { fromPick = false; return; }
+  listOpen.value = true;
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => { debounceTimer = null; applySearch(); }, 200);
+});
 
 
 const props = withDefaults(
@@ -123,22 +223,41 @@ function addMemberMarker(m: {
   return marker;
 }
 
+/** Fetch latest members, refresh the cache, then re-render. The active query
+ *  is re-applied here (V22) so a refresh never silently drops it. */
 async function refreshMarkers() {
   if (!map) return;
   const members = props.members && props.members.length > 0
     ? props.members
     : await api<Member[]>("/api/app/members/");
+  // V20: null check, not falsy — a coord of 0 is a real location.
+  allMembers = members.filter(
+    (m): m is Member & { lat: number; lng: number } => m.lat != null && m.lng != null,
+  );
+  renderMarkers();
+  // Fit once, like the dashboard's calculateMapCenter: with a fixed center the
+  // pins land off-screen. Later refreshes keep the user's viewport.
+  if (!fitted && allMembers.length > 0) {
+    fitted = true;
+    fitTo(allMembers);
+  }
+}
+
+/** Pure projection over the cache (V23): draws the current match set.
+ *  Never fetches — clearing the search restores pins with no request. */
+function renderMarkers() {
+  if (!map) return;
   clusterer?.clearMarkers();
   markers.forEach((m) => m.setMap(null));
   flyers.forEach((f) => f.setMap(null));
   markers = [];
   flyers = [];
-  // V20: null check, not falsy — a coord of 0 is a real location.
-  const located = members.filter(
-    (m): m is Member & { lat: number; lng: number } => m.lat != null && m.lng != null,
-  );
+
+  const shown = allMembers.filter((m) => matches(m, query.value));
+  visible.value = shown;
+
   const created: google.maps.Marker[] = [];
-  for (const m of located) {
+  for (const m of shown) {
     const color = m.is_problem ? "#dc2626" : m.is_online ? "#16a34a" : "#64748b";
     created.push(addMemberMarker({
       lat: m.lat, lng: m.lng, name: m.name, member_id: m.member_id, color,
@@ -156,30 +275,58 @@ async function refreshMarkers() {
     // Same effect as the dashboard map: nearby pins collapse into a count bubble.
     clusterer = new MarkerClusterer({ map, markers: created });
   }
-  // Fit once, like the dashboard's calculateMapCenter: with a fixed center the
-  // pins land off-screen. Later refreshes keep the user's viewport.
-  if (!fitted && located.length > 0) {
-    fitted = true;
-    if (located.length === 1) {
-      map.setCenter({ lat: located[0].lat, lng: located[0].lng });
-    } else {
-      const bounds = new google.maps.LatLngBounds();
-      located.forEach((m) => bounds.extend({ lat: m.lat, lng: m.lng }));
-      map.fitBounds(bounds, 60);
-      // Jitter clusters members within a few hundred metres, so a raw fit
-      // zooms to street level and explodes the bubble. Cap it at the configured
-      // zoom — same view the dashboard shows.
-      const maxZoom = Number(config.public.mapZoom) || 13;
-      const once = map.addListener("idle", () => {
-        google.maps.event.removeListener(once);
-        if ((map?.getZoom() ?? 0) > maxZoom) map.setZoom(maxZoom);
-      });
-    }
+}
+
+/** Zoom used when a result is picked: deep enough that MarkerClusterer stops
+ *  collapsing the pin into a count bubble. Separate from `mapZoom`, which caps
+ *  a fit and is deliberately shallower. */
+const PICK_ZOOM = 17;
+
+/** Pan to a search result, promote it to the search query, and mark it
+ *  selected. `panTo` is Google's native eased animation; the zoom is set first
+ *  so the pan lands at the working zoom. Writing `query` re-renders, so only
+ *  that member stays drawn — the box must not claim one name while every other
+ *  pin is still on the map. */
+const focusId = ref("");
+let fromPick = false;
+function focusMember(m: Member & { lat: number; lng: number }) {
+  focusId.value = m.member_id;
+  listOpen.value = false;
+  if (query.value !== m.name) {
+    fromPick = true; // the watcher must not queue a second, competing fit
+    query.value = m.name;
   }
+  renderMarkers();
+  if (!map) return;
+  map.setZoom(Math.max(map.getZoom() ?? 0, PICK_ZOOM));
+  map.panTo({ lat: m.lat, lng: m.lng });
+}
+
+/** Recenter and set zoom in one shot, cap baked into the target (V24).
+ *  `fitBounds` is unusable here: it animates to the raw fit zoom and a
+ *  corrective `idle` listener then pins it back, which reads as zoom
+ *  in → zoom out. Computing the target first means one camera move. */
+function fitTo(list: { lat: number; lng: number }[]) {
+  if (!map || list.length === 0) return;
+  const maxZoom = Number(config.public.mapZoom) || 13;
+  if (list.length === 1) {
+    map.setCenter({ lat: list[0].lat, lng: list[0].lng });
+    map.setZoom(maxZoom);
+    return;
+  }
+  const ne = { lat: -90, lng: -180 };
+  const sw = { lat: 90, lng: 180 };
+  for (const m of list) {
+    ne.lat = Math.max(ne.lat, m.lat); ne.lng = Math.max(ne.lng, m.lng);
+    sw.lat = Math.min(sw.lat, m.lat); sw.lng = Math.min(sw.lng, m.lng);
+  }
+  map.setCenter({ lat: (ne.lat + sw.lat) / 2, lng: (ne.lng + sw.lng) / 2 });
+  const w = mapEl.value?.clientWidth || 800;
+  const h = mapEl.value?.clientHeight || 600;
+  map.setZoom(Math.min(zoomToFit({ ne, sw }, w, h, 60), maxZoom));
 }
 
 /* ---- Route polylines ---- */
-
 async function drawPolylines() {
   if (!map || !props.routes || props.routes.length === 0) return;
   polylines.forEach((p) => p.setMap(null));

@@ -333,6 +333,10 @@ class Members(models.Model):
         member_peers.network = self.network
         # Avoid MemberPeers.save() (which re-fetches peers via a 2nd API call)
         member_peers.save_base(raw=False)
+        # Link it: without this the FK stays NULL for every new member and
+        # `is_online()` raises on `self.peers`, reading offline while the
+        # controller reports a live path.
+        self.peers = member_peers
 
         if self.mqtt is None:
             try:
@@ -643,31 +647,17 @@ class Members(models.Model):
     member_status.admin_order_field = "network"
 
     def is_online(self):
-        online_status = False
-        # peers = to_dictionary("{}")
-        peers = {}
-        # if self.peers:
-        try:
-            self.peers
-            try:
-                peers = get_member_peers_from_redis(str(self.member_id))
-                if not peers:
-                    peers = to_dictionary(self.peers.peers)
-                if "paths" in peers and len(peers["paths"]) != 0 and self.ipaddress:
-                    online_status = True
-                if (
-                    "role" in self.peers.peers
-                    and "latency" in self.peers.peers
-                    and "version" in self.peers.peers
-                ):  # and int(self.peers.peers['latency']) == -1:
-                    online_status = True
-            except AttributeError:
-                pass
-        # except KeyError or ObjectDoesNotExist:
-        except ObjectDoesNotExist:
-            pass
-
-        return online_status
+        # Redis first (cron-refreshed), DB row as fallback. Both can be absent
+        # for a freshly created member, so every hop is guarded: an unguarded
+        # `self.peers.peers` on a NULL FK reads offline against a live path.
+        peers = get_member_peers_from_redis(str(self.member_id))
+        if not peers and self.peers_id:
+            peers = to_dictionary(self.peers.peers)
+        if not peers:
+            return False
+        if peers.get("paths") and self.ipaddress:
+            return True
+        return all(k in peers for k in ("role", "latency", "version"))
 
     is_online.short_description = _("BackOne Online")
 
