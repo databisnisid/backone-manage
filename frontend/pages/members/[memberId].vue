@@ -353,9 +353,12 @@ const lossClass = computed(() => {
   return loss > 5 ? "text-red-600" : loss > 1 ? "text-amber-600" : "text-emerald-600";
 });
 
-watch(data, (d) => {
-  if (!d?.mqtt) return;
-  const m = d.mqtt;
+// Data is loaded during setup (top-level await), so the template is already
+// rendered by onMounted — a watcher would fire before chartEl exists.
+onMounted(async () => {
+  await nextTick();
+  const m = data.value?.mqtt;
+  if (!m || !chartEl.value) return;
   setOption({
     tooltip: {},
     xAxis: { type: "category", data: ["CPU", "Mem", "Loss", "RTT", "Load"] },
@@ -374,7 +377,7 @@ watch(data, (d) => {
       },
     ],
   });
-}, { immediate: true });
+});
 
 onUnmounted(dispose);
 </script>

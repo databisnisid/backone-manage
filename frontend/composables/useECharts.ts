@@ -1,4 +1,10 @@
-import { init, type ECharts, type EChartsCoreOption } from "echarts/core";
+import { init, use, type ECharts, type EChartsCoreOption } from "echarts/core";
+import { BarChart } from "echarts/charts";
+import { GridComponent, TooltipComponent } from "echarts/components";
+import { CanvasRenderer } from "echarts/renderers";
+
+// echarts/core is tree-shaken: nothing renders until the pieces are registered.
+use([BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
 /**
  * Manual echarts init/resize/dispose on a DOM element.

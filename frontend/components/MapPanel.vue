@@ -18,6 +18,7 @@
 import type { Member, Route } from "~/types/api";
 import { useBackendStore } from "~/stores/backend";
 import logoSvgUrl from "~/assets/images/backone-logo.svg";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 const config = useRuntimeConfig();
 const apiKey = config.public.googleMapsApiKey || "";
@@ -29,6 +30,9 @@ let map: google.maps.Map | null = null;
 let markers: google.maps.Marker[] = [];
 let flyers: google.maps.Circle[] = [];
 let polylines: google.maps.Polyline[] = [];
+let clusterer: MarkerClusterer | null = null;
+let fitted = false; // fit the viewport to members once, then keep the user's view
+
 
 const props = withDefaults(
   defineProps<{
@@ -58,8 +62,9 @@ const logoLoaded = new Promise<void>((resolve) => {
 
 /* ---- Marker icon builder (teardrop pin + logo via canvas) ---- */
 
+const PIN_W = 36; // marker width in px, canvas below
 function makeMarkerIcon(statusColor: string): google.maps.Icon {
-  const W = 36, H = 48;
+  const W = PIN_W, H = 48;
   const canvas = document.createElement("canvas");
   canvas.width = W;
   canvas.height = H;
@@ -100,12 +105,12 @@ function makeMarkerIcon(statusColor: string): google.maps.Icon {
 
 /* ---- Add / refresh markers ---- */
 
-async function addMemberMarker(m: {
+/** Exact coords, no offset: the clusterer resolves overlaps. */
+function addMemberMarker(m: {
   lat: number; lng: number; name: string; member_id: string; color: string;
-}) {
+}): google.maps.Marker {
   const marker = new google.maps.Marker({
     position: { lat: m.lat, lng: m.lng },
-    map,
     title: m.name,
     icon: makeMarkerIcon(m.color),
   });
@@ -115,6 +120,7 @@ async function addMemberMarker(m: {
     });
   }
   markers.push(marker);
+  return marker;
 }
 
 async function refreshMarkers() {
@@ -122,19 +128,52 @@ async function refreshMarkers() {
   const members = props.members && props.members.length > 0
     ? props.members
     : await api<Member[]>("/api/app/members/");
+  clusterer?.clearMarkers();
   markers.forEach((m) => m.setMap(null));
   flyers.forEach((f) => f.setMap(null));
   markers = [];
   flyers = [];
-  for (const m of members) {
-    if (!m.lat || !m.lng) continue;
+  // V20: null check, not falsy — a coord of 0 is a real location.
+  const located = members.filter(
+    (m): m is Member & { lat: number; lng: number } => m.lat != null && m.lng != null,
+  );
+  const created: google.maps.Marker[] = [];
+  for (const m of located) {
     const color = m.is_problem ? "#dc2626" : m.is_online ? "#16a34a" : "#64748b";
-    await addMemberMarker({ lat: m.lat, lng: m.lng, name: m.name, member_id: m.member_id, color });
+    created.push(addMemberMarker({
+      lat: m.lat, lng: m.lng, name: m.name, member_id: m.member_id, color,
+    }));
     if (m.is_new) {
       flyers.push(new google.maps.Circle({
         map, center: { lat: m.lat, lng: m.lng }, radius: 150,
         strokeColor: "#0ea5e9", fillColor: "#0ea5e9", fillOpacity: 0.15,
       }));
+    }
+  }
+  if (clusterer) {
+    clusterer.addMarkers(created);
+  } else {
+    // Same effect as the dashboard map: nearby pins collapse into a count bubble.
+    clusterer = new MarkerClusterer({ map, markers: created });
+  }
+  // Fit once, like the dashboard's calculateMapCenter: with a fixed center the
+  // pins land off-screen. Later refreshes keep the user's viewport.
+  if (!fitted && located.length > 0) {
+    fitted = true;
+    if (located.length === 1) {
+      map.setCenter({ lat: located[0].lat, lng: located[0].lng });
+    } else {
+      const bounds = new google.maps.LatLngBounds();
+      located.forEach((m) => bounds.extend({ lat: m.lat, lng: m.lng }));
+      map.fitBounds(bounds, 60);
+      // Jitter clusters members within a few hundred metres, so a raw fit
+      // zooms to street level and explodes the bubble. Cap it at the configured
+      // zoom — same view the dashboard shows.
+      const maxZoom = Number(config.public.mapZoom) || 13;
+      const once = map.addListener("idle", () => {
+        google.maps.event.removeListener(once);
+        if ((map?.getZoom() ?? 0) > maxZoom) map.setZoom(maxZoom);
+      });
     }
   }
 }
@@ -210,7 +249,10 @@ async function loadMap() {
     zoom: props.single ? props.zoom : Number(config.public.mapZoom) || 13,
   });
   if (props.single) {
-    await addMemberMarker({ lat: props.lat!, lng: props.lng!, name: "", member_id: "", color: "#0ea5e9" });
+    // Single-pin map: no clustering, so mount the marker directly.
+    map.setOptions({ streetViewControl: false });
+    addMemberMarker({ lat: props.lat!, lng: props.lng!, name: "", member_id: "", color: "#0ea5e9" })
+      .setMap(map);
   } else {
     await refreshMarkers();
     if (props.routes && props.routes.length > 0) {

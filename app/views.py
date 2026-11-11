@@ -1,3 +1,4 @@
+import hashlib
 import json
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -21,6 +22,20 @@ from zabbix.models import ZabbixConfigs
 from licenses.models import Licenses
 from headscale.models import HS_Users, HS_Nodes, HS_Preauthkeys
 from problems.models import MemberProblems
+
+
+def _jitter(member_id, scale):
+    """Deterministic offset per member_id (SPEC V14).
+
+    Members without a geo location all fall back to GEO_WIDGET_DEFAULT_LOCATION,
+    so they stack on one point and the clusterer can never split them. Spreading
+    them by a stable per-member offset gives the dashboard's scattered look
+    while staying identical across refreshes and clients (hash, not random()).
+    """
+    h = hashlib.sha256(str(member_id).encode()).digest()
+    a = int.from_bytes(h[0:4], "big") / 2**32
+    b = int.from_bytes(h[4:8], "big") / 2**32
+    return (a * 2 - 1) * scale, (b * 2 - 1) * scale
 
 
 def member_qs(request):
@@ -116,6 +131,12 @@ def members(request):
             str(member.organization.uuid) if member.organization else None
         )
         real_lat, real_lng = _parse_lat_lng(member.location)
+        if not member.location:
+            # No geo: stack them all on the default point, then spread by a
+            # stable per-member offset so the clusterer can split them (V14).
+            dlat, dlng = _jitter(member.member_id, 0.0025)
+            real_lat += dlat
+            real_lng += dlng
         entry["lat"] = real_lat
         entry["lng"] = real_lng
         m = mqtt_by_member_id.get(member.member_id)

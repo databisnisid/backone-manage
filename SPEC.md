@@ -6,6 +6,8 @@ SD-WAN / ZeroTier network management platform. Django+Wagtail. Manage orgs, Zero
 
 White-label SPA login: frontend `fe.nexus` posts cross-origin to backend `nexus` `/login/`. Add "Remember me" checkbox — checked → session persists 30 days; unchecked → session cookie expires at browser close.
 
+SPA dashboard map: members with near-identical coords (no-geo fallback `GEO_WIDGET_DEFAULT_LOCATION`) cluster into a count bubble like the Wagtail dashboard map — every site stays reachable by zooming, and no pin stack hides members.
+
 ## §C Constraints
 
 - Python 3.12, Django 5.2.17, Wagtail 7.4.3. pip pinned `requirements.txt`. venv.
@@ -22,6 +24,13 @@ White-label SPA login: frontend `fe.nexus` posts cross-origin to backend `nexus`
 - "Remember me" login: Wagtail `LoginForm.remember` BooleanField (`wagtail/admin/forms/auth.py:20`) + `LoginView.form_valid` reads it (`wagtail/admin/views/account.py:398`). SPA POSTs `remember`. CustomLoginView overrides `form_valid` to honor 30d (grill decision) instead of Wagtail default `SESSION_COOKIE_AGE` (1d).
 - No pytest — Django unittest only. 14 empty tests.py placeholders.
 - `save()` overrides push to external APIs in real time.
+- Clustering lives in `frontend/components/MapPanel.vue` (`MarkerClusterer`, dep `@googlemaps/markerclusterer` ^2.6.2). Marker coords are exact; the library resolves overlap. Same UX as the Wagtail dashboard map (`dashboard/static/dashboard/js/map_dashboard.js:303`).
+- No-geo members need a distinct coord or the cluster can never split: `app/views.py:_jitter()` offsets them by a stable hash of `member_id`, ±0.0025° (~278 m), only when `member.location` is empty. Hash not `random()` — identical across refreshes and clients.
+- Viewport is fitted to members once (`fitBounds`, 60 px padding) then clamped to `NUXT_PUBLIC_MAP_ZOOM` (default 13); later refreshes keep the user's viewport.
+- `is_new` flyer circle centers on the member's own coord, so the pulse stays attached to its pin.
+- Route polylines (`drawPolylines`) untouched — network endpoints, not member markers.
+- Legacy jitter (`members/views.py:80`, `zabbix/utils.py:29`, `random.uniform(-0.0025,0.0025)`) untouched — Wagtail dashboard path only, SPA does not use it.
+- Marker guard is `lat == null || lng == null` (not falsy) — a member at lat/lng 0 is real and must plot.
 
 ## §I Interact
 
@@ -44,6 +53,8 @@ Entrypoints (dockerize): `entrypoint.ds`(dev), `entrypoint_gunicorn.ds`(prod), `
 
 External surfaces: ZeroTier API, Headscale API, Zabbix API (`zabbix-utils`), MQTT broker, Redis, ipinfo.io (`connectors/drivers/ipinfo_lite.py`), MQTT rcall topic (`connectors/drivers/mqtt.py`).
 
+SPA map: `frontend/components/MapPanel.vue` `refreshMarkers()` -> `GET /api/app/members/` (`lat`/`lng` per member; `props.members` has no callers so it is always fetched, `MapPanel.vue:122`). Rendered at `fe.nexus.manage.backone.cloud/`. Refresh `config.public.mapRefreshInterval` (`MapPanel.vue:228`, default 300 s). Marker pin 36 px wide, click navigates to the member page. `props.single` (member detail, `pages/members/[memberId].vue`) bypasses `refreshMarkers` and mounts one unclustered pin.
+
 ## §R Research
 
 No research skill run — section omitted (right-size).
@@ -63,6 +74,8 @@ No research skill run — section omitted (right-size).
 - V11. `§C` must document that `wagtail-modeladmin` is an external package (not wagtail core) and `modelsearch` is a required search backend dependency.
 - V12. Module-level `wagtail.contrib.modeladmin` imports are prohibited — use `wagtail_modeladmin` (external package). Verified: all 10 apps comply.
 - V13. "Remember me" session: checked → `session.set_expiry(30*24*3600)` (30d); unchecked → `set_expiry(0)` (browser-close). Must override Wagtail `form_valid` (`account.py:398`) which uses `SESSION_COOKIE_AGE` (1d) — grill decided 30d.
+- V14. SPA map markers plot **exact** member coords — no jitter, no offset. Overlaps are resolved by `@googlemaps/markerclusterer` (`MarkerClusterer`), the same UX as the Wagtail dashboard map (`dashboard/static/dashboard/js/map_dashboard.js:303`). Clusters collapse as the user zooms in, so spread scales with zoom naturally.
+- V20. A member with non-null coords is never dropped by a falsy check (`lat`/`lng` of `0` are real). `MapPanel.vue:refreshMarkers`.
 
 ## §T Tasks
 
@@ -78,6 +91,8 @@ No research skill run — section omitted (right-size).
 | T8 | x | Add input guards to module `licenses.utils.check_license(lic_json)` for missing `node_id`/`uuid`/`token` keys + `b64decode` | V8 |
 | T9 | x | Override `CustomLoginView.form_valid` (`config/customviews.py`) — read `form.cleaned_data["remember"]`, `set_expiry(30d)` when true else `set_expiry(0)`; keep `super().form_valid(form)`; verify SPA POST of `remember` sets expiry | V13, I.login |
 | T10 | x | SPA `login.vue` add "Remember me" checkbox (v-model `rememberMe`), `loginToBackend(username,password,rememberMe)` appends `remember` to POST body; verify click E2E persists session 30d vs browser-close | V13, I.login |
+| T11 | x | Cluster markers in `MapPanel.vue`: `MarkerClusterer` on exact coords, null-check marker guard, `fitBounds` clamped to configured zoom; `app/views.py:_jitter()` spreads no-geo members so clusters can split | V14, V20 |
+| T12 | x | Verified live: 40 coincident members render one count bubble at zoom 13, splitting into 4 then 7+individual pins while zooming in; clicking a pin navigates to `/members/<id>`; member page renders its telemetry chart | V14 |
 
 ## §B Bugs
 
@@ -86,3 +101,5 @@ No research skill run — section omitted (right-size).
 | B2 | 2026-09-02 | §V6 conflates two `check_license` symbols; module fn returns dict + unguarded `lic_json[...]`/`b64decode` at `licenses/utils.py:81-86` raises | V8: split symbols, add input guards |
 | B3 | 2026-09-02 | `Mqtt.save()` unguarded `packet_loss_split[2]`/`round_trip_string[1]` at `mqtt/models.py:96,105` IndexError on malformed telemetry — violates V4 | V7: guard index access |
 | B1 | 2026-09-02 | `Members.save()`/`MemberPeers.save()`/`Members.delete()` call ZeroTier API unguarded (`members/models.py:297,309,270`); raw API exception propagates | V9: wrap, surface error to user, abort save |
+| B4 | 2026-11-10 | SPA map plots `member.lat/lng` verbatim (`MapPanel.vue` `refreshMarkers`); no-geo members fall back to `GEO_WIDGET_DEFAULT_LOCATION` (`app/views.py:118` → `config/settings.py:313`), so N sites collapse into one pin | V14: `MarkerClusterer` count bubble, exact coords |
+| B5 | 2026-11-10 | `MapPanel.vue:130` `if (!m.lat \|\| !m.lng) continue` treats coord `0` as missing — a member on the equator or prime meridian is silently unplotted | V20: null check |

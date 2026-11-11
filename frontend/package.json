@@ -11,6 +11,7 @@
     "postinstall": "npm install http-proxy --no-save"
   },
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.6.2",
     "@iconify-json/lucide": "^1.2.129",
     "@nuxt/ui": "^4.11.0",
     "@pinia/nuxt": "1.0.2",
