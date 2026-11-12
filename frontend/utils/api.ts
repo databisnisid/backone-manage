@@ -8,7 +8,7 @@ export class ApiError extends Error {
 
 import { useBackendStore } from "~/stores/backend";
 import type { Controller, WebFilter, WebFilterOrg, WebFilterMember, ZabbixConfig, MonitorRule, MonitorItem, HSUser, HSNode, HSPreauthkey, LicenseItem } from "~/types/api";
-import type { Route, NetworkDetail, AccessLogs } from "~/types/api";
+import type { Route, NetworkDetail, AccessLogs, MemberWritable, ControllerMemberOption } from "~/types/api";
 
 // csrftoken cookie lives on the backend domain — invisible to this cross-origin
 // CSRF token: read from X-CSRFToken header on any backend response.
@@ -288,4 +288,52 @@ export function fetchOrganizationsDevices(): Promise<OrgWithDevices[]> {
 // -- Access history --
 export function fetchAccessLogs(): Promise<AccessLogs> {
   return api<AccessLogs>("/api/app/access-logs/");
+}
+
+// ── Member writes (SPEC §C) ──
+export function fetchControllerMembers(networkId: string): Promise<ControllerMemberOption[]> {
+  return api<ControllerMemberOption[]>(
+    `/api/app/networks/${networkId}/controller-members/`,
+  );
+}
+
+export function fetchMemberDetail(memberId: string): Promise<MemberWritable> {
+  return api<MemberWritable>(`/api/app/members/${encodeURIComponent(memberId)}/`);
+}
+
+export interface MemberCreateBody {
+  network_id: string;
+  member_id: string;
+  name?: string;
+  member_code?: string;
+  description?: string;
+  ipaddress?: string;
+  tags?: string;
+  is_authorized?: boolean;
+  is_bridge?: boolean;
+  is_no_auto_ip?: boolean;
+}
+
+export function createMember(body: MemberCreateBody): Promise<MemberWritable> {
+  return api<MemberWritable>("/api/app/members/", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function updateMember(
+  memberId: string,
+  body: Partial<Omit<MemberCreateBody, "network_id" | "member_id">>,
+): Promise<MemberWritable> {
+  return api<MemberWritable>(`/api/app/members/${encodeURIComponent(memberId)}/`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+export function deleteMember(memberId: string, force = false): Promise<{ ok: boolean }> {
+  return api<{ ok: boolean }>(
+    `/api/app/members/${encodeURIComponent(memberId)}/${force ? "?force=true" : ""}`,
+    { method: "DELETE" },
+  );
 }

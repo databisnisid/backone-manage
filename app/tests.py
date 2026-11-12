@@ -345,3 +345,290 @@ class AccessLogApiTests(TestCase):
         before = AccessFailureLog.objects.count()
         self.get(self.admin)
         self.assertEqual(AccessFailureLog.objects.count(), before)
+
+class MemberWriteApiTests(TestCase):
+    """SPEC §C/V41-V45: adopt/edit/delete mirror the admin, never drift."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from django.contrib.auth.models import Permission
+
+        cls.features = Features.objects.create(name="W", number_of_member=10)
+        with mock.patch.object(Controllers, "save", autospec=True):
+            cls.org = Organizations(name="WriteOrg", features=cls.features)
+            cls.org.save()
+        with mock.patch(
+            "controllers.backend.Zerotier.status", return_value=FAKE_STATUS
+        ):
+            cls.controller = Controllers(
+                name="ctl", uri="http://controller:9993", token="tok"
+            )
+            cls.controller.save()
+
+        cls.writer = User.objects.create_user(
+            username="writer", email="w@t.co", password="x", organization=cls.org
+        )
+        cls.writer.user_permissions.add(
+            *Permission.objects.filter(
+                codename__in=["add_members", "change_members", "delete_members"]
+            )
+        )
+        cls.admin = User.objects.create_superuser(
+            username="root", email="r@t.co", password="x", organization=cls.org
+        )
+
+    def setUp(self):
+        self.license = mock.patch(
+            "members.permissions.is_license_valid", return_value=True
+        )
+        self.license.start()
+        self.addCleanup(self.license.stop)
+
+        with mock.patch.object(
+            Controllers, "save", autospec=True
+        ), mock.patch("networks.models.Zerotier") as zt_cls:
+            zt = zt_cls.return_value
+            zt.list_networks.return_value = []
+            zt.add_network.return_value = dict(FAKE_NETWORK, nwid="nwid_w")
+            zt.get_network_info.return_value = FAKE_NETWORK
+            zt.set_network.return_value = FAKE_NETWORK
+            self.net = Networks(
+                name="WriteNet",
+                controller=self.controller,
+                organization=self.org,
+                user=self.writer,
+                network_id="nwid_w",
+            )
+            self.net.save()
+        Networks.objects.filter(pk=self.net.pk).update(
+            ip_address_networks="10.0.0.0/24"
+        )
+        self.net.refresh_from_db()
+
+    def _post(self, user, body):
+        self.client.force_login(user)
+        return self.client.post(
+            reverse("app_members"), json.dumps(body), content_type="application/json"
+        )
+
+    def _adopt(self, user, member_id="nodewrite1", **extra):
+        info = {
+            "id": member_id,
+            "authorized": False,
+            "activeBridge": False,
+            "noAutoAssignIps": False,
+            "ipAssignments": ["10.0.0.7"],
+        }
+        with mock.patch(
+            "controllers.backend.Zerotier.get_member_info_ex",
+            return_value=(200, info),
+        ), mock.patch("members.models.Zerotier") as zt_cls, mock.patch.object(
+            Members, "save", autospec=True
+        ) as save:
+            save.side_effect = lambda obj, *a, **k: None
+            r = self._post(
+                user,
+                {"network_id": "nwid_w", "member_id": member_id, **extra},
+            )
+        return r, save
+
+    def test_adopt_seeds_from_controller_not_defaults(self):
+        """V41: a pending controller member is not authorized by adopting it."""
+        r, save = self._adopt(self.writer, name="N1")
+        self.assertEqual(r.status_code, 201)
+        row = save.call_args.args[0]
+        self.assertFalse(row.is_authorized)
+        self.assertEqual(row.ipaddress, "10.0.0.7")
+        self.assertEqual(row.name, "N1")
+
+    def test_adopt_controller_unreachable_is_502(self):
+        with mock.patch(
+            "controllers.backend.Zerotier.get_member_info_ex",
+            return_value=(None, None),
+        ):
+            r = self._post(
+                self.writer, {"network_id": "nwid_w", "member_id": "nodewrite1"}
+            )
+        self.assertEqual(r.status_code, 502)
+
+    def test_adopt_controller_absent_is_400(self):
+        with mock.patch(
+            "controllers.backend.Zerotier.get_member_info_ex",
+            return_value=(404, None),
+        ):
+            r = self._post(
+                self.writer, {"network_id": "nwid_w", "member_id": "nodewrite1"}
+            )
+        self.assertEqual(r.status_code, 400)
+
+    def test_superuser_denied_before_controller(self):
+        """§C: the rule check precedes any controller call."""
+        with mock.patch(
+            "controllers.backend.Zerotier.get_member_info_ex"
+        ) as info:
+            r = self._post(
+                self.admin, {"network_id": "nwid_w", "member_id": "nodewrite1"}
+            )
+        self.assertEqual(r.status_code, 403)
+        self.assertEqual(r.json()["rule"], "superuser_no_member_write")
+        info.assert_not_called()
+
+    def test_duplicate_adopt_is_400(self):
+        with mock.patch("members.models.Zerotier") as zt_cls:
+            zt_cls.return_value.set_member.return_value = FAKE_MEMBER
+            zt_cls.return_value.get_member_peers.return_value = FAKE_PEERS
+            Members(name="Dup", member_id="nodewrite1", network=self.net).save()
+        r = self._post(
+            self.writer, {"network_id": "nwid_w", "member_id": "nodewrite1"}
+        )
+        self.assertEqual(r.status_code, 400)
+        self.assertIn("member_id", r.json()["error"])
+
+    def test_db_unique_constraint(self):
+        """V45: a concurrent adopt cannot slip a second row in."""
+        from django.db import IntegrityError, transaction
+
+        with mock.patch("members.models.Zerotier") as zt_cls:
+            zt_cls.return_value.set_member.return_value = FAKE_MEMBER
+            zt_cls.return_value.get_member_peers.return_value = FAKE_PEERS
+            Members(name="One", member_id="nodewrite1", network=self.net).save()
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            Members.objects.bulk_create(
+                [Members(name="Two", member_id="nodewrite1", network=self.net)]
+            )
+
+    def test_foreign_member_is_404_not_403(self):
+        """V3: scoping wins over permission, so tenants cannot probe IDs."""
+        with mock.patch.object(Controllers, "save", autospec=True):
+            other_org = Organizations(name="Other", features=self.features)
+            other_org.save()
+        with mock.patch("members.models.Zerotier") as zt_cls:
+            zt_cls.return_value.set_member.return_value = FAKE_MEMBER
+            zt_cls.return_value.get_member_peers.return_value = FAKE_PEERS
+            foreign = Members(
+                name="Foreign",
+                member_id="foreign001",
+                network=self.net,
+                organization=other_org,
+            )
+            foreign.save()
+        Members.objects.filter(pk=foreign.pk).update(organization=other_org)
+        self.client.force_login(self.writer)
+        r = self.client.get(reverse("app_member_detail", args=[foreign.member_id]))
+        self.assertEqual(r.status_code, 404)
+
+    def _member(self):
+        with mock.patch("members.models.Zerotier") as zt_cls:
+            zt = zt_cls.return_value
+            zt.set_member.return_value = FAKE_MEMBER
+            zt.get_member_peers.return_value = FAKE_PEERS
+            m = Members(
+                name="Editable",
+                member_id="editme0001",
+                network=self.net,
+                ipaddress="10.0.0.9",
+            )
+            m.save()
+        return m
+
+    def test_patch_immutable_member_id_is_400(self):
+        m = self._member()
+        self.client.force_login(self.writer)
+        r = self.client.patch(
+            reverse("app_member_detail", args=[m.member_id]),
+            json.dumps({"member_id": "other00001"}),
+            content_type="application/json",
+        )
+        self.assertEqual(r.status_code, 400)
+        m.refresh_from_db()
+        self.assertEqual(m.member_id, "editme0001")
+
+    def test_patch_saves_editable_field(self):
+        m = self._member()
+        self.client.force_login(self.writer)
+        with mock.patch("members.models.Zerotier") as zt_cls:
+            zt_cls.return_value.set_member.return_value = FAKE_MEMBER
+            zt_cls.return_value.get_member_peers.return_value = FAKE_PEERS
+            r = self.client.patch(
+                reverse("app_member_detail", args=[m.member_id]),
+                json.dumps({"name": "Renamed"}),
+                content_type="application/json",
+            )
+        self.assertEqual(r.status_code, 200)
+        m.refresh_from_db()
+        self.assertEqual(m.name, "Renamed")
+
+    def test_delete_controller_refusal_is_409_then_force_drops(self):
+        """V42: force is only meaningful after the refusal, and logs it."""
+        m = self._member()
+        self.client.force_login(self.writer)
+        with mock.patch(
+            "controllers.backend.Zerotier.delete_member",
+            return_value={"status": 0},
+        ):
+            r = self.client.delete(reverse("app_member_detail", args=[m.member_id]))
+        self.assertEqual(r.status_code, 409)
+        self.assertTrue(r.json()["force_available"])
+        self.assertTrue(Members.objects.filter(pk=m.pk).exists())
+
+        with self.assertLogs("app.views", level="WARNING"):
+            r = self.client.delete(
+                reverse("app_member_detail", args=[m.member_id]) + "?force=true"
+            )
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(Members.objects.filter(pk=m.pk).exists())
+
+    def test_picker_rejects_failure_dict(self):
+        """V44: {'status': 0} must not become a member named 'status'."""
+        self.client.force_login(self.writer)
+        with mock.patch(
+            "controllers.backend.Zerotier.list_members_ex",
+            return_value=(None, {"status": 0}),
+        ):
+            r = self.client.get(
+                reverse("app_network_controller_members", args=["nwid_w"])
+            )
+        self.assertEqual(r.status_code, 502)
+
+    def test_picker_lists_only_unadopted(self):
+        with mock.patch("members.models.Zerotier") as zt_cls:
+            zt_cls.return_value.set_member.return_value = FAKE_MEMBER
+            zt_cls.return_value.get_member_peers.return_value = FAKE_PEERS
+            Members(name="Known", member_id="known00001", network=self.net).save()
+        info = {
+            "authorized": True,
+            "activeBridge": False,
+            "noAutoAssignIps": False,
+            "ipAssignments": ["10.0.0.8"],
+        }
+        self.client.force_login(self.writer)
+        with mock.patch(
+            "controllers.backend.Zerotier.list_members_ex",
+            return_value=(200, {"known00001": 1, "fresh00001": 1}),
+        ), mock.patch(
+            "controllers.backend.Zerotier.get_member_info_ex",
+            return_value=(200, info),
+        ):
+            r = self.client.get(
+                reverse("app_network_controller_members", args=["nwid_w"])
+            )
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(
+            r.json(),
+            [{"member_id": "fresh00001", "authorized": True, "ipaddress": "10.0.0.8"}],
+        )
+
+    def test_me_permissions_block(self):
+        """§C: capability comes from the server, superuser add/edit denied."""
+        self.client.force_login(self.admin)
+        perms = self.client.get(reverse("app_me")).json()["permissions"]
+        self.assertFalse(perms["members_add"])
+        self.assertFalse(perms["members_change"])
+        self.assertTrue(perms["members_delete"])
+        self.assertEqual(perms["reasons"]["add"], "superuser_no_member_write")
+
+        self.client.force_login(self.writer)
+        perms = self.client.get(reverse("app_me")).json()["permissions"]
+        self.assertTrue(perms["members_add"])
+        self.assertTrue(perms["members_change"])
+        self.assertTrue(perms["members_delete"])

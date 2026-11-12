@@ -5,6 +5,23 @@
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
+        <template #trailing>
+          <UButton
+            v-if="canChange"
+            icon="i-lucide-pencil"
+            label="Edit"
+            variant="ghost"
+            @click="openEdit"
+          />
+          <UButton
+            v-if="canDelete"
+            icon="i-lucide-trash-2"
+            label="Delete"
+            color="error"
+            variant="ghost"
+            @click="remove"
+          />
+        </template>
       </UDashboardNavbar>
     </template>
 
@@ -293,6 +310,41 @@
         </div>
       </div>
       <div v-else class="p-4 text-sm text-(--ui-text-dimmed)">Loading…</div>
+
+      <UModal v-model:open="modalOpen" title="Edit Member">
+        <template #body>
+          <UForm :state="form" @submit="submit">
+            <UFormField label="Name" name="name" required>
+              <UInput v-model="form.name" />
+            </UFormField>
+            <UFormField label="Member Code" name="member_code">
+              <UInput v-model="form.member_code" />
+            </UFormField>
+            <UFormField label="IP Address" name="ipaddress">
+              <UInput v-model="form.ipaddress" placeholder="Comma-separated; must be inside the network CIDR" />
+            </UFormField>
+            <UFormField label="Tags" name="tags">
+              <UInput v-model="form.tags" />
+            </UFormField>
+            <UFormField label="Description" name="description">
+              <UTextarea v-model="form.description" />
+            </UFormField>
+            <div class="mt-2 grid gap-2">
+              <UCheckbox v-model="form.is_authorized" label="Authorized" />
+              <UCheckbox v-model="form.is_bridge" label="Bridge mode" />
+              <UCheckbox v-model="form.is_no_auto_ip" label="No auto assign IP" />
+            </div>
+            <p class="mt-2 text-xs text-(--ui-text-dimmed)">
+              Member ID and network are immutable; re-adopt on another network instead.
+            </p>
+            <div v-if="error" class="mt-2 p-2 rounded bg-red-50 text-red-700 text-sm dark:bg-red-900/20 dark:text-red-400">{{ error }}</div>
+            <div class="flex justify-end gap-2 pt-4">
+              <UButton variant="outline" @click="modalOpen = false">Cancel</UButton>
+              <UButton type="submit" :loading="saving">Save</UButton>
+            </div>
+          </UForm>
+        </template>
+      </UModal>
     </template>
   </UDashboardPanel>
 </template>
@@ -312,6 +364,100 @@ if (auth.loggedIn) {
   } catch {
     data.value = null;
   }
+}
+
+// Capability from the server (§C); the write views re-check regardless.
+const canChange = computed(() => auth.me?.permissions?.members_change === true);
+const canDelete = computed(() => auth.me?.permissions?.members_delete === true);
+
+const modalOpen = ref(false);
+const saving = ref(false);
+const error = ref("");
+const form = reactive({
+  name: "",
+  member_code: "",
+  description: "",
+  ipaddress: "",
+  tags: "",
+  is_authorized: false,
+  is_bridge: false,
+  is_no_auto_ip: false,
+});
+
+async function openEdit() {
+  if (!data.value) return;
+  error.value = "";
+  // The list/telemetry payload is informational; the edit form loads the row
+  // itself so a stale page can never PATCH over a newer value (§C).
+  const row = await fetchMemberDetail(data.value.member.member_id);
+  form.name = row.name;
+  form.member_code = row.member_code || "";
+  form.description = row.description || "";
+  form.ipaddress = row.ipaddress || "";
+  form.tags = row.tags || "";
+  form.is_authorized = !!row.is_authorized;
+  form.is_bridge = row.is_bridge;
+  form.is_no_auto_ip = row.is_no_auto_ip;
+  modalOpen.value = true;
+}
+
+function ruleMessage(data: any): string {
+  const rule = data?.rule;
+  if (rule === "superuser_no_member_write") {
+    return "A superuser cannot write members (platform operator, not tenant).";
+  }
+  if (rule && rule !== "perm_missing") return `Denied: ${rule}`;
+  if (typeof data?.error === "string") return data.error;
+  if (data?.error) return JSON.stringify(data.error);
+  return "Request failed";
+}
+
+async function submit() {
+  if (!data.value) return;
+  saving.value = true;
+  error.value = "";
+  try {
+    const row = await updateMember(data.value.member.member_id, { ...form });
+    modalOpen.value = false;
+    data.value.member.name = row.name;
+    data.value.member.member_code = row.member_code;
+    data.value.member.description = row.description;
+    data.value.member.ipaddress = row.ipaddress;
+    data.value.member.tags = row.tags;
+    data.value.member.is_authorized = row.is_authorized;
+    data.value.member.is_bridge = row.is_bridge;
+    data.value.member.is_no_auto_ip = row.is_no_auto_ip;
+  } catch (e: any) {
+    error.value = ruleMessage(e?.data || e);
+  } finally {
+    saving.value = false;
+  }
+}
+
+async function remove() {
+  if (!data.value) return;
+  const id = data.value.member.member_id;
+  if (!confirm(`Delete member "${data.value.member.name}"? This removes it from the controller too.`)) {
+    return;
+  }
+  try {
+    await deleteMember(id);
+  } catch (e: any) {
+    const body = e?.data;
+    if (body?.rule === "controller_refused_delete") {
+      // §V42: the controller no longer has this member, so the row can only be
+      // dropped locally — and only after the caller sees the refusal.
+      const refusal = typeof body.error === "string" ? body.error : "controller refused delete";
+      if (!confirm(`${refusal}\n\nDrop the local row anyway (leaves the controller alone)?`)) {
+        return;
+      }
+      await deleteMember(id, true);
+    } else {
+      alert(ruleMessage(body || e));
+      return;
+    }
+  }
+  navigateTo("/members");
 }
 
 const chartEl = ref<HTMLElement | null>(null);

@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -7,9 +8,11 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.views.decorators.cache import never_cache
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 from members.models import Members, MemberPeers
 from members.views import prepare_data
+from members.permissions import member_write_denial
 from networks.models import Networks, NetworkRoutes
 from controllers.models import Controllers
 from controllers.backend import Zerotier
@@ -27,6 +30,8 @@ from problems.models import MemberProblems
 from axes.models import AccessLog, AccessFailureLog
 
 User = get_user_model()
+
+logger = logging.getLogger(__name__)
 
 
 def _jitter(member_id, scale):
@@ -64,6 +69,24 @@ def network_qs(request):
 def problem_qs(request):
     return MemberProblems.unsolved.all().filter(member__in=member_qs(request))
 
+
+def _member_permissions(user):
+    """Server-side capability block for the SPA (SPEC §C).
+
+    The SPA reads this instead of re-deriving rules in TypeScript; the write
+    views still re-check, because hiding a button is not enforcement.
+    """
+    reasons = {
+        action: member_write_denial(user, None, action)
+        for action in ("add", "change", "delete")
+    }
+    return {
+        "members_add": reasons["add"] is None,
+        "members_change": reasons["change"] is None,
+        "members_delete": reasons["delete"] is None,
+        "reasons": reasons,
+    }
+
 @login_required
 @never_cache
 def me(request):
@@ -87,6 +110,7 @@ def me(request):
                 settings, "IS_MAILAUTH_NO_PASSWORD", False
             ),
         },
+        "permissions": _member_permissions(user),
     }
     return JsonResponse(data)
 
@@ -119,6 +143,10 @@ def _mqtt_summary(m):
 @login_required
 @never_cache
 def members(request):
+    if request.method == "POST":
+        return _member_create(request)
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
     problems = list(problem_qs(request))
     members = list(member_qs(request).order_by("name"))
     data = prepare_data(members, problems)
@@ -1583,3 +1611,267 @@ def access_logs(request):
         ),
         "failures": rows(AccessFailureLog.objects.all(), lambda r: {"locked_out": r.locked_out}),
     })
+
+
+# ---------------------------------------------------------------------------
+# Member writes (SPEC §C). Every mutation goes through Members.save()/delete()
+# so the controller and the DB cannot drift; the only carve-out is
+# `?force=true`, which drops a row whose controller member is already gone.
+# ---------------------------------------------------------------------------
+
+MEMBER_EDITABLE = (
+    "name",
+    "member_code",
+    "description",
+    "ipaddress",
+    "tags",
+    "is_authorized",
+    "is_bridge",
+    "is_no_auto_ip",
+)
+MEMBER_IMMUTABLE = ("network_id", "member_id")
+
+
+def _zerotier(network):
+    return Zerotier(network.controller.uri, network.controller.token)
+
+
+def _controller_unreachable():
+    return JsonResponse(
+        {"error": "controller unreachable", "rule": "controller_unreachable"},
+        status=502,
+    )
+
+
+def _member_payload(member):
+    return {
+        "id": member.id,
+        "member_id": member.member_id,
+        "network_id": member.network.network_id,
+        "name": member.name,
+        "member_code": member.member_code,
+        "description": member.description,
+        "ipaddress": member.ipaddress,
+        "tags": member.tags,
+        "is_authorized": 1 if member.is_authorized else 0,
+        "is_bridge": member.is_bridge,
+        "is_no_auto_ip": member.is_no_auto_ip,
+    }
+
+
+def _validate_member(member):
+    """`full_clean()` minus the fields the controller/save() own (SPEC §C).
+
+    The admin's ModelForm never validates `user`, `organization`, `peers`,
+    `mqtt` or `configuration` — they are derived in `save()` — so validating
+    raw model instances has to exclude them or every write fails on blanks.
+    """
+    member.user = member.network.user
+    member.organization = member.network.organization
+    member.full_clean(exclude=["peers", "mqtt", "configuration"])
+
+
+def _json_body(request):
+    try:
+        body = json.loads(request.body or b"{}")
+    except (json.JSONDecodeError, ValueError):
+        return None
+    return body if isinstance(body, dict) else None
+
+
+def _member_from_controller(network, member_id, body):
+    """Build the row from the controller's view of member_id (SPEC V41).
+
+    Adopting a pending member must leave it pending: the controller's
+    `authorized`/`activeBridge`/`noAutoAssignIps`/`ipAssignments` seed the row,
+    and only keys the caller actually sent override them.
+    """
+    status, info = _zerotier(network).get_member_info_ex(network.network_id, member_id)
+    if status is None:
+        return None, _controller_unreachable()
+    if status != 200 or not isinstance(info, dict):
+        return None, JsonResponse(
+            {"error": "member not found on controller", "rule": "controller_unknown_member"},
+            status=400,
+        )
+
+    member = Members(
+        network=network,
+        member_id=member_id,
+        name=body.get("name") or "NET-%s MEMBER-%s" % (network.network_id, member_id),
+    )
+    member.is_authorized = bool(info.get("authorized", False))
+    member.is_bridge = bool(info.get("activeBridge", False))
+    member.is_no_auto_ip = bool(info.get("noAutoAssignIps", False))
+    ips = info.get("ipAssignments") or []
+    member.ipaddress = ",".join(str(ip) for ip in ips) if ips else None
+    for field in ("member_code", "description", "tags"):
+        if field in body:
+            member.__setattr__(field, body[field])
+    return member, None
+
+
+def _member_create(request):
+    # SPEC §C: a denial is reported before the controller is asked anything.
+    rule = member_write_denial(request.user, None, "add")
+    if rule:
+        return JsonResponse({"error": "not allowed", "rule": rule}, status=403)
+
+    body = _json_body(request)
+    if body is None:
+        return JsonResponse({"error": "invalid JSON"}, status=400)
+
+    network_id = body.get("network_id")
+    member_id = str(body.get("member_id") or "").strip()
+    if not network_id or not member_id:
+        return JsonResponse(
+            {"error": {"network_id": ["Required"], "member_id": ["Required"]}},
+            status=400,
+        )
+
+    network = network_qs(request).filter(network_id=network_id).first()
+    if network is None:
+        return JsonResponse({"error": "network not found"}, status=404)
+
+    if Members.objects.filter(network=network, member_id=member_id).exists():
+        return JsonResponse(
+            {"error": {"member_id": ["Member ID already exist in this network!"]}},
+            status=400,
+        )
+
+    member, err = _member_from_controller(network, member_id, body)
+    if err:
+        return err
+
+    for field in MEMBER_EDITABLE:
+        if field in body:
+            member.__setattr__(field, body[field])
+
+    try:
+        _validate_member(member)
+    except ValidationError as e:
+        return JsonResponse({"error": e.message_dict}, status=400)
+
+    try:
+        member.save()
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=502)
+    except IntegrityError:
+        return JsonResponse(
+            {"error": {"member_id": ["Member ID already exist in this network!"]}},
+            status=400,
+        )
+
+    return JsonResponse(_member_payload(member), status=201)
+
+
+@login_required
+@never_cache
+def member_detail(request, member_id):
+    # Scope first, then permission: a foreign member must be indistinguishable
+    # from a missing one (SPEC V3), so a 404 wins over a 403 here.
+    member = member_qs(request).filter(member_id=member_id).first()
+    if member is None:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    if request.method == "GET":
+        return JsonResponse(_member_payload(member))
+
+    if request.method == "PATCH":
+        rule = member_write_denial(request.user, member, "change")
+        if rule:
+            return JsonResponse({"error": "not allowed", "rule": rule}, status=403)
+
+        body = _json_body(request)
+        if body is None:
+            return JsonResponse({"error": "invalid JSON"}, status=400)
+        immutable = [f for f in MEMBER_IMMUTABLE if f in body]
+        if immutable:
+            return JsonResponse(
+                {"error": {f: ["Cannot be changed after creation."] for f in immutable}},
+                status=400,
+            )
+
+        for field in MEMBER_EDITABLE:
+            if field in body:
+                member.__setattr__(field, body[field])
+
+        try:
+            _validate_member(member)
+        except ValidationError as e:
+            return JsonResponse({"error": e.message_dict}, status=400)
+
+        try:
+            member.save()
+        except ValidationError as e:
+            return JsonResponse({"error": " ".join(e.messages)}, status=502)
+
+        return JsonResponse(_member_payload(member))
+
+    if request.method == "DELETE":
+        rule = member_write_denial(request.user, member, "delete")
+        if rule:
+            return JsonResponse({"error": "not allowed", "rule": rule}, status=403)
+
+        if request.GET.get("force") == "true":
+            # SPEC V42 carve-out: the controller member is already gone, so the
+            # row can only be dropped locally. Reachable only after the plain
+            # DELETE answered 409 with the controller's refusal.
+            logger.warning(
+                "Force-dropping member row %s (%s) without controller call, by %s",
+                member.member_id,
+                member.network.network_id,
+                request.user.username,
+            )
+            Members.objects.filter(pk=member.pk).delete()
+            return JsonResponse({"ok": True, "forced": True})
+
+        try:
+            member.delete()
+        except ValidationError as e:
+            return JsonResponse(
+                {
+                    "error": " ".join(e.messages),
+                    "rule": "controller_refused_delete",
+                    "force_available": True,
+                },
+                status=409,
+            )
+        return JsonResponse({"ok": True})
+
+    return JsonResponse({"error": "method not allowed"}, status=405)
+
+
+@login_required
+@never_cache
+def network_controller_members(request, network_id):
+    """Read-only picker: controller members with no Members row yet (V39)."""
+    network = network_qs(request).filter(network_id=network_id).first()
+    if network is None:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    zt = _zerotier(network)
+    status, payload = zt.list_members_ex(network.network_id)
+    # A failure dict is `{'status': 0}` and nothing else; iterating it naively
+    # would offer a member called "status" (V44). Never swallow into [].
+    if status is None or not isinstance(payload, dict) or set(payload) == {"status"}:
+        return _controller_unreachable()
+
+    known = set(
+        Members.objects.filter(network=network).values_list("member_id", flat=True)
+    )
+    data = []
+    for member_id in payload:
+        if member_id in known:
+            continue
+        info_status, info = zt.get_member_info_ex(network.network_id, member_id)
+        if info_status != 200 or not isinstance(info, dict):
+            continue
+        data.append(
+            {
+                "member_id": member_id,
+                "authorized": bool(info.get("authorized", False)),
+                "ipaddress": ",".join(str(ip) for ip in info.get("ipAssignments") or []),
+            }
+        )
+    return JsonResponse(data, safe=False)

@@ -24,7 +24,13 @@ class Zerotier:
         status = self.status()
         return status['address']
 
-    def query(self, methode, uri_command, data={}):
+    def query_ex(self, methode, uri_command, data={}):
+        """`query()` plus the HTTP status: `(status_code|None, payload)`.
+
+        `status_code is None` means the controller could not be asked at all,
+        which is what callers must distinguish from "controller said 404"
+        (SPEC V43). `payload` is None when the body was not JSON.
+        """
         try:
             if methode == 'GET':
                 request = requests.get(uri_command, headers=self.header)
@@ -32,12 +38,17 @@ class Zerotier:
                 request = requests.post(uri_command, headers=self.header, json=data)
             elif methode == 'DELETE':
                 request = requests.delete(uri_command, headers=self.header)
-            result = request.json()
+            return request.status_code, request.json()
+        except (requests.exceptions.RequestException, ValueError):
+            return None, None
 
-        except requests.exceptions.RequestException:
-            result = {'status': 0}
-
-        return result
+    def query(self, methode, uri_command, data={}):
+        # ponytail: JSON `null` bodies fold into {'status': 0} like failures.
+        # ZeroTier never returns bare null; widen only if a real endpoint does.
+        status, payload = self.query_ex(methode, uri_command, data)
+        if status is None or payload is None:
+            return {'status': 0}
+        return payload
 
     def status(self):
         uri_command = self.uri + '/status'
@@ -49,9 +60,16 @@ class Zerotier:
         result = self.query('GET', uri_command)
         return result
 
+    @staticmethod
+    def _member_url(network_id, member_id=None):
+        url = '/controller/network/' + network_id + '/member'
+        return url + '/' + member_id if member_id else url
+
     def list_members(self, network_id):
-        uri_command = self.uri + '/controller/network/' + network_id + '/member'
-        return self.query('GET', uri_command)
+        return self.query('GET', self.uri + self._member_url(network_id))
+
+    def list_members_ex(self, network_id):
+        return self.query_ex('GET', self.uri + self._member_url(network_id))
 
     def get_network_info(self, network_id):
         #uri_command = self.uri + '/controller/network/' + network_id + '/'
@@ -60,8 +78,10 @@ class Zerotier:
         return result
 
     def get_member_info(self, network_id, member_id):
-        uri_command = self.uri + '/controller/network/' + network_id + '/member/' + member_id
-        return self.query('GET', uri_command)
+        return self.query('GET', self.uri + self._member_url(network_id, member_id))
+
+    def get_member_info_ex(self, network_id, member_id):
+        return self.query_ex('GET', self.uri + self._member_url(network_id, member_id))
 
     def add_network(self, network_id=None):
         if not network_id:
@@ -80,8 +100,7 @@ class Zerotier:
         pass
 
     def delete_member(self, network_id, member_id):
-        uri_command = self.uri + '/controller/network/' + network_id + '/member/' + member_id
-        return self.query('DELETE', uri_command)
+        return self.query('DELETE', self.uri + self._member_url(network_id, member_id))
 
     def set_network(self, network_id, data={}):
         #uri_command = self.uri + '/controller/network/' + network_id + '/'
@@ -89,8 +108,7 @@ class Zerotier:
         return self.query('POST', uri_command, data)
 
     def set_member(self, network_id, member_id, data={}):
-        uri_command = self.uri + '/controller/network/' + network_id + '/member/' + member_id
-        return self.query('POST', uri_command, data)
+        return self.query('POST', self.uri + self._member_url(network_id, member_id), data)
 
     def set_network_name(self, network_id, name):
         data = {'name': name}

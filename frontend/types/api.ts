@@ -9,6 +9,18 @@ export interface MeResponse {
   };
   is_superuser: boolean;
   features: { is_2fa: boolean; is_mailauth_no_password: boolean };
+  permissions: MemberPermissions;
+}
+
+export interface MemberPermissions {
+  members_add: boolean;
+  members_change: boolean;
+  members_delete: boolean;
+  reasons: {
+    add: string | null;
+    change: string | null;
+    delete: string | null;
+  };
 }
 
 export interface Member {
@@ -367,4 +379,26 @@ export interface AccessFailureItem {
 export interface AccessLogs {
   logs: AccessLogItem[];
   failures: AccessFailureItem[];
+}
+
+// ── Member writes (SPEC §C) ──
+export interface MemberWritable {
+  id: number;
+  member_id: string;
+  network_id: string;
+  name: string;
+  member_code: string | null;
+  description: string | null;
+  ipaddress: string | null;
+  tags: string | null;
+  is_authorized: number;
+  is_bridge: boolean;
+  is_no_auto_ip: boolean;
+}
+
+/** Controller member with no local row yet — the adopt picker's options. */
+export interface ControllerMemberOption {
+  member_id: string;
+  authorized: boolean;
+  ipaddress: string;
 }

@@ -16,8 +16,8 @@ from wagtail.snippets.views.snippets import SnippetViewSet
 
 from accounts.customs import GroupOrganizationFilter
 from accounts.models import GroupOrganizations
-from licenses.utils import is_license_valid
 from .models import Members, MemberPeers
+from .permissions import can_add_member, can_change_member, can_delete_member
 from crum import get_current_user
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel, ObjectList
 from django.utils.translation import gettext as _
@@ -31,7 +31,6 @@ from wagtailgeowidget.panels import GeoAddressPanel, GoogleMapsPanel
 # from wagtail.admin.forms import WagtailAdminModelForm
 # from django import forms
 # from networks.models import Networks
-from licenses.utils import is_license_valid
 
 logger = logging.getLogger(__name__)
 
@@ -210,82 +209,28 @@ class MemberPeersPermissionHelper(PermissionHelper):
 
 
 class MembersPermissionHelper(PermissionHelper):
-    def user_can_list(self, user):
-        result = True
-        if not user.has_perm("members.view_members"):
-            result = False
+    """Delegates to `members.permissions` — one rule set, two surfaces (V34)."""
 
-        return result
+    def user_can_list(self, user):
+        return user.has_perm("members.view_members")
 
     def user_can_create(self, user):
-        result = True
-        total_members = Members.objects.filter(organization=user.organization).count()
-
-        logger.info(f"Total members {total_members}")
-
-        # if not (user.organization.features.number_of_member > total_members):
-        if user.organization.features.number_of_member < total_members:
-            result = False
-            logger.warning(f"Total members {total_members} is more than License")
-
-        if not user.has_perm("members.add_members"):
-            result = False
-
-        if user.is_superuser:
-            result = False
-
-        """ Check Group Organization """
-        try:
-            GroupOrganizations.objects.get(main_org=user.organization)
-            result = False
-            logger.info("You are in GroupOrganizations")
-        except ObjectDoesNotExist:
-            pass
-
-        """ Check License """
-        if not is_license_valid(user):
-            result = False
-
-        return result
+        allowed, rule = can_add_member(user)
+        if not allowed:
+            logger.info("Member add denied: %s by %s", rule, user.username)
+        return allowed
 
     def user_can_delete_obj(self, user, obj):
-        result = True
-        if not user.has_perm("members.delete_members"):
-            result = False
-
-        """ Check Group Organization """
-        try:
-            GroupOrganizations.objects.get(main_org=user.organization)
-            result = False
-        except ObjectDoesNotExist:
-            pass
-
-        """ Check License """
-        if not is_license_valid(user):
-            result = False
-
-        return result
+        allowed, rule = can_delete_member(user, obj)
+        if not allowed:
+            logger.info("Member delete denied: %s by %s", rule, user.username)
+        return allowed
 
     def user_can_edit_obj(self, user, obj):
-        result = True
-        if not user.has_perm("members.change_members"):
-            result = False
-
-        if user.is_superuser:
-            result = False
-
-        """ Check Group Organization """
-        try:
-            GroupOrganizations.objects.get(main_org=user.organization)
-            result = False
-        except ObjectDoesNotExist:
-            pass
-
-        """ Check License """
-        if not is_license_valid(user):
-            result = False
-
-        return result
+        allowed, rule = can_change_member(user, obj)
+        if not allowed:
+            logger.info("Member edit denied: %s by %s", rule, user.username)
+        return allowed
 
 
 class MembersAdmin(ModelAdmin):

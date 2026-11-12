@@ -278,6 +278,14 @@ class Members(models.Model):
         db_table = "members"
         verbose_name = "member"
         verbose_name_plural = "members"
+        constraints = [
+            # `clean()` already rejects duplicates within a network; the row
+            # can otherwise still race in, so V45 pins it in the DB too.
+            models.UniqueConstraint(
+                fields=["network", "member_id"],
+                name="members_network_member_id_uniq",
+            )
+        ]
 
     def __str__(self):
         return "%s" % self.name
