@@ -42,9 +42,6 @@ const navItems = computed(() => {
     { label: "WebFilters", icon: "i-lucide-shield", to: "/settings/webfilters" },
     { label: "Monitor", icon: "i-lucide-activity", to: "/settings/monitor" },
     { label: "Operational Time", icon: "i-lucide-clock", to: "/settings/operational-time" },
-    { label: "Headscale Users", icon: "i-lucide-users", to: "/settings/headscale/users" },
-    { label: "Headscale Nodes", icon: "i-lucide-server", to: "/settings/headscale/nodes" },
-    { label: "Headscale Keys", icon: "i-lucide-key", to: "/settings/headscale/preauthkeys" },
     { label: "Access History", icon: "i-lucide-history", to: "/settings/access" },
   ];
   if (auth.isSuperuser) {
