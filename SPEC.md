@@ -60,6 +60,7 @@ No research skill run — section omitted (right-size).
 - V10. `§C` version strings must match `requirements.txt` pinned versions; version bump PRs must update both.
 - V11. `§C` must document that `wagtail-modeladmin` is an external package (not wagtail core) and `modelsearch` is a required search backend dependency.
 - V12. Module-level `wagtail.contrib.modeladmin` imports are prohibited — use `wagtail_modeladmin` (external package). Verified: all 10 apps comply.
+- V13. Member presence has exactly one definition: live peer data resolved by `member_id` (Redis db1 first, `MemberPeers` row second) with at least one `paths` entry. `is_online()`, `member_status()`, and `list_ip_peers()` must all read it through `_member_peers_dict()` so the two admin columns can never disagree, and the `Members.peers` FK value must never gate presence. `MemberPeers` rows are keyed by `(member_id, network)`; sync workers re-link `Members.peers` to the member's own row. (fixes B4)
 
 ## §T Tasks
 
@@ -73,6 +74,7 @@ No research skill run — section omitted (right-size).
 | T6 | x | Remove dead broken `encrypt_node_id()` in `licenses/utils.py` (marked "Not Used", refs undefined) | |
 | T7 | x | Guard index access in `Mqtt.save()` on `packet_loss_string`/`round_trip_string` | V7 |
 | T8 | x | Add input guards to module `licenses.utils.check_license(lic_json)` for missing `node_id`/`uuid`/`token` keys + `b64decode` | V8 |
+| T9 | x | Unify member presence on one resolver; key `MemberPeers` by `(member_id, network)`; re-link FK in `Members.save()` and both peer sync workers; add `MembersPeerStatusTests` | V13, B4 |
 
 ## §B Bugs
 
@@ -81,3 +83,4 @@ No research skill run — section omitted (right-size).
 | B2 | 2026-09-02 | §V6 conflates two `check_license` symbols; module fn returns dict + unguarded `lic_json[...]`/`b64decode` at `licenses/utils.py:81-86` raises | V8: split symbols, add input guards |
 | B3 | 2026-09-02 | `Mqtt.save()` unguarded `packet_loss_split[2]`/`round_trip_string[1]` at `mqtt/models.py:96,105` IndexError on malformed telemetry — violates V4 | V7: guard index access |
 | B1 | 2026-09-02 | `Members.save()`/`MemberPeers.save()`/`Members.delete()` call ZeroTier API unguarded (`members/models.py:297,309,270`); raw API exception propagates | V9: wrap, surface error to user, abort save |
+| B4 | 2026-11-16 | `is_online()` read Redis but `member_status()` read only `Members.peers`; FK can point at another member's row (`MemberPeers.objects.get(member_id=...)` unscoped by network) and `Members.save()` never re-linked it — member `e3071f023f` showed ONLINE + OFFLINE simultaneously (3 cross-linked, 1 null, 42 stale rows on vn) | V13: single resolver `_member_peers_dict()`, sync workers key by `(member_id, network)` and re-link FK |

@@ -1,6 +1,6 @@
 from .models import Controllers
 from networks.models import Networks, NetworkRoutes
-from members.models import Members, MemberPeers
+from members.models import Members, MemberPeers, _zt_failed
 from .backend import Zerotier
 from django.core.exceptions import ObjectDoesNotExist
 from config.utils import to_list
@@ -258,17 +258,48 @@ def zt_synchronize_member_peers(network=None):
     """
     print(localtime(), "START - Synchronize Member Peers")
     if network is not None:
-        member_peers = MemberPeers.objects.filter(network=network)
+        members = Members.objects.filter(network=network)
     else:
-        member_peers = MemberPeers.objects.all()
+        members = Members.objects.all()
 
-    for member_peer in member_peers:
+    # Iterate Members, not MemberPeers: rows must be keyed by (member_id,
+    # network) and re-linked through Members.peers, otherwise a stale or
+    # cross-linked FK makes member_status() report OFFLINE forever.
+    for member in members.select_related("network"):
         zt = Zerotier(
-            member_peer.network.controller.uri, member_peer.network.controller.token
+            member.network.controller.uri, member.network.controller.token
         )
-        member_peer.peers = zt.get_member_peers(member_peer.member_id)
-        member_peer.save()
+        peers = zt.get_member_peers(member.member_id)
+        if _zt_failed(peers):
+            continue
+        member_peer = MemberPeers.objects.filter(
+            member_id=member.member_id, network=member.network
+        ).first()
+        if member_peer is None:
+            member_peer = MemberPeers(
+                member_id=member.member_id, network=member.network
+            )
+        member_peer.peers = peers
+        # save_base: skip MemberPeers.save()'s redundant controller fetch
+        member_peer.save_base(raw=False)
+        if member.peers_id != member_peer.id:
+            # .update() avoids Members.save()'s controller round-trip
+            Members.objects.filter(pk=member.pk).update(peers=member_peer)
     print(localtime(), "DONE - Synchronize Member Peers")
+
+
+def _peer_row(member):
+    """Return the MemberPeers row owned by this member, creating it if absent.
+
+    Keyed by (member_id, network): member_id alone is ambiguous across
+    networks and caused FK cross-links.
+    """
+    row = MemberPeers.objects.filter(
+        member_id=member.member_id, network=member.network
+    ).first()
+    if row is None:
+        row = MemberPeers(member_id=member.member_id, network=member.network)
+    return row
 
 
 def zt_check_member_peers(member):
@@ -276,18 +307,16 @@ def zt_check_member_peers(member):
     Update Member Peers
     """
     if member.peers is None:
-        try:
-            member_peer = MemberPeers.objects.get(member_id=member.member_id)
-        except ObjectDoesNotExist:
-            member_peer = MemberPeers()
-
         zt = Zerotier(member.network.controller.uri, member.network.controller.token)
-        member_peer.peers = zt.get_member_peers(member_peer.member_id)
-        member_peer.network = member.network
-        member_peer.save()
-
+        peers = zt.get_member_peers(member.member_id)
+        if _zt_failed(peers):
+            return
+        member_peer = _peer_row(member)
+        member_peer.peers = peers
+        member_peer.save_base(raw=False)
+        # .update() skips Members.save()'s controller round-trip
+        Members.objects.filter(pk=member.pk).update(peers=member_peer)
         member.peers = member_peer
-        member.save()
 
 
 def zt_check_all_member_peers():
