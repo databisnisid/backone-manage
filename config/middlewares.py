@@ -3,6 +3,7 @@ import logging
 import sys
 from django.conf import settings
 from django.http import HttpResponse
+from django.middleware.csrf import get_token as get_csrf_token
 from django.template.loader import render_to_string
 from django.test.testcases import template_rendered
 from config.utils import check_device_id
@@ -70,4 +71,17 @@ class CheckHeadersMiddleware(object):
                         return HttpResponse(template_rendered)
 
         response = self.get_response(request)
+        return response
+
+
+class CsrfTokenHeaderMiddleware:
+    """Add X-CSRFToken header to every response so cross-origin SPA can read it."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if isinstance(response, HttpResponse) and not response.has_header("X-CSRFToken"):
+            response["X-CSRFToken"] = get_csrf_token(request)
         return response

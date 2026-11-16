@@ -27,7 +27,7 @@ ALLOWED_HOSTS = [str(os.getenv("ALLOWED_HOSTS", "*"))]
 # Application definition
 
 INSTALLED_APPS = [
-    #'headscale',
+    "headscale",
     # "sites_custom",
     "mailauth",
     "mailauth.contrib.admin",
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "problems",
     "qr_code",
     "zabbix",
+    "app",
     #
     "corsheaders",
     "wagtail.contrib.forms",
@@ -98,6 +99,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "config.middlewares.CsrfTokenHeaderMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -242,13 +244,17 @@ WAGTAILADMIN_BASE_URL = str(
 CSRF_TRUSTED_ORIGINS = [WAGTAILADMIN_BASE_URL]
 
 ADDITIONAL_DOMAINS = os.getenv(
-    "ADDITIONAL_DOMAINS", "https://mn.guanghao-sdwan.id, https://manage.nexusnetwork.id"
+    "ADDITIONAL_DOMAINS", "https://mn.guanghao-sdwan.id, https://manage.nexusnetwork.id, https://fe.nexus.manage.backone.cloud"
 )
 
 domains_list = ADDITIONAL_DOMAINS.split(",")
 
 for domain_list in domains_list:
     CSRF_TRUSTED_ORIGINS.append(domain_list.replace(" ", ""))
+CSRF_TRUSTED_ORIGINS.append("http://127.0.0.1:3000")
+CSRF_TRUSTED_ORIGINS.append("http://localhost:3000")
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = True
 
 # Controller Rule Compiler
 NODEJS = str(os.getenv("NODEJS", "/usr/bin/node"))
@@ -327,6 +333,10 @@ MEMBER_NEW_PERIOD = int(os.getenv("MEMBER_NEW_PERIOD", 84600))
 # AXES
 AXES_COOLOFF_TIME = float(os.getenv("AXES_COOLOFF_TIME", 2))
 AXES_RESET_ON_SUCCESS = True
+# axes 8.0.0 defaults this to False, which leaves AccessFailureLog empty (SPEC V28).
+AXES_ENABLE_ACCESS_FAILURE_LOG = os.getenv(
+    "AXES_ENABLE_ACCESS_FAILURE_LOG", "True"
+).lower() in ("true", "1", "t")
 # AXES_LOCKOUT_PARAMETERS = ['ip_address', 'username']
 AXES_LOCKOUT_PARAMETERS = ["username"]
 AXES_LOCKOUT_TEMPLATE = "axes/block.html"
@@ -374,7 +384,12 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = os.getenv(
     "SESSION_EXPIRE_AT_BROWSER_CLOSE", "False"
 ).lower() in ("true", "1", "t")
 SESSION_SAVE_EVERY_REQUEST = True
-
+# Cross-origin frontend (e.g. fe.nexus.manage.backone.cloud) needs Session=None; Secure
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = True
+# CSRF cookie SameSite=None for cross-origin SPA (matches session settings)
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = True
 
 # ZABBIX
 ZABBIX_URL = os.getenv("ZABBIX_URL", "localhost")
@@ -384,7 +399,14 @@ ZABBIX_HOSTNAME_AUTO_CREATE = os.getenv(
 ).lower() in ("true", "1", "t")
 
 # CORS
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "true").lower() == "true"
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+CORS_ALLOW_CREDENTIALS = True
+CORS_EXPOSE_HEADERS = ["X-CSRFToken"]
 # CORS_ALLOWED_ORIGINS = [
 #    "https://example.com",
 #    "https://sub.example.com",
@@ -543,6 +565,7 @@ LOGGING = {
 
 # Two Factor
 # LOGIN_URL = "two_factor:login"
+LOGIN_URL = "/login/"
 
 # this one is optional
 # LOGIN_REDIRECT_URL = "two_factor:profile"

@@ -34,6 +34,7 @@
            └───────────┘ └────────┘ └────────┘
 ```
 
+
 **Data flow:**
 1. **ZeroTier (primary controller)**: `controllers/backend.py` `Zerotier` class wraps the ZeroTier API. Model `save()` overrides (esp. `members/models.py`) push changes (members, network rules) to the controller in real time. Import/sync helpers in `controllers/workers.py`.
 2. **MQTT telemetry (two pipelines)**: direct path — `mqtt_presence.py` subscribes to `backone/presence`, parses the 21-field semicolon payload into the `Mqtt` model (linked to `Members` via FK). Redis-buffered path — `mqtt_presence_redis.py` writes raw payload JSON to Redis (with TTL), then `mqtt_presence_redis_to_db.py` scans keys, deserializes, and upserts `Mqtt`. `mqtt/redis.py` serves cached reads (db0 MQTT telemetry, db1 peer cache).
@@ -233,3 +234,4 @@ GOOGLE_MAPS key (map dashboard), RTTY, syslog, quotas, license features
 10. **DRF serializer is read-only** — no write path there.
 11. **Redis dual-purpose** — db0 MQTT telemetry, db1 peer cache; don't collide keys.
 12. **`config/utils.py`** (`get_user()`, `to_list()`) is the shared-helper home. Prefer adding helpers there over new modules.
+13. **Nuxt frontend (`frontend/`)**: Nuxt 4.5.2 SPA (Vue 3, Pinia, Tailwind v4, ECharts), `ssr: false`, `app.baseURL: "/app/"`, static via `nuxi generate`. Django = auth + API backend; read-only org-scoped `/api/app/*` FBVs in `app/` (`@login_required` + `@never_cache` — cache middleware leaks cross-user otherwise). NEVER call `Members.save()` from these views. Dev: `npm run dev` proxies `/api`, `/accounts`, `/login`, `/two`, `/custom`, `/documents` → Django `:8008`; backend needs `IS_CACHE=True` (no Redis) or live Redis. Prod: `frontend/Dockerfile` → nginx static + proxy to Django (`DJANGO_UPSTREAM` env, default `http://django:8008`). Google Maps keyless dev = gray tiles.
