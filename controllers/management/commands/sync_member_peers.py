@@ -25,42 +25,36 @@ class Command(BaseCommand):
             socket_timeout=1,
         )
 
-        # member_peers = MemberPeers.objects.all()
-        members = Members.objects.filter(is_authorized=True)
-
+        # Re-read per loop: a cached queryset misses members created after the
+        # daemon started, which is how a new node stays permanently "offline".
         """ Loop Forever """
         while True:
+            members = (
+                Members.objects.filter(is_authorized=True)
+                .select_related("network__controller")
+            )
             # current_time = timezone.now()
             # timestamp = int(current_time.timestamp())
             # for member_peer in member_peers:
             logger.info(f"Start - Syncronize")
             for member in members:
-                zt = Zerotier(
-                    member.network.controller.uri,
-                    member.network.controller.token,
-                    # member_peer.network.controller.token,
-                    # member_peer.network.controller.uri,
-                )
-                # peers = zt.get_member_peers(member_peer.member_id)
-                peers = zt.get_member_peers(member.member_id)
-                logger.info(f"{peers}")
-                member_id_with_prefix = (
-                    f"{settings.MQTT_REDIS_PREFIX}:{member.member_id}"
-                )
-                msg_json = {}
-                msg_json["peers"] = peers
-                # msg_json["ts"] = timestamp
-                msg_json_string = str(msg_json).replace("'", '"')
-
+                # One bad member (deleted network, dead controller) must not
+                # stop the daemon and leave every other member stale.
                 try:
-                    # r.json().set(member_id_with_prefix, "$.peers", peers)
+                    zt = Zerotier(
+                        member.network.controller.uri,
+                        member.network.controller.token,
+                    )
+                    peers = zt.get_member_peers(member.member_id)
                     r.setex(
-                        member_id_with_prefix,
+                        f"{settings.MQTT_REDIS_PREFIX}:{member.member_id}",
                         settings.MQTT_REDIS_SETEX,
-                        msg_json_string,
+                        json.dumps({"peers": peers}),
                     )
                 except (TimeoutError, ConnectionError):
                     pass
+                except Exception as e:
+                    logger.warning(f"sync_member_peers {member.member_id}: {e}")
 
             logger.info(
                 f"End - Syncronize. Sleep for {settings.SYNC_MEMBER_PEERS_SLEEP} seconds"

@@ -6,6 +6,11 @@ from wagtail.admin.views import account
 from wagtail.models import Site
 from accounts.models import Organizations
 from config.settings import IS_MAILAUTH_NO_PASSWORD, IS_2FA_ENABLE
+from config.settings import SESSION_COOKIE_AGE
+
+# "Remember me" — checked keeps user logged in 30 days (grill decision §V13);
+# unchecked expires session at browser close (set_expiry(0)).
+REMEMBER_ME_COOKIE_AGE = 30 * 24 * 3600
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +36,17 @@ class CustomLoginView(account.LoginView):
             # return response.HttpResponseRedirect(url)
 
         return super().get(*args, **kwargs)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # V13: "Remember me" — checked → 30-day session, unchecked → browser-close.
+        if form.cleaned_data.get("remember"):
+            self.request.session.set_expiry(REMEMBER_ME_COOKIE_AGE)
+        else:
+            self.request.session.set_expiry(0)
+
+        return response
 
     def get_context_data(self, **kwargs):
 

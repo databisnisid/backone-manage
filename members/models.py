@@ -293,6 +293,14 @@ class Members(models.Model):
         db_table = "members"
         verbose_name = "member"
         verbose_name_plural = "members"
+        constraints = [
+            # `clean()` already rejects duplicates within a network; the row
+            # can otherwise still race in, so V45 pins it in the DB too.
+            models.UniqueConstraint(
+                fields=["network", "member_id"],
+                name="members_network_member_id_uniq",
+            )
+        ]
 
     def __str__(self):
         return "%s" % self.name
@@ -347,6 +355,8 @@ class Members(models.Model):
         member_peers.network = self.network
         # Avoid MemberPeers.save() (which re-fetches peers via a 2nd API call)
         member_peers.save_base(raw=False)
+        # Link it: without this the FK stays NULL/stale and presence would read
+        # offline while the controller reports a live path.
         self.peers = member_peers
 
         if self.mqtt is None:
