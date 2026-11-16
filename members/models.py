@@ -85,6 +85,21 @@ def get_member_peers_from_redis(member_id: str = "") -> dict:
     return result
 
 
+
+def _member_peers_dict(member_id: str, member_peers) -> dict:
+    """Resolve a member's live peers: Redis (db1) first, then the local row.
+    Resolved by member_id, never through the MemberPeers FK value alone,
+    because that FK can point at another member's row.
+    """
+    peers = get_member_peers_from_redis(str(member_id or ""))
+    if not peers and member_peers:
+        try:
+            peers = to_dictionary(member_peers.peers)
+        except (ValueError, SyntaxError):
+            peers = {}
+    return peers if isinstance(peers, dict) else {}
+
+
 def _zt_failed(result) -> bool:
     """Return True when a ZeroTier API result signals failure (V9)."""
     if not isinstance(result, dict):
@@ -326,13 +341,12 @@ class Members(models.Model):
             raise ValidationError(_("ZeroTier: unable to update member on controller"))
         self.configuration = member_info
 
-        # Get MemberPeers
-        try:
-            member_peers = MemberPeers.objects.get(member_id=self.member_id)
-        except ObjectDoesNotExist:
-            member_peers = MemberPeers(member_id=self.member_id)
-        except MultipleObjectsReturned:
-            MemberPeers.objects.filter(member_id=self.member_id).delete()
+        # Get MemberPeers. Scope by network: a member_id can exist in several
+        # networks, and a bare get() would attach another member's row.
+        member_peers = MemberPeers.objects.filter(
+            member_id=self.member_id, network=self.network
+        ).first()
+        if member_peers is None:
             member_peers = MemberPeers(member_id=self.member_id)
         peers = zt.get_member_peers(self.member_id)
         if _zt_failed(peers):
@@ -341,9 +355,8 @@ class Members(models.Model):
         member_peers.network = self.network
         # Avoid MemberPeers.save() (which re-fetches peers via a 2nd API call)
         member_peers.save_base(raw=False)
-        # Link it: without this the FK stays NULL for every new member and
-        # `is_online()` raises on `self.peers`, reading offline while the
-        # controller reports a live path.
+        # Link it: without this the FK stays NULL/stale and presence would read
+        # offline while the controller reports a live path.
         self.peers = member_peers
 
         if self.mqtt is None:
@@ -521,27 +534,12 @@ class Members(models.Model):
     is_authorized_thumbnail.short_description = _("Authorized")
 
     def list_ip_peers(self):
-        peers = to_dictionary("{}")
         ip_peers = []
-        if self.peers:
-            peers = to_dictionary(self.peers.peers)
-        if "paths" in peers and len(peers["paths"]) != 0:
-            paths = peers["paths"]
-            # ip_peers = []
-            # ip_peers_html = []
-            for path in paths:
-                ip_path = path["address"].split("/")
-                if ip_path[0] not in ip_peers:
-                    ip_info = "<a href='https://ipinfo.io/{}' target='_blank' rel='noopener noreferrer'>{}</a>".format(
-                        ip_path[0], ip_path[0]
-                    )
-                    ip_peers.append(ip_path[0])
-                    # ip_peers_html.append(ip_info)
-
-            # result = "<br />".join([str(p) for p in ip_peers_html])
-            # return format_html("<small>" + result + "</small>")
-        # else:
-        #    return ""
+        peers = _member_peers_dict(self.member_id, self.peers)
+        for path in peers.get("paths") or []:
+            ip = path.get("address", "").split("/")[0]
+            if ip and ip not in ip_peers:
+                ip_peers.append(ip)
         return ip_peers
 
     def list_peers(self):
@@ -572,54 +570,33 @@ class Members(models.Model):
     list_peers.short_description = _("Peers (Providers)")
 
     def member_status(self):
-        peers = to_dictionary("{}")
-        if self.peers:
-            peers = to_dictionary(self.peers.peers)
+        peers = _member_peers_dict(self.member_id, self.peers)
 
-        if "paths" in peers and len(peers["paths"]) != 0:
-            version = peers["version"]
-            latency = peers["latency"]
+        if peers.get("paths"):
+            version = peers.get("version", "")
+            latency = peers.get("latency")
 
-            if latency < 0:
-                direct_or_relay = "RELAY"
-                text = format_html("<small>{} ({})</small>", direct_or_relay, version)
+            if latency is None or latency < 0:
+                text = format_html("<small>RELAY ({})</small>", version)
             else:
-                direct_or_relay = "DIRECT"
                 text = format_html(
-                    "<small>{} ({}/{}ms)</small>",
-                    direct_or_relay,
-                    version,
-                    str(latency),
+                    "<small>DIRECT ({}/{}ms)</small>", version, str(latency)
                 )
-
-            # text = format_html("<small style='color: green;'>ONLINE ({})<br />{}({}ms)<br />{}</small>",
-            #                   version, peers['role'], str(latency), direct_or_relay)
-            # text = format_html("<small style='color: green;'>{} ({}/{}ms)</small>",
-            #                   direct_or_relay, version, str(latency))
         else:
-            controller_configuration = to_dictionary(
-                self.network.controller.configuration
-            )
-            if self.peers:
-                peers = to_dictionary(self.peers.peers)
-
-            if self.member_id == controller_configuration["address"]:
-                version = controller_configuration["version"]
-                text = format_html(
-                    "<small style='color: blue;'>CONTROLLER ({})</small>", version
+            try:
+                controller_configuration = to_dictionary(
+                    self.network.controller.configuration
                 )
-            elif self.peers:
-                if (
-                    "role" in self.peers.peers
-                    and "latency" in self.peers.peers
-                    and "version" in self.peers.peers
-                ):  # and int(self.peers.peers['latency']) == -1:
-                    text = format_html("<small>RELAY ({})</small>", peers["version"])
-                else:
-                    text = format_html("<small style='color: red;'>OFFLINE</small>")
+            except (ValueError, SyntaxError):
+                controller_configuration = {}
+
+            if self.member_id == controller_configuration.get("address"):
+                text = format_html(
+                    "<small style='color: blue;'>CONTROLLER ({})</small>",
+                    controller_configuration.get("version"),
+                )
             else:
                 text = format_html("<small style='color: red;'>OFFLINE</small>")
-
         # return text
         ipaddress_ts = self.ipaddress_ts()
         if ipaddress_ts:
@@ -655,17 +632,12 @@ class Members(models.Model):
     member_status.admin_order_field = "network"
 
     def is_online(self):
-        # Redis first (cron-refreshed), DB row as fallback. Both can be absent
-        # for a freshly created member, so every hop is guarded: an unguarded
-        # `self.peers.peers` on a NULL FK reads offline against a live path.
-        peers = get_member_peers_from_redis(str(self.member_id))
-        if not peers and self.peers_id:
-            peers = to_dictionary(self.peers.peers)
-        if not peers:
-            return False
-        if peers.get("paths") and self.ipaddress:
-            return True
-        return all(k in peers for k in ("role", "latency", "version"))
+        # Single source of truth with member_status(): at least one live path
+        # means online. Redis (db1) wins over the MemberPeers row. No ipaddress
+        # requirement — a peer with an active path is connected even before an
+        # address is assigned, and member_status() already renders it DIRECT.
+        peers = _member_peers_dict(self.member_id, self.peers)
+        return bool(peers.get("paths"))
 
     is_online.short_description = _("BackOne Online")
 
